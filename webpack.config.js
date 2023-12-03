@@ -7,6 +7,11 @@ module.exports = {
    output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'dist'),
+      library: {
+         name: 'tsccs', // you then can access it via window: `window.youLib`
+         type: 'umd',
+         umdNamedDefine: true,
+       },
    },
    resolve: {
       extensions: ['.ts', '.js'],

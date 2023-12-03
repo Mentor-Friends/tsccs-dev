@@ -8,8 +8,7 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
 
 
         var jsonData = JSON.stringify(connectionData);
-        console.log("this is the json data");
-        console.log(jsonData);
+
             const response = await fetch(CreateTheConnectionUrl,{
                 method: 'POST',
                 headers:{

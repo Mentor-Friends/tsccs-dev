@@ -4,7 +4,7 @@ import { GetComposition } from "./GetComposition";
 import GetConceptByCharacter from "./GetConceptByCharacter";
 
 
-export async function GetCompositionList(compositionName: string){
+export  async function GetCompositionList(compositionName: string){
    var concept = await GetConceptByCharacter(compositionName);
    var CompositionList :any = [];
    if(concept){
@@ -18,3 +18,5 @@ export async function GetCompositionList(compositionName: string){
    }
     return CompositionList;
 }
+
+

@@ -1,181 +1,171 @@
-
-import { Concept } from './DataStructures/Concept';
-import { GetConcept } from './Api/GetConcept';
-import { DrawingLoop } from './Drawing/ConceptDraw';
-import { selectConceptObject } from './Drawing/ConceptEvents';
-import { GetAllUserConcepts } from './Api/GetAllConcepts';
-import { ConceptsToDraw } from './DataStructures/ConceptsToDraw';
-import { GetAllUserConnections } from './Api/GetAllConnections';
-import { ConnectionData } from './DataStructures/ConnectionData';
-import { GetComposition } from './Services/GetComposition';
-import { GetCompositionList } from './Services/GetCompositionList';
-import CreateTheConcept from './Services/CreateTheConcept';
-import { TheTexts } from './DataStructures/TheTexts';
-import { CreateTextData } from './Api/Create/CreateTheTextData';
-import MakeTheInstanceConcept from './Services/MakeTheInstanceConcept';
-import CreateTheComposition from './Services/CreateTheComposition';
-import { ReservedIds } from './DataStructures/ReservedIds';
 import { SyncData } from './DataStructures/SyncData';
-import { ConceptsData } from './DataStructures/ConceptData';
 
 
-const form = document.querySelector('#myForm') as HTMLFormElement;
-//const form2 = document.querySelector('#userForm') as HTMLFormElement;
-const form3 = document.querySelector('#compositionForm') as HTMLFormElement;
-const jsonForm = document.querySelector('#jsonForm') as HTMLFormElement;
-const nameForm = document.querySelector('#nameform') as HTMLFormElement;
-const getname = document.querySelector('#getname') as HTMLFormElement;
 
 
-var json = {
-    "asdgsaddff": {
-        "adgasdfsdf": {
-            "asdg": "tame",
-            "briderarr": ["hello", "tre"]
-        }
-    }
-};
+export { SplitStrings} from './Services/SplitStrings'; 
+export { GetCompositionList }  from './Services/GetCompositionList';
+export {GetComposition} from './Services/GetComposition';
+export {default as CreateComposition} from './Services/CreateTheComposition';
+export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBetweenTwoConcepts';
+
+// const form = document.querySelector('#myForm') as HTMLFormElement;
+// //const form2 = document.querySelector('#userForm') as HTMLFormElement;
+// const form3 = document.querySelector('#compositionForm') as HTMLFormElement;
+// const jsonForm = document.querySelector('#jsonForm') as HTMLFormElement;
+// const nameForm = document.querySelector('#nameform') as HTMLFormElement;
+// const getname = document.querySelector('#getname') as HTMLFormElement;
+
+
+// var json = {
+//     "asdgsaddff": {
+//         "adgasdfsdf": {
+//             "asdg": "tame",
+//             "briderarr": ["hello", "tre"]
+//         }
+//     }
+// };
 
 
 
 setInterval(function(){
+    console.log("syncing");
     SyncData.SyncDataOnline()
-    console.log(ConceptsData.conceptsArray);
 }, 5000);
 
 
 
-form.addEventListener('submit', (event) => {
-   event.preventDefault();
-   const conceptIdElement = document.querySelector('#conceptid') as HTMLInputElement;
-   const conceptId = conceptIdElement.value;
-   GetComposition(Number(conceptId)).then(output=>{
-    const jsonElemnt = document.querySelector('#jsonoutput') as HTMLInputElement;
-    var json = JSON.stringify(output);
-    console.log(json);
+// form.addEventListener('submit', (event) => {
+//    event.preventDefault();
+//    const conceptIdElement = document.querySelector('#conceptid') as HTMLInputElement;
+//    const conceptId = conceptIdElement.value;
+//    GetComposition(Number(conceptId)).then(output=>{
+//     const jsonElemnt = document.querySelector('#jsonoutput') as HTMLInputElement;
+//     var json = JSON.stringify(output);
+//     console.log(json);
 
-    jsonElemnt.innerHTML = json;
-
-
-   });
-});
+//     jsonElemnt.innerHTML = json;
 
 
-getname.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const conceptIdElement = document.querySelector('#nameconceptid') as HTMLInputElement;
-    const conceptId = conceptIdElement.value;
-    GetComposition(Number(conceptId)).then(output=>{
-        const firstNameElement = document.querySelector('#firstname') as HTMLInputElement;
-        const lastNameElement = document.querySelector('#lastname') as HTMLInputElement;
-        console.log(output);
-        firstNameElement.value = output.namedata.firstname;
-        lastNameElement.value = output.namedata.lastname;
- 
-    });
- });
-
-nameForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const firstNameElement = document.querySelector('#firstname') as HTMLInputElement;
-    const firstname = firstNameElement.value;
-    const lastNameElement = document.querySelector('#lastname') as HTMLInputElement;
-    const lastname = lastNameElement.value;
-    var json = {
-        "namedata":{
-            "firstname": firstname,
-            "lastname": lastname
-        }
-
-    }
-    console.log(json);
-
-    CreateTheComposition(json).then((value)=>{
-        const outputid = document.querySelector('#outputid') as HTMLInputElement;
-        var concept = value as Concept;
-        outputid.innerHTML = concept.id.toString();
-        console.log('this is the test for final');
-        console.log(value);
-    });
- 
- 
-    });
-
-jsonForm.addEventListener('submit', (event) =>{
-    event.preventDefault();
-    const compositionNameElement = document.querySelector("#jsondata") as HTMLInputElement;
-    const compositionName = compositionNameElement.value;
-    console.log("this is the composition name");
-    console.log(compositionName);
-    var jon = JSON.parse(compositionName);
-    CreateTheComposition(jon).then((value)=>{
-        const outputid = document.querySelector('#outputid') as HTMLInputElement;
-        var concept = value as Concept;
-        outputid.innerHTML = concept.id.toString();
-        console.log('this is the test for final');
-        console.log(value);
-    });
-});
-
-form3.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const compositionNameElement = document.querySelector("#composition_name") as HTMLInputElement;
-    const compositionName = compositionNameElement.value;
-    GetCompositionList(compositionName).then(output=>{
-        const jsonElemnt = document.querySelector('#jsonoutput') as HTMLInputElement;
-        var json = JSON.stringify(output);
-        console.log(json);
-    
-        jsonElemnt.innerHTML = JSON.stringify(json);
-    });
-});
+//    });
+// });
 
 
-
-// form2.addEventListener('submit', (event) => {
+// getname.addEventListener('submit', (event) => {
 //     event.preventDefault();
-//     const userIdElement = document.querySelector("#userid") as HTMLInputElement;
-//     const userId = userIdElement.value;
-//     GetAllUserConcepts(Number(userId));
-//     GetAllUserConnections(Number(userId)).then(()=>{
-//         console.log("got all the data");
+//     const conceptIdElement = document.querySelector('#nameconceptid') as HTMLInputElement;
+//     const conceptId = conceptIdElement.value;
+//     GetComposition(Number(conceptId)).then(output=>{
+//         const firstNameElement = document.querySelector('#firstname') as HTMLInputElement;
+//         const lastNameElement = document.querySelector('#lastname') as HTMLInputElement;
+//         console.log(output);
+//         firstNameElement.value = output.namedata.firstname;
+//         lastNameElement.value = output.namedata.lastname;
+ 
 //     });
-
 //  });
 
-window.onmousedown = (ev: MouseEvent): any => {
-    var isMouseDown = true;
-    var canvas = document.querySelector('#myCanvas') as HTMLCanvasElement;
-    var ctx = canvas.getContext('2d') as CanvasRenderingContext2D ;
-    var _difference_from_window = canvas.getBoundingClientRect();
-    var width_difference = 0;
-    var height_difference = 0;
-    //Update mouse position at time of down
-    var mouse_x_coordinate = ev.x - _difference_from_window.left + window.scrollX;
-    var mouse_y_coordinate = ev.y - _difference_from_window.top + window.scrollY;
+// nameForm.addEventListener('submit', (event) => {
+//     event.preventDefault();
+//     const firstNameElement = document.querySelector('#firstname') as HTMLInputElement;
+//     const firstname = firstNameElement.value;
+//     const lastNameElement = document.querySelector('#lastname') as HTMLInputElement;
+//     const lastname = lastNameElement.value;
+//     var json = {
+//         "namedata":{
+//             "firstname": firstname,
+//             "lastname": lastname
+//         }
 
-    var selected_concept_object = selectConceptObject(mouse_x_coordinate, mouse_y_coordinate);
-    window.onmousemove = (ev: MouseEvent): any => {
-        var previous_mouse_x = mouse_x_coordinate;
-        var previous_mouse_y = mouse_y_coordinate;
-        var new_mouse_x_coordinate = ev.x - _difference_from_window.left + window.scrollX;
-        var new_mouse_y_coordinate = ev.y - _difference_from_window.top + window.scrollY;
-        //how much did the mouse move
-        var mouse_x_difference = new_mouse_x_coordinate - previous_mouse_x;
-        var mouse_y_difference = new_mouse_y_coordinate - previous_mouse_y;
+//     }
+//     console.log(json);
 
-        if(selected_concept_object){
-            if(isMouseDown){
-                selected_concept_object.x = new_mouse_x_coordinate;
-                selected_concept_object.y = new_mouse_y_coordinate;
-            }
-        }
-    }
+//     CreateTheComposition(json).then((value)=>{
+//         const outputid = document.querySelector('#outputid') as HTMLInputElement;
+//         var concept = value as Concept;
+//         outputid.innerHTML = concept.id.toString();
+//         console.log('this is the test for final');
+//         console.log(value);
+//     });
+ 
+ 
+//     });
 
-    window.onmouseup = (ev: MouseEvent): any => {
-        isMouseDown = false;
-        selected_concept_object  = null;
-    }
+// jsonForm.addEventListener('submit', (event) =>{
+//     event.preventDefault();
+//     const compositionNameElement = document.querySelector("#jsondata") as HTMLInputElement;
+//     const compositionName = compositionNameElement.value;
+//     console.log("this is the composition name");
+//     console.log(compositionName);
+//     var jon = JSON.parse(compositionName);
+//     CreateTheComposition(jon).then((value)=>{
+//         const outputid = document.querySelector('#outputid') as HTMLInputElement;
+//         var concept = value as Concept;
+//         outputid.innerHTML = concept.id.toString();
+//         console.log('this is the test for final');
+//         console.log(value);
+//     });
+// });
+
+// form3.addEventListener('submit', (event) => {
+//     event.preventDefault();
+//     const compositionNameElement = document.querySelector("#composition_name") as HTMLInputElement;
+//     const compositionName = compositionNameElement.value;
+//     GetCompositionList(compositionName).then(output=>{
+//         const jsonElemnt = document.querySelector('#jsonoutput') as HTMLInputElement;
+//         var json = JSON.stringify(output);
+//         console.log(json);
+    
+//         jsonElemnt.innerHTML = JSON.stringify(json);
+//     });
+// });
 
 
-}
+
+// // form2.addEventListener('submit', (event) => {
+// //     event.preventDefault();
+// //     const userIdElement = document.querySelector("#userid") as HTMLInputElement;
+// //     const userId = userIdElement.value;
+// //     GetAllUserConcepts(Number(userId));
+// //     GetAllUserConnections(Number(userId)).then(()=>{
+// //         console.log("got all the data");
+// //     });
+
+// //  });
+
+// window.onmousedown = (ev: MouseEvent): any => {
+//     var isMouseDown = true;
+//     var canvas = document.querySelector('#myCanvas') as HTMLCanvasElement;
+//     var ctx = canvas.getContext('2d') as CanvasRenderingContext2D ;
+//     var _difference_from_window = canvas.getBoundingClientRect();
+//     var width_difference = 0;
+//     var height_difference = 0;
+//     //Update mouse position at time of down
+//     var mouse_x_coordinate = ev.x - _difference_from_window.left + window.scrollX;
+//     var mouse_y_coordinate = ev.y - _difference_from_window.top + window.scrollY;
+
+//     var selected_concept_object = selectConceptObject(mouse_x_coordinate, mouse_y_coordinate);
+//     window.onmousemove = (ev: MouseEvent): any => {
+//         var previous_mouse_x = mouse_x_coordinate;
+//         var previous_mouse_y = mouse_y_coordinate;
+//         var new_mouse_x_coordinate = ev.x - _difference_from_window.left + window.scrollX;
+//         var new_mouse_y_coordinate = ev.y - _difference_from_window.top + window.scrollY;
+//         //how much did the mouse move
+//         var mouse_x_difference = new_mouse_x_coordinate - previous_mouse_x;
+//         var mouse_y_difference = new_mouse_y_coordinate - previous_mouse_y;
+
+//         if(selected_concept_object){
+//             if(isMouseDown){
+//                 selected_concept_object.x = new_mouse_x_coordinate;
+//                 selected_concept_object.y = new_mouse_y_coordinate;
+//             }
+//         }
+//     }
+
+//     window.onmouseup = (ev: MouseEvent): any => {
+//         isMouseDown = false;
+//         selected_concept_object  = null;
+//     }
+
+
+//}

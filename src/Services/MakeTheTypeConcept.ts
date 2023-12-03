@@ -5,7 +5,7 @@ import { TheTexts } from "../DataStructures/TheTexts";
 import CreateTheConcept from "./CreateTheConcept";
 import GetConceptByCharacter from "./GetConceptByCharacter";
 import MakeTheCharacter from "./MakeTheCharacter";
-import SplitStrings from "./SplitStrings";
+import { SplitStrings } from "./SplitStrings";
 
 export default async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number,
     )
