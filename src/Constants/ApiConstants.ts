@@ -1,5 +1,5 @@
 
-export const BASE_URL:string = "https://localhost:7053";
+export const BASE_URL:string = "https://alpha.freeschema.com";
 
 export const GetConceptUrl:string = BASE_URL + '/api/getConcept';
 
