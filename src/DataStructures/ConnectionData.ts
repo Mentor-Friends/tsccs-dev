@@ -1,0 +1,67 @@
+import { Connection } from "./Connection";
+export class ConnectionData{
+    
+    name: string;
+    constructor(){
+        this.name = "Connection Array";
+    }
+    static  connectionArray:Connection[] = [];
+
+    static connectionDictionary:Connection[] = [];
+    static  CheckContains(connection: Connection){
+        var contains = false;
+        for(var i=0; i<this.connectionArray.length; i++){
+         if(this.connectionArray[i].id == connection.id){
+             contains = true;
+         }
+        }
+
+        return contains;
+    }
+
+
+    static AddConnection(connection: Connection){
+       var contains = this.CheckContains(connection);
+
+       if(!contains){
+        this.connectionArray.push(connection);
+       }
+    }
+
+    static AddToDictionary(connection: Connection){
+        this.connectionDictionary[connection.id] = connection;
+    }
+
+    static RemoveConnection(connection: Connection){
+       for(var i=0; i<this.connectionArray.length; i++){
+        if(this.connectionArray[i].id == connection.id){
+            this.connectionArray.splice(i, 1);
+        }
+       }
+    }
+
+    static GetConnection(id: number){
+       var  myConcept: Connection|null;
+       myConcept = null;
+        for(var i=0; i<this.connectionArray.length; i++){
+            if(this.connectionArray[i].id == id){
+                myConcept = this.connectionArray[i];
+            }
+        }
+        return myConcept;
+    }
+
+    static GetConnectionsOfComposition(id: number){
+        var connectionList:Connection[] = [];
+        for(var i=0; i<this.connectionArray.length; i++){
+            if(this.connectionArray[i].typeId == id){
+                connectionList.push(this.connectionArray[i]);
+            }
+        }
+        return connectionList;
+    }
+
+    getName(){
+        return this.name;
+    }
+}
