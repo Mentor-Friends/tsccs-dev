@@ -1,8 +1,18 @@
-{
+{  
+  "name": "tsccs",
+  "version": "1.0.0",
+  "description": "Full Pack of concept and connection system",
+  "scripts": {
+    "start": "npx webpack",
+    "dev": "npx webpack",
+    "build": "npx webpack --mode production"
+  },
   "dependencies": {
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.3.2",
+  },
+  "devDependencies": {
     "webpack": "^5.89.0",
+    "typescript": "^5.3.2",
+    "ts-loader": "^9.5.1",
     "webpack-cli": "^5.1.4"
   }
 }
