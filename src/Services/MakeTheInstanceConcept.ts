@@ -1,6 +1,8 @@
 import { CreateTextData } from "../Api/Create/CreateTheTextData";
+import { GetConcept } from "../Api/GetConcept";
 import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndType";
 import { Concept } from "../DataStructures/Concept";
+import { ConceptsData } from "../DataStructures/ConceptData";
 import { TheTexts } from "../DataStructures/TheTexts";
 import CreateTheConcept from "./CreateTheConcept";
 import MakeTheTypeConcept from "./MakeTheTypeConcept";
@@ -75,6 +77,17 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
 
 
             }
+            // if(concept){
+            //     if(concept.type == null){
+            //         var conceptType = ConceptsData.GetConcept(concept.typeId);
+            //         if(conceptType == null && concept.typeId != null && concept.typeId != undefined){
+            //             var typeConceptStringNew = await GetConcept(concept.typeId);
+            //             var newTypeConcept = typeConceptStringNew as Concept;
+            //             concept.type = newTypeConcept;
+            //         }
+            //     }
+            // }
+            console.log(concept);
             concept.type = typeConcept;
             return concept;
 }

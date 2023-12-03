@@ -23,7 +23,7 @@ async function CreateData(){
 }
 
 
+//console.log(await window.tsccs.GetTheConcept(20));
 await CreateData();
-console.log("here test");
 console.log(window.tsccs.SyncData.connectionSyncArray);
 window.tsccs.SyncData.SyncDataOnline();
