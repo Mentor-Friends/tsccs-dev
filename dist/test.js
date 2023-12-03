@@ -23,7 +23,6 @@ async function CreateData(){
 }
 
 
-
 await CreateData();
 console.log("here test");
 console.log(window.tsccs.SyncData.connectionSyncArray);
