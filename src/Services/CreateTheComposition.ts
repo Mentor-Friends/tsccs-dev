@@ -20,7 +20,7 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
                 localMainKey = concept.id;
                 MainKeyLocal = concept.id;
 
-                CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
+                await CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
     
             }
             else{
@@ -31,8 +31,8 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
                 var concept = conceptString as Concept;
                 console.log("of the concept");
                 console.log(concept.id);
-                createTheConnection(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
-                CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
+                await createTheConnection(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
+                await CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
             }
         }
         else{
@@ -41,7 +41,7 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
             var localMainKey = MainKeyLocal;
             var conceptString = await MakeTheInstanceConcept(key, json[key], false, localUserId, localAccessId, localSessionId);
             var concept = conceptString as Concept;
-            createTheConnection(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
+            await createTheConnection(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
 
         }
 

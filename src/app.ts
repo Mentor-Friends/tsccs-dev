@@ -9,6 +9,8 @@ export {GetComposition} from './Services/GetComposition';
 export {default as CreateComposition} from './Services/CreateTheComposition';
 export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBetweenTwoConcepts';
 
+export {SyncData} from './DataStructures/SyncData';
+
 // const form = document.querySelector('#myForm') as HTMLFormElement;
 // //const form2 = document.querySelector('#userForm') as HTMLFormElement;
 // const form3 = document.querySelector('#compositionForm') as HTMLFormElement;
@@ -28,10 +30,11 @@ export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBet
 
 
 
-setInterval(function(){
-    console.log("syncing");
-    SyncData.SyncDataOnline()
-}, 5000);
+// setInterval(function(){
+//     console.log("syncing");
+//     SyncData.SyncDataOnline()
+
+// }, 5000);
 
 
 
