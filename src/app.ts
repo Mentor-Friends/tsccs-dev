@@ -8,6 +8,7 @@ export { GetCompositionList }  from './Services/GetCompositionList';
 export {GetComposition} from './Services/GetComposition';
 export {default as CreateComposition} from './Services/CreateTheComposition';
 export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBetweenTwoConcepts';
+export { default as GetTheConcept} from './Services/GetTheConcept';
 
 export {SyncData} from './DataStructures/SyncData';
 
