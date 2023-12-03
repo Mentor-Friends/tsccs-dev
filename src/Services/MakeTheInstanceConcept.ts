@@ -22,7 +22,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             var stringToCheck: string = "";
 
             var  stringLength:number = referent.length;
-            var typeConcept: Concept;
+            var typeConcept;
             var concept: Concept;
 
             var startsWithThe = type.startsWith("the_");
@@ -75,7 +75,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
 
 
             }
-
-
+            concept.type = typeConcept;
             return concept;
 }
