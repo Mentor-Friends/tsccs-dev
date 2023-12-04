@@ -1,18 +1,17 @@
-{  
+{
   "name": "tsccs",
   "version": "1.0.0",
   "description": "Full Pack of concept and connection system",
   "scripts": {
     "start": "npx webpack",
-    "dev": "npx webpack",
-    "build": "npx webpack --mode production"
-  },
-  "dependencies": {
+	  "dev": "webpack --env NODE_ENV=development --mode development",
+    "build": "webpack --env NODE_ENV=production --mode production"
   },
   "devDependencies": {
-    "webpack": "^5.89.0",
-    "typescript": "^5.3.2",
+    "dotenv-webpack": "^8.0.1",
     "ts-loader": "^9.5.1",
+    "typescript": "^5.3.2",
+    "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   }
 }
