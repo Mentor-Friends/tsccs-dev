@@ -27,9 +27,7 @@ export async function CreateConnectionBetweenTwoConcepts(concept1Data: Concept, 
         let prefix: string = concept1Data.type?.characterValue + "_s";
         let linkerAdd = linker + "_s";
         let forwardLinker = prefix + "_" + linkerAdd;
-        console.log("creating connection between two concepts");
-        console.log(concept1Data);
-        console.log(concept2Data);
+
         var connectionConcept = await MakeTheInstanceConcept("connection",forwardLinker,false,999,999,999);
         var newConnection = new Connection(0,concept1Data.id, concept2Data.id,concept1Data.userId, concept2Data.userId, concept1Data.userId,
            connectionConcept.id, connectionConcept.userId, 3, userId, securityId, securityUserId, accessId, accessUserId,sessionInformationId,sessionInformationUserId  );

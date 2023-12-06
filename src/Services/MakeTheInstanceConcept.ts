@@ -1,3 +1,4 @@
+import { TheCharacter } from "../../dist/bundle";
 import { CreateTextData } from "../Api/Create/CreateTheTextData";
 import { GetConcept } from "../Api/GetConcept";
 import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndType";
@@ -5,6 +6,7 @@ import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { TheTexts } from "../DataStructures/TheTexts";
 import CreateTheConcept from "./CreateTheConcept";
+import { MakeTheName } from "./MakeTheName";
 import MakeTheTypeConcept from "./MakeTheTypeConcept";
 
 export default async function MakeTheInstanceConcept(type:string, referent:string, composition:boolean=false, userId: number, 
@@ -36,6 +38,8 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 stringToCheck = "the_" + type;
             }
             if(composition){
+                console.log("what is this");
+                console.log(type);
                var   typeConceptString = await MakeTheTypeConcept(type, sessionInformationId, userId, userId );
                typeConcept = typeConceptString as Concept;
 
@@ -65,17 +69,14 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 typeConcept = typeConceptString  as Concept;
                 var conceptByCharTypeString = await GetConceptByCharacterAndType(referent,typeConcept.id);
                 var conceptTypeCharacter = conceptByCharTypeString as Concept;
-
+                var makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
+                var makeTheNameConcept = makeTheNameString as Concept;
                 concept = conceptTypeCharacter;
                 if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
                     var conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                        referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+                        makeTheNameConcept.id, makeTheNameConcept.userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
                     concept = conceptString as Concept;
-                }   
-
-
-
-
+                }
             }
             // if(concept){
             //     if(concept.type == null){
@@ -87,7 +88,8 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             //         }
             //     }
             // }
-            console.log(concept);
             concept.type = typeConcept;
+            console.log("this is the concept");
+            console.log(concept);
             return concept;
 }

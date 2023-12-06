@@ -1,5 +1,7 @@
 import { GetConcept } from "../Api/GetConcept";
 import { Concept } from "./Concept";
+import { getFromDb, storeToDb } from "../Database/indexdb";
+import { getFromDatabase, getFromDatabaseWithType, removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
 export class ConceptsData{
     
     name: string;
@@ -25,10 +27,11 @@ export class ConceptsData{
     static AddConcept(concept: Concept){
        var contains = this.CheckContains(concept);
        this.conceptDictionary[concept.id] = concept;
+
        if(contains){
         this.RemoveConcept(concept);
-
        }
+        storeToDatabase("concepts",concept);
         this.conceptsArray.push(concept);
     }
 
@@ -38,6 +41,8 @@ export class ConceptsData{
             this.conceptsArray.splice(i, 1);
         }
        }
+
+       removeFromDatabase("concepts",concept.id);
     }
 
     static GetConcept(id: number){
@@ -47,6 +52,10 @@ export class ConceptsData{
             if(this.conceptsArray[i].id == id){
                 myConcept = this.conceptsArray[i];
             }
+        }
+        if(!myConcept){
+            var concept = getFromDatabase("concepts",id);
+            return concept;
         }
 
         return myConcept;
@@ -74,6 +83,19 @@ export class ConceptsData{
              }
          }
 
+         var dbConceptList = getFromDatabaseWithType("concepts","typeId", typeId);
+         for(var i=0; i< dbConceptList.length; i++){
+            var contains: boolean = false;
+            for(var j=0; j< ConceptList.length; j++){
+                if(dbConceptList[i].id == ConceptList[j].id){
+                    contains = true;
+                }
+            }
+
+            if(!contains){
+                ConceptList.push(dbConceptList[i]);
+            }
+         }
          return ConceptList;
      }
 

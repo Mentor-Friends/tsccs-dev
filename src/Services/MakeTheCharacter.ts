@@ -30,9 +30,13 @@ export default async function MakeTheCharacter(the_character_data:string, userId
 
             }
             else{
-                var mystring = await GetConceptByCharacterAndType(the_character_data,typeId);
-                concept = mystring as Concept;
+                var conceptString = await MakeTheConcept(the_character_data, userId, categoryId, categoryUserId, typeId, typeUserId, characterData.id, characterData.userId,
+                    securityId, securityUserId, accessId, accessUserId, sessionId, sessionUserId);
+
+                    concept = conceptString as Concept;
+
             }
+
         }
 
         return concept;

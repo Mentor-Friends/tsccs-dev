@@ -7,7 +7,7 @@ import { Connection } from "./Connection";
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
     static  connectionSyncArray: Connection[] = [];
-
+    
 
     static  CheckContains(concept: Concept){
         var contains = false;

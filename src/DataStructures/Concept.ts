@@ -19,7 +19,7 @@ export  class Concept{
     sessionId: number;
     sessionUserId: number;
     referent: number;
-    type: Concept | null;
+    type: Concept | null | void;
     isNew: boolean;
 
 

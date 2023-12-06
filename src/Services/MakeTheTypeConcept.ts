@@ -28,6 +28,7 @@ export default async  function MakeTheTypeConcept(typeString: string, sessionId:
             if(splittedStringArray[0] == typeString){
               var conceptString =  await MakeTheCharacter(typeString, userId, securityId, accessId, accessUserId, sessionId);
               existingConcept = conceptString as Concept;
+
             }   
             else{
                 var categoryId:number = 1;
@@ -35,11 +36,13 @@ export default async  function MakeTheTypeConcept(typeString: string, sessionId:
                 var typeConcept = await MakeTheTypeConcept(splittedStringArray[1], sessionId, sessionUserId, userId );
 
                 if(typeConcept){
-
+                    
                     var concept = await CreateTheConcept(typeString, userId, categoryId, userId,typeConcept.id, userId, referentId, userId,
                         securityId, userId,accessId, userId, sessionId, userId );
                     existingConcept = concept as Concept;
                 }
+                console.log("this is the type concept");
+                console.log(typeConcept);
 
             }
         }

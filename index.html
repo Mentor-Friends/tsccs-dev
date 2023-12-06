@@ -5,61 +5,78 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Js Utility Library</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <style>
-            
+            .container{
+              width:30%;
+              padding:50px;
+              background-color:rgb(214, 191, 239);
+            }
         </style>
     </head>
     <body>
-        <form id="myForm">
-            <label for="name">Concept Id:</label>
-            <input type="number" id="conceptid" />
-            <button type="submit">Get</button>
-         </form>
+      <!-- <h1>Oauth</h1>
+      <button onclick="SignIn()"> Sign In with Google</button> -->
+      
+      <div class ="container">
+        <h1>Personal Info</h1>
+      <form id="personalinfo" name="personalinfo">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input  class="form-control" id="name" name="name">
+        </div>
 
-         <form id="getname">
-            <label for="conceptid">Get Name Id:</label>
-            <input type="number" id="nameconceptid" />
-            <button type="submit">Get</button>
-         </form>
+        <div class="form-group">
+          <label for="age">Age</label>
+          <input class="form-control" id="age" name="age">
+        </div>
 
-         <form id="compositionForm">
-            <label for="name">Composition Name:</label>
-            <input type="text" id="composition_name" />
-            <button type="submit">Get</button>
-         </form>
-<!-- 
-         <form id="userForm">
-            <label for="name">User Id:</label>
-            <input type="number" id="userid" />
-            <button type="submit">Get</button>
-         </form> -->
+        <div class="form-group">
+          <h5>Address</h5>
+          <label for="country">Country</label>
+          <input class="form-control" id="country" name="country">
+        </div>
 
-         <form id="jsonForm">
-            <label for="name">Json Form:</label>
-            <textarea id="jsondata" ></textarea>    
-            <span id="outputid"></span>
-            <button type="submit">Get</button>
-         </form>
+        <div class="form-group">
+          <label for="state">State</label>
+          <input class="form-control" id="state" name="state">
+        </div>
 
-         <form id= "nameform">
-            <label for="firstname">First Name:</label>
-            <input type="text" id="firstname">
-            <label for="lastname">Last Name:</label>
-            <input type="text" id="lastname">
-            <button type="submit">Submit</button>
-         </form>
-         
-         
+        <div class="form-group">
+          <label for="addressline1">AddressLine1</label>
+          <input class="form-control" id="addressline1"  name="addressline1">
 
-         <canvas id="myCanvas" width="100" height="100" style="border:1px solid #000000;"></canvas>
-         <br\>
-         <br\>
-         <br\>
-         <br\>
-         <span id = "jsonoutput">
-
-         </span>
-    </body>
+        </div>
+        <br/>
+        <button type="submit" id="personalsubmit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
     <script src="./dist/bundle.js" type="module"></script>
     <script src="./dist/test.js" type="module"></script>
+    <script src="./dist/conceptconnection.js"></script>
+    <script src="./dist/createComposition.js"></script>
+      <script>
+      document.body.onload = function(){
+        var inputs = document.getElementsByTagName('input');
+        var pageInput = document.getElementById('personalinfo');
+        var mainConcept;
+        CreateMainConcept(pageInput).then(concept=>{
+          for(var i=0; i< inputs.length; i++){
+          inputs[i].onchange=function(event){
+            createConcept(event.target,concept);
+          }
+        }
+        });
+
+
+        var submit = document.getElementById("personalsubmit");
+        submit.onclick=function(event){
+          event.preventDefault();
+          syncOnlineData();
+        }
+      }
+      </script>
+
+    </body>
+
 </html>

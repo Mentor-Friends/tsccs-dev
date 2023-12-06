@@ -4,7 +4,6 @@ import { TheCharacter } from "../../DataStructures/TheCharacter";
 
 export async function CreateTheCharacter(characterData: TheCharacter){
     try{
-          console.log(characterData);
             const response = await fetch(CreateTheCharacterDataUrl,{
                 method: 'POST',
                 headers:{
