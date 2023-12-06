@@ -1,1 +1,7 @@
 node_modules/
+
+dist/bundle.js
+
+.env
+.env.development
+.env.production

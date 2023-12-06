@@ -1,5 +1,7 @@
 const path = require('path');
-module.exports = {
+const Dotenv = require('dotenv-webpack');
+
+module.exports = env => ({
    entry: './src/app.ts',
    mode: 'development',
    devtool: 'inline-source-map',
@@ -25,4 +27,9 @@ module.exports = {
          },
       ],
    },
-};
+   plugins: [
+      new Dotenv({
+           path: `.env.${env.NODE_ENV}`
+        })
+   ]
+});

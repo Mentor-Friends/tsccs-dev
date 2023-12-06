@@ -1,5 +1,5 @@
 
-export const BASE_URL:string = "https://localhost:7053";
+export const BASE_URL:string = process.env.BASE_URL || '';
 
 export const GetConceptUrl:string = BASE_URL + '/api/getConcept';
 
