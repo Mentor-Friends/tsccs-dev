@@ -10,7 +10,6 @@ import { ConnectionData } from "../DataStructures/ConnectionData"
 export async function GetComposition(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
-    //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     await GetAllConnectionsOfComposition(id);
     connectionList = ConnectionData.GetConnectionsOfComposition(id);
     var compositionList:number[] = [];
@@ -31,6 +30,7 @@ export async function GetComposition(id:number){
     returnOutput[mainString] = output;
     return returnOutput;
 }
+
 
  async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[]){
 

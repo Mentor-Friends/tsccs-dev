@@ -4,7 +4,7 @@ export async function GetAllConceptsByType(type:string,userId: number){
     try{
             var urlencoded = new URLSearchParams();
             urlencoded.append("type", type);
-            urlencoded.append("user_id", "10267");
+            urlencoded.append("user_id", userId.toString());
             const response = await fetch(GetAllConceptsByTypeUrl,{
                 method: 'POST',
                 headers:{

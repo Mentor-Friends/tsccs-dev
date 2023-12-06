@@ -1,3 +1,4 @@
+import { removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
 import { Connection } from "./Connection";
 export class ConnectionData{
     
@@ -22,10 +23,13 @@ export class ConnectionData{
 
     static AddConnection(connection: Connection){
        var contains = this.CheckContains(connection);
-
-       if(!contains){
+        if(contains){
+            this.RemoveConnection(connection);
+        }
+        if(connection.id != 0){
+            storeToDatabase("connection",connection);
+        }
         this.connectionArray.push(connection);
-       }
     }
 
     static AddToDictionary(connection: Connection){
@@ -37,6 +41,10 @@ export class ConnectionData{
         if(this.connectionArray[i].id == connection.id){
             this.connectionArray.splice(i, 1);
         }
+       }
+       if(connection.id != 0){
+        removeFromDatabase("connection",connection.id);
+
        }
     }
 

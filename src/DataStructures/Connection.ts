@@ -1,3 +1,5 @@
+import { ConnectionData } from "./ConnectionData";
+
 export class Connection{
     id: number;
     userId: number;
@@ -7,6 +9,8 @@ export class Connection{
     toTheConceptId: number;
     OfTheConceptUserId: number;
     ToTheConceptUserId: number;
+    entryTimeStamp: Date;
+    terminationDateTime: Date;
     typeId: number;
     typeUserId: number;
     orderId: number;
@@ -39,7 +43,9 @@ export class Connection{
             this.accessUserId = accessUserId;
             this.sessionInformationId = sessionInformationId;
             this.sessionInformationUserId = sessionInformationUserId;
-            
+            this.entryTimeStamp = new Date();
+            this.terminationDateTime  = new Date();
+            ConnectionData.AddConnection(this);
         }
 
 

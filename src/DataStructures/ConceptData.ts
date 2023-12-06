@@ -31,7 +31,7 @@ export class ConceptsData{
        if(contains){
         this.RemoveConcept(concept);
        }
-        storeToDatabase("concepts",concept);
+        storeToDatabase("concept",concept);
         this.conceptsArray.push(concept);
     }
 
@@ -42,7 +42,7 @@ export class ConceptsData{
         }
        }
 
-       removeFromDatabase("concepts",concept.id);
+       removeFromDatabase("concept",concept.id);
     }
 
     static GetConcept(id: number){
@@ -54,7 +54,7 @@ export class ConceptsData{
             }
         }
         if(!myConcept){
-            var concept = getFromDatabase("concepts",id);
+            var concept = getFromDatabase("concept",id);
             return concept;
         }
 
@@ -83,7 +83,7 @@ export class ConceptsData{
              }
          }
 
-         var dbConceptList = getFromDatabaseWithType("concepts","typeId", typeId);
+         var dbConceptList = getFromDatabaseWithType("concept","typeId", typeId);
          for(var i=0; i< dbConceptList.length; i++){
             var contains: boolean = false;
             for(var j=0; j< ConceptList.length; j++){
