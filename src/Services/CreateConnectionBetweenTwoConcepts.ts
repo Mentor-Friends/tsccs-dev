@@ -19,9 +19,9 @@ export async function CreateConnectionBetweenTwoConcepts(concept1Data: Concept, 
             let linkerAdd1 = linker + "_by";
             let backwardLinker = prefix1 + "_" + linkerAdd1;  
 
-            var connectionConcept = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
-            var newConnection = new Connection(0,concept1Data.id, concept2Data.id,concept1Data.userId, concept2Data.userId, concept1Data.userId,
-               connectionConcept.id, connectionConcept.userId, 1000, userId, securityId, securityUserId, accessId, accessUserId,sessionInformationId,sessionInformationUserId  );
+            var connectionConceptReverse = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
+            var newConnection = new Connection(0,concept2Data.id, concept1Data.id,concept2Data.userId, concept1Data.userId, concept2Data.userId,
+               connectionConceptReverse.id, connectionConceptReverse.userId, 1000, userId, securityId, securityUserId, accessId, accessUserId,sessionInformationId,sessionInformationUserId  );
             SyncData.AddConnection(newConnection);
         }
         let prefix: string = concept1Data.type?.characterValue + "_s";
