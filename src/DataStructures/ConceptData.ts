@@ -34,6 +34,16 @@ export class ConceptsData{
         this.conceptsArray.push(concept);
     }
 
+    static AddConceptTemporary(concept: Concept){
+        var contains = this.CheckContains(concept);
+        this.conceptDictionary[concept.id] = concept;
+ 
+        if(contains){
+         this.RemoveConcept(concept);
+        }
+         this.conceptsArray.push(concept);
+     }
+
     static RemoveConcept(concept: Concept){
        for(var i=0; i<this.conceptsArray.length; i++){
         if(this.conceptsArray[i].id == concept.id){

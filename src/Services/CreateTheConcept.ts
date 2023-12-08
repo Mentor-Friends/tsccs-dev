@@ -8,8 +8,6 @@ typeId:number, typeUserId:number,referentId:number, referentUserId:number,securi
 accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number){
 
 var id = await ReservedIds.getId();
-console.log("this is the reserved id");
-console.log(id);
 var isNew: boolean = true;
 var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
     securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);

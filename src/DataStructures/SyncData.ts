@@ -16,8 +16,16 @@ export class SyncData{
              contains = true;
          }
         }
-
         return contains;
+    }
+
+    static SyncDataDelete(id:number){
+        this.conceptsSyncArray.splice(id, 1);
+        for(var i=0;i<this.connectionSyncArray.length; i++){
+            if(this.connectionSyncArray[i].ofTheConceptId == id || this.connectionSyncArray[i].toTheConceptId == id || this.connectionSyncArray[i].typeId == id){
+                this.connectionSyncArray.splice(i,1);
+            }
+        }
     }
 
     static  CheckContainsConnection(connection: Connection){
@@ -27,14 +35,13 @@ export class SyncData{
              contains = true;
          }
         }
-
         return contains;
     }
+
     static AddConcept(concept: Concept){
         var contains = false;
-        ConceptsData.AddConcept(concept);
+        ConceptsData.AddConceptTemporary(concept);
         if(!contains){
-
          this.conceptsSyncArray.push(concept);
         }
      }
@@ -60,13 +67,13 @@ export class SyncData{
         }
      }
 
-     static  SyncDataOnline(){
+     static async  SyncDataOnline(){
         if(this.conceptsSyncArray.length > 0){
-            CreateTheConceptApi(this.conceptsSyncArray);
+            await CreateTheConceptApi(this.conceptsSyncArray);
             this.conceptsSyncArray = [];
         }
          if(this.connectionSyncArray.length > 0){
-         CreateTheConnectionApi(this.connectionSyncArray);
+         await CreateTheConnectionApi(this.connectionSyncArray);
          this.connectionSyncArray = [];
         }
         return "done";

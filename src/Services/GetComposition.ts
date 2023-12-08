@@ -10,6 +10,7 @@ import { ConnectionData } from "../DataStructures/ConnectionData"
 export async function GetComposition(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
+    console.log("trying to get "+ id );
     await GetAllConnectionsOfComposition(id);
     connectionList = ConnectionData.GetConnectionsOfComposition(id);
     var compositionList:number[] = [];

@@ -40,59 +40,53 @@ function GetIdFromType(){
     window.tsccs.getFromDatabaseWithType("concepts","categoryId",4);
 }
 
-function syncOnlineData(){
+async function  syncOnlineData(){
     console.log(window.tsccs.SyncData.conceptsSyncArray);
     console.log(window.tsccs.SyncData.connectionSyncArray);
-    window.tsccs.SyncData.SyncDataOnline();
+    await window.tsccs.SyncData.SyncDataOnline();
 }
 
 
 var json ={
-    "quiz": {
-        "sport": {
-            "q1": {
-                "question": "Which one is correct team name in NBA?",
-                "options": [
-                    "New York Bulls",
-                    "Los Angeles Kings",
-                    "Golden State Warriros",
-                    "Huston Rocket"
-                ],
-                "answer": "Huston Rocket"
-            }
-        },
-        "maths": {
-            "q1": {
-                "question": "5 + 7 = ?",
-                "options": [
-                    "10",
-                    "11",
-                    "12",
-                    "13"
-                ],
-                "answer": "12"
-            },
-            "q2": {
-                "question": "12 - 8 = ?",
-                "options": [
-                    "1",
-                    "2",
-                    "3",
-                    "4"
-                ],
-                "answer": "4"
-            }
-        }
+    "boomjpt":{
+	"id": "0001",
+	"type": "donut",
+	"name": "Cake",
+	"ppu": 0.55,
+	"batters":
+		{
+			"batter":
+				[
+					{ "id": "1001", "type": "Regular" },
+					{ "id": "1002", "type": "Chocolate" },
+					{ "id": "1003", "type": "Blueberry" },
+					{ "id": "1004", "type": "Devil's Food" }
+				]
+		},
+	"topping":
+		[
+			{ "id": "5001", "type": "None" },
+			{ "id": "5002", "type": "Glazed" },
+			{ "id": "5005", "type": "Sugar" },
+			{ "id": "5007", "type": "Powdered Sugar" },
+			{ "id": "5006", "type": "Chocolate with Sprinkles" },
+			{ "id": "5003", "type": "Chocolate" },
+			{ "id": "5004", "type": "Maple" }
+		]
     }
 };
 
-var perform1 = performance.now();
 window.tsccs.CreateComposition(json).then(concept=>{
-    console.log("this is the final");
+    console.log("this is the final   " + concept.id);
     console.log(concept);
-    syncOnlineData();
-    var perform2 = performance.now();
-    console.log("the time for the data to be written is "+ perform2-perform1);
+    syncOnlineData().then(()=>{
+        window.tsccs.GetComposition(concept.id).then(composition=>{
+            console.log(composition);
+        })
+    });
+
+
+
 });
 // console.log("this is the main");
 // window.tsccs.ConceptsData.GetConceptByCharacterAndTypeLocal("New York Bulls",100113841).then(conceptList=>{

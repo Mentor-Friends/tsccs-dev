@@ -10,7 +10,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
       if(concept == null || concept.id == 0){
         console.log("calling the api");
         var json = {
-          'character_value': characterValue,
+          'character_value': `${characterValue}`,
           'type_id': typeId 
         };
         var toSendJson = JSON.stringify(json);

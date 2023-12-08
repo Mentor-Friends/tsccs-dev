@@ -14,7 +14,6 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
                 throw new Error(`Error! status: ${response.status}`);
             }
             const result = await response.json();
-            console.log(result);
             for(var i=0; i< result.length; i++){
                 ConnectionData.AddConnection(result[i]);
                 ConnectionData.AddToDictionary(result[i]);
