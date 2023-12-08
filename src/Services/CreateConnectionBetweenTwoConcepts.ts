@@ -21,7 +21,7 @@ export async function CreateConnectionBetweenTwoConcepts(concept1Data: Concept, 
 
             var connectionConcept = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
             var newConnection = new Connection(0,concept1Data.id, concept2Data.id,concept1Data.userId, concept2Data.userId, concept1Data.userId,
-               connectionConcept.id, connectionConcept.userId, 3, userId, securityId, securityUserId, accessId, accessUserId,sessionInformationId,sessionInformationUserId  );
+               connectionConcept.id, connectionConcept.userId, 1000, userId, securityId, securityUserId, accessId, accessUserId,sessionInformationId,sessionInformationUserId  );
             SyncData.AddConnection(newConnection);
         }
         let prefix: string = concept1Data.type?.characterValue + "_s";
@@ -30,6 +30,6 @@ export async function CreateConnectionBetweenTwoConcepts(concept1Data: Concept, 
 
         var connectionConcept = await MakeTheInstanceConcept("connection",forwardLinker,false,999,999,999);
         var newConnection = new Connection(0,concept1Data.id, concept2Data.id,concept1Data.userId, concept2Data.userId, concept1Data.userId,
-           connectionConcept.id, connectionConcept.userId, 3, userId, securityId, securityUserId, accessId, accessUserId,sessionInformationId,sessionInformationUserId  );
+           connectionConcept.id, connectionConcept.userId, 1000, userId, securityId, securityUserId, accessId, accessUserId,sessionInformationId,sessionInformationUserId  );
         SyncData.AddConnection(newConnection);
         }

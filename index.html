@@ -57,6 +57,8 @@
     <script src="./dist/createComposition.js"></script>
       <script>
       document.body.onload = function(){
+
+
         var inputs = document.getElementsByTagName('input');
         var pageInput = document.getElementById('personalinfo');
         var mainConcept;
@@ -65,6 +67,7 @@
           inputs[i].onchange=function(event){
             createConcept(event.target,concept);
           }
+          mainConcept = concept;
         }
         });
 
@@ -73,6 +76,7 @@
         submit.onclick=function(event){
           event.preventDefault();
           syncOnlineData();
+          console.log(mainConcept);
         }
       }
       </script>

@@ -1,9 +1,8 @@
 import { GetConcept } from "../Api/GetConcept";
 import { Concept } from "./Concept";
-import { getFromDb, storeToDb } from "../Database/indexdb";
-import { getFromDatabase, getFromDatabaseWithType, removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import { getFromDatabase, getFromDatabaseWithType, getFromDatabaseWithTypeOld, removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
 export class ConceptsData{
-    
+
     name: string;
     constructor(){
         this.name = "conceptsArray";
@@ -61,19 +60,31 @@ export class ConceptsData{
         return myConcept;
     }
 
-    static GetConceptByCharacter(characterValue: string){
-        var  myConcept: Concept|null;
-        myConcept = null;
+    static async GetConceptByCharacter(characterValue: string){
+        var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
          for(var i=0; i<this.conceptsArray.length; i++){
              if(this.conceptsArray[i].characterValue == characterValue){
-                 myConcept = this.conceptsArray[i];
+                concept = this.conceptsArray[i];
              }
          }
 
-         return myConcept;
+         return concept;
      }
 
-     static GetConceptsByTypeId(typeId: number){
+     static async GetConceptByCharacterAndTypeLocal(character_value:string, typeId: number){
+        var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+        var conceptList:Concept[] = await this.GetConceptsByTypeId(typeId);
+        for(var i=0;i<conceptList.length; i++){
+
+            if(character_value == conceptList[i].characterValue){
+                concept = conceptList[i];
+            }
+        }
+        return concept;
+
+     }
+
+     static  GetConceptsByTypeId(typeId: number){
         var  myConcept: Concept|null;
         var ConceptList: Concept[] = [];
         myConcept = null;
@@ -82,22 +93,35 @@ export class ConceptsData{
                  ConceptList.push(this.conceptsArray[i]);
              }
          }
-
-         var dbConceptList = getFromDatabaseWithType("concept","typeId", typeId);
-         for(var i=0; i< dbConceptList.length; i++){
-            var contains: boolean = false;
-            for(var j=0; j< ConceptList.length; j++){
-                if(dbConceptList[i].id == ConceptList[j].id){
-                    contains = true;
-                }
-            }
-
-            if(!contains){
-                ConceptList.push(dbConceptList[i]);
-            }
-         }
+         console.log("not in the static file");
+        //  getFromDatabaseWithType("concept","typeId",typeId).then(conceptList=>{
+        //     console.log("thi sis my list");
+        //  });
+        //   var dbConceptList = await getFromDatabaseWithTypeOld("concept","typeId", typeId);
+        //   console.log(dbConceptList);
+        //   if(Array.isArray(dbConceptList)){
+        //         console.log(dbConceptList);
+        //         console.log(dbConceptList.length);
+        //  for(var i=0; i< dbConceptList.length; i++){
+        //     console.log("here to push firsts");
+        //     var contains: boolean = false;
+        //     for(var j=0; j< ConceptList.length; j++){
+        //         if(dbConceptList[i].id == ConceptList[j].id){
+        //             contains = true;
+        //         }
+        //     }
+        //     console.log("here to push");
+        //     if(!contains){
+        //         ConceptList.push(dbConceptList[i]);
+        //     }
+        //  }
+        // }
+        // console.log("this is the concept list");
+        // console.log(ConceptList);
          return ConceptList;
      }
+
+
 
 
     getName(){

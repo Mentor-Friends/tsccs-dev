@@ -1,9 +1,6 @@
-import { TheCharacter } from "../../dist/bundle";
 import { CreateTextData } from "../Api/Create/CreateTheTextData";
-import { GetConcept } from "../Api/GetConcept";
 import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndType";
 import { Concept } from "../DataStructures/Concept";
-import { ConceptsData } from "../DataStructures/ConceptData";
 import { TheTexts } from "../DataStructures/TheTexts";
 import CreateTheConcept from "./CreateTheConcept";
 import { MakeTheName } from "./MakeTheName";
@@ -38,8 +35,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 stringToCheck = "the_" + type;
             }
             if(composition){
-                console.log("what is this");
-                console.log(type);
                var   typeConceptString = await MakeTheTypeConcept(type, sessionInformationId, userId, userId );
                typeConcept = typeConceptString as Concept;
 

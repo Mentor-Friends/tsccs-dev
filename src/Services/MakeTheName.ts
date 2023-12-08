@@ -21,7 +21,7 @@ export async function MakeTheName(theCharacterData:string, userId: number, secur
         }
         else{
            characterConcept = await  MakeTheCharacter(theCharacterData,userId, securityId, accessId,accessUserId, sessionId) as Concept;
-        
+           
         
             existingConcept = await MakeTheConcept(theCharacterData, userId, categoryId, categoryUserId, nameTypeId, typeUserId, characterConcept.id, characterConcept.userId,securityId,securityUserId,accessId,
              accessUserId,sessionId,sessionUserId);

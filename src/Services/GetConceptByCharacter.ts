@@ -5,8 +5,8 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 export default async function GetConceptByCharacter(characterValue: string){
     var concept = ConceptsData.GetConceptByCharacter(characterValue);
     if(concept == null && characterValue){
-       var conceptString = await GetConceptByCharacterValue(characterValue);
-       concept = conceptString as Concept;
+       await GetConceptByCharacterValue(characterValue);
+        concept = ConceptsData.GetConceptByCharacter(characterValue);
     }
     return concept;
 }

@@ -11,7 +11,7 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
     var MainKeyLocal: number = mainKey ?? 0;
     var MainConcept;
     for (const key in json) {
-        if(typeof json[key] != 'string' ){
+        if(typeof json[key] != 'string' && typeof json[key] != 'number' ){
             if(ofTheConceptId == null && ofTheConceptUserId == null){
                 var localMainKey = MainKeyLocal;
                 let conceptString = await MakeTheInstanceConcept(key, "", true, localUserId, localAccessId, localSessionId);

@@ -1,30 +1,37 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptByCharacterAndTypeUrl } from './../Constants/ApiConstants';
+import { Concept } from "./../DataStructures/Concept";
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
 
-
     try{
-          var json = {
-            'character_value': characterValue,
-            'type_id': typeId 
-          };
-          var toSendJson = JSON.stringify(json);
+    var concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
+      console.log("this is for the type" + characterValue + " and " + typeId);
+      console.log(concept);
+      if(concept == null || concept.id == 0){
+        console.log("calling the api");
+        var json = {
+          'character_value': characterValue,
+          'type_id': typeId 
+        };
+        var toSendJson = JSON.stringify(json);
 
-            const response = await fetch(GetConceptByCharacterAndTypeUrl,{
-                method: 'POST',
-                headers:{
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                body: toSendJson,
-            });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
-            }
-             const result = await response.json() ;
+          const response = await fetch(GetConceptByCharacterAndTypeUrl,{
+              method: 'POST',
+              headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: toSendJson,
+          });
+          if(!response.ok){
+              throw new Error(`Error! status: ${response.status}`);
+          }
+            concept = await response.json() ;
+      }
 
-            ConceptsData.AddConcept(result);
-            return result;
+
+            ConceptsData.AddConcept(concept);
+            return concept;
     }
     catch (error) {
         if (error instanceof Error) {

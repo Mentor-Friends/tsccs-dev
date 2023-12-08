@@ -9,14 +9,19 @@ export {GetComposition} from './Services/GetComposition';
 export {default as CreateComposition} from './Services/CreateTheComposition';
 export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBetweenTwoConcepts';
 export { default as GetTheConcept} from './Services/GetTheConcept';
-export { storeToDb, getFromDb } from './Database/indexdb'; 
 export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
-export { storeToDatabase,getFromDatabase,getFromDatabaseWithType } from './Database/indexeddb';
+export { storeToDatabase,getFromDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/indexeddb';
 export {default as CreateTheConnection} from './Services/CreateTheConnection';
+
+export {  } from './Api/GetConceptByCharacterAndType';
 
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
+export {ConceptsData} from './DataStructures/ConceptData';
 
+import {GetDataFromIndexDb} from './Services/GetDataFromIndexDb';
+
+GetDataFromIndexDb();
 // const form = document.querySelector('#myForm') as HTMLFormElement;
 // //const form2 = document.querySelector('#userForm') as HTMLFormElement;
 // const form3 = document.querySelector('#compositionForm') as HTMLFormElement;
