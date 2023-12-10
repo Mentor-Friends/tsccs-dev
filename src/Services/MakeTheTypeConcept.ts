@@ -41,8 +41,7 @@ export default async  function MakeTheTypeConcept(typeString: string, sessionId:
                         securityId, userId,accessId, userId, sessionId, userId );
                     existingConcept = concept as Concept;
                 }
-                console.log("this is the type concept");
-                console.log(typeConcept);
+
 
             }
         }

@@ -9,7 +9,6 @@ export function DrawingLoop(){
     var FPS = 60;
     var FRAME_RATE=1000/FPS;
     var canvas = document.querySelector('#myCanvas') as HTMLCanvasElement;
-    console.log(canvas);
     var ctx = canvas.getContext('2d') as CanvasRenderingContext2D ;
     
     setInterval(function(){

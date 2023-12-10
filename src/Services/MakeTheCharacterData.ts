@@ -12,7 +12,6 @@ export default async function MakeTheCharacterData(the_character_data: string, u
 
         var theCharacter = new TheCharacter(userId, the_character_data, securityId, securityUserId, accessId, accessUserId,
             sessionId, sessionInformationUserId,"",false);
-            console.log("character testing");
         var output =  await   CreateTheCharacter(theCharacter);
         var returner = output as Returner;
 

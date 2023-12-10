@@ -29,8 +29,6 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
                 var localMainKey = MainKeyLocal;
                 var conceptString = await MakeTheInstanceConcept(key, "", true, localUserId, localAccessId, localSessionId  );
                 var concept = conceptString as Concept;
-                console.log("of the concept");
-                console.log(concept.id);
                 await createTheConnection(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
                 await CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
             }

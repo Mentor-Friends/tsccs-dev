@@ -84,7 +84,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             //     }
             // }
             concept.type = typeConcept;
-            console.log("this is the concept");
-            console.log(concept);
+
             return concept;
 }

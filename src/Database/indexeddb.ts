@@ -63,13 +63,11 @@ export function storeToDatabase(databaseName:string, object:any){
 
     request.onsuccess = function(event:Event) {
 
-        console.log("saving in the db");
-        console.log(object);
+
         var target = event.target as IDBOpenDBRequest;
         var db = target.result as IDBDatabase;
         let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
         let objStore = transaction.objectStore(databaseName);
-        console.log(objStore.add(object));
 
 
     };
@@ -155,8 +153,6 @@ export function getFromDatabase(databaseName:string, id:number){
               cursor.continue();
           }
         }
-        console.log("resolving");
-          console.log(ConceptList);
           resolve(ConceptList); 
 
     //   // Database opened successfully
@@ -194,7 +190,6 @@ export function getFromDatabase(databaseName:string, id:number){
         for(var i=0; i<students.length; i++){
             ConceptList.push(students[i]);
         }
-        console.log("resolving");
         resolve(ConceptList); 
     }
 

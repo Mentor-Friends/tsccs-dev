@@ -4,7 +4,6 @@ export class ReservedIds{
     static  ids:number[] = [];
 
      static async getId(){
-        console.log(this.ids.length);
         if(this.ids.length < 5){
             var ids =  await GetReservedIds();
         }

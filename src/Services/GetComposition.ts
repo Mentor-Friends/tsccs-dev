@@ -10,7 +10,6 @@ import { ConnectionData } from "../DataStructures/ConnectionData"
 export async function GetComposition(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
-    console.log("trying to get "+ id );
     await GetAllConnectionsOfComposition(id);
     connectionList = ConnectionData.GetConnectionsOfComposition(id);
     var compositionList:number[] = [];
@@ -32,6 +31,34 @@ export async function GetComposition(id:number){
     return returnOutput;
 }
 
+export async function GetCompositionWithId(id:number){
+    var connectionList:Connection[] = [];
+    var returnOutput: any = {};
+    await GetAllConnectionsOfComposition(id);
+    connectionList = ConnectionData.GetConnectionsOfComposition(id);
+    var compositionList:number[] = [];
+
+    for(var i=0; i<connectionList.length; i++){
+        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+            compositionList.push(connectionList[i].ofTheConceptId);
+        }
+    }
+
+    var concept = ConceptsData.GetConcept(id);
+    if(concept == null && id != null && id != undefined){
+     var conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    var output = await recursiveFetch(id, connectionList, compositionList);
+    var mainString = concept?.type?.characterValue ?? "top";
+    returnOutput[mainString] = output;
+    var FinalReturn: any = {};
+    FinalReturn['data'] = returnOutput;
+    FinalReturn['id'] = id;
+
+    return FinalReturn;
+}
+
 
  async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[]){
 
@@ -47,8 +74,7 @@ export async function GetComposition(id:number){
         if(concept.type == null){
             var toConceptTypeId: number  = concept.typeId;
             var toConceptType = ConceptsData.GetConcept(toConceptTypeId);
-            console.log("this is the to concept type");
-            console.log(toConceptType);
+
             concept.type = toConceptType;
             if(toConceptType == null && toConceptTypeId != null && toConceptTypeId != undefined){
                 var conceptString = await  GetConcept(toConceptTypeId);
@@ -79,8 +105,7 @@ export async function GetComposition(id:number){
                     if(toConcept?.type == null){
                         var toConceptTypeId: number  = toConcept.typeId;
                         var toConceptType = ConceptsData.GetConcept(toConceptTypeId);
-                        console.log("this is the to concept type");
-                        console.log(toConceptType);
+
                         toConcept.type = toConceptType;
                         if(toConceptType == null && toConceptTypeId != null && toConceptTypeId != undefined){
                             var conceptString = await  GetConcept(toConceptTypeId);
@@ -94,8 +119,7 @@ export async function GetComposition(id:number){
 
 
                 var localmainString = toConcept?.type?.characterValue ?? "top";
-                console.log("after to concept");
-                console.log(toConcept);
+
                 var localKey = localmainString.replace(regex, "");
 
                 if(isNaN(Number(localKey)) ){

@@ -33,9 +33,7 @@ export class ConceptsData{
        }
         storeToDatabase("concept",concept);
         BinaryTree.addConceptToTree(concept);
-        console.log("adding the concept to binary tree");
 
-        console.log(BinaryTree.getNodeFromTree(concept.id));
         this.conceptsArray.push(concept);
     }
 
@@ -63,8 +61,6 @@ export class ConceptsData{
        var  myConcept: Concept|null;
        myConcept = null;
         var node = BinaryTree.getNodeFromTree(id);
-        console.log("got the node for " + id);
-        console.log(node);
         if(node?.value){
             myConcept = node.value;
         }
@@ -112,7 +108,6 @@ export class ConceptsData{
                  ConceptList.push(this.conceptsArray[i]);
              }
          }
-         console.log("not in the static file");
         //  getFromDatabaseWithType("concept","typeId",typeId).then(conceptList=>{
         //     console.log("thi sis my list");
         //  });

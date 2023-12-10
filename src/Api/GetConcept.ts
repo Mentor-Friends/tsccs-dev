@@ -23,7 +23,6 @@ export async function GetConcept(id: number){
             const result = await response.json() as Concept;
             console.log(result);
             if(result.id > 0){
-                console.log("from inside ");
                 ConceptsData.AddConcept(result);
                 return result;
             }

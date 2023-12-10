@@ -60,7 +60,7 @@ var json ={
 					{ "id": "1001", "type": "Regular" },
 					{ "id": "1002", "type": "Chocolate" },
 					{ "id": "1003", "type": "Blueberry" },
-					{ "id": "1004", "type": "Devil's Food" }
+					{ "id": "1004", "type": "Devils Food" }
 				]
 		},
 	"topping":
@@ -77,22 +77,13 @@ var json ={
 };
 
 window.tsccs.CreateComposition(json).then(concept=>{
-    console.log("this is the final   " + concept.id);
-    console.log(concept);
     syncOnlineData().then(()=>{
-        window.tsccs.GetComposition(concept.id).then(composition=>{
+        window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
             console.log(composition);
         })
     });
 
 });
-// console.log("this is the main");
-// window.tsccs.ConceptsData.GetConceptByCharacterAndTypeLocal("New York Bulls",100113841).then(conceptList=>{
-//     console.log("this is the concept listsssdf");
-//     console.log(conceptList);
-// });
 
-// StoreId();
-// GetId();
-//GetIdFromType();
+
 window.syncOnlineData = syncOnlineData;

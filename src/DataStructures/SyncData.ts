@@ -55,7 +55,6 @@ export class SyncData{
      }
 
      static AddConnection(connection: Connection){
-        console.log(this.connectionSyncArray);
          this.connectionSyncArray.push(connection);
      }
 

@@ -4,7 +4,6 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 export function selectConceptObject(mouse_x_coordinate: number, mouse_y_coordinate: number){
     var conceptArray = ConceptsData.conceptsArray;
     var offset = 50;
-    console.log(conceptArray.length);
     for(var i=0; i<conceptArray.length; i++){
         var left_boundary_of_object = conceptArray[i].x - offset;
         var right_boundary_of_object = conceptArray[i].x + offset;

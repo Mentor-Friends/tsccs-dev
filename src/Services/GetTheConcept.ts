@@ -7,7 +7,6 @@ export default async function GetTheConcept(id: number){
     if(concept == null && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
-     console.log('cannot find the data in the local');
     }
     if(concept){
         if(concept.type == null){

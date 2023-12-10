@@ -13,7 +13,6 @@ async function GetCompositionList(name){
     const createColumnAge = document.createElement('td');
     let age = json.personalinfo.age;
     createColumnAge.innerHTML = age;
-    console.log(age);
     rowElement.appendChild(createColumnAge);
     const createColumnCountry = document.createElement('td');
     let country = json.personalinfo.country;
