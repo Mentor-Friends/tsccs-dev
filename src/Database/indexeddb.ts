@@ -51,6 +51,8 @@ request.onupgradeneeded = (event) => {
 
 }
 export function storeToDatabase(databaseName:string, object:any){
+
+  openDatabase(databaseName);
     let db;
 
     const request = indexedDB.open("FreeSchema",version);
@@ -61,12 +63,14 @@ export function storeToDatabase(databaseName:string, object:any){
 
     request.onsuccess = function(event:Event) {
 
-      
+        console.log("saving in the db");
+        console.log(object);
         var target = event.target as IDBOpenDBRequest;
         var db = target.result as IDBDatabase;
         let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
         let objStore = transaction.objectStore(databaseName);
-        objStore.add(object);
+        console.log(objStore.add(object));
+
 
     };
 

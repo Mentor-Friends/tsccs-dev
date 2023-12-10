@@ -18,9 +18,16 @@ export async function GetConcept(id: number){
             if(!response.ok){
                 throw new Error(`Error! status: ${response.status}`);
             }
-            const result = (await response.json()) as Concept;
-            ConceptsData.AddConcept(result);
-            return result;
+            console.log("getting data from backend");
+
+            const result = await response.json() as Concept;
+            console.log(result);
+            if(result.id > 0){
+                console.log("from inside ");
+                ConceptsData.AddConcept(result);
+                return result;
+            }
+
         }
     }
     catch (error) {

@@ -13,10 +13,15 @@ export async function GetConceptByCharacterValue(characterValue: string){
           if(!response.ok){
               throw new Error(`Error! status: ${response.status}`);
           }
-           const result = await response.json() as Concept;
-           
-            ConceptsData.AddConcept(result);
-            return result;
+          else{
+            const result = await response.json() as Concept;
+            if(result.id > 0){
+              ConceptsData.AddConcept(result);
+              return result;
+            }
+
+          }
+
     }
     catch (error) {
         if (error instanceof Error) {

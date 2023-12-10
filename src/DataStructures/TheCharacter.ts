@@ -13,7 +13,7 @@ export class TheCharacter{
     constructor(userId:number, data:string, securityId: number, securityUserId: number, accessId:number, accessUserId: number, 
     sessionId: number, sessionUserId: number, entryTimestamp: string, isNew: boolean){
         this.userId = userId;
-        this.data = data;
+        this.data = `${data}`;
         this.securityId = securityId; 
         this.securityUserId = securityUserId;
         this.accessId = accessId;

@@ -1,6 +1,7 @@
 import { GetConcept } from "../Api/GetConcept";
 import { Concept } from "./Concept";
 import { getFromDatabase, getFromDatabaseWithType, getFromDatabaseWithTypeOld, removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import { BinaryTree } from "./BinaryTree";
 export class ConceptsData{
 
     name: string;
@@ -31,6 +32,10 @@ export class ConceptsData{
         this.RemoveConcept(concept);
        }
         storeToDatabase("concept",concept);
+        BinaryTree.addConceptToTree(concept);
+        console.log("adding the concept to binary tree");
+
+        console.log(BinaryTree.getNodeFromTree(concept.id));
         this.conceptsArray.push(concept);
     }
 
@@ -57,14 +62,18 @@ export class ConceptsData{
     static GetConcept(id: number){
        var  myConcept: Concept|null;
        myConcept = null;
-        for(var i=0; i<this.conceptsArray.length; i++){
-            if(this.conceptsArray[i].id == id){
-                myConcept = this.conceptsArray[i];
-            }
+        var node = BinaryTree.getNodeFromTree(id);
+        console.log("got the node for " + id);
+        console.log(node);
+        if(node?.value){
+            myConcept = node.value;
         }
-        if(!myConcept){
-            var concept = getFromDatabase("concept",id);
-            return concept;
+        if(myConcept == null){
+            for(var i=0; i<this.conceptsArray.length; i++){
+                if(this.conceptsArray[i].id == id){
+                    myConcept = this.conceptsArray[i];
+                }
+            }
         }
 
         return myConcept;

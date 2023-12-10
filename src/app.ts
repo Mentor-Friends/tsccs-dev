@@ -1,4 +1,5 @@
 import { SyncData } from './DataStructures/SyncData';
+import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
 
 
 
@@ -20,7 +21,7 @@ export {Concept} from './DataStructures/Concept';
 export {ConceptsData} from './DataStructures/ConceptData';
 
 import {GetDataFromIndexDb} from './Services/GetDataFromIndexDb';
-
+CreateBinaryTreeFromData();
 GetDataFromIndexDb();
 // const form = document.querySelector('#myForm') as HTMLFormElement;
 // //const form2 = document.querySelector('#userForm') as HTMLFormElement;

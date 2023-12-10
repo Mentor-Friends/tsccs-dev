@@ -28,7 +28,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           }
             concept = await response.json() ;
       }
-
+        
 
             ConceptsData.AddConcept(concept);
             return concept;

@@ -36,7 +36,7 @@ export  class Concept{
         this.referentId = referentId;
         this.referent = referentId;
         this.referentUserId = referentUserId;
-        this.characterValue = characterValue;
+        this.characterValue = `${characterValue}`;
         this.securityId = securityId;
         this.securityUserId = securityUserId;
         this.accessId = accessId;

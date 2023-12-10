@@ -85,8 +85,6 @@ window.tsccs.CreateComposition(json).then(concept=>{
         })
     });
 
-
-
 });
 // console.log("this is the main");
 // window.tsccs.ConceptsData.GetConceptByCharacterAndTypeLocal("New York Bulls",100113841).then(conceptList=>{
