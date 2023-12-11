@@ -31,6 +31,7 @@ export class ConceptsData{
        if(contains){
         this.RemoveConcept(concept);
        }
+       console.log("storing to database");
         storeToDatabase("concept",concept);
         BinaryTree.addConceptToTree(concept);
 

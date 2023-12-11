@@ -47,33 +47,38 @@ async function  syncOnlineData(){
 }
 
 
-var json ={
-    "boomjpt":{
-	"id": "0001",
-	"type": "donut",
-	"name": "Cake",
-	"ppu": 0.55,
-	"batters":
-		{
-			"batter":
-				[
-					{ "id": "1001", "type": "Regular" },
-					{ "id": "1002", "type": "Chocolate" },
-					{ "id": "1003", "type": "Blueberry" },
-					{ "id": "1004", "type": "Devils Food" }
-				]
-		},
-	"topping":
-		[
-			{ "id": "5001", "type": "None" },
-			{ "id": "5002", "type": "Glazed" },
-			{ "id": "5005", "type": "Sugar" },
-			{ "id": "5007", "type": "Powdered Sugar" },
-			{ "id": "5006", "type": "Chocolate with Sprinkles" },
-			{ "id": "5003", "type": "Chocolate" },
-			{ "id": "5004", "type": "Maple" }
-		]
-    }
+var json ={"boomgpt": {
+    "note": "",
+    "boom_folder": {
+        "category_id": "100386862",
+        "category_name": "Important Contacts"
+    },
+    "created_at": "1702266154331",
+    "title": "Hem Sir",
+    "crm_data": {
+        "experience": "",
+        "link": "",
+        "addresses": "",
+        "notes": [
+            ""
+        ],
+        "tag": "prospect",
+        "education": "",
+        "about": "",
+        "avatar": "",
+        "phone": [
+            {
+                "number": "+977 985-1022244"
+            }
+        ],
+        "email": "",
+        "name": "Hem Sir"
+    },
+    "comment": [
+        ""
+    ],
+    "data_type": "extension_whatsapp"
+}
 };
 
 window.tsccs.CreateComposition(json).then(concept=>{
