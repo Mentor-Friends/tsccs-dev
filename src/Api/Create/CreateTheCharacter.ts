@@ -1,23 +1,35 @@
 import { CreateTheCharacterDataUrl } from "../../Constants/ApiConstants";
+import { CharacterRepository } from "../../DataStructures/CharacterRepository";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 
 export async function CreateTheCharacter(characterData: TheCharacter){
     try{
-            const response = await fetch(CreateTheCharacterDataUrl,{
-                method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(characterData),
-            });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
-            }
-             const resultString = await response.json();
-            const result = resultString as Returner;
+      var characterData = CharacterRepository.GetCharacter(characterData.data);
+      if(characterData.id == 0){
+        const response = await fetch(CreateTheCharacterDataUrl,{
+          method: 'POST',
+          headers:{
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(characterData),
+      });
+      if(!response.ok){
+          throw new Error(`Error! status: ${response.status}`);
+      }
+       const resultString = await response.json();
+      const result = resultString as Returner;
+      var savingCharacter = new TheCharacter(result.userId, characterData.data, 0, 0, 4,4,999,999,"",false);
+      savingCharacter.id = result.id;
+      CharacterRepository.AddCharacter(savingCharacter);
+      return result;
+      }
+      else{
+        var returningData = new Returner(characterData.id, characterData.userId, 0, false);
+        return returningData;
+      }
 
-            return result;
+
     }
     catch (error) {
         if (error instanceof Error) {

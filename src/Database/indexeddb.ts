@@ -62,13 +62,14 @@ export function storeToDatabase(databaseName:string, object:any){
     };
 
     request.onsuccess = function(event:Event) {
-        console.log("storing success" + databaseName);
-
+      if(object.id > 0){
         var target = event.target as IDBOpenDBRequest;
         var db = target.result as IDBDatabase;
         let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
         let objStore = transaction.objectStore(databaseName);
         objStore.add(object);
+      }
+
 
 
     };

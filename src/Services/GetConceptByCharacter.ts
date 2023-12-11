@@ -4,7 +4,9 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 
 export default async function GetConceptByCharacter(characterValue: string){
     var concept = await ConceptsData.GetConceptByCharacter(characterValue);
-    if((concept == null || concept?.id == 0) && characterValue){
+    var literalCharacter = `${characterValue}`;
+    if((concept == null || concept?.id == 0) && literalCharacter){
+        console.log("now going online");
        await GetConceptByCharacterValue(characterValue);
         concept = await ConceptsData.GetConceptByCharacter(characterValue);
     }

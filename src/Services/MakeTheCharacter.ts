@@ -21,6 +21,7 @@ export default async function MakeTheCharacter(the_character_data:string, userId
             var referentId:number = the_character_data.charCodeAt(0);
             var typeIdForCharacter:number = 49;
             var characterDataString = await MakeTheCharacterData(the_character_data, userId, securityId,accessId, sessionId);
+
             concept = MakeTheConcept(the_character_data, userId, categoryId, categoryUserId,
                 referentId, referentUserId, typeIdForCharacter, typeUserId,
                 securityId, securityUserId, accessId, accessUserId,

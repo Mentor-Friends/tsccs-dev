@@ -18,10 +18,8 @@ export async function GetConcept(id: number){
             if(!response.ok){
                 throw new Error(`Error! status: ${response.status}`);
             }
-            console.log("getting data from backend");
 
             const result = await response.json() as Concept;
-            console.log(result);
             if(result.id > 0){
                 ConceptsData.AddConcept(result);
                 return result;

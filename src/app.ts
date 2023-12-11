@@ -13,6 +13,7 @@ export { default as GetTheConcept} from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
 export { storeToDatabase,getFromDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/indexeddb';
 export {default as CreateTheConnection} from './Services/CreateTheConnection';
+export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 
 export {  } from './Api/GetConceptByCharacterAndType';
 

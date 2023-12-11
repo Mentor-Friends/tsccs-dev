@@ -25,17 +25,19 @@ export class ConceptsData{
 
 
     static AddConcept(concept: Concept){
-       var contains = this.CheckContains(concept);
-       this.conceptDictionary[concept.id] = concept;
+        if(concept.id > 0){
+            var contains = this.CheckContains(concept);
+            this.conceptDictionary[concept.id] = concept;
+     
+            if(contains){
+             this.RemoveConcept(concept);
+            }
+             storeToDatabase("concept",concept);
+             BinaryTree.addConceptToTree(concept);
+     
+             this.conceptsArray.push(concept);
+        }
 
-       if(contains){
-        this.RemoveConcept(concept);
-       }
-       console.log("storing to database");
-        storeToDatabase("concept",concept);
-        BinaryTree.addConceptToTree(concept);
-
-        this.conceptsArray.push(concept);
     }
 
     static AddConceptTemporary(concept: Concept){

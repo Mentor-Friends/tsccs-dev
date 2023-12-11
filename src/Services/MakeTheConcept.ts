@@ -11,6 +11,7 @@ accessId:number, accessUserId:number, sessionInformationId:number, sessionInform
     var concept = conceptString as Concept;
 
     if(concept.id == 0){
+
        conceptString = await  CreateTheConcept(referent,userId,categoryId,categoryUserId,typeId, typeUserId, referentId, referentUserId, securityId,
             securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
 
