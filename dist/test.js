@@ -86,16 +86,18 @@ var json ={"boomgpt": {
     "data_type": "extension_whatsapp"
 }
 };
-// setTimeout(() => {
-//     window.tsccs.CreateComposition(json).then(concept=>{
-//         syncDataLocal().then(()=>{
-//             window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
-//                 console.log(composition);
-//             })
-//         });
+setTimeout(() => {
+    window.tsccs.CreateComposition(json).then(concept=>{
+
+        console.log("workking");
+        syncDataLocal().then(()=>{
+            window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
+                console.log(composition);
+            })
+        });
     
-//     });
-// }, 3000);
+    });
+}, 3000);
 
 
 //window.tsccs.GetLink(100128392, "my_console_s");

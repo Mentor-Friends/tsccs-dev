@@ -27,6 +27,7 @@ export class ConnectionData{
             this.RemoveConnection(connection);
         }
         if(connection.id != 0 || connection.isTemp){
+
             storeToDatabase("connection",connection);
         }
         this.connectionArray.push(connection);
