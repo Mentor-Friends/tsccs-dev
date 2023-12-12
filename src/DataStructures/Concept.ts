@@ -21,6 +21,7 @@ export  class Concept{
     referent: number;
     type: Concept | null | void;
     isNew: boolean;
+    isTemp: boolean = false;
 
 
     constructor(id: number, userId: number, typeId:number, typeUserId:number, categoryId:number, categoryUserId:number,

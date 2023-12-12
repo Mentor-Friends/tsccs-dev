@@ -10,8 +10,10 @@ import { ConnectionData } from "../DataStructures/ConnectionData"
 export async function GetComposition(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
-    await GetAllConnectionsOfComposition(id);
-    connectionList = ConnectionData.GetConnectionsOfComposition(id);
+    var connectionListString = await GetAllConnectionsOfComposition(id);
+    connectionList = connectionListString as Connection[];
+    console.log(connectionList);
+    //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     var compositionList:number[] = [];
 
     for(var i=0; i<connectionList.length; i++){
@@ -34,8 +36,8 @@ export async function GetComposition(id:number){
 export async function GetCompositionWithId(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
-    await GetAllConnectionsOfComposition(id);
-    connectionList = ConnectionData.GetConnectionsOfComposition(id);
+    var connectionListString = await GetAllConnectionsOfComposition(id);
+    connectionList = connectionListString as Connection[];
     var compositionList:number[] = [];
 
     for(var i=0; i<connectionList.length; i++){
@@ -65,7 +67,7 @@ export async function GetCompositionWithId(id:number){
     var output : any= {};
     var arroutput: any = [];
     var concept = ConceptsData.GetConcept(id);
-    if(concept == null && id != null && id != undefined){
+    if((concept == null || concept.id == 0) && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
@@ -97,7 +99,7 @@ export async function GetCompositionWithId(id:number){
                 var toConceptId = connectionList[i].toTheConceptId;
 
                 var toConcept = ConceptsData.GetConcept(toConceptId);
-                if(toConcept == null && toConceptId != null && toConceptId != undefined){
+                if((toConcept == null || toConcept.id == 0) && toConceptId != null && toConceptId != undefined){
                  var conceptString = await  GetConcept(toConceptId);
                  toConcept = conceptString as Concept;
                 }

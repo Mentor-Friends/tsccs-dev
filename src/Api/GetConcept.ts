@@ -3,11 +3,13 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptUrl } from './../Constants/ApiConstants';
 export async function GetConcept(id: number){
     try{
-        var Concept = ConceptsData.GetConcept(id);
-        if(Concept != null){
-            return Concept;
+        var conceptUse :Concept= ConceptsData.GetConcept(id);
+        if(conceptUse.id != 0){
+            console.log("getting data from local");
+            return conceptUse;
         }
         else{
+            console.log("getting data from online");
             const response = await fetch(GetConceptUrl,{
                 method: 'POST',
                 headers:{

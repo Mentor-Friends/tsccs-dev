@@ -14,6 +14,7 @@ export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConc
 export { storeToDatabase,getFromDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/indexeddb';
 export {default as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
+export { GetLink } from './Services/GetLink';
 
 export {  } from './Api/GetConceptByCharacterAndType';
 
@@ -22,6 +23,8 @@ export {Concept} from './DataStructures/Concept';
 export {ConceptsData} from './DataStructures/ConceptData';
 
 import {GetDataFromIndexDb} from './Services/GetDataFromIndexDb';
+import {GetAiData} from './Api/GetAiData';
+//GetAiData();
 CreateBinaryTreeFromData();
 GetDataFromIndexDb();
 // const form = document.querySelector('#myForm') as HTMLFormElement;

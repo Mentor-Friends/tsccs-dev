@@ -3,8 +3,9 @@ import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 
 export default async function GetTheConcept(id: number){
-    var concept = ConceptsData.GetConcept(id);
-    if(concept == null && id != null && id != undefined){
+    var concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+    concept = ConceptsData.GetConcept(id);
+    if((concept == null || concept.id == 0) && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }

@@ -17,6 +17,10 @@ export const GetCharacterByCharacterUrl: string = BASE_URL + '/api/get_character
 
 export const GetAllConceptsByTypeUrl: string = BASE_URL + '/api/get_all_concepts_by_type';
 
+export const GetAllConnectionsOfConceptUrl: string = BASE_URL + '/api/get-link-connections';
+
+export const GetAllAiData:string = 'https://devai.freeschema.com/api/get_ranked_type_id';
+
 
 
 

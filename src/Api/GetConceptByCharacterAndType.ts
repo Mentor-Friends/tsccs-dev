@@ -24,10 +24,10 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           if(!response.ok){
               throw new Error(`Error! status: ${response.status}`);
           }
-            concept = await response.json() ;
+            var conceptString = await response.json() ;
+            concept = conceptString as Concept;
+
       }
-
-
             ConceptsData.AddConcept(concept);
             return concept;
     }

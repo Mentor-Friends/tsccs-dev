@@ -1,5 +1,6 @@
 import { Connection } from "../DataStructures/Connection";
 import { SyncData } from "../DataStructures/SyncData";
+import { genHexString } from "./GenerateHexNumber";
 
 export default function createTheConnection(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,
      typeId: number, sessionInformationId: number, sessionInformationUserId: number
@@ -14,5 +15,7 @@ export default function createTheConnection(ofTheConceptId:number, ofTheConceptU
         var accessUserId: number = ofTheConceptUserId;
         var connection = new Connection(0,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
             typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
+        connection.isTemp = true;
+        connection.id = genHexString(10);
         SyncData.AddConnection(connection);
 }

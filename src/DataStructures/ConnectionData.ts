@@ -26,7 +26,7 @@ export class ConnectionData{
         if(contains){
             this.RemoveConnection(connection);
         }
-        if(connection.id != 0){
+        if(connection.id != 0 || connection.isTemp){
             storeToDatabase("connection",connection);
         }
         this.connectionArray.push(connection);
@@ -59,7 +59,7 @@ export class ConnectionData{
         return myConcept;
     }
 
-    static GetConnectionsOfComposition(id: number){
+    static GetConnectionsOfCompositionLocal(id: number){
         var connectionList:Connection[] = [];
         for(var i=0; i<this.connectionArray.length; i++){
             if(this.connectionArray[i].typeId == id){

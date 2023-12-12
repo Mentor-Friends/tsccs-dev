@@ -21,6 +21,8 @@ export class Connection{
     accessUserId: number;
     sessionInformationId: number;
     sessionInformationUserId: number;
+    localSyncTime: Date;
+    isTemp:boolean = false;
 
     constructor(id: number = 0, ofTheConceptId: number, toTheConceptId: number, ofTheConceptUserId: number, toTheConceptUserId: number,
         userId: number, typeId: number, typeUserId: number, orderId: number, orderUserId: number, securityId: number, securityUserId: number,
@@ -46,6 +48,7 @@ export class Connection{
             this.entryTimeStamp = new Date();
             this.terminationDateTime  = new Date();
             ConnectionData.AddConnection(this);
+            this.localSyncTime = new Date();
         }
 
 

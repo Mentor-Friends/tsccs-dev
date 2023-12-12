@@ -46,6 +46,12 @@ async function  syncOnlineData(){
     await window.tsccs.SyncData.SyncDataOnline();
 }
 
+async function  syncDataLocal(){
+    console.log(window.tsccs.SyncData.conceptsSyncArray);
+    console.log(window.tsccs.SyncData.connectionSyncArray);
+    await window.tsccs.SyncData.syncDataLocalDb();
+}
+
 
 var json ={"boomgpt": {
     "note": "",
@@ -80,19 +86,23 @@ var json ={"boomgpt": {
     "data_type": "extension_whatsapp"
 }
 };
-setTimeout(() => {
-    window.tsccs.CreateComposition(json).then(concept=>{
-        syncOnlineData().then(()=>{
-            window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
-                console.log(composition);
-            })
-        });
+// setTimeout(() => {
+//     window.tsccs.CreateComposition(json).then(concept=>{
+//         syncDataLocal().then(()=>{
+//             window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
+//                 console.log(composition);
+//             })
+//         });
     
-    });
-}, 3000);
+//     });
+// }, 3000);
+
+
+//window.tsccs.GetLink(100128392, "my_console_s");
 
 
 
 
 
 window.syncOnlineData = syncOnlineData;
+window.syncDataLocal = syncDataLocal;

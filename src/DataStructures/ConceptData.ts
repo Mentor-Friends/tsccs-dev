@@ -61,13 +61,15 @@ export class ConceptsData{
     }
 
     static GetConcept(id: number){
-       var  myConcept: Concept|null;
-       myConcept = null;
+       var  myConcept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
         var node = BinaryTree.getNodeFromTree(id);
         if(node?.value){
-            myConcept = node.value;
+            var returnedConcept = node.value;
+            if(returnedConcept){
+                myConcept = returnedConcept as Concept;
+            }
         }
-        if(myConcept == null){
+        if(myConcept.id == 0 || myConcept == null){
             for(var i=0; i<this.conceptsArray.length; i++){
                 if(this.conceptsArray[i].id == id){
                     myConcept = this.conceptsArray[i];

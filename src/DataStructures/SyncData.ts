@@ -1,3 +1,4 @@
+import { storeToDatabase } from "./../Database/indexeddb";
 import { CreateTheConceptApi } from "../Api/Create/CreateTheConceptApi";
 import { CreateTheConnectionApi } from "../Api/Create/CreateTheConnectionApi";
 import { Concept } from "./Concept";
@@ -77,6 +78,22 @@ export class SyncData{
         }
         return "done";
 
+     }
+
+     static async syncDataLocalDb(){
+        if(this.conceptsSyncArray.length > 0){
+            for(let i=0; i< this.conceptsSyncArray.length;i++){
+                storeToDatabase("concept",this.conceptsSyncArray[i]);
+            }
+            this.conceptsSyncArray = [];
+        }
+         if(this.connectionSyncArray.length > 0){
+            for(let i=0; i< this.conceptsSyncArray.length;i++){
+                storeToDatabase("connection",this.connectionSyncArray[i]);
+            }
+         this.connectionSyncArray = [];
+        }
+        return "done";
      }
 
 
