@@ -1,4 +1,4 @@
-import { Connection } from "../../dist/bundle";
+import { Connection } from "../DataStructures/Connection";
 import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndType";
 import { GetConnectionOfTheConcept } from "../Api/GetConnectionOfTheConcept";
 import { Concept } from "./../DataStructures/Concept";

@@ -1,4 +1,4 @@
-import { Concept } from "../../dist/bundle";
+import { Concept } from "../DataStructures/Concept";
 import { Node } from "./Node";
 
 export class BinaryTree{
