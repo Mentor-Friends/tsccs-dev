@@ -4,6 +4,7 @@ import { CreateTheConnectionApi } from "../Api/Create/CreateTheConnectionApi";
 import { Concept } from "./Concept";
 import { ConceptsData } from "./ConceptData";
 import { Connection } from "./Connection";
+import { ConnectionData } from "./ConnectionData";
 
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
@@ -56,6 +57,7 @@ export class SyncData{
      }
 
      static AddConnection(connection: Connection){
+        ConnectionData.AddConnection(connection);
          this.connectionSyncArray.push(connection);
      }
 
@@ -87,8 +89,10 @@ export class SyncData{
             }
             this.conceptsSyncArray = [];
         }
+        console.log("storing in the connection table");
          if(this.connectionSyncArray.length > 0){
             for(let i=0; i< this.conceptsSyncArray.length;i++){
+                console.log("storing in the connection table");
                 storeToDatabase("connection",this.connectionSyncArray[i]);
             }
          this.connectionSyncArray = [];
