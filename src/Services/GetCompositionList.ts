@@ -11,9 +11,8 @@ export  async function GetCompositionList(compositionName: string){
     await GetAllConceptsByType(compositionName, 999);
     var conceptList = ConceptsData.GetConceptsByTypeId(concept.id);
     for(var i=0; i< conceptList.length; i++){
-      var compositionString = await GetComposition(conceptList[i].id);
-         var json = JSON.stringify(compositionString);
-         CompositionList.push(json);
+      var compositionJson= await GetComposition(conceptList[i].id);
+         CompositionList.push(compositionJson);
     }
    }
     return CompositionList;
