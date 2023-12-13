@@ -26,12 +26,12 @@ export class ConceptsData{
 
     static AddConcept(concept: Concept){
         if(concept.id > 0){
-            var contains = this.CheckContains(concept);
-            this.conceptDictionary[concept.id] = concept;
+            //var contains = this.CheckContains(concept);
+           // this.conceptDictionary[concept.id] = concept;
      
-            if(contains){
-             this.RemoveConcept(concept);
-            }
+        //    if(contains){
+          //   this.RemoveConcept(concept);
+          //  }
              storeToDatabase("concept",concept);
              BinaryTree.addConceptToTree(concept);
      
@@ -69,36 +69,50 @@ export class ConceptsData{
                 myConcept = returnedConcept as Concept;
             }
         }
-        if(myConcept.id == 0 || myConcept == null){
-            for(var i=0; i<this.conceptsArray.length; i++){
-                if(this.conceptsArray[i].id == id){
-                    myConcept = this.conceptsArray[i];
-                }
-            }
-        }
+        // if(myConcept.id == 0 || myConcept == null){
+        //     for(var i=0; i<this.conceptsArray.length; i++){
+        //         if(this.conceptsArray[i].id == id){
+        //             myConcept = this.conceptsArray[i];
+        //         }
+        //     }
+        // }
 
         return myConcept;
     }
 
     static async GetConceptByCharacter(characterValue: string){
         var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
-         for(var i=0; i<this.conceptsArray.length; i++){
-             if(this.conceptsArray[i].characterValue == characterValue){
-                concept = this.conceptsArray[i];
-             }
-         }
+        //  for(var i=0; i<this.conceptsArray.length; i++){
+        //      if(this.conceptsArray[i].characterValue == characterValue){
+        //         concept = this.conceptsArray[i];
+        //      }
+        //  }
+        console.log(characterValue);
+        var Node = BinaryTree.getCharacterFromTree(characterValue);
+        if(Node){
+        console.log(Node.value);
+
+            return Node.value;
+        }
 
          return concept;
      }
 
      static async GetConceptByCharacterAndTypeLocal(character_value:string, typeId: number){
         var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
-        var conceptList:Concept[] = await this.GetConceptsByTypeId(typeId);
-        for(var i=0;i<conceptList.length; i++){
+        // var conceptList:Concept[] = await this.GetConceptsByTypeId(typeId);
+        // for(var i=0;i<conceptList.length; i++){
 
-            if(character_value == conceptList[i].characterValue){
-                concept = conceptList[i];
-            }
+        //     if(character_value == conceptList[i].characterValue){
+        //         concept = conceptList[i];
+        //     }
+        // }
+
+        var Node = BinaryTree.getCharacterAndTypeFromTree(character_value,typeId);
+        if(Node){
+        console.log(Node.value);
+
+            return Node.value;
         }
         return concept;
 

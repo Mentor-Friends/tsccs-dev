@@ -1,4 +1,4 @@
-import { ConceptsData } from "../../dist/bundle";
+import { ConceptsData } from "../DataStructures/ConceptData";
 import { Concept } from "../DataStructures/Concept";
 
 var version = 4;

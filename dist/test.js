@@ -86,7 +86,6 @@ var json ={"boomgpt": {
     "data_type": "extension_whatsapp"
 }
 };
-setTimeout(() => {
     window.tsccs.CreateComposition(json).then(concept=>{
 
         console.log("workking");
@@ -97,10 +96,40 @@ setTimeout(() => {
         });
     
     });
-}, 3000);
+
+    setTimeout(() => {
+        window.tsccs.CreateComposition(json).then(concept=>{
+
+            console.log("workking");
+            syncDataLocal().then(()=>{
+                window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
+                    console.log(composition);
+                })
+            });
+        
+        });
+    }, 10000);
 
 
-//window.tsccs.GetLink(100128392, "my_console_s");
+
+
+    // for(let i=0; i< 100; i++ ){
+    //     window.tsccs.ConceptsData.GetConceptByCharacter("boomgpt");
+
+    // }
+
+// window.tsccs.GetLink(100128392, "my_console_s").then((output)=>{
+//     console.log("first");
+//     console.log(output);
+// });
+
+// window.tsccs.GetLink(100128392, "console_folder_s").then((output)=>{
+//     console.log("Second");
+//     console.log(output);
+// });
+// window.tsccs.GetLink(100128392, "my_console_s").then((output)=>{
+//     console.log(output);
+// });
 
 
 

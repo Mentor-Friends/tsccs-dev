@@ -1,4 +1,4 @@
-import { Concept } from "../../dist/bundle";
+import { Concept } from "../DataStructures/Concept";
 import { Node } from "./Node";
 
 export class BinaryTree{
@@ -24,6 +24,22 @@ export class BinaryTree{
             var Node = this.root.getFromNode(id, this.root);
             return Node;
         }
+        return this.root;
+    }
+
+    static getCharacterFromTree(value:string){
+        if(this.root){
+            var Node = this.root.getFromNodeWithCharacter(value,this.root);
+            return Node;
+        }   
+        return this.root;
+    }
+
+    static getCharacterAndTypeFromTree(value:string, typeId: number){
+        if(this.root){
+            var Node = this.root.getFromNodeWithCharacterAndType(value, typeId,this.root);
+            return Node;
+        }   
         return this.root;
     }
 

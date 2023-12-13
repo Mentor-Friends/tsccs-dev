@@ -24,9 +24,14 @@ export {ConceptsData} from './DataStructures/ConceptData';
 
 import {GetDataFromIndexDb} from './Services/GetDataFromIndexDb';
 import {GetAiData} from './Api/GetAiData';
+import { BinaryTree } from './DataStructures/BinaryTree';
+ CreateBinaryTreeFromData().then(()=>{
+    console.log(BinaryTree.root);
+ });
+ GetDataFromIndexDb(); 
+ 
+
 //GetAiData();
-CreateBinaryTreeFromData();
-GetDataFromIndexDb();
 // const form = document.querySelector('#myForm') as HTMLFormElement;
 // //const form2 = document.querySelector('#userForm') as HTMLFormElement;
 // const form3 = document.querySelector('#compositionForm') as HTMLFormElement;
