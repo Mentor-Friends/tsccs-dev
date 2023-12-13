@@ -5,7 +5,7 @@ import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
 
 
 export { SplitStrings} from './Services/SplitStrings'; 
-export { GetCompositionList }  from './Services/GetCompositionList';
+export { GetCompositionList,GetCompositionListWithId }  from './Services/GetCompositionList';
 export {GetComposition,GetCompositionWithId} from './Services/GetComposition';
 export {default as CreateComposition} from './Services/CreateTheComposition';
 export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBetweenTwoConcepts';
