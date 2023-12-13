@@ -31,7 +31,7 @@ import { BinaryTree } from './DataStructures/BinaryTree';
  GetDataFromIndexDb(); 
  
 
-//GetAiData();
+GetAiData();
 // const form = document.querySelector('#myForm') as HTMLFormElement;
 // //const form2 = document.querySelector('#userForm') as HTMLFormElement;
 // const form3 = document.querySelector('#compositionForm') as HTMLFormElement;
