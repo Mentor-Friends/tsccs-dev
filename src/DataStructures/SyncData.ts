@@ -23,7 +23,11 @@ export class SyncData{
     }
 
     static SyncDataDelete(id:number){
-        this.conceptsSyncArray.splice(id, 1);
+        for(var i=0; i< this.conceptsSyncArray.length;i++){
+            if(id == this.conceptsSyncArray[i].id){
+                this.conceptsSyncArray.splice(i, 1);
+            }
+        }
         for(var i=0;i<this.connectionSyncArray.length; i++){
             if(this.connectionSyncArray[i].ofTheConceptId == id || this.connectionSyncArray[i].toTheConceptId == id || this.connectionSyncArray[i].typeId == id){
                 this.connectionSyncArray.splice(i,1);
