@@ -5,7 +5,7 @@ import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
 
 
 export { SplitStrings} from './Services/SplitStrings'; 
-export { GetCompositionList }  from './Services/GetCompositionList';
+export { GetCompositionList,GetCompositionListWithId }  from './Services/GetCompositionList';
 export {GetComposition,GetCompositionWithId} from './Services/GetComposition';
 export {default as CreateComposition} from './Services/CreateTheComposition';
 export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBetweenTwoConcepts';
@@ -24,9 +24,14 @@ export {ConceptsData} from './DataStructures/ConceptData';
 
 import {GetDataFromIndexDb} from './Services/GetDataFromIndexDb';
 import {GetAiData} from './Api/GetAiData';
-//GetAiData();
-CreateBinaryTreeFromData();
-GetDataFromIndexDb();
+import { BinaryTree } from './DataStructures/BinaryTree';
+ CreateBinaryTreeFromData().then(()=>{
+    console.log(BinaryTree.root);
+ });
+ GetDataFromIndexDb(); 
+ 
+
+GetAiData();
 // const form = document.querySelector('#myForm') as HTMLFormElement;
 // //const form2 = document.querySelector('#userForm') as HTMLFormElement;
 // const form3 = document.querySelector('#compositionForm') as HTMLFormElement;

@@ -5,7 +5,7 @@ export async function GetConcept(id: number){
     try{
         var conceptUse :Concept= ConceptsData.GetConcept(id);
         if(conceptUse.id != 0){
-            console.log("getting data from local");
+
             return conceptUse;
         }
         else{

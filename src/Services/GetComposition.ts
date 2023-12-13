@@ -74,6 +74,7 @@ export async function GetCompositionWithId(id:number){
 
     if(concept){
         if(concept.type == null){
+
             var toConceptTypeId: number  = concept.typeId;
             var toConceptType = ConceptsData.GetConcept(toConceptTypeId);
 
@@ -105,6 +106,7 @@ export async function GetCompositionWithId(id:number){
                 }
                 if(toConcept){
                     if(toConcept?.type == null){
+
                         var toConceptTypeId: number  = toConcept.typeId;
                         var toConceptType = ConceptsData.GetConcept(toConceptTypeId);
 

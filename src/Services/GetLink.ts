@@ -2,7 +2,7 @@ import { Connection } from "../DataStructures/Connection";
 import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndType";
 import { GetConnectionOfTheConcept } from "../Api/GetConnectionOfTheConcept";
 import { Concept } from "./../DataStructures/Concept";
-import { GetComposition } from "./GetComposition";
+import { GetComposition, GetCompositionWithId } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 
 export async function GetLink(id:number, linker:string){
@@ -11,18 +11,15 @@ export async function GetLink(id:number, linker:string){
     var linkString: string = concept.type?.characterValue + "_s" + "_" + linker;
     var relatedConceptString = await GetConceptByCharacterAndType(linkString, 16);
     var relatedConcept = relatedConceptString as Concept;
-    console.log(concept);
     if(relatedConcept.id > 0){
       var connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId);
       var connections = connectionsString as Connection[];
       for(var i=0; i<connections.length; i++){
         let toConceptId = connections[i].toTheConceptId;
         let toConcept = await GetTheConcept(toConceptId);
-        let newComposition = await GetComposition(toConcept.id);
+        let newComposition = await GetCompositionWithId(toConcept.id);
         output.push(newComposition);
       }
-      console.log(output);
     }
-
-
+    return  output;
 }

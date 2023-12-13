@@ -19,7 +19,7 @@ export const GetAllConceptsByTypeUrl: string = BASE_URL + '/api/get_all_concepts
 
 export const GetAllConnectionsOfConceptUrl: string = BASE_URL + '/api/get-link-connections';
 
-export const GetAllAiData:string = 'https://devai.freeschema.com/api/get_ranked_type_id';
+export const GetAllAiData:string = process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=2000';
 
 
 

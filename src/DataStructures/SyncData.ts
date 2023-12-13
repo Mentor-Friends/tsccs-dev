@@ -5,6 +5,7 @@ import { Concept } from "./Concept";
 import { ConceptsData } from "./ConceptData";
 import { Connection } from "./Connection";
 import { ConnectionData } from "./ConnectionData";
+import { ReservedIds } from "./ReservedIds";
 
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
@@ -22,7 +23,11 @@ export class SyncData{
     }
 
     static SyncDataDelete(id:number){
-        this.conceptsSyncArray.splice(id, 1);
+        for(var i=0; i< this.conceptsSyncArray.length;i++){
+            if(id == this.conceptsSyncArray[i].id){
+                this.conceptsSyncArray.splice(i, 1);
+            }
+        }
         for(var i=0;i<this.connectionSyncArray.length; i++){
             if(this.connectionSyncArray[i].ofTheConceptId == id || this.connectionSyncArray[i].toTheConceptId == id || this.connectionSyncArray[i].typeId == id){
                 this.connectionSyncArray.splice(i,1);
@@ -85,14 +90,19 @@ export class SyncData{
      static async syncDataLocalDb(){
         if(this.conceptsSyncArray.length > 0){
             for(let i=0; i< this.conceptsSyncArray.length;i++){
+                //ReservedIds.AddId(this.conceptsSyncArray[i].id);
+                //this.conceptsSyncArray[i].id = -this.conceptsSyncArray[i].id;
                 storeToDatabase("concept",this.conceptsSyncArray[i]);
             }
             this.conceptsSyncArray = [];
         }
-        console.log("storing in the connection table");
          if(this.connectionSyncArray.length > 0){
-            for(let i=0; i< this.conceptsSyncArray.length;i++){
-                console.log("storing in the connection table");
+            for(let i=0; i< this.connectionSyncArray.length;i++){
+                // this.connectionSyncArray[i].ofTheConceptId = -this.connectionSyncArray[i].ofTheConceptId;
+                // this.connectionSyncArray[i].toTheConceptId = -this.connectionSyncArray[i].toTheConceptId;
+                // this.connectionSyncArray[i].OfTheConceptId = -this.connectionSyncArray[i].OfTheConceptId;
+                // this.connectionSyncArray[i].ToTheConceptId = -this.connectionSyncArray[i].ToTheConceptId;
+               // this.connectionSyncArray[i].typeId = -this.connectionSyncArray[i].typeId;
                 storeToDatabase("connection",this.connectionSyncArray[i]);
             }
          this.connectionSyncArray = [];

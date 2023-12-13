@@ -15,7 +15,6 @@ export async function GetAiData(){
         }
          const result = await response.json();
         for(var i=0; i< result.length; i++){
-            console.log(result[i]);
             ConceptsData.AddConcept(result[i]);
         }
 }

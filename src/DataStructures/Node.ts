@@ -124,13 +124,43 @@ export class Node{
             if(id == node.key){
                 return node;
             }
-            else if(id < this.key){
+            else if(id < node.key){
                 return this.getFromNode(id, node.leftNode);
             }
-            else if (id > this.key) {
+            else if (id > node.key) {
                 return this.getFromNode(id, node.rightNode);
             }
             return node;
+        }
+        return node;
+
+    }
+
+    public getFromNodeWithCharacter(value: string, node: Node | null) :Node | null{
+        if(node){
+            if( value == node.value.characterValue){
+                return node;
+            }
+            var leftNode =   this.getFromNodeWithCharacter(value, node.leftNode);
+            var rightNode = this.getFromNodeWithCharacter(value, node.rightNode);
+                
+            return leftNode ? leftNode : rightNode;
+        }
+        return node;
+
+    }
+
+    
+    public getFromNodeWithCharacterAndType(value: string, typeId: number, node: Node | null) :Node | null{
+        if(node){
+            if( value == node.value.characterValue && typeId == node.value.typeId){
+                console.log("got character and type");
+                return node;
+            }
+            var leftNode =   this.getFromNodeWithCharacter(value, node.leftNode);
+            var rightNode = this.getFromNodeWithCharacter(value, node.rightNode);
+                
+            return leftNode ? leftNode : rightNode;
         }
         return node;
 
