@@ -111,6 +111,9 @@ var json =  {
     //     });
     // });
 
+    window.tsccs.GetCompositionList("recentFolder",10267).then((concept)=>{
+        console.log(concept);
+    })
     // window.tsccs.ConceptsData.GetConceptByCharacter("boomg").then((concept)=>{
     //     console.log(concept);
     // });

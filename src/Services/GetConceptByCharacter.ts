@@ -11,6 +11,7 @@ export default async function GetConceptByCharacter(characterValue: string){
         console.log("now going online");
         await GetConceptByCharacterValue(characterValue);
         concept = await ConceptsData.GetConceptByCharacter(characterValue);
+        console.log(concept);
     }
     return concept;
 }

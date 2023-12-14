@@ -5,7 +5,6 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
 
     try{
     var concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
-      console.log("getting the data from local with type",concept);
       if(concept == null || concept.id == 0){
         var json = {
           'character_value': `${characterValue}`,
@@ -26,10 +25,10 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           }
             var conceptString = await response.json() ;
             concept = conceptString as Concept;
-
-      }
             ConceptsData.AddConcept(concept);
-            return concept;
+      }
+      return concept;
+
     }
     catch (error) {
         if (error instanceof Error) {
