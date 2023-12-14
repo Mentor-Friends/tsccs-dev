@@ -1,13 +1,13 @@
 import { Concept } from "./Concept";
 
 export class Node{
-    key:number;
+    key:any;
     value:Concept;
     leftNode: Node | null;
     rightNode: Node | null;
     height:number = 1;
 
-    constructor(key:number, value:Concept, leftNode: Node | null, rightNode:Node| null){
+    constructor(key:any, value:Concept, leftNode: Node | null, rightNode:Node| null){
         this.key = key;
         this.value = value;
         this.leftNode = leftNode;
@@ -129,6 +129,23 @@ export class Node{
             }
             else if (id > node.key) {
                 return this.getFromNode(id, node.rightNode);
+            }
+            return node;
+        }
+        return node;
+
+    }
+
+    public getCharacterFromNode(value: string, node: Node | null) :Node | null{
+        if(node){
+            if(value == node.key){
+                return node;
+            }
+            else if(value < node.key){
+                return this.getCharacterFromNode(value, node.leftNode);
+            }
+            else if (value > node.key) {
+                return this.getCharacterFromNode(value, node.rightNode);
             }
             return node;
         }

@@ -1,6 +1,6 @@
 import { SyncData } from './DataStructures/SyncData';
 import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
-
+import {CreateCharacterBinaryTreeFromData} from './Services/CreateCharacterBinaryTreeFromData';
 
 
 
@@ -24,9 +24,14 @@ export {ConceptsData} from './DataStructures/ConceptData';
 
 import {GetDataFromIndexDb} from './Services/GetDataFromIndexDb';
 import { BinaryTree } from './DataStructures/BinaryTree';
+import { BinaryCharacterTree } from './DataStructures/BinaryCharacterTree';
  CreateBinaryTreeFromData().then(()=>{
     console.log(BinaryTree.root);
  });
+ CreateCharacterBinaryTreeFromData().then(()=>{
+   console.log("character Tree");
+   console.log(BinaryCharacterTree.root);
+ })
  GetDataFromIndexDb(); 
  
 

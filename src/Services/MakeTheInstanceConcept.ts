@@ -70,6 +70,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 var makeTheNameConcept = makeTheNameString as Concept;
                 concept = conceptTypeCharacter;
                 if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
+                    console.log("Creating the new concept");
                     var conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                         makeTheNameConcept.id, makeTheNameConcept.userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
                     concept = conceptString as Concept;

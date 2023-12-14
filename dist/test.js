@@ -114,19 +114,19 @@ var json =  {
     // window.tsccs.ConceptsData.GetConceptByCharacter("boomg").then((concept)=>{
     //     console.log(concept);
     // });
-    window.tsccs.MakeTheInstanceConcept("data_type","extension_whatsapp_chat",false).then(concept=>{
-        console.log(concept);
-    })
+    // window.tsccs.MakeTheInstanceConcept("data_type","extension_whatsapp_chat",false).then(concept=>{
+    //     console.log(concept);
+    // })
 
-    window.tsccs.MakeTheInstanceConcept("data_typasdfe","extension_whatasdfsadfsadfsapp_chat",false).then(concept=>{
-        console.log(concept);
-    })
+    // window.tsccs.MakeTheInstanceConcept("data_typasdfe","extension_whatasdfsadfsadfsapp_chat",false).then(concept=>{
+    //     console.log(concept);
+    // })
 
-    window.tsccs.MakeTheInstanceConcept("data_typsadfsadfasdfasdfe","asdfasgdscvcxv",false).then(concept=>{
-        console.log(concept);
-    syncOnlineData();
+    // window.tsccs.MakeTheInstanceConcept("data_typsadfsadfasdfasdfe","asdfasgdscvcxv",false).then(concept=>{
+    //     console.log(concept);
+    // syncOnlineData();
 
-    })
+    // })
 
 
     // setTimeout(() => {
