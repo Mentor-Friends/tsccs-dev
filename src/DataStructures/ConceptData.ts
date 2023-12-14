@@ -83,7 +83,7 @@ export class ConceptsData{
     static async GetConceptByCharacter(characterValue: string){
         var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
          for(var i=0; i<this.conceptsArray.length; i++){
-             if(this.conceptsArray[i].characterValue == characterValue && this.conceptsArray[i].typeId != 51 && this.conceptsArray[i].typeId != 12){
+             if(this.conceptsArray[i].characterValue == characterValue){
                 concept = this.conceptsArray[i];
              }
          }
