@@ -82,38 +82,37 @@ export class ConceptsData{
 
     static async GetConceptByCharacter(characterValue: string){
         var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
-        //  for(var i=0; i<this.conceptsArray.length; i++){
-        //      if(this.conceptsArray[i].characterValue == characterValue){
-        //         concept = this.conceptsArray[i];
-        //      }
-        //  }
-        console.log(characterValue);
-        var Node = BinaryTree.getCharacterFromTree(characterValue);
-        if(Node){
-        console.log(Node.value);
+         for(var i=0; i<this.conceptsArray.length; i++){
+             if(this.conceptsArray[i].characterValue == characterValue){
+                concept = this.conceptsArray[i];
+             }
+         }
+        // console.log(characterValue);
+        // var Node = BinaryTree.getCharacterFromTree(characterValue);
+        // if(Node){
+        // console.log(Node.value);
 
-            return Node.value;
-        }
+        //     return Node.value;
+        // }
 
          return concept;
      }
 
      static async GetConceptByCharacterAndTypeLocal(character_value:string, typeId: number){
         var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
-        // var conceptList:Concept[] = await this.GetConceptsByTypeId(typeId);
-        // for(var i=0;i<conceptList.length; i++){
+        var conceptList:Concept[] = await this.GetConceptsByTypeId(typeId);
+        for(var i=0;i<conceptList.length; i++){
 
-        //     if(character_value == conceptList[i].characterValue){
-        //         concept = conceptList[i];
-        //     }
-        // }
-
-        var Node = BinaryTree.getCharacterAndTypeFromTree(character_value,typeId);
-        if(Node){
-        console.log(Node.value);
-
-            return Node.value;
+            if(character_value == conceptList[i].characterValue){
+                concept = conceptList[i];
+            }
         }
+        // var Node = BinaryTree.getCharacterAndTypeFromTree(character_value,typeId);
+        // if(Node){
+        // console.log(Node.value);
+
+        //     return Node.value;
+        // }
         return concept;
 
      }

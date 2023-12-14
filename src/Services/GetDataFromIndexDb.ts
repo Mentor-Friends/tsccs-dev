@@ -4,8 +4,17 @@ import { getFromDatabaseWithTypeOld } from "../Database/indexeddb";
 
 export  async function GetDataFromIndexDb(){
 
+    var conceptList = await getFromDatabaseWithTypeOld("concept");
 
     GetConnectionsFromIndexDb();
+    console.log(conceptList);
+
+        if(Array.isArray(conceptList)){
+            for(var i=0 ;i < conceptList.length ;i++){
+                ConceptsData.AddConcept(conceptList[i]);
+            }
+
+        }
  }
 
  async function GetConnectionsFromIndexDb(){

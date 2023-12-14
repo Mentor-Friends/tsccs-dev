@@ -52,63 +52,72 @@ async function  syncDataLocal(){
     await window.tsccs.SyncData.syncDataLocalDb();
 }
 
-
-var json ={"boomgpt": {
-    "note": "",
-    "boom_folder": {
-        "category_id": "100386862",
-        "category_name": "Important Contacts"
-    },
-    "created_at": "1702266154331",
-    "title": "Hem Sir",
-    "crm_data": {
-        "experience": "",
-        "link": "",
-        "addresses": "",
-        "notes": [
-            ""
-        ],
-        "tag": "prospect",
-        "education": "",
-        "about": "",
-        "avatar": "",
-        "phone": [
-            {
-                "number": "+977 985-1022244"
-            }
-        ],
-        "email": "",
-        "name": "Hem Sir"
-    },
-    "comment": [
-        ""
-    ],
-    "data_type": "extension_whatsapp"
-}
+var json = {
+    "boomg":{
+        "room": 124,
+        "toom": "twa",
+        "test": {
+            "cat": 124,
+            "tet": "asdfasdf"
+        }
+    }
 };
+
+// var json ={"boomgpt": {
+//     "note": "",
+//     "boom_folder": {
+//         "category_id": "100386862",
+//         "category_name": "Important Contacts"
+//     },
+//     "created_at": "1702266154331",
+//     "title": "Hem Sir",
+//     "crm_data": {
+//         "experience": "",
+//         "link": "",
+//         "addresses": "",
+//         "notes": [
+//             ""
+//         ],
+//         "tag": "prospect",
+//         "education": "",
+//         "about": "",
+//         "avatar": "",
+//         "phone": [
+//             {
+//                 "number": "+977 985-1022244"
+//             }
+//         ],
+//         "email": "",
+//         "name": "Hem Sir"
+//     },
+//     "comment": [
+//         ""
+//     ],
+//     "data_type": "extension_whatsapp"
+// }
+// };
     window.tsccs.CreateComposition(json).then(concept=>{
 
         console.log("workking");
         syncDataLocal().then(()=>{
-            window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
+            window.tsccs.GetComposition(concept.id).then(composition=>{
                 console.log(composition);
             })
         });
-    
     });
 
-    setTimeout(() => {
-        window.tsccs.CreateComposition(json).then(concept=>{
+    // setTimeout(() => {
+    //     window.tsccs.CreateComposition(json).then(concept=>{
 
-            console.log("workking");
-            syncDataLocal().then(()=>{
-                window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
-                    console.log(composition);
-                })
-            });
+    //         console.log("workking");
+    //         syncDataLocal().then(()=>{
+    //             window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
+    //                 console.log(composition);
+    //             })
+    //         });
         
-        });
-    }, 10000);
+    //     });
+    // }, 10000);
 
 
 
