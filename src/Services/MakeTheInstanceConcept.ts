@@ -23,7 +23,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             var stringToCheck: string = "";
 
             var  stringLength:number = referent.length;
-            var typeConcept;
+            var typeConcept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
             var concept: Concept;
 
             var startsWithThe = type.startsWith("the_");
@@ -64,6 +64,8 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 typeConcept = typeConceptString  as Concept;
                 var conceptByCharTypeString = await GetConceptByCharacterAndType(referent,typeConcept.id);
                 var conceptTypeCharacter = conceptByCharTypeString as Concept;
+                console.log("this is what found in the concpet and type");
+                console.log(conceptTypeCharacter);
                 var makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
                 var makeTheNameConcept = makeTheNameString as Concept;
                 concept = conceptTypeCharacter;
@@ -84,6 +86,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             //     }
             // }
             concept.type = typeConcept;
-
+            console.log("this is the concept returned by make the instance concept",concept);
             return concept;
 }

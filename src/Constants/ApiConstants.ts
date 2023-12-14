@@ -1,5 +1,5 @@
 
-export const BASE_URL:string = process.env.BASE_URL || 'https://localhost:7053';
+export const BASE_URL:string = process.env.BASE_URL || 'https://devboom.freeschema.com';
 
 export const GetConceptUrl:string = BASE_URL + '/api/getConcept';
 

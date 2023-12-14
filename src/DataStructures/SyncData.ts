@@ -47,7 +47,7 @@ export class SyncData{
 
     static AddConcept(concept: Concept){
         var contains = false;
-        ConceptsData.AddConceptTemporary(concept);
+       // ConceptsData.AddConceptTemporary(concept);
         if(!contains){
          this.conceptsSyncArray.push(concept);
         }

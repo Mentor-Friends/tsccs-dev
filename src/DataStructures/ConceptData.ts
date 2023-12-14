@@ -69,13 +69,13 @@ export class ConceptsData{
                 myConcept = returnedConcept as Concept;
             }
         }
-        // if(myConcept.id == 0 || myConcept == null){
-        //     for(var i=0; i<this.conceptsArray.length; i++){
-        //         if(this.conceptsArray[i].id == id){
-        //             myConcept = this.conceptsArray[i];
-        //         }
-        //     }
-        // }
+        if(myConcept.id == 0 || myConcept == null){
+            for(var i=0; i<this.conceptsArray.length; i++){
+                if(this.conceptsArray[i].id == id){
+                    myConcept = this.conceptsArray[i];
+                }
+            }
+        }
 
         return myConcept;
     }
@@ -83,7 +83,7 @@ export class ConceptsData{
     static async GetConceptByCharacter(characterValue: string){
         var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
          for(var i=0; i<this.conceptsArray.length; i++){
-             if(this.conceptsArray[i].characterValue == characterValue){
+             if(this.conceptsArray[i].characterValue == characterValue && this.conceptsArray[i].typeId != 51 && this.conceptsArray[i].typeId != 12){
                 concept = this.conceptsArray[i];
              }
          }
@@ -100,7 +100,7 @@ export class ConceptsData{
 
      static async GetConceptByCharacterAndTypeLocal(character_value:string, typeId: number){
         var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
-        var conceptList:Concept[] = await this.GetConceptsByTypeId(typeId);
+        let conceptList:Concept[] = await this.GetConceptsByTypeId(typeId);
         for(var i=0;i<conceptList.length; i++){
 
             if(character_value == conceptList[i].characterValue){
@@ -119,7 +119,7 @@ export class ConceptsData{
 
      static  GetConceptsByTypeId(typeId: number){
         var  myConcept: Concept|null;
-        var ConceptList: Concept[] = [];
+        let ConceptList: Concept[] = [];
         myConcept = null;
          for(var i=0; i<this.conceptsArray.length; i++){
              if(this.conceptsArray[i].typeId == typeId){

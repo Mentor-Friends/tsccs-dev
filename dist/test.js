@@ -52,16 +52,21 @@ async function  syncDataLocal(){
     await window.tsccs.SyncData.syncDataLocalDb();
 }
 
-var json = {
-    "boomg":{
-        "room": 124,
-        "toom": "twa",
-        "test": {
-            "cat": 124,
-            "tet": "asdfasdf"
-        }
-    }
-};
+var json =  {
+    "boomgpt": {
+    "title": "Whatsapp - Nischal",
+    "short_desc": '',
+    "image": "",
+    "source_url": "https://web.whatsapp.com/",
+    "data_type": "extension_whatsapp_chat",
+    "answer": "Hey Ahim",
+    "created_at": "1702529064692",
+    "boom_folder": {
+        "category_name": "test chats",
+        "category_id": "100325501"
+    },
+    "note": "alu"
+}};
 
 // var json ={"boomgpt": {
 //     "note": "",
@@ -96,15 +101,33 @@ var json = {
 //     "data_type": "extension_whatsapp"
 // }
 // };
-    window.tsccs.CreateComposition(json).then(concept=>{
+    // window.tsccs.CreateComposition(json).then(concept=>{
 
-        console.log("workking");
-        syncDataLocal().then(()=>{
-            window.tsccs.GetComposition(concept.id).then(composition=>{
-                console.log(composition);
-            })
-        });
-    });
+    //     console.log("workking");
+    //     syncOnlineData().then(()=>{
+    //         window.tsccs.GetComposition(concept.id).then(composition=>{
+    //             console.log(composition);
+    //         })
+    //     });
+    // });
+
+    // window.tsccs.ConceptsData.GetConceptByCharacter("boomg").then((concept)=>{
+    //     console.log(concept);
+    // });
+    window.tsccs.MakeTheInstanceConcept("data_type","extension_whatsapp_chat",false).then(concept=>{
+        console.log(concept);
+    })
+
+    window.tsccs.MakeTheInstanceConcept("data_typasdfe","extension_whatasdfsadfsadfsapp_chat",false).then(concept=>{
+        console.log(concept);
+    })
+
+    window.tsccs.MakeTheInstanceConcept("data_typsadfsadfasdfasdfe","asdfasgdscvcxv",false).then(concept=>{
+        console.log(concept);
+    syncOnlineData();
+
+    })
+
 
     // setTimeout(() => {
     //     window.tsccs.CreateComposition(json).then(concept=>{
