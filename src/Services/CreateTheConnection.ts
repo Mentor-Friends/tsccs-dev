@@ -13,9 +13,12 @@ export default function createTheConnection(ofTheConceptId:number, ofTheConceptU
         var securityUserId: number = ofTheConceptUserId;
         var accessId : number = 4;
         var accessUserId: number = ofTheConceptUserId;
-        var connection = new Connection(0,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
-            typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
-        connection.isTemp = true;
-        connection.id = genHexString(10);
-        SyncData.AddConnection(connection);
+        if(ofTheConceptId != toTheConceptId){
+            var connection = new Connection(0,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
+                typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
+            connection.isTemp = true;
+            connection.id = genHexString(10);
+            SyncData.AddConnection(connection);
+        }
+      
 }

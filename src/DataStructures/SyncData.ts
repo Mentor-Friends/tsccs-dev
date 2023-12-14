@@ -47,7 +47,7 @@ export class SyncData{
 
     static AddConcept(concept: Concept){
         var contains = false;
-        ConceptsData.AddConceptTemporary(concept);
+       // ConceptsData.AddConceptTemporary(concept);
         if(!contains){
          this.conceptsSyncArray.push(concept);
         }
@@ -62,7 +62,6 @@ export class SyncData{
      }
 
      static AddConnection(connection: Connection){
-        ConnectionData.AddConnection(connection);
          this.connectionSyncArray.push(connection);
      }
 
@@ -90,22 +89,16 @@ export class SyncData{
      static async syncDataLocalDb(){
         if(this.conceptsSyncArray.length > 0){
             for(let i=0; i< this.conceptsSyncArray.length;i++){
-                //ReservedIds.AddId(this.conceptsSyncArray[i].id);
-                //this.conceptsSyncArray[i].id = -this.conceptsSyncArray[i].id;
                 storeToDatabase("concept",this.conceptsSyncArray[i]);
             }
             this.conceptsSyncArray = [];
         }
          if(this.connectionSyncArray.length > 0){
             for(let i=0; i< this.connectionSyncArray.length;i++){
-                // this.connectionSyncArray[i].ofTheConceptId = -this.connectionSyncArray[i].ofTheConceptId;
-                // this.connectionSyncArray[i].toTheConceptId = -this.connectionSyncArray[i].toTheConceptId;
-                // this.connectionSyncArray[i].OfTheConceptId = -this.connectionSyncArray[i].OfTheConceptId;
-                // this.connectionSyncArray[i].ToTheConceptId = -this.connectionSyncArray[i].ToTheConceptId;
-               // this.connectionSyncArray[i].typeId = -this.connectionSyncArray[i].typeId;
                 storeToDatabase("connection",this.connectionSyncArray[i]);
             }
          this.connectionSyncArray = [];
+         console.log(this.connectionSyncArray);
         }
         return "done";
      }

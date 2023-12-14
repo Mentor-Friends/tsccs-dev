@@ -144,7 +144,15 @@ export class Node{
             var leftNode =   this.getFromNodeWithCharacter(value, node.leftNode);
             var rightNode = this.getFromNodeWithCharacter(value, node.rightNode);
                 
-            return leftNode ? leftNode : rightNode;
+            if(leftNode){
+                return leftNode;
+            }
+            else if(rightNode){
+                return rightNode;
+            }
+            else{
+                return null;
+            }
         }
         return node;
 
@@ -160,7 +168,15 @@ export class Node{
             var leftNode =   this.getFromNodeWithCharacter(value, node.leftNode);
             var rightNode = this.getFromNodeWithCharacter(value, node.rightNode);
                 
-            return leftNode ? leftNode : rightNode;
+            if(leftNode){
+                return leftNode;
+            }
+            else if(rightNode){
+                return rightNode;
+            }
+            else{
+                return null;
+            }
         }
         return node;
 

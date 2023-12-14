@@ -42,6 +42,4 @@ export class BinaryTree{
         }   
         return this.root;
     }
-
-
 }

@@ -4,7 +4,7 @@ import { getFromDatabaseWithTypeOld } from "../app";
 
 export default  async function CreateBinaryTreeFromData(){
     var tree = new BinaryTree();
-    var startTime = new Date().getTime();;
+    var startTime = new Date().getTime();
     var conceptList = await getFromDatabaseWithTypeOld("concept");
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
