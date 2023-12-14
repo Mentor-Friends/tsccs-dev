@@ -1,3 +1,4 @@
+import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Concept } from "../DataStructures/Concept";
 import { Node } from "./Node";
 
@@ -16,6 +17,8 @@ export class BinaryTree{
 
     static addConceptToTree(concept:Concept){
         var node: Node = new Node(concept.id, concept, null, null);
+        var characterNode: Node = new Node(concept.characterValue, concept, null,null);
+        BinaryCharacterTree.addNodeToTree(characterNode);
         this.addNodeToTree(node);
     }
 

@@ -12,6 +12,7 @@ var isNew: boolean = true;
 var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
     securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
 concept.isTemp = true;
+console.log(concept, "adding this to concept");
 SyncData.AddConcept(concept);
 return concept;
 
