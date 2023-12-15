@@ -25,6 +25,8 @@ export {ConceptsData} from './DataStructures/ConceptData';
 import {GetDataFromIndexDb} from './Services/GetDataFromIndexDb';
 import { BinaryTree } from './DataStructures/BinaryTree';
 import { BinaryCharacterTree } from './DataStructures/BinaryCharacterTree';
+export {isDataLoaded};
+var isDataLoaded = false;
  CreateBinaryTreeFromData().then(()=>{
     console.log(BinaryTree.root);
  });
@@ -32,7 +34,9 @@ import { BinaryCharacterTree } from './DataStructures/BinaryCharacterTree';
    console.log("character Tree");
    console.log(BinaryCharacterTree.root);
  })
- GetDataFromIndexDb(); 
+ GetDataFromIndexDb().then(()=>{
+  isDataLoaded = true;
+ }); 
  
 
 // const form = document.querySelector('#myForm') as HTMLFormElement;
