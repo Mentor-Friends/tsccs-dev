@@ -90,6 +90,13 @@ var json =  {
 //     "data_type": "extension_whatsapp"
 // }
 // };
+
+console.log(window.tsccs.isDataLoaded);
+setInterval(() => {
+    if(window.tsccs.isDataLoaded){
+        console.log("data loaded");
+    }
+}, 3000);
     window.tsccs.CreateComposition(json,null,null,null,10345).then(concept=>{
         syncDataLocal().then(()=>{
             window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
