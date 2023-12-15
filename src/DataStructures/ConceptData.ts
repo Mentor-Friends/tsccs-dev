@@ -153,6 +153,18 @@ export class ConceptsData{
          return ConceptList;
      }
 
+     static  GetConceptsByTypeIdAndUser(typeId: number, userId: number){
+        var  myConcept: Concept|null;
+        let ConceptList: Concept[] = [];
+        myConcept = null;
+         for(var i=0; i<this.conceptsArray.length; i++){
+             if(this.conceptsArray[i].typeId == typeId && this.conceptsArray[i].userId == userId){
+                 ConceptList.push(this.conceptsArray[i]);
+             }
+         }
+         return ConceptList;
+     }
+
 
 
 
