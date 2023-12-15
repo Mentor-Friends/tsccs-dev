@@ -10,7 +10,7 @@ export  async function GetCompositionList(compositionName: string,userId:number)
    console.log("this is the concept list", concept);
    if(concept){
     await GetAllConceptsByType(compositionName, userId);
-    var conceptList = ConceptsData.GetConceptsByTypeId(concept.id);
+    var conceptList = ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
     console.log("this is the concept list", conceptList);
     for(var i=0; i< conceptList.length; i++){
       var compositionJson= await GetComposition(conceptList[i].id);
@@ -26,7 +26,7 @@ export  async function GetCompositionListWithId(compositionName: string, userId:
    console.log("this is the concept list", concept);
    if(concept){
     await GetAllConceptsByType(compositionName, userId);
-    var conceptList = ConceptsData.GetConceptsByTypeId(concept.id);
+    var conceptList = ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
     console.log("this is the concept list", conceptList);
     for(var i=0; i< conceptList.length; i++){
       var compositionJson= await GetCompositionWithId(conceptList[i].id);
@@ -35,5 +35,7 @@ export  async function GetCompositionListWithId(compositionName: string, userId:
    }
     return CompositionList;
 }
+
+
 
 

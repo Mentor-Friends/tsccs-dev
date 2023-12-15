@@ -53,19 +53,8 @@ async function  syncDataLocal(){
 }
 
 var json =  {
-    "boomgpt": {
-    "title": "Whatsapp - Nischal",
-    "short_desc": '',
-    "image": "",
-    "source_url": "https://web.whatsapp.com/",
-    "data_type": "extension_whatsapp_chat",
-    "answer": "Hey Ahim",
-    "created_at": "1702529064692",
-    "boom_folder": {
-        "category_name": "test chats",
-        "category_id": "100325501"
-    },
-    "note": "alu"
+    "recentData": {
+        "work": 123
 }};
 
 // var json ={"boomgpt": {
@@ -101,19 +90,17 @@ var json =  {
 //     "data_type": "extension_whatsapp"
 // }
 // };
-    // window.tsccs.CreateComposition(json).then(concept=>{
+    window.tsccs.CreateComposition(json,null,null,null,10345).then(concept=>{
+        syncDataLocal().then(()=>{
+            window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
+                console.log(composition);
+            })
+        });
+    });
 
-    //     console.log("workking");
-    //     syncOnlineData().then(()=>{
-    //         window.tsccs.GetComposition(concept.id).then(composition=>{
-    //             console.log(composition);
-    //         })
-    //     });
-    // });
-
-    window.tsccs.GetCompositionList("recentFolder",10267).then((concept)=>{
-        console.log(concept);
-    })
+    // window.tsccs.GetCompositionList("recentFolder",10267).then((concept)=>{
+    //     console.log(concept);
+    // })
     // window.tsccs.ConceptsData.GetConceptByCharacter("boomg").then((concept)=>{
     //     console.log(concept);
     // });
