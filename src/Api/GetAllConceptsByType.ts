@@ -19,6 +19,7 @@ export async function GetAllConceptsByType(type:string,userId: number){
             for(var i=0; i< result.length; i++){
                 ConceptsData.AddConcept(result[i]);
             }
+            console.log("added");
     }
     catch (error) {
         if (error instanceof Error) {

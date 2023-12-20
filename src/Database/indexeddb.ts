@@ -21,6 +21,7 @@ export function openDatabase(databaseName:string){
 
 };
 
+
 request.onupgradeneeded = (event) => {
     var target = event.target as IDBOpenDBRequest;
     var db = target.result as IDBDatabase;
@@ -50,6 +51,57 @@ request.onupgradeneeded = (event) => {
   }
 
 }
+
+export function openLocalDatabase(databaseName:string){
+  let db;
+
+  const request = indexedDB.open("FreeSchemaLocal",version);
+
+  request.onerror = (event) => {
+      console.error("Why didn't you allow my web app to use IndexedDB?!");
+  };
+
+  request.onsuccess = function(event:Event) {
+
+      
+    var target = event.target as IDBOpenDBRequest;
+    var db = target.result as IDBDatabase;
+    let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+
+};
+
+
+request.onupgradeneeded = (event) => {
+    var target = event.target as IDBOpenDBRequest;
+    var db = target.result as IDBDatabase;
+    var conceptDb = "concept";
+    var connectionDb = "connection";
+    var syncTimestamp = "synctimestamp"
+    if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
+      let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id',}); // create it
+      objectStore.transaction.oncomplete = (event: Event) => {
+            // Store values in the newly created objectStore.
+            // const myObjectStore = db
+            // .transaction(databaseName, "readwrite")
+            // .objectStore(databaseName);
+            // myObjectStore.add(object);
+      }
+    }
+    if (!db.objectStoreNames.contains(connectionDb)) { // if there's no database name
+      let  objectStore = db.createObjectStore(connectionDb, {keyPath: 'id'}); // create it
+      objectStore.transaction.oncomplete = (event: Event) => {
+
+      }
+    }
+
+    if(!db.objectStoreNames.contains(syncTimestamp)){
+      db.createObjectStore(syncTimestamp); // create it
+    }
+  }
+
+}
+
+
 export function storeToDatabase(databaseName:string, object:any){
 
   openDatabase(databaseName);
@@ -101,6 +153,7 @@ export function storeToDatabase(databaseName:string, object:any){
         }
       }
 }
+
 
 export function getFromDatabase(databaseName:string, id:number){
   openDatabase(databaseName);
