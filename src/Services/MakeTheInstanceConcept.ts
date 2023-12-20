@@ -38,7 +38,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             if(composition){
                var   typeConceptString = await MakeTheTypeConcept(type, sessionInformationId, userId, userId );
                typeConcept = typeConceptString as Concept;
-
+                console.log("For compsosition", typeConcept);
                var conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                 referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
 
@@ -63,16 +63,13 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             else{
                 var typeConceptString = await MakeTheTypeConcept(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
                 typeConcept = typeConceptString  as Concept;
-                console.log("this is what found in the concpet and type", referent, typeConcept.id);
                 var conceptByCharTypeString = await GetConceptByCharacterAndType(referent,typeConcept.id);
                 var conceptTypeCharacter = conceptByCharTypeString as Concept;
 
-                console.log(conceptTypeCharacter);
                 var makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
                 var makeTheNameConcept = makeTheNameString as Concept;
                 concept = conceptTypeCharacter;
                 if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
-                    console.log("Creating the new concept");
                     var conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                         makeTheNameConcept.id, makeTheNameConcept.userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
                     concept = conceptString as Concept;

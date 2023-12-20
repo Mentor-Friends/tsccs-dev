@@ -79,7 +79,6 @@ export class ConceptsData{
         //         }
         //     }
         // }
-
         return myConcept;
     }
 
@@ -109,13 +108,14 @@ export class ConceptsData{
 
      static async GetConceptByCharacterAndTypeLocal(character_value:string, typeId: number){
         var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
-        var Node = await BinaryCharacterTree.getCharacterAndTypeFromTree(character_value,typeId);
-        if(Node){
+        //var Node = await BinaryCharacterTree.getCharacterAndTypeFromTree(character_value,typeId);
+        concept = await BinaryTypeTree.getTypeVariantsWithCharacterValue(character_value,typeId);
+        // if(Node){
 
-            concept =  Node.value;
-            console.log("found the output");
-            console.log(concept);
-        }
+        //     concept =  Node.value;
+        //     console.log("found the output");
+        //     console.log(concept);
+        // }
         return concept;
 
      }

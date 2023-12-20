@@ -11,14 +11,13 @@ export class LocalConceptsData{
     constructor(){
         this.name = "conceptsArray";
     }
-    static  conceptsArray:Concept[] = [];
+    static  localconceptsArray:Concept[] = [];
 
-    static conceptDictionary:Concept[] = [];
 
     static  CheckContains(concept: Concept){
         var contains = false;
-        for(var i=0; i<this.conceptsArray.length; i++){
-         if(this.conceptsArray[i].id == concept.id){
+        for(var i=0; i<this.localconceptsArray.length; i++){
+         if(this.localconceptsArray[i].id == concept.id){
              contains = true;
          }
         }
@@ -33,25 +32,25 @@ export class LocalConceptsData{
             LocalBinaryTree.addConceptToTree(concept);
             LocalBinaryCharacterTree.addConceptToTree(concept);
             LocalBinaryTypeTree.addConceptToTree(concept);
-            this.conceptsArray.push(concept);
+            this.localconceptsArray.push(concept);
         }
 
     }
 
     static AddConceptTemporary(concept: Concept){
         var contains = this.CheckContains(concept);
-        this.conceptDictionary[concept.id] = concept;
+        this.localconceptsArray[concept.id] = concept;
  
         if(contains){
          this.RemoveConcept(concept);
         }
-         this.conceptsArray.push(concept);
+         this.localconceptsArray.push(concept);
      }
 
     static RemoveConcept(concept: Concept){
-       for(var i=0; i<this.conceptsArray.length; i++){
-        if(this.conceptsArray[i].id == concept.id){
-            this.conceptsArray.splice(i, 1);
+       for(var i=0; i<this.localconceptsArray.length; i++){
+        if(this.localconceptsArray[i].id == concept.id){
+            this.localconceptsArray.splice(i, 1);
         }
        }
 
@@ -112,9 +111,9 @@ export class LocalConceptsData{
         var  myConcept: Concept|null;
         let ConceptList: Concept[] = [];
         myConcept = null;
-         for(var i=0; i<this.conceptsArray.length; i++){
-             if(this.conceptsArray[i].typeId == typeId){
-                 ConceptList.push(this.conceptsArray[i]);
+         for(var i=0; i<this.localconceptsArray.length; i++){
+             if(this.localconceptsArray[i].typeId == typeId){
+                 ConceptList.push(this.localconceptsArray[i]);
              }
          }
          return ConceptList;

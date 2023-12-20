@@ -27,7 +27,7 @@ export async function GetComposition(id:number){
      concept = conceptString as Concept;
     }
     var output = await recursiveFetch(id, connectionList, compositionList);
-    var mainString = concept?.type?.characterValue ?? "top";
+    var mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     return returnOutput;
 }
@@ -51,7 +51,7 @@ export async function GetCompositionWithId(id:number){
      concept = conceptString as Concept;
     }
     var output = await recursiveFetch(id, connectionList, compositionList);
-    var mainString = concept?.type?.characterValue ?? "top";
+    var mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     var FinalReturn: any = {};
     FinalReturn['data'] = returnOutput;
@@ -86,7 +86,7 @@ export async function GetCompositionWithId(id:number){
         }
     }
 
-    var mainString = concept?.type?.characterValue ?? "top";
+    var mainString = concept?.type?.characterValue ?? "";
 
     if(!compositionList.includes(id)){
         return concept?.characterValue;
@@ -121,7 +121,7 @@ export async function GetCompositionWithId(id:number){
                 var regex = "the_";
 
 
-                var localmainString = toConcept?.type?.characterValue ?? "top";
+                var localmainString = toConcept?.type?.characterValue ?? "";
 
                 var localKey = localmainString.replace(regex, "");
 

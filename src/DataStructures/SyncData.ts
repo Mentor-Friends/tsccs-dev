@@ -74,11 +74,23 @@ export class SyncData{
      }
 
      static async  SyncDataOnline(){
+
+        for(let i=0;i<this.conceptsSyncArray.length;i++){
+            ConceptsData.AddConcept(this.conceptsSyncArray[i]);
+        }
+
+        for(let i=0;i<this.connectionSyncArray.length;i++){
+            ConnectionData.AddConnection(this.connectionSyncArray[i]);
+        }
+        
+        console.log("syncing online tese connections",this.connectionSyncArray);
         if(this.conceptsSyncArray.length > 0){
+
             await CreateTheConceptApi(this.conceptsSyncArray);
             this.conceptsSyncArray = [];
         }
          if(this.connectionSyncArray.length > 0){
+
          await CreateTheConnectionApi(this.connectionSyncArray);
          this.connectionSyncArray = [];
         }

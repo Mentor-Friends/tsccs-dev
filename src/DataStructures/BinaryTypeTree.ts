@@ -94,6 +94,29 @@ export class BinaryTypeTree{
         return concepts;
     }
 
+    static async getTypeVariantsWithCharacterValue( characterValue:string,typeId:number,){
+        var concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+        try{
+            var data = await this.waitForDataToLoad();
+        }
+        catch(exception){
+            return concept;
+        }
+            var Node = this.getNodeFromTree(typeId);
+    
+            if(Node){
+                if(Node.value.characterValue == characterValue ){
+                    concept = Node.value;
+                }
+                for(let i=0; i< Node.variants.length; i++){
+                    if(Node.variants[i].value.characterValue == characterValue ){
+                        concept = Node.variants[i].value;
+                    }
+                }
+            }
+        return concept;
+    }
+
 
 
 

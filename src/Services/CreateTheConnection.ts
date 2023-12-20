@@ -17,7 +17,7 @@ export default function createTheConnection(ofTheConceptId:number, ofTheConceptU
             var connection = new Connection(0,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
                 typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
             connection.isTemp = true;
-            connection.id = genHexString(10);
+            connection.id = Math.floor(Math.random() * 100000000);
             SyncData.AddConnection(connection);
         }
       
