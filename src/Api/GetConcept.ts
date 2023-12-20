@@ -3,7 +3,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptUrl } from './../Constants/ApiConstants';
 export async function GetConcept(id: number){
     try{
-        var conceptUse :Concept= ConceptsData.GetConcept(id);
+        var conceptUse :Concept= await ConceptsData.GetConcept(id);
         if(conceptUse.id != 0){
 
             return conceptUse;

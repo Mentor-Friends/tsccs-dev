@@ -1,6 +1,7 @@
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Concept } from "../DataStructures/Concept";
 import { Node } from "./Node";
+import { IdentifierFlags } from "./IdentifierFlags";
 
 export class BinaryTree{
     static root: Node | null = null;
@@ -15,6 +16,25 @@ export class BinaryTree{
         }
     }
 
+    static async waitForDataToLoad(){
+        return new Promise((resolve,reject) => {
+            this.checkFlag(resolve);
+            setTimeout(()=>{
+                reject("not")},25000);
+            });
+    }
+
+
+    static  checkFlag(resolve:any){
+
+        if(IdentifierFlags.isDataLoaded){
+            return resolve("done");
+        }
+        else{
+            setTimeout(BinaryTree.checkFlag, 1000, resolve);
+        }
+      };
+
     static addConceptToTree(concept:Concept){
         var node: Node = new Node(concept.id, concept, null, null);
         var characterNode: Node = new Node(concept.characterValue, concept, null,null);
@@ -22,7 +42,14 @@ export class BinaryTree{
         this.addNodeToTree(node);
     }
 
-    static getNodeFromTree(id:number){
+    static async getNodeFromTree(id:number){
+
+        try{
+            var data = await this.waitForDataToLoad();
+        }
+        catch(exception){
+            return null;
+        }
         if(this.root){
             var Node = this.root.getFromNode(id, this.root);
             return Node;
@@ -30,19 +57,6 @@ export class BinaryTree{
         return this.root;
     }
 
-    static getCharacterFromTree(value:string){
-        if(this.root){
-            var Node = this.root.getFromNodeWithCharacter(value,this.root);
-            return Node;
-        }   
-        return this.root;
-    }
 
-    static getCharacterAndTypeFromTree(value:string, typeId: number){
-        if(this.root){
-            var Node = this.root.getFromNodeWithCharacterAndType(value, typeId,this.root);
-            return Node;
-        }   
-        return this.root;
-    }
+
 }

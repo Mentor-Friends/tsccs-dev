@@ -2,15 +2,19 @@ import { SyncData } from './DataStructures/SyncData';
 import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
 import {CreateCharacterBinaryTreeFromData} from './Services/CreateCharacterBinaryTreeFromData';
 
-
+import { IdentifierFlags } from './DataStructures/IdentifierFlags';
 
 export { SplitStrings} from './Services/SplitStrings'; 
 export { GetCompositionList,GetCompositionListWithId }  from './Services/GetCompositionList';
+export { GetCompositionListLocal, GetCompositionListLocalWithId} from './Services/Local/GetCompositionListLocal';
 export {GetComposition,GetCompositionWithId} from './Services/GetComposition';
+export {GetCompositionLocal, GetCompositionLocalWithId} from './Services/Local/GetCompositionLocal';
 export {default as CreateComposition} from './Services/CreateTheComposition';
+export { CreateTheCompositionLocal } from './Services/Local/CreateTheCompositionLocal';
 export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBetweenTwoConcepts';
 export { default as GetTheConcept} from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
+export { MakeTheInstanceConceptLocal} from './Services/Local/MakeTheInstanceConceptLocal';
 export { storeToDatabase,getFromDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/indexeddb';
 export {default as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
@@ -22,21 +26,47 @@ export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {ConceptsData} from './DataStructures/ConceptData';
 
-import {GetDataFromIndexDb} from './Services/GetDataFromIndexDb';
+import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import { BinaryTree } from './DataStructures/BinaryTree';
 import { BinaryCharacterTree } from './DataStructures/BinaryCharacterTree';
-export {isDataLoaded};
-var isDataLoaded = false;
+import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';
+import { LocalBinaryTree } from './DataStructures/Local/LocalBinaryTree';
+import { CreateTypeTreeFromData } from './Services/CreateTypeTreeFromData';
+import { BinaryTypeTree } from './DataStructures/BinaryTypeTree';
+import { CreateLocalCharacterBinaryTreeFromData } from './Services/Local/CreateLocalCharacterBinaryTree';
+import { CreateLocalBinaryTypeTreeFromData } from './Services/Local/CreateLocalBinaryTypeTreeFromData';
+
+
+
  CreateBinaryTreeFromData().then(()=>{
-    console.log(BinaryTree.root);
+  IdentifierFlags.isDataLoaded= true;
  });
+
  CreateCharacterBinaryTreeFromData().then(()=>{
-   console.log("character Tree");
-   console.log(BinaryCharacterTree.root);
- })
- GetDataFromIndexDb().then(()=>{
-  isDataLoaded = true;
- }); 
+  IdentifierFlags.isCharacterLoaded= true;
+ });
+
+ CreateTypeTreeFromData().then(()=>{
+  IdentifierFlags.isTypeLoaded= true;
+ });
+
+ CreateLocalBinaryTreeFromData().then(()=>{
+  IdentifierFlags.isLocalDataLoaded = true;
+ });
+
+ CreateLocalCharacterBinaryTreeFromData().then(()=>{
+  IdentifierFlags.isLocalCharacterLoaded = true;
+ });
+
+ CreateLocalBinaryTypeTreeFromData().then(()=>{
+  IdentifierFlags.isLocalTypeLoaded = true;
+ });
+
+//  GetDataFromIndexDbLocal().then(()=>{
+//  });
+
+
+//  GetDataFromIndexDb(); 
  
 
 // const form = document.querySelector('#myForm') as HTMLFormElement;

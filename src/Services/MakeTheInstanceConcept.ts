@@ -8,6 +8,7 @@ import MakeTheTypeConcept from "./MakeTheTypeConcept";
 
 export default async function MakeTheInstanceConcept(type:string, referent:string, composition:boolean=false, userId: number, 
         accessId:number, sessionInformationId: number=999){
+
             var sessionInformationId: number = 999;
             var categoryId: number = 4;
             var categoryUserId: number = userId; 
@@ -62,9 +63,10 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             else{
                 var typeConceptString = await MakeTheTypeConcept(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
                 typeConcept = typeConceptString  as Concept;
+                console.log("this is what found in the concpet and type", referent, typeConcept.id);
                 var conceptByCharTypeString = await GetConceptByCharacterAndType(referent,typeConcept.id);
                 var conceptTypeCharacter = conceptByCharTypeString as Concept;
-                console.log("this is what found in the concpet and type");
+
                 console.log(conceptTypeCharacter);
                 var makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
                 var makeTheNameConcept = makeTheNameString as Concept;
