@@ -52,18 +52,22 @@ import { CreateLocalBinaryTypeTreeFromData } from './Services/Local/CreateLocalB
 
  CreateLocalBinaryTreeFromData().then(()=>{
   IdentifierFlags.isLocalDataLoaded = true;
+  console.log("Data",IdentifierFlags.isLocalDataLoaded);
  });
 
  CreateLocalCharacterBinaryTreeFromData().then(()=>{
   IdentifierFlags.isLocalCharacterLoaded = true;
+  console.log("character",IdentifierFlags.isLocalCharacterLoaded);
  });
 
  CreateLocalBinaryTypeTreeFromData().then(()=>{
   IdentifierFlags.isLocalTypeLoaded = true;
+  console.log("type",IdentifierFlags.isLocalTypeLoaded);
  });
 
-//  GetDataFromIndexDbLocal().then(()=>{
-//  });
+ GetDataFromIndexDbLocal().then(()=>{
+    IdentifierFlags.isLocalConnectionLoaded = true;
+ });
 
 
 //  GetDataFromIndexDb(); 

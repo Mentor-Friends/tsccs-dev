@@ -10,7 +10,7 @@ import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionD
 export async function GetCompositionLocal(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
-    connectionList = LocalConnectionData.GetConnectionsOfCompositionLocal(id);
+    connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     var compositionList:number[] = [];
 
@@ -20,7 +20,7 @@ export async function GetCompositionLocal(id:number){
         }
     }
 
-    var concept = LocalConceptsData.GetConcept(id);
+    var concept = await LocalConceptsData.GetConcept(id);
     var output = await recursiveFetchLocal(id, connectionList, compositionList);
     var mainString = concept?.type?.characterValue ?? "top";
     returnOutput[mainString] = output;
@@ -30,7 +30,7 @@ export async function GetCompositionLocal(id:number){
 export async function GetCompositionLocalWithId(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
-    connectionList = LocalConnectionData.GetConnectionsOfCompositionLocal(id);
+    connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
     var compositionList:number[] = [];
 
     for(var i=0; i<connectionList.length; i++){
@@ -39,7 +39,7 @@ export async function GetCompositionLocalWithId(id:number){
         }
     }
 
-    var concept = LocalConceptsData.GetConcept(id);
+    var concept = await LocalConceptsData.GetConcept(id);
     if(concept.id != 0){
         var output = await recursiveFetchLocal(id, connectionList, compositionList);
         var mainString = concept?.type?.characterValue ?? "top";
@@ -58,13 +58,13 @@ export async function GetCompositionLocalWithId(id:number){
 
     var output : any= {};
     var arroutput: any = [];
-    var concept = LocalConceptsData.GetConcept(id);
+    var concept = await LocalConceptsData.GetConcept(id);
 
     if(concept.id != 0){
         if(concept.type == null){
 
             var toConceptTypeId: number  = concept.typeId;
-            var toConceptType = LocalConceptsData.GetConcept(toConceptTypeId);
+            var toConceptType = await LocalConceptsData.GetConcept(toConceptTypeId);
 
             concept.type = toConceptType;
         }
@@ -82,12 +82,12 @@ export async function GetCompositionLocalWithId(id:number){
             if(connectionList[i].ofTheConceptId == id){
                 var toConceptId = connectionList[i].toTheConceptId;
 
-                var toConcept = LocalConceptsData.GetConcept(toConceptId);
+                var toConcept = await LocalConceptsData.GetConcept(toConceptId);
                 if(toConcept.id != 0){
                     if(toConcept?.type == null){
 
                         var toConceptTypeId: number  = toConcept.typeId;
-                        var toConceptType = LocalConceptsData.GetConcept(toConceptTypeId);
+                        var toConceptType = await LocalConceptsData.GetConcept(toConceptTypeId);
 
                         toConcept.type = toConceptType;
                     }

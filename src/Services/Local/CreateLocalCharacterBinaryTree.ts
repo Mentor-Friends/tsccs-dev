@@ -4,7 +4,7 @@ import { getAllFromLocalDb } from "../../Database/indexdblocal";
 
 export  async function CreateLocalCharacterBinaryTreeFromData(){
     var startTime = new Date().getTime();
-    var conceptList = await getAllFromLocalDb("concept");
+    var conceptList = await getAllFromLocalDb("localconcept");
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];

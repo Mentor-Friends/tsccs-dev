@@ -415,27 +415,7 @@ export class Node{
 
     }
 
-    public getFromNodeWithCharacter(value: string, node: Node | null) :Node | null{
-        if(node){
-            if( value == node.value.characterValue){
-                return node;
-            }
-            var leftNode =   this.getFromNodeWithCharacter(value, node.leftNode);
-            var rightNode = this.getFromNodeWithCharacter(value, node.rightNode);
-                
-            if(leftNode){
-                return leftNode;
-            }
-            else if(rightNode){
-                return rightNode;
-            }
-            else{
-                return null;
-            }
-        }
-        return node;
 
-    }
 
     
     public getFromNodeWithCharacterAndType(value: string, typeId: number, node: Node | null) :Node | null{

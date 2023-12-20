@@ -103,17 +103,20 @@ var json ={"boomgpt": {
 
 
 
-        window.tsccs.CreateCompositionLocal(json,null,null,null,10345).then(concept=>{
-            syncOnlineData().then(()=>{
-                window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
+        window.tsccs.CreateTheCompositionLocal(json,null,null,null,10345).then(concept=>{
+            //syncOnlineData().then(()=>{
+                window.tsccs.GetCompositionLocalWithId(concept.id).then(composition=>{
                     console.log(composition);
-                })
-            });
+                });
+           // });
         });
-            // window.tsccs.GetCompositionList("boomgpt",10267).then(output=>{
-            //     console.log("wahts");
-            //     console.log(output);
-            // })
+        setTimeout(() => {
+            window.tsccs.GetCompositionLocalWithId(84424465).then(output=>{
+                console.log("wahts");
+                console.log(output);
+            });
+        }, 8000);
+
 
             // window.tsccs.ConceptsData.GetConceptByCharacterAndTypeLocal("Default",5).then(output=>{
             //     console.log(output);

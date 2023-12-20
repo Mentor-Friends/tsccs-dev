@@ -19,7 +19,7 @@ export default function CreateTheConnectionLocal(ofTheConceptId:number, ofTheCon
             var connection = new Connection(0,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
                 typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
             connection.isTemp = true;
-            connection.id = genHexString(10);
+            connection.id = Math.floor(Math.random() * 100000000);
             LocalConnectionData.AddConnection(connection);
             storeToDatabase("localconnection", connection);
         }

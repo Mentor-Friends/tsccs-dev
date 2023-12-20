@@ -58,13 +58,15 @@ export class LocalConceptsData{
      //  removeFromDatabase("concept",concept.id);
     }
 
-    static GetConcept(id: number){
+    static async GetConcept(id: number){
        var  myConcept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
-        for(var i=0; i<this.conceptsArray.length; i++){
-            if(this.conceptsArray[i].id == id){
-                myConcept = this.conceptsArray[i];
-            }
-        }
+       var node = await LocalBinaryTree.getNodeFromTree(id);
+       if(node?.value){
+           var returnedConcept = node.value;
+           if(returnedConcept){
+               myConcept = returnedConcept as Concept;
+           }
+       }
 
         return myConcept;
     }

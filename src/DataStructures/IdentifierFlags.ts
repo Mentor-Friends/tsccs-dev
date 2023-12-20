@@ -6,4 +6,6 @@ export class IdentifierFlags{
     static isLocalDataLoaded = false;
     static isLocalCharacterLoaded = false;
     static isLocalTypeLoaded = false;
+    
+    static isLocalConnectionLoaded = false;
 }

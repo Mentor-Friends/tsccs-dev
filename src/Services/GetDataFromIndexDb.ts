@@ -21,15 +21,15 @@ export  async function GetDataFromIndexDb(){
  }
 
  export async function GetDataFromIndexDbLocal(){
-    var conceptList = await getAllFromLocalDb("localconcept");
+   // var conceptList = await getAllFromLocalDb("localconcept");
 
     GetConnectionsFromIndexDbLocal();
-    if(Array.isArray(conceptList)){
-        for(var i=0 ;i < conceptList.length ;i++){
-            LocalConceptsData.AddConcept(conceptList[i]);
-        }
+    // if(Array.isArray(conceptList)){
+    //     for(var i=0 ;i < conceptList.length ;i++){
+    //         LocalConceptsData.AddConcept(conceptList[i]);
+    //     }
 
-    }
+    // }
  }
 
  async function GetConnectionsFromIndexDb(){

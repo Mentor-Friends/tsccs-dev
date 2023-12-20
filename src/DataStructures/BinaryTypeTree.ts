@@ -53,7 +53,6 @@ export class BinaryTypeTree{
 
     static async waitForDataToLoad(){
         return new Promise((resolve,reject) => {
-            console.log("promises");
             this.checkFlag(resolve);
             setTimeout(()=>{
                 reject("not")},25000);
