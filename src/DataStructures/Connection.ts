@@ -47,7 +47,6 @@ export class Connection{
             this.sessionInformationUserId = sessionInformationUserId;
             this.entryTimeStamp = new Date();
             this.terminationDateTime  = new Date();
-            ConnectionData.AddConnection(this);
             this.localSyncTime = new Date();
         }
 

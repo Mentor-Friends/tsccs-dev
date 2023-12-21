@@ -6,6 +6,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
     try{
     var concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
       if(concept == null || concept.id == 0){
+        console.log("could not find");
         var json = {
           'character_value': `${characterValue}`,
           'type_id': typeId 

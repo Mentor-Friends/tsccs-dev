@@ -1,8 +1,10 @@
-import { Connection } from "../DataStructures/Connection";
-import { SyncData } from "../DataStructures/SyncData";
-import { genHexString } from "./GenerateHexNumber";
+import { Connection } from "../../DataStructures/Connection";
+import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
+import { SyncData } from "../../DataStructures/SyncData";
+import { storeToDatabase } from "../../Database/indexdblocal";
+import { genHexString } from "./../GenerateHexNumber";
 
-export default function createTheConnection(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,
+export default function CreateTheConnectionLocal(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,
      typeId: number, sessionInformationId: number, sessionInformationUserId: number
     ){  
         var orderId: number = 1;
@@ -18,7 +20,8 @@ export default function createTheConnection(ofTheConceptId:number, ofTheConceptU
                 typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
             connection.isTemp = true;
             connection.id = Math.floor(Math.random() * 100000000);
-            SyncData.AddConnection(connection);
+            LocalConnectionData.AddConnection(connection);
+            storeToDatabase("localconnection", connection);
         }
       
 }
