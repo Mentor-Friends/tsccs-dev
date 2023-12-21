@@ -83,7 +83,6 @@ export class SyncData{
             ConnectionData.AddConnection(this.connectionSyncArray[i]);
         }
         
-        console.log("syncing online tese connections",this.connectionSyncArray);
         if(this.conceptsSyncArray.length > 0){
 
             await CreateTheConceptApi(this.conceptsSyncArray);

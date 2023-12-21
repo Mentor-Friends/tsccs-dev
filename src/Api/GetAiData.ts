@@ -3,6 +3,7 @@ import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAiData(){
     try{
+      const start = new Date().getTime();
 
         const response = await fetch(GetAllAiData,{
             method: 'GET',
@@ -17,6 +18,9 @@ export async function GetAiData(){
         for(var i=0; i< result.length; i++){
             ConceptsData.AddConcept(result[i]);
         }
+        let elapsed = new Date().getTime() - start;
+        console.log("The time taken is ", elapsed);
+
 }
 catch (error) {
     if (error instanceof Error) {

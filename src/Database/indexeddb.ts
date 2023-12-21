@@ -130,7 +130,7 @@ export function storeToDatabase(databaseName:string, object:any){
         var db = target.result as IDBDatabase;
         var conceptDb = "concept";
         var connectionDb = "connection";
-        var syncTimestamp = "synctimestamp"
+        var syncTimestamp = "stats"
         if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
           let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
           objectStore.transaction.oncomplete = (event: Event) => {
@@ -177,6 +177,19 @@ export function getFromDatabase(databaseName:string, id:number){
     // };
     }
   }
+
+
+  export function getStatsFromDatabase(){
+    return new Promise(function(resolve, reject){
+      openDatabase("stats");
+      const request = indexedDB.open("FreeSchema",version);
+
+      request.onsuccess = function(event){
+        
+      }
+    });
+  }
+
 
 
   export async function getFromDatabaseWithType(databaseName:string, type:string, id:number){

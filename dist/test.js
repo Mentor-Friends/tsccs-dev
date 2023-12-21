@@ -110,12 +110,12 @@ var json ={"boomgpt": {
                 });
             });
         });
-        setTimeout(() => {
-            window.tsccs.GetCompositionWithId(100378785).then(output=>{
-                console.log("wahts");
-                console.log(output);
-            });
-        }, 8000);
+        // setTimeout(() => {
+        //     window.tsccs.GetCompositionWithId(100378785).then(output=>{
+        //         console.log("wahts");
+        //         console.log(output);
+        //     });
+        // }, 8000);
 
 
             // window.tsccs.ConceptsData.GetConceptByCharacterAndTypeLocal("Default",5).then(output=>{

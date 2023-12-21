@@ -35,39 +35,48 @@ import { CreateTypeTreeFromData } from './Services/CreateTypeTreeFromData';
 import { BinaryTypeTree } from './DataStructures/BinaryTypeTree';
 import { CreateLocalCharacterBinaryTreeFromData } from './Services/Local/CreateLocalCharacterBinaryTree';
 import { CreateLocalBinaryTypeTreeFromData } from './Services/Local/CreateLocalBinaryTypeTreeFromData';
+import { GetAiData } from './Api/GetAiData';
 
 
+GetAiData().then(()=>{
+   const start = new Date().getTime();
+   CreateBinaryTreeFromData().then(()=>{
+      IdentifierFlags.isDataLoaded= true;
+     });
+    
+     CreateCharacterBinaryTreeFromData().then(()=>{
+      IdentifierFlags.isCharacterLoaded= true;
+     });
+    
+     CreateTypeTreeFromData().then(()=>{
+      IdentifierFlags.isTypeLoaded= true;
+      let elapsed = new Date().getTime() - start;
+      console.log("The time taken to prepare data is ", elapsed);
+     });
+    
+     CreateLocalBinaryTreeFromData().then(()=>{
+      IdentifierFlags.isLocalDataLoaded = true;
+      console.log("Data",IdentifierFlags.isLocalDataLoaded);
+     });
+    
+     CreateLocalCharacterBinaryTreeFromData().then(()=>{
+      IdentifierFlags.isLocalCharacterLoaded = true;
+      console.log("character",IdentifierFlags.isLocalCharacterLoaded);
+     });
+    
+     CreateLocalBinaryTypeTreeFromData().then(()=>{
+      IdentifierFlags.isLocalTypeLoaded = true;
+      console.log("type",IdentifierFlags.isLocalTypeLoaded);
+     });
+    
+     GetDataFromIndexDbLocal().then(()=>{
+        IdentifierFlags.isLocalConnectionLoaded = true;
+     });
 
- CreateBinaryTreeFromData().then(()=>{
-  IdentifierFlags.isDataLoaded= true;
- });
 
- CreateCharacterBinaryTreeFromData().then(()=>{
-  IdentifierFlags.isCharacterLoaded= true;
- });
+});
 
- CreateTypeTreeFromData().then(()=>{
-  IdentifierFlags.isTypeLoaded= true;
- });
-
- CreateLocalBinaryTreeFromData().then(()=>{
-  IdentifierFlags.isLocalDataLoaded = true;
-  console.log("Data",IdentifierFlags.isLocalDataLoaded);
- });
-
- CreateLocalCharacterBinaryTreeFromData().then(()=>{
-  IdentifierFlags.isLocalCharacterLoaded = true;
-  console.log("character",IdentifierFlags.isLocalCharacterLoaded);
- });
-
- CreateLocalBinaryTypeTreeFromData().then(()=>{
-  IdentifierFlags.isLocalTypeLoaded = true;
-  console.log("type",IdentifierFlags.isLocalTypeLoaded);
- });
-
- GetDataFromIndexDbLocal().then(()=>{
-    IdentifierFlags.isLocalConnectionLoaded = true;
- });
+ 
 
 
 //  GetDataFromIndexDb(); 
