@@ -1,5 +1,7 @@
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { Concept } from "../DataStructures/Concept";
+import { Settings } from "../DataStructures/Settings";
+import { SettingData } from "../DataStructures/SettingData";
 
 var version = 4;
 
@@ -27,7 +29,7 @@ request.onupgradeneeded = (event) => {
     var db = target.result as IDBDatabase;
     var conceptDb = "concept";
     var connectionDb = "connection";
-    var syncTimestamp = "synctimestamp"
+    var settings = "settings"
     if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
       let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
       objectStore.transaction.oncomplete = (event: Event) => {
@@ -45,61 +47,17 @@ request.onupgradeneeded = (event) => {
       }
     }
 
-    if(!db.objectStoreNames.contains(syncTimestamp)){
-      db.createObjectStore(syncTimestamp); // create it
+    if(!db.objectStoreNames.contains(settings)){
+      let  objectStore = db.createObjectStore(settings, {keyPath: 'id'}); // create it
+      objectStore.transaction.oncomplete = (event: Event) => {
+
+      }
     }
   }
 
 }
 
-export function openLocalDatabase(databaseName:string){
-  let db;
 
-  const request = indexedDB.open("FreeSchemaLocal",version);
-
-  request.onerror = (event) => {
-      console.error("Why didn't you allow my web app to use IndexedDB?!");
-  };
-
-  request.onsuccess = function(event:Event) {
-
-      
-    var target = event.target as IDBOpenDBRequest;
-    var db = target.result as IDBDatabase;
-    let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
-
-};
-
-
-request.onupgradeneeded = (event) => {
-    var target = event.target as IDBOpenDBRequest;
-    var db = target.result as IDBDatabase;
-    var conceptDb = "concept";
-    var connectionDb = "connection";
-    var syncTimestamp = "synctimestamp"
-    if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
-      let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id',}); // create it
-      objectStore.transaction.oncomplete = (event: Event) => {
-            // Store values in the newly created objectStore.
-            // const myObjectStore = db
-            // .transaction(databaseName, "readwrite")
-            // .objectStore(databaseName);
-            // myObjectStore.add(object);
-      }
-    }
-    if (!db.objectStoreNames.contains(connectionDb)) { // if there's no database name
-      let  objectStore = db.createObjectStore(connectionDb, {keyPath: 'id'}); // create it
-      objectStore.transaction.oncomplete = (event: Event) => {
-
-      }
-    }
-
-    if(!db.objectStoreNames.contains(syncTimestamp)){
-      db.createObjectStore(syncTimestamp); // create it
-    }
-  }
-
-}
 
 
 export function storeToDatabase(databaseName:string, object:any){
@@ -125,33 +83,36 @@ export function storeToDatabase(databaseName:string, object:any){
       }
     };
 
-    request.onupgradeneeded = (event) => {
-        var target = event.target as IDBOpenDBRequest;
-        var db = target.result as IDBDatabase;
-        var conceptDb = "concept";
-        var connectionDb = "connection";
-        var syncTimestamp = "stats"
-        if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
-          let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
-          objectStore.transaction.oncomplete = (event: Event) => {
-                // Store values in the newly created objectStore.
-                // const myObjectStore = db
-                // .transaction(databaseName, "readwrite")
-                // .objectStore(databaseName);
-                // myObjectStore.add(object);
-          }
-        }
-        if (!db.objectStoreNames.contains(connectionDb)) { // if there's no database name
-          let  objectStore = db.createObjectStore(connectionDb, {keyPath: 'id'}); // create it
-          objectStore.transaction.oncomplete = (event: Event) => {
+    // request.onupgradeneeded = (event) => {
+    //     var target = event.target as IDBOpenDBRequest;
+    //     var db = target.result as IDBDatabase;
+    //     var conceptDb = "concept";
+    //     var connectionDb = "connection";
+    //     var settings = "settings"
+    //     if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
+    //       let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
+    //       objectStore.transaction.oncomplete = (event: Event) => {
+    //             // Store values in the newly created objectStore.
+    //             // const myObjectStore = db
+    //             // .transaction(databaseName, "readwrite")
+    //             // .objectStore(databaseName);
+    //             // myObjectStore.add(object);
+    //       }
+    //     }
+    //     if (!db.objectStoreNames.contains(connectionDb)) { // if there's no database name
+    //       let  objectStore = db.createObjectStore(connectionDb, {keyPath: 'id'}); // create it
+    //       objectStore.transaction.oncomplete = (event: Event) => {
 
-          }
-        }
+    //       }
+    //     }
 
-        if(!db.objectStoreNames.contains(syncTimestamp)){
-          db.createObjectStore(syncTimestamp); // create it
-        }
-      }
+    //     if(!db.objectStoreNames.contains(settings)){
+    //       let  objectStore = db.createObjectStore(settings, {keyPath: 'id'}); // create it
+    //       objectStore.transaction.oncomplete = (event: Event) => {
+    
+    //       }
+    //     }
+     // }
 }
 
 
@@ -179,15 +140,48 @@ export function getFromDatabase(databaseName:string, id:number){
   }
 
 
-  export function getStatsFromDatabase(){
+  export function GetStatsFromDatabase(){
     return new Promise(function(resolve, reject){
-      openDatabase("stats");
+      var databaseName:string = "settings";
+      openDatabase(databaseName);
       const request = indexedDB.open("FreeSchema",version);
-
       request.onsuccess = function(event){
-        
+        var target = event.target as IDBOpenDBRequest;
+        var db = target.result as IDBDatabase;
+      let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+        let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
+        var allobjects = objectStore.getAll();
+        allobjects.onsuccess = ()=> {
+        var settingsData:SettingData = new SettingData(false);
+
+          var settingsArray = allobjects.result;
+          for(let i=0;i<settingsArray.length;i++){
+            settingsData = settingsArray[i];
+            settingsData = settingsData as SettingData;
+          }
+          resolve(settingsData); 
+        }
+      }
+
+      request.onerror =function(event){
+        reject(event);
       }
     });
+  }
+
+  export function AiUpdateFlag(object:SettingData){
+    var databaseName:string = "settings";
+    openDatabase(databaseName);
+    const request = indexedDB.open("FreeSchema",version);
+
+    request.onsuccess = function(event){
+      var target = event.target as IDBOpenDBRequest;
+      var db = target.result as IDBDatabase;
+      let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+      let objStore = transaction.objectStore(databaseName);
+      console.log(object);
+      objStore.put(object);
+    }
   }
 
 
