@@ -39,6 +39,9 @@ import { GetAiData } from './Api/GetAiData';
 import { GetStatsFromDatabase } from './Database/indexeddb';
 import InitializeSystem from './Services/InitializeSystem';
 
+export default InitializeSystem;
+
+
 InitializeSystem().then(()=>{
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{

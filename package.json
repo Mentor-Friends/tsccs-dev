@@ -1,7 +1,11 @@
 {
-  "name": "tsccs",
-  "version": "1.0.0",
+  "name": "@mentorfriends/tsccs",
+  "version": "1.0.6",
   "description": "Full Pack of concept and connection system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "files": ["dist", "LICENSE", "README.md", "package.json"],
   "scripts": {
     "start": "npx webpack",
 	  "dev": "webpack --env NODE_ENV=development --mode development",

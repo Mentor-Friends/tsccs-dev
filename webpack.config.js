@@ -7,14 +7,18 @@ module.exports = env => ({
    devtool: 'inline-source-map',
    watch: true,
    output: {
-      filename: 'bundle.js',
+      filename: 'index.js',
       path: path.resolve(__dirname, 'dist'),
       library: {
-         name: 'tsccs', // you then can access it via window: `window.youLib`
-         type: 'umd',
-         umdNamedDefine: true,
+         // name: 'tsccs', // you then can access it via window: `window.youLib`
+         // type: 'umd',
+         // umdNamedDefine: true,
+         type: "module"
        },
    },
+   experiments: {
+      outputModule: true,
+    },
    resolve: {
       extensions: ['.ts', '.js'],
    },
