@@ -1,9 +1,9 @@
-import { Concept } from "../DataStructures/Concept";
-import { IdentifierFlags } from "./IdentifierFlags";
-import { Node } from "./Node";
+import { Concept } from "../../DataStructures/Concept";
+import { IdentifierFlags } from "./../IdentifierFlags";
+import { Node } from "./../Node";
 
-export class BinaryCharacterTree{
-    static characterRoot: Node | null = null;
+export class LocalBinaryCharacterTree{
+    static LocalCharacterRoot: Node | null = null;
 
 
     static async waitForDataToLoad(){
@@ -17,22 +17,22 @@ export class BinaryCharacterTree{
 
     static  checkFlag(resolve:any){
 
-        if(IdentifierFlags.isCharacterLoaded){
+        if(IdentifierFlags.isLocalCharacterLoaded){
             return resolve("done");
         }
         else{
-            setTimeout(BinaryCharacterTree.checkFlag, 1000, resolve);
+            setTimeout(LocalBinaryCharacterTree.checkFlag, 1000, resolve);
         }
       };
     static async addNodeToTree(node:Node){
-        if(this.characterRoot == null){
-            this.characterRoot = node;
-            return this.characterRoot;
+        if(this.LocalCharacterRoot == null){
+            this.LocalCharacterRoot = node;
+            return this.LocalCharacterRoot;
         }
         else{
-            this.characterRoot = this.characterRoot.addCharacterNode(node,this.characterRoot,this.characterRoot.height);
+            this.LocalCharacterRoot = this.LocalCharacterRoot.addCharacterNode(node,this.LocalCharacterRoot,this.LocalCharacterRoot.height);
         }
-        return this.characterRoot;
+        return this.LocalCharacterRoot;
     }
 
     static addConceptToTree(concept:Concept){
@@ -44,11 +44,11 @@ export class BinaryCharacterTree{
     }
 
     static getNodeFromTree(value:string){
-        if(this.characterRoot){
-            var Node = this.characterRoot.getCharacterFromNode(value, this.characterRoot);
+        if(this.LocalCharacterRoot){
+            var Node = this.LocalCharacterRoot.getCharacterFromNode(value, this.LocalCharacterRoot);
             return Node;
         }
-        return this.characterRoot;
+        return this.LocalCharacterRoot;
     }
 
     static async getCharacterAndTypeFromTree(value:string, typeId: number){
@@ -59,13 +59,13 @@ export class BinaryCharacterTree{
         catch(exception){
             return null;
         }
-        if(this.characterRoot){
+        if(this.LocalCharacterRoot){
             console.log("searching .................");
             console.log(value);
-            var Node = this.characterRoot.getFromNodeWithCharacterAndType(value, typeId,this.characterRoot);
+            var Node = this.LocalCharacterRoot.getFromNodeWithCharacterAndType(value, typeId,this.LocalCharacterRoot);
             return Node;
         }   
-        return this.characterRoot;
+        return this.LocalCharacterRoot;
     }
 
 }

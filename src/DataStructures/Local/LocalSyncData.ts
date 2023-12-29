@@ -1,13 +1,10 @@
-import { storeToDatabase } from "./../Database/indexeddb";
-import { CreateTheConceptApi } from "../Api/Create/CreateTheConceptApi";
-import { CreateTheConnectionApi } from "../Api/Create/CreateTheConnectionApi";
-import { Concept } from "./Concept";
-import { ConceptsData } from "./ConceptData";
-import { Connection } from "./Connection";
-import { ConnectionData } from "./ConnectionData";
-import { ReservedIds } from "./ReservedIds";
+import { Concept } from "./../Concept";
+import { LocalConceptsData } from "./LocalConceptData";
+import { Connection } from "./../Connection";
+import { LocalConnectionData } from "./LocalConnectionData";
+import { storeToDatabase } from "../../Database/indexdblocal";
 
-export class SyncData{
+export class LocalSyncData{
     static  conceptsSyncArray:Concept[] = [];
     static  connectionSyncArray: Connection[] = [];
     
@@ -73,30 +70,6 @@ export class SyncData{
         }
      }
 
-     static async  SyncDataOnline(){
-
-        for(let i=0;i<this.conceptsSyncArray.length;i++){
-            ConceptsData.AddConcept(this.conceptsSyncArray[i]);
-        }
-
-        for(let i=0;i<this.connectionSyncArray.length;i++){
-            ConnectionData.AddConnection(this.connectionSyncArray[i]);
-        }
-        
-        console.log("syncing online tese connections",this.connectionSyncArray);
-        if(this.conceptsSyncArray.length > 0){
-
-            await CreateTheConceptApi(this.conceptsSyncArray);
-            this.conceptsSyncArray = [];
-        }
-         if(this.connectionSyncArray.length > 0){
-
-         await CreateTheConnectionApi(this.connectionSyncArray);
-         this.connectionSyncArray = [];
-        }
-        return "done";
-
-     }
 
      static async syncDataLocalDb(){
         if(this.conceptsSyncArray.length > 0){

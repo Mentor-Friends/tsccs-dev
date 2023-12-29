@@ -1,9 +1,8 @@
-import { BinaryCharacterTree } from "./BinaryCharacterTree";
-import { Concept } from "../DataStructures/Concept";
-import { Node } from "./Node";
-import { IdentifierFlags } from "./IdentifierFlags";
+import { Concept } from "../../DataStructures/Concept";
+import { IdentifierFlags } from "../IdentifierFlags";
+import { Node } from "./../Node";
 
-export class BinaryTree{
+export class LocalBinaryTree{
     static root: Node | null = null;
 
     static addNodeToTree(node:Node){
@@ -14,6 +13,12 @@ export class BinaryTree{
         else{
             this.root = this.root.addNode(node,this.root,this.root.height);
         }
+    }
+
+    static addConceptToTree(concept:Concept){
+        var node: Node = new Node(concept.id, concept, null, null);
+        var characterNode: Node = new Node(concept.characterValue, concept, null,null);
+        this.addNodeToTree(node);
     }
 
     static async waitForDataToLoad(){
@@ -27,23 +32,17 @@ export class BinaryTree{
 
     static  checkFlag(resolve:any){
 
-        if(IdentifierFlags.isDataLoaded){
+        if(IdentifierFlags.isLocalDataLoaded){
             return resolve("done");
         }
         else{
-            setTimeout(BinaryTree.checkFlag, 1000, resolve);
+            setTimeout(LocalBinaryTree.checkFlag, 1000, resolve);
         }
       };
 
-    static addConceptToTree(concept:Concept){
-        var node: Node = new Node(concept.id, concept, null, null);
-        var characterNode: Node = new Node(concept.characterValue, concept, null,null);
-        BinaryCharacterTree.addNodeToTree(characterNode);
-        this.addNodeToTree(node);
-    }
-
     static async getNodeFromTree(id:number){
 
+        
         try{
             var data = await this.waitForDataToLoad();
         }
@@ -58,5 +57,11 @@ export class BinaryTree{
     }
 
 
-
+    static getCharacterAndTypeFromTree(value:string, typeId: number){
+        if(this.root){
+            var Node = this.root.getFromNodeWithCharacterAndType(value, typeId,this.root);
+            return Node;
+        }   
+        return this.root;
+    }
 }

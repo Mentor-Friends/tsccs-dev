@@ -48,7 +48,7 @@ export  class Concept{
         this.y = 0;
         this.type = null;
         this.isNew = isNew;
-        ConceptsData.AddConcept(this);
+       // ConceptsData.AddConcept(this);
     }
 
     getType(){

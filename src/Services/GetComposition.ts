@@ -12,7 +12,6 @@ export async function GetComposition(id:number){
     var returnOutput: any = {};
     var connectionListString = await GetAllConnectionsOfComposition(id);
     connectionList = connectionListString as Connection[];
-    console.log(connectionList);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     var compositionList:number[] = [];
 
@@ -22,13 +21,13 @@ export async function GetComposition(id:number){
         }
     }
 
-    var concept = ConceptsData.GetConcept(id);
+    var concept = await ConceptsData.GetConcept(id);
     if(concept == null && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
     var output = await recursiveFetch(id, connectionList, compositionList);
-    var mainString = concept?.type?.characterValue ?? "top";
+    var mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     return returnOutput;
 }
@@ -46,13 +45,13 @@ export async function GetCompositionWithId(id:number){
         }
     }
 
-    var concept = ConceptsData.GetConcept(id);
+    var concept = await ConceptsData.GetConcept(id);
     if(concept == null && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
     var output = await recursiveFetch(id, connectionList, compositionList);
-    var mainString = concept?.type?.characterValue ?? "top";
+    var mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     var FinalReturn: any = {};
     FinalReturn['data'] = returnOutput;
@@ -66,7 +65,7 @@ export async function GetCompositionWithId(id:number){
 
     var output : any= {};
     var arroutput: any = [];
-    var concept = ConceptsData.GetConcept(id);
+    var concept = await ConceptsData.GetConcept(id);
     if((concept == null || concept.id == 0) && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
@@ -76,7 +75,7 @@ export async function GetCompositionWithId(id:number){
         if(concept.type == null){
 
             var toConceptTypeId: number  = concept.typeId;
-            var toConceptType = ConceptsData.GetConcept(toConceptTypeId);
+            var toConceptType = await ConceptsData.GetConcept(toConceptTypeId);
 
             concept.type = toConceptType;
             if(toConceptType == null && toConceptTypeId != null && toConceptTypeId != undefined){
@@ -87,7 +86,7 @@ export async function GetCompositionWithId(id:number){
         }
     }
 
-    var mainString = concept?.type?.characterValue ?? "top";
+    var mainString = concept?.type?.characterValue ?? "";
 
     if(!compositionList.includes(id)){
         return concept?.characterValue;
@@ -99,7 +98,7 @@ export async function GetCompositionWithId(id:number){
             if(connectionList[i].ofTheConceptId == id){
                 var toConceptId = connectionList[i].toTheConceptId;
 
-                var toConcept = ConceptsData.GetConcept(toConceptId);
+                var toConcept = await ConceptsData.GetConcept(toConceptId);
                 if((toConcept == null || toConcept.id == 0) && toConceptId != null && toConceptId != undefined){
                  var conceptString = await  GetConcept(toConceptId);
                  toConcept = conceptString as Concept;
@@ -108,7 +107,7 @@ export async function GetCompositionWithId(id:number){
                     if(toConcept?.type == null){
 
                         var toConceptTypeId: number  = toConcept.typeId;
-                        var toConceptType = ConceptsData.GetConcept(toConceptTypeId);
+                        var toConceptType = await ConceptsData.GetConcept(toConceptTypeId);
 
                         toConcept.type = toConceptType;
                         if(toConceptType == null && toConceptTypeId != null && toConceptTypeId != undefined){
@@ -122,7 +121,7 @@ export async function GetCompositionWithId(id:number){
                 var regex = "the_";
 
 
-                var localmainString = toConcept?.type?.characterValue ?? "top";
+                var localmainString = toConcept?.type?.characterValue ?? "";
 
                 var localKey = localmainString.replace(regex, "");
 
