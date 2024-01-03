@@ -1,9 +1,10 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptByCharacterValueUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
+import { BaseUrl } from "../DataStructures/BaseUrl";
 export async function GetConceptByCharacterValue(characterValue: string){
     try{
-            const response = await fetch(GetConceptByCharacterValueUrl,{
+            const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',
               headers:{
                   'Content-Type': 'application/x-www-form-urlencoded'

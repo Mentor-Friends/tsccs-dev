@@ -2,13 +2,14 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 import { Concept } from "../DataStructures/Concept";
 import { Settings } from "../DataStructures/Settings";
 import { SettingData } from "../DataStructures/SettingData";
+import { BaseUrl } from "../DataStructures/BaseUrl";
 
 var version = 4;
 
 export function openDatabase(databaseName:string){
   let db;
 
-  const request = indexedDB.open("FreeSchema",version);
+  const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchema",version);
 
   request.onerror = (event) => {
       console.error("Why didn't you allow my web app to use IndexedDB?!");
@@ -65,7 +66,7 @@ export function storeToDatabase(databaseName:string, object:any){
   openDatabase(databaseName);
     let db;
 
-    const request = indexedDB.open("FreeSchema",version);
+    const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchema",version);
 
     request.onerror = (event) => {
         console.error("Why didn't you allow my web app to use IndexedDB?!");
@@ -118,7 +119,7 @@ export function storeToDatabase(databaseName:string, object:any){
 
 export function getFromDatabase(databaseName:string, id:number){
   openDatabase(databaseName);
-    const request = indexedDB.open("FreeSchema",version);
+    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
     var concept: Concept|null;
     request.onsuccess = function(event) {
         var target = event.target as IDBOpenDBRequest;
@@ -144,7 +145,7 @@ export function getFromDatabase(databaseName:string, id:number){
     return new Promise(function(resolve, reject){
       var databaseName:string = "settings";
       openDatabase(databaseName);
-      const request = indexedDB.open("FreeSchema",version);
+      const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
       request.onsuccess = function(event){
         var target = event.target as IDBOpenDBRequest;
         var db = target.result as IDBDatabase;
@@ -172,7 +173,7 @@ export function getFromDatabase(databaseName:string, id:number){
   export function AiUpdateFlag(object:SettingData){
     var databaseName:string = "settings";
     openDatabase(databaseName);
-    const request = indexedDB.open("FreeSchema",version);
+    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
 
     request.onsuccess = function(event){
       var target = event.target as IDBOpenDBRequest;
@@ -189,7 +190,7 @@ export function getFromDatabase(databaseName:string, id:number){
   export async function getFromDatabaseWithType(databaseName:string, type:string, id:number){
     return new Promise(function(resolve, reject){
     openDatabase(databaseName);
-    const request = indexedDB.open("FreeSchema",version);
+    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
     var concept: Concept|null;
     var ConceptList: Concept[] = [];
 
@@ -233,7 +234,7 @@ export function getFromDatabase(databaseName:string, id:number){
   export async function getFromDatabaseWithTypeOld(databaseName:string){
     return new Promise(function(resolve, reject){
     openDatabase(databaseName);
-    const request = indexedDB.open("FreeSchema",version);
+    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
     var concept: Concept|null;
     var ConceptList: Concept[] = [];
 
@@ -310,7 +311,7 @@ export function getFromDatabase(databaseName:string, id:number){
 
   export function removeFromDatabase(databaseName:string, id:number){
     openDatabase(databaseName);
-    const request = indexedDB.open("FreeSchema",version);
+    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
 
     request.onsuccess = function(event) {
         var target = event.target as IDBOpenDBRequest;

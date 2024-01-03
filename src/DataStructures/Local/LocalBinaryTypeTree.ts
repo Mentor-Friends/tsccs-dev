@@ -7,7 +7,6 @@ export class LocalBinaryTypeTree{
 
     static async addNodeToTree(node:Node){
         if(this.LocalTypeRoot == null){
-            console.log("this is type root ", node);
             this.LocalTypeRoot = node;
             return this.LocalTypeRoot;
         }

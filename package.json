@@ -1,15 +1,15 @@
 {
-  "name": "@mentorfriends/tsccs",
-  "version": "1.0.6",
+  "name": "mftsccs",
+  "version": "3.0.1",
+  "environment": "production",
   "description": "Full Pack of concept and connection system",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "type": "commonjs",
+  "main": "dist/bundle.js",
+  "types": "dist/types/app.d.ts",
   "files": ["dist", "LICENSE", "README.md", "package.json"],
   "scripts": {
     "start": "npx webpack",
 	  "dev": "webpack --env NODE_ENV=development --mode development",
-    "build": "webpack --env NODE_ENV=production --mode production"
+    "build": "webpack --config webpack.config.js"
   },
   "devDependencies": {
     "dotenv-webpack": "^8.0.1",

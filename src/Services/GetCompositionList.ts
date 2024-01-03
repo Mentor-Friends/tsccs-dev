@@ -1,4 +1,5 @@
 import { GetAllConceptsByType } from "../Api/GetAllConceptsByType";
+import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { GetComposition, GetCompositionWithId } from "./GetComposition";
 import GetConceptByCharacter from "./GetConceptByCharacter";
@@ -10,11 +11,20 @@ export  async function GetCompositionList(compositionName: string,userId:number,
    if(concept){
     await GetAllConceptsByType(compositionName, userId);
     var conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
-    console.log("this is the listed data",conceptList);
     var startPage = inpage * (page - 1);
+    var prefetchComposition:number[] = [];
+    for(var i=startPage; i< startPage + inpage; i++){
+      if(conceptList[i]){
+         
+         prefetchComposition.push(conceptList[i].id);
+      }
+    }
+
+    await GetAllConnectionsOfCompositionBulk(prefetchComposition);
 
     for(var i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
+
          var compositionJson= await GetComposition(conceptList[i].id);
          CompositionList.push(compositionJson);
       }
@@ -31,7 +41,15 @@ export  async function GetCompositionListWithId(compositionName: string, userId:
     await GetAllConceptsByType(compositionName, userId);
     var conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
     var startPage = inpage * (page - 1);
-    
+    var prefetchComposition:number[] = [];
+    for(var i=startPage; i< startPage + inpage; i++){
+      if(conceptList[i]){
+         
+         prefetchComposition.push(conceptList[i].id);
+      }
+    }
+
+    await GetAllConnectionsOfCompositionBulk(prefetchComposition);
     for(var i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
          var compositionJson= await GetCompositionWithId(conceptList[i].id);

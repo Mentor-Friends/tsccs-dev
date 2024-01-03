@@ -1,19 +1,19 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptByCharacterAndTypeUrl } from './../Constants/ApiConstants';
 import { Concept } from "./../DataStructures/Concept";
+import { BaseUrl } from "../DataStructures/BaseUrl";
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
 
     try{
     var concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
       if(concept == null || concept.id == 0){
-        console.log("could not find");
         var json = {
           'character_value': `${characterValue}`,
           'type_id': typeId 
         };
         var toSendJson = JSON.stringify(json);
 
-          const response = await fetch(GetConceptByCharacterAndTypeUrl,{
+          const response = await fetch(BaseUrl.GetConceptByCharacterAndTypeUrl(),{
               method: 'POST',
               headers:{
                 'Accept': 'application/json',

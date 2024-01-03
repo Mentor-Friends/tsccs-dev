@@ -1,13 +1,14 @@
-import { CreateTheCharacterDataUrl } from "../../Constants/ApiConstants";
+
 import { CharacterRepository } from "../../DataStructures/CharacterRepository";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
+import { BaseUrl } from "../../DataStructures/BaseUrl";
 
 export async function CreateTheCharacter(characterData: TheCharacter){
     try{
       var characterData = CharacterRepository.GetCharacter(characterData.data);
       if(characterData.id == 0){
-        const response = await fetch(CreateTheCharacterDataUrl,{
+        const response = await fetch(BaseUrl.CreateTheCharacterDataUrl(),{
           method: 'POST',
           headers:{
               'Content-Type': 'application/json'

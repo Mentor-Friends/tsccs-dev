@@ -1,3 +1,4 @@
+import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
 import { GetAllAiData } from './../Constants/ApiConstants';
@@ -6,7 +7,7 @@ export async function GetAiData(){
     try{
       const start = new Date().getTime();
 
-        const response = await fetch(GetAllAiData,{
+        const response = await fetch(BaseUrl.GetAllAiData(),{
             method: 'GET',
             headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'

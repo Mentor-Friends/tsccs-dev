@@ -7,7 +7,6 @@ export default async function InitializeSystem(){
     var statsData = await GetStatsFromDatabase();
     var settings = statsData as SettingData;
     if(!settings.isOnlineSync){
-        console.log("getting the ai data");
         await GetAiData();
     }
     else{

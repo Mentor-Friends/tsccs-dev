@@ -3,6 +3,7 @@ import {  GetAllConnectionsOfConceptUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
 import { TheCharacter } from "../DataStructures/TheCharacter";
 import { Connection } from "../DataStructures/Connection";
+import { BaseUrl } from "../DataStructures/BaseUrl";
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
     try{
         var urlencoded = new URLSearchParams();
@@ -11,7 +12,7 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
         urlencoded.append("userId", `${userId}`);
         urlencoded.append("inpage", `${inpage}`);
         urlencoded.append("page", `${page}`);
-            const response = await fetch(GetAllConnectionsOfConceptUrl,{
+            const response = await fetch(BaseUrl.GetAllConnectionsOfConceptUrl(),{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/x-www-form-urlencoded'

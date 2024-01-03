@@ -14,7 +14,6 @@ export  async function CreateCharacterBinaryTreeFromData(){
             }
 
         }
-        console.log("what is this");
         console.log(BinaryCharacterTree.characterRoot);
     var endTime = new Date().getTime();
     var time = endTime - startTime;

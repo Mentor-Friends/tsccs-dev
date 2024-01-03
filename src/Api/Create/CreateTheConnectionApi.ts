@@ -1,7 +1,7 @@
 import { CreateTheConnectionUrl } from "../../Constants/ApiConstants";
 import { Concept } from "../../DataStructures/Concept";
 import { Connection } from "../../DataStructures/Connection";
-
+import { BaseUrl } from "../../DataStructures/BaseUrl";
 export async function CreateTheConnectionApi(connectionData: Connection[]){
     try{
 
@@ -9,7 +9,7 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
 
         var jsonData = JSON.stringify(connectionData);
 
-            const response = await fetch(CreateTheConnectionUrl,{
+            const response = await fetch(BaseUrl.CreateTheConnectionUrl(),{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'

@@ -1,9 +1,10 @@
 import { ConnectionData } from '../DataStructures/ConnectionData';
 import { GetAllConnectionsOfUserUrl } from './../Constants/ApiConstants';
+import { BaseUrl } from "../DataStructures/BaseUrl";
 export async function GetAllUserConnections(userId: number){
     try{
 
-            const response = await fetch(GetAllConnectionsOfUserUrl,{
+            const response = await fetch(BaseUrl.GetAllConnectionsOfUserUrl(),{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/x-www-form-urlencoded'

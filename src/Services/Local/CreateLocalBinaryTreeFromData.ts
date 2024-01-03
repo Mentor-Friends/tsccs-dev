@@ -1,4 +1,5 @@
 import { LocalBinaryTree } from "../../DataStructures/Local/LocalBinaryTree";
+import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { Node } from "../../DataStructures/Node";
 import { getAllFromLocalDb } from "../../Database/indexdblocal";
 
@@ -8,8 +9,9 @@ export default  async function CreateLocalBinaryTreeFromData(){
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
-                let node = new Node(concept.id, concept, null, null);
-                LocalBinaryTree.addNodeToTree(node);
+                LocalConceptsData.AddConcept(concept);
+                // let node = new Node(concept.id, concept, null, null);
+                // LocalBinaryTree.addNodeToTree(node);
             }
 
         }

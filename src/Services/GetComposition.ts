@@ -22,7 +22,7 @@ export async function GetComposition(id:number){
     }
 
     var concept = await ConceptsData.GetConcept(id);
-    if(concept == null && id != null && id != undefined){
+    if(concept.id == 0 && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
@@ -46,7 +46,7 @@ export async function GetCompositionWithId(id:number){
     }
 
     var concept = await ConceptsData.GetConcept(id);
-    if(concept == null && id != null && id != undefined){
+    if(concept.id == 0 && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }

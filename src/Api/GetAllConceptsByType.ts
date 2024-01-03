@@ -1,11 +1,12 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetAllConceptsByTypeUrl } from './../Constants/ApiConstants';
+import { BaseUrl } from "../DataStructures/BaseUrl";
 export async function GetAllConceptsByType(type:string,userId: number){
     try{
             var urlencoded = new URLSearchParams();
             urlencoded.append("type", type);
             urlencoded.append("user_id", userId.toString());
-            const response = await fetch(GetAllConceptsByTypeUrl,{
+            const response = await fetch(BaseUrl.GetAllConceptsByTypeUrl(),{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/x-www-form-urlencoded'

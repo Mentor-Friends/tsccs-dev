@@ -1,4 +1,5 @@
 
+
 function SignIn(){
     let oauth2Endpoint = "https://accounts.google.com/o/oauth2/v2/auth";
     let form = document.createElement('form');
@@ -103,19 +104,20 @@ var json ={"boomgpt": {
 
 
 
-        window.tsccs.CreateComposition(json,null,null,null,10345).then(concept=>{
-            syncOnlineData().then(()=>{
-                window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
-                    console.log(composition);
-                });
-            });
-        });
+        // window.tsccs.CreateComposition(json,null,null,null,10345).then(concept=>{
+        //     syncOnlineData().then(()=>{
+        //         window.tsccs.GetCompositionWithId(concept.id).then(composition=>{
+        //             console.log(composition);
+        //         });
+        //     });
+        // });
         // setTimeout(() => {
         //     window.tsccs.GetCompositionWithId(100378785).then(output=>{
         //         console.log("wahts");
         //         console.log(output);
         //     });
         // }, 8000);
+
 
 
             // window.tsccs.ConceptsData.GetConceptByCharacterAndTypeLocal("Default",5).then(output=>{

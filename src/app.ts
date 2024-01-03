@@ -1,3 +1,5 @@
+export {init};
+
 import { SyncData } from './DataStructures/SyncData';
 import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
 import {CreateCharacterBinaryTreeFromData} from './Services/CreateCharacterBinaryTreeFromData';
@@ -7,6 +9,7 @@ import { IdentifierFlags } from './DataStructures/IdentifierFlags';
 export { SplitStrings} from './Services/SplitStrings'; 
 export { GetCompositionList,GetCompositionListWithId }  from './Services/GetCompositionList';
 export { GetCompositionListLocal, GetCompositionListLocalWithId} from './Services/Local/GetCompositionListLocal';
+export {GetAllConnectionsOfComposition} from './Api/GetAllConnectionsOfComposition';
 export {GetComposition,GetCompositionWithId} from './Services/GetComposition';
 export {GetCompositionLocal, GetCompositionLocalWithId} from './Services/Local/GetCompositionLocal';
 export {default as CreateComposition} from './Services/CreateTheComposition';
@@ -19,6 +22,7 @@ export { storeToDatabase,getFromDatabase,getFromDatabaseWithType,getFromDatabase
 export {default as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink } from './Services/GetLink';
+export { GetLinkerConnectionFromConcepts} from './Services/GetLinkerConnectionFromConcept';
 
 export {  } from './Api/GetConceptByCharacterAndType';
 
@@ -38,50 +42,68 @@ import { CreateLocalBinaryTypeTreeFromData } from './Services/Local/CreateLocalB
 import { GetAiData } from './Api/GetAiData';
 import { GetStatsFromDatabase } from './Database/indexeddb';
 import InitializeSystem from './Services/InitializeSystem';
+import { BaseUrl } from './DataStructures/BaseUrl';
+export {BaseUrl} from './DataStructures/BaseUrl';
 
-export default InitializeSystem;
-
-
-InitializeSystem().then(()=>{
+function init(url:string = "", aiurl:string=""){
+   BaseUrl.BASE_URL = url;
+   BaseUrl.AI_URL = aiurl;
+   InitializeSystem().then(()=>{
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{
          IdentifierFlags.isDataLoaded= true;
-      });
-      
-      CreateCharacterBinaryTreeFromData().then(()=>{
          IdentifierFlags.isCharacterLoaded= true;
-      });
-      
-      CreateTypeTreeFromData().then(()=>{
          IdentifierFlags.isTypeLoaded= true;
          let elapsed = new Date().getTime() - start;
-         console.log("The time taken to prepare data is ", elapsed);
+         console.log("The time taken to prepare concept  data is  ", elapsed);
+         console.log(BinaryTypeTree.typeRoot);
       });
+      
+      // CreateCharacterBinaryTreeFromData().then(()=>{
+      //    IdentifierFlags.isCharacterLoaded= true;
+      //    let elapsed = new Date().getTime() - start;
+      //    console.log("The time taken to prepare character data is  ", elapsed);
+      // });
+      
+      // CreateTypeTreeFromData().then(()=>{
+      //    IdentifierFlags.isTypeLoaded= true;
+      //    let elapsed = new Date().getTime() - start;
+      //    console.log("The time taken to prepare data is ", elapsed);
+      // });
       
       CreateLocalBinaryTreeFromData().then(()=>{
          IdentifierFlags.isLocalDataLoaded = true;
-         console.log("Data",IdentifierFlags.isLocalDataLoaded);
-      });
-      
-      CreateLocalCharacterBinaryTreeFromData().then(()=>{
-         IdentifierFlags.isLocalCharacterLoaded = true;
-         console.log("character",IdentifierFlags.isLocalCharacterLoaded);
-      });
-      
-      CreateLocalBinaryTypeTreeFromData().then(()=>{
          IdentifierFlags.isLocalTypeLoaded = true;
-         console.log("type",IdentifierFlags.isLocalTypeLoaded);
+         IdentifierFlags.isLocalCharacterLoaded = true;
+         let elapsed = new Date().getTime() - start;
+         console.log("The time taken to prepare local concept  ", elapsed);
       });
+      
+      // CreateLocalCharacterBinaryTreeFromData().then(()=>{
+      //    IdentifierFlags.isLocalCharacterLoaded = true;
+      // });
+      
+      // CreateLocalBinaryTypeTreeFromData().then(()=>{
+      //    IdentifierFlags.isLocalTypeLoaded = true;
+      //    console.log("type",IdentifierFlags.isLocalTypeLoaded);
+      // });
       
       GetDataFromIndexDbLocal().then(()=>{
          IdentifierFlags.isLocalConnectionLoaded = true;
       });
+      GetDataFromIndexDb().then(()=>{
+         IdentifierFlags.isConnectionLoaded = true;
+         IdentifierFlags.isConnectionTypeLoaded = true;
+         let elapsed = new Date().getTime() - start;
+         console.log("The time taken to prepare connections  ", elapsed);
+      });
 
 
    });
+}
 
 
- 
+
 
 
 //  GetDataFromIndexDb(); 
