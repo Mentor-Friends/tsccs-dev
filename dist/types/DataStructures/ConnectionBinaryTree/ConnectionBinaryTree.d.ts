@@ -6,5 +6,6 @@ export declare class ConnectionBinaryTree {
     static addConnectionToTree(connection: Connection): void;
     static waitForDataToLoad(): Promise<unknown>;
     static checkFlag(resolve: any): any;
+    static removeNodeFromTree(id: number): Promise<void>;
     static getNodeFromTree(id: number): Promise<ConnectionNode | null>;
 }

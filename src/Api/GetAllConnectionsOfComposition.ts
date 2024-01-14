@@ -8,12 +8,15 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
         connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
+        console.log("this is the connection list from local", connectionList);
         if(connectionList.length == 0){
           var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_id);
           connectionList = connectionListString as Connection[];
         }
         else{
+          console.log("not waiting for this");
           GetAllConnectionsOfCompositionOnline(composition_id);
+          console.log("forward from this");
         }
         return connectionList;
         
@@ -33,6 +36,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
       if(!response.ok){
           throw new Error(`Error! status: ${response.status}`);
       }
+      console.log("waiting and watching");
       const result = await response.json();
       for(var i=0; i< result.length; i++){
           ConnectionData.AddConnection(result[i]);

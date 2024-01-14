@@ -25,6 +25,7 @@ export class SyncData{
     static SyncDataDelete(id:number){
         for(var i=0; i< this.conceptsSyncArray.length;i++){
             if(id == this.conceptsSyncArray[i].id){
+                console.log("this is the deleting of ", this.conceptsSyncArray[i]);
                 this.conceptsSyncArray.splice(i, 1);
             }
         }
@@ -84,14 +85,13 @@ export class SyncData{
         }
         
         if(this.conceptsSyncArray.length > 0){
-
-            await CreateTheConceptApi(this.conceptsSyncArray);
+             CreateTheConceptApi(this.conceptsSyncArray);
             this.conceptsSyncArray = [];
         }
          if(this.connectionSyncArray.length > 0){
 
-         await CreateTheConnectionApi(this.connectionSyncArray);
-         this.connectionSyncArray = [];
+             CreateTheConnectionApi(this.connectionSyncArray);
+            this.connectionSyncArray = [];
         }
         return "done";
 

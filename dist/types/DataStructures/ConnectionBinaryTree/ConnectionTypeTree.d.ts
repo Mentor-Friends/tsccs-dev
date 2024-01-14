@@ -6,6 +6,7 @@ export declare class ConnectionTypeTree {
     static waitForDataToLoad(): Promise<unknown>;
     static checkFlag(resolve: any): any;
     static addConnectionToTree(connection: Connection): void;
+    static removeTypeConcept(typeId: number, id: number): void;
     static getNodeFromTree(id: number): ConnectionNode | null;
     static getTypeVariantsFromTree(typeId: number): Promise<Connection[] | undefined>;
     static getTypeVariantsFromTreeWithUserId(typeId: number, userId: number): Promise<Connection[]>;

@@ -43,6 +43,13 @@ export class ConnectionTypeTree{
 
     }
 
+    static removeTypeConcept(typeId:number,id:number){
+        if(this.connectionTypeRoot){
+            this.connectionTypeRoot = this.connectionTypeRoot.removeNodeWithVariants(this.connectionTypeRoot,typeId,id);
+
+        }
+    }
+
     static getNodeFromTree(id:number){
 
 

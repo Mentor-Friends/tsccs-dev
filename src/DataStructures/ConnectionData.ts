@@ -1,4 +1,5 @@
 import { removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Connection } from "./Connection";
 import { ConnectionBinaryTree } from "./ConnectionBinaryTree/ConnectionBinaryTree";
 import { ConnectionTypeTree } from "./ConnectionBinaryTree/ConnectionTypeTree";
@@ -22,6 +23,10 @@ export class ConnectionData{
         return contains;
     }
 
+    static AddConnectionToStorage(connection:Connection){
+        storeToDatabase("connection", connection);
+    }
+
 
     static AddConnection(connection: Connection){
     //    var contains = this.CheckContains(connection);
@@ -34,6 +39,11 @@ export class ConnectionData{
     //     }
     //     this.connectionArray.push(connection);
         storeToDatabase("connection", connection);
+        ConnectionBinaryTree.addConnectionToTree(connection);
+        ConnectionTypeTree.addConnectionToTree(connection);
+    }
+
+    static AddConnectionToMemory(connection:Connection){
         ConnectionBinaryTree.addConnectionToTree(connection);
         ConnectionTypeTree.addConnectionToTree(connection);
     }
@@ -52,6 +62,14 @@ export class ConnectionData{
         removeFromDatabase("connection",connection.id);
 
        }
+    }
+
+    static GetConnectionTree(){
+        return ConnectionBinaryTree.connectionroot;
+    }
+
+    static GetConnectionTypeTree(){
+        return ConnectionTypeTree.connectionTypeRoot;
     }
 
     static async GetConnection(id: number){

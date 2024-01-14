@@ -14,17 +14,6 @@ export class LocalConceptsData{
     static  localconceptsArray:Concept[] = [];
 
 
-    static  CheckContains(concept: Concept){
-        var contains = false;
-        for(var i=0; i<this.localconceptsArray.length; i++){
-         if(this.localconceptsArray[i].id == concept.id){
-             contains = true;
-         }
-        }
-
-        return contains;
-    }
-
 
     static AddConcept(concept: Concept){
         if(concept.id > 0){
@@ -37,25 +26,18 @@ export class LocalConceptsData{
 
     }
 
-    static AddConceptTemporary(concept: Concept){
-        var contains = this.CheckContains(concept);
-        this.localconceptsArray[concept.id] = concept;
- 
-        if(contains){
-         this.RemoveConcept(concept);
+    static AddConceptToMemory(concept: Concept){
+        if(concept.id > 0){
+            LocalBinaryTree.addConceptToTree(concept);
+            LocalBinaryCharacterTree.addConceptToTree(concept);
+            LocalBinaryTypeTree.addConceptToTree(concept);
         }
-         this.localconceptsArray.push(concept);
-     }
 
-    static RemoveConcept(concept: Concept){
-       for(var i=0; i<this.localconceptsArray.length; i++){
-        if(this.localconceptsArray[i].id == concept.id){
-            this.localconceptsArray.splice(i, 1);
-        }
-       }
-
-     //  removeFromDatabase("concept",concept.id);
     }
+
+
+
+
 
     static async GetConcept(id: number){
        var  myConcept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);

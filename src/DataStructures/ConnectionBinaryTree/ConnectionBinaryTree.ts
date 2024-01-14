@@ -38,6 +38,12 @@ export class ConnectionBinaryTree{
         }
       };
 
+      static async removeNodeFromTree(id:number){
+        if(this.connectionroot){
+            this.connectionroot = this.connectionroot.removeNode(this.connectionroot,id);
+        }
+      }
+
 
 
 

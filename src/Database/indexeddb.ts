@@ -6,9 +6,17 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 
 var version = 4;
 
-export function openDatabase(databaseName:string){
-  let db;
+export class IndexDb{
+  static db:IDBDatabase;
+}
 
+
+export function openDatabase(databaseName:string){
+  return new Promise(function(resolve, reject){
+  if(IndexDb.db){
+    console.log("this is from the memory");
+    resolve( IndexDb.db);
+  }
   const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchema",version);
 
   request.onerror = (event) => {
@@ -19,8 +27,8 @@ export function openDatabase(databaseName:string){
 
       
     var target = event.target as IDBOpenDBRequest;
-    var db = target.result as IDBDatabase;
-    let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+    IndexDb.db = target.result as IDBDatabase;
+    resolve(IndexDb.db);
 
 };
 
@@ -55,6 +63,7 @@ request.onupgradeneeded = (event) => {
       }
     }
   }
+});
 
 }
 
@@ -63,26 +72,19 @@ request.onupgradeneeded = (event) => {
 
 export function storeToDatabase(databaseName:string, object:any){
 
-  openDatabase(databaseName);
-    let db;
-
-    const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchema",version);
-
-    request.onerror = (event) => {
-        console.error("Why didn't you allow my web app to use IndexedDB?!");
-    };
-
-    request.onsuccess = function(event:Event) {
-      if(object.id != 0){
-        var target = event.target as IDBOpenDBRequest;
-        var db = target.result as IDBDatabase;
-        let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
-        let objStore = transaction.objectStore(databaseName);
+  openDatabase(databaseName).then(()=>{
+    if(object.id != 0){
+      //var target = event.target as IDBOpenDBRequest;
+      var db = IndexDb.db;
+      let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+      let objStore = transaction.objectStore(databaseName);
 
 
-        objStore.add(object);
-      }
-    };
+      objStore.add(object);
+    }
+  })
+
+
 
     // request.onupgradeneeded = (event) => {
     //     var target = event.target as IDBOpenDBRequest;
@@ -117,72 +119,60 @@ export function storeToDatabase(databaseName:string, object:any){
 }
 
 
-export function getFromDatabase(databaseName:string, id:number){
-  openDatabase(databaseName);
-    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
-    var concept: Concept|null;
-    request.onsuccess = function(event) {
-        var target = event.target as IDBOpenDBRequest;
-        var db = target.result as IDBDatabase;
-      let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
-      let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
-      let getRequest = objectStore.get(id);
-      getRequest.onsuccess = function(event:Event) {
-        let target = event.target as IDBRequest;
-        concept = target.result as Concept;
-        return concept;
-        // concept =  event.target.result;
-        // Access the retrieved data
-      };  
-       return concept as Concept;
-    //   // Database opened successfully
-    // };
-    }
-  }
+// export function getFromDatabase(databaseName:string, id:number){
+//   openDatabase(databaseName).then(()=>{
+//     let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+//     let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
+//     let getRequest = objectStore.get(id);
+//     getRequest.onsuccess = function(event:Event) {
+//       let target = event.target as IDBRequest;
+//       concept = target.result as Concept;
+//       return concept;
+//       // concept =  event.target.result;
+//       // Access the retrieved data
+//     };  
+//      return concept as Concept;
+//   });
+
+
+//     //   // Database opened successfully
+//     // };
+    
+//   }
 
 
   export function GetStatsFromDatabase(){
     return new Promise(function(resolve, reject){
       var databaseName:string = "settings";
-      openDatabase(databaseName);
-      const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
-      request.onsuccess = function(event){
-        var target = event.target as IDBOpenDBRequest;
-        var db = target.result as IDBDatabase;
-      let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
-        let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
-        var allobjects = objectStore.getAll();
-        allobjects.onsuccess = ()=> {
-        var settingsData:SettingData = new SettingData(false);
+      openDatabase(databaseName).then(()=>{
 
-          var settingsArray = allobjects.result;
-          for(let i=0;i<settingsArray.length;i++){
-            settingsData = settingsArray[i];
-            settingsData = settingsData as SettingData;
+          var db = IndexDb.db;
+        let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+          let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
+          var allobjects = objectStore.getAll();
+          allobjects.onsuccess = ()=> {
+          var settingsData:SettingData = new SettingData(false);
+  
+            var settingsArray = allobjects.result;
+            for(let i=0;i<settingsArray.length;i++){
+              settingsData = settingsArray[i];
+              settingsData = settingsData as SettingData;
+            }
+            resolve(settingsData); 
           }
-          resolve(settingsData); 
-        }
-      }
+        });
+      });
 
-      request.onerror =function(event){
-        reject(event);
-      }
-    });
   }
 
   export function AiUpdateFlag(object:SettingData){
     var databaseName:string = "settings";
-    openDatabase(databaseName);
-    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
-
-    request.onsuccess = function(event){
-      var target = event.target as IDBOpenDBRequest;
-      var db = target.result as IDBDatabase;
+    openDatabase(databaseName).then(()=>{
+      var db = IndexDb.db;
       let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
       let objStore = transaction.objectStore(databaseName);
-      console.log(object);
       objStore.put(object);
-    }
+    });
   }
 
 
@@ -233,15 +223,13 @@ export function getFromDatabase(databaseName:string, id:number){
 
   export async function getFromDatabaseWithTypeOld(databaseName:string){
     return new Promise(function(resolve, reject){
-    openDatabase(databaseName);
-    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
-    var concept: Concept|null;
-    var ConceptList: Concept[] = [];
+    openDatabase(databaseName).then(()=>{
 
 
-    request.onsuccess = function(event) {
-        var target = event.target as IDBOpenDBRequest;
-        var db = target.result as IDBDatabase;
+      var concept: Concept|null;
+      var ConceptList: Concept[] = [];
+    
+        var db = IndexDb.db;
       let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
       let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
       var allobjects = objectStore.getAll();
@@ -253,17 +241,11 @@ export function getFromDatabase(databaseName:string, id:number){
             ConceptList.push(students[i]);
         }
         resolve(ConceptList); 
-    }
 
+      }
+    });
 
-    //   // Database opened successfully
-    // };
-    }
-
-    request.onerror =function(event){
-      reject(event);
-    }
-});
+  });
 
 
    // return ConceptList;
@@ -318,9 +300,12 @@ export function getFromDatabase(databaseName:string, id:number){
         var db = target.result as IDBDatabase;
       let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
       let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
-      let getRequest = objectStore.delete(id);
+      console.log("deleting from the database", id);
+      let getRequest = objectStore.delete(Number(id));
       getRequest.onsuccess = function(event:Event) {
         let target = event.target as IDBRequest;
+        console.log(event);
+        console.log("deleted successfully");
         // concept =  event.target.result;
         // Access the retrieved data
       };

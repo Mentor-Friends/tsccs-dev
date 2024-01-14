@@ -23,6 +23,13 @@ export class LocalBinaryTypeTree{
         }
 
     }
+    
+    static removeConceptType(typeId:number,id:number){
+        if(this.LocalTypeRoot){
+            this.LocalTypeRoot = this.LocalTypeRoot.removeNodeWithVariants(this.LocalTypeRoot,typeId, id);
+
+        }
+    }
 
     static getNodeFromTree(id:number){
         if(this.LocalTypeRoot){

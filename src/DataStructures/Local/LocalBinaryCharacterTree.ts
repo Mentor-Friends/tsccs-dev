@@ -68,4 +68,11 @@ export class LocalBinaryCharacterTree{
         return this.LocalCharacterRoot;
     }
 
+    
+    static removeConceptType(character:string,id:number){
+        if(this.LocalCharacterRoot){
+            this.LocalCharacterRoot = this.LocalCharacterRoot.removeNodeWithVariants(this.LocalCharacterRoot,character, id);
+        }
+    }
+
 }

@@ -18,4 +18,7 @@ export declare class ConnectionNode {
     getBalanceFactor(N: ConnectionNode | null): number;
     getFromNode(id: number, node: ConnectionNode | null): ConnectionNode | null;
     getCharacterFromNode(value: string, node: ConnectionNode | null): ConnectionNode | null;
+    removeNode(passedNode: ConnectionNode | null, id: number): ConnectionNode | null;
+    removeNodeWithVariants(passedNode: ConnectionNode | null, typeIdentifier: any, conceptId: number): ConnectionNode | null;
+    inOrderSuccessor(root: ConnectionNode): ConnectionNode;
 }

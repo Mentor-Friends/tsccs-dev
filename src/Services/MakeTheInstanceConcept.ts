@@ -3,6 +3,7 @@ import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndTyp
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
 import CreateTheConcept from "./CreateTheConcept";
+import MakeTheConcept from "./MakeTheConcept";
 import { MakeTheName } from "./MakeTheName";
 import MakeTheTypeConcept from "./MakeTheTypeConcept";
 
@@ -89,3 +90,5 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             console.log("this is the concept returned by make the instance concept",concept);
             return concept;
 }
+
+

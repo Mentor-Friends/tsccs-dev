@@ -1,27 +1,28 @@
 import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
+import { ConnectionData } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
-export async function GetAiData(){
+export async function GetAllPrefetchConnections(userId:number, inpage:number){
     try{
       const start = new Date().getTime();
-
-        const response = await fetch(BaseUrl.GetAllAiData(),{
-            method: 'GET',
+      var urlencoded = new URLSearchParams();
+      urlencoded.append("user_id", userId.toString());
+        const response = await fetch(BaseUrl.GetAllPrefetchConnectionsUrl(),{
+            method: 'POST',
             headers:{
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
+            body: urlencoded
         });
         if(!response.ok){
             throw new Error(`Error! status: ${response.status}`);
         }
          const result = await response.json();
         for(var i=0; i< result.length; i++){
-            ConceptsData.AddConceptToStorage(result[i]);
+            ConnectionData.AddConnectionToStorage(result[i]);
         }
-        console.log("got all the concepts data from ai");
-        PurgatoryDatabaseUpdated();
         let elapsed = new Date().getTime() - start;
         console.log("The time taken is ", elapsed);
 

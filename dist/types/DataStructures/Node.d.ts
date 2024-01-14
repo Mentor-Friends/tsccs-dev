@@ -20,4 +20,8 @@ export declare class Node {
     getFromNode(id: number, node: Node | null): Node | null;
     getCharacterFromNode(value: string, node: Node | null): Node | null;
     getFromNodeWithCharacterAndType(value: string, typeId: number, node: Node | null): Node | null;
+    removeNode(passedNode: Node | null, id: number): Node | null;
+    removeNodeWithVariants(passedNode: Node | null, typeIdentifier: any, conceptId: number): Node | null;
+    countNodeBelow(root: Node | null): number;
+    inOrderSuccessor(root: Node): Node;
 }

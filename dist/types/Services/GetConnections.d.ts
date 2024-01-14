@@ -1,2 +1,2 @@
-import { Concept } from "../DataStructures/Concept";
-export default function GetConnections(concept1: Concept, linker: string): void;
+import { Connection } from "../DataStructures/Connection";
+export declare function GetConnectionById(id: number): Promise<Connection>;

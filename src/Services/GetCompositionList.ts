@@ -42,13 +42,14 @@ export  async function GetCompositionListWithId(compositionName: string, userId:
     var conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
     var startPage = inpage * (page - 1);
     var prefetchComposition:number[] = [];
+    console.log("this is the prefetched concept list", conceptList);
     for(var i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
          
          prefetchComposition.push(conceptList[i].id);
       }
     }
-
+    console.log("this is the prefetch", prefetchComposition);
     await GetAllConnectionsOfCompositionBulk(prefetchComposition);
     for(var i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){

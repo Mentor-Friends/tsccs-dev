@@ -149,8 +149,9 @@ export class Node{
             if(debugFlag){
                 console.log("else here", node, passedNode);
             }
-            if (node.key == passedNode.key && node.key != ""){
-                    node.currentNode = this.addCurrentNode(passedNode, node.currentNode);
+            if (node.key == passedNode.key && node.key != "" && node.value.id != passedNode.value.id){
+                   // node.currentNode = this.addCurrentNode(passedNode, node.currentNode);
+                    node.addCurrentNodeType(passedNode,node);
             }
             return node;
         }
@@ -257,7 +258,7 @@ export class Node{
             if(debugFlag){
                 console.log("else here", node, passedNode);
             }
-            if (node.key == passedNode.key && node.key != 0){
+            if (node.key == passedNode.key && node.key != 0 && node.value.id != passedNode.value.id){
                     node.addCurrentNodeType(passedNode,node);
             }
             return node;
@@ -427,8 +428,12 @@ export class Node{
                     return node;
                 }
                 else{
-
-                    return this.getFromNodeWithCharacterAndType(value, typeId, node.currentNode);
+                    for(let i=0;i<node.variants.length;i++){
+                        if(node.variants[i].value.typeId == typeId){
+                            return node.variants[i];
+                        }
+                    }
+                   // return this.getFromNodeWithCharacterAndType(value, typeId, node.currentNode);
                 }
             }
             else if(value < node.key){
@@ -441,6 +446,140 @@ export class Node{
         }
         return node;
 
+    }
+
+    public removeNode(passedNode:Node|null,id:number){
+            if(passedNode == null){
+                return passedNode;
+            }
+            if(passedNode.key > id){
+                passedNode.leftNode = this.removeNode(passedNode.leftNode, id);
+                return passedNode;
+            }
+            else if(passedNode.key < id){
+                passedNode.rightNode = this.removeNode(passedNode.rightNode,id);
+                return passedNode;
+            }
+
+            // if(passedNode.variants.length > 0){
+            //     if(passedNode.value.id == id ){
+
+            //     }
+            //     var newNode = passedNode.variants[0];
+            //     if(newNode){
+            //         passedNode.value = newNode.value;
+            //         passedNode.key = newNode.key;
+            //         passedNode.currentNode = newNode.currentNode;
+            //         return passedNode;
+
+            //     }
+            // }
+
+            if(passedNode.leftNode == null){
+                let temp = passedNode.rightNode;
+                passedNode = null;
+                return temp;
+            }
+            else if(passedNode.rightNode == null){
+                let temp = passedNode.leftNode;
+                passedNode = null;
+                return temp;
+            }
+            else{                
+                // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
+                var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
+                passedNode.value = immediateSuccessor.value;
+                passedNode.key = immediateSuccessor.key;
+                passedNode.variants = immediateSuccessor.variants;
+                passedNode.currentNode = immediateSuccessor.currentNode;
+                passedNode.rightNode = this.removeNode(passedNode.rightNode,immediateSuccessor.key);
+                return passedNode;
+
+            }
+    
+    }
+
+    public removeNodeWithVariants(passedNode:Node|null,typeIdentifier:any, conceptId:number){
+        if(passedNode == null){
+            return passedNode;
+        }
+        if(passedNode.key > typeIdentifier){
+            passedNode.leftNode = this.removeNodeWithVariants(passedNode.leftNode, typeIdentifier,conceptId);
+            return passedNode;
+        }
+        else if(passedNode.key < typeIdentifier){
+            passedNode.rightNode = this.removeNodeWithVariants(passedNode.rightNode,typeIdentifier,conceptId);
+            return passedNode;
+        }
+
+        if(passedNode.variants.length > 0){
+
+            //condition if the main node is equal to the value
+            if(passedNode.value.id == conceptId ){
+                var newNode = passedNode.variants[0];
+                if(newNode){
+                    passedNode.value = newNode.value;
+                    passedNode.key = newNode.key;
+                    passedNode.currentNode = newNode.currentNode;
+                    passedNode.variants.splice(0,1);
+                    return passedNode;
+    
+                }
+            }
+            else{
+
+                // in the condition that the main node is not equal to the checking value 
+                for(let i=0; i<passedNode.variants.length; i++){
+                    if(conceptId == passedNode.variants[i].value.id){
+                        passedNode.variants.splice(i, 1);
+                        return passedNode;
+                    }
+                }
+            }
+
+        }
+
+        if(passedNode.leftNode == null){
+            let temp = passedNode.rightNode;
+            passedNode = null;
+            return temp;
+        }
+        else if(passedNode.rightNode == null){
+            let temp = passedNode.leftNode;
+            passedNode = null;
+            return temp;
+        }
+        else{                
+            // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
+            var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
+            passedNode.value = immediateSuccessor.value;
+            passedNode.key = immediateSuccessor.key;
+            passedNode.variants = immediateSuccessor.variants;
+            passedNode.currentNode = immediateSuccessor.currentNode;
+            passedNode.rightNode = this.removeNodeWithVariants(passedNode.rightNode,immediateSuccessor.key,conceptId);
+            return passedNode;
+
+        }
+
+}
+
+
+      countNodeBelow(root:Node|null):number{
+        if(root==null)
+        {
+            return 0;
+        }
+
+        //recursive call to left child and right child and
+        // add the result of these with 1 ( 1 for counting the root)
+        return 1 + this.countNodeBelow(root.leftNode) + this.countNodeBelow(root.rightNode);
+    }
+
+    inOrderSuccessor(root:Node){
+        while (root.leftNode != null) {
+            root = root.leftNode;
+        }
+        return root;
     }
 
 

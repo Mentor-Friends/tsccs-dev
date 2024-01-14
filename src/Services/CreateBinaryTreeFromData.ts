@@ -10,7 +10,7 @@ export default  async function CreateBinaryTreeFromData(){
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
-                ConceptsData.AddConcept(concept);
+                ConceptsData.AddConceptToMemory(concept);
                 // let node = new Node(concept.id, concept, null, null);
                 // BinaryTree.addNodeToTree(node);
             }

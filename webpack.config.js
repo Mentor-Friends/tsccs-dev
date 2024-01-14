@@ -3,18 +3,18 @@ const Dotenv = require('dotenv-webpack');
 
 module.exports = env => ({
    entry: './src/app.ts',
-   mode: 'production',
+   mode: 'development',
    devtool: 'inline-source-map',
    watch: true,
    output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'dist'),
-      libraryTarget: 'commonjs',
+      //libraryTarget: 'commonjs',
       library: {
-         // name: 'tsccs', // you then can access it via window: `window.youLib`
-         // type: 'umd',
-         // umdNamedDefine: true,
-         type: "module"
+         name: 'tsccs', // you then can access it via window: `window.youLib`
+         type: 'umd',
+         umdNamedDefine: true,
+       //  type: "module"
        },
    },
    resolve: {

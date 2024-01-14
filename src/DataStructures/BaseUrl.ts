@@ -9,6 +9,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/getConcept';
     }
 
+    static GetConnectionUrl(){
+        return this.BASE_URL + '/api/get-connection-by-id';
+    }
+
     static GetConceptBulkUrl(){
         return this.BASE_URL + '/api/get_concept_bulk';
     }
@@ -51,11 +55,18 @@ export class BaseUrl{
     }
     
     static GetAllAiData(){
-        return this.AI_URL + '/api/get_ranked_type_id?inpage=500' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=500';
+        return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=500';
     }
 
+    static GetAllPrefetchConnectionsUrl(){
+        return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';
+    }
     static GetAllLinkerConnectionOfConceptUrl(){
         return this.BASE_URL + '/api/get-all-linkers-from-concept';
+    }
+
+    static DeleteConceptUrl(){
+        return this.BASE_URL + '/api/delete_concept';
     }
 
 

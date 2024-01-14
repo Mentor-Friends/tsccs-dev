@@ -35,6 +35,22 @@ export class BinaryCharacterTree{
         return this.characterRoot;
     }
 
+    static async removeNodeByCharacter(character:string, id:number){
+        if(this.characterRoot){
+            this.characterRoot.removeNodeWithVariants(this.characterRoot,character,id);
+        }
+    }
+
+
+
+    static countNumberOfNodes(){
+        if(this.characterRoot){
+            return this.characterRoot.countNodeBelow(this.characterRoot);
+
+        }
+        return 0;
+    }
+
     static addConceptToTree(concept:Concept){
         if(concept.characterValue != ""){
             var node: Node = new Node(concept.characterValue, concept, null, null);
@@ -66,6 +82,13 @@ export class BinaryCharacterTree{
             return Node;
         }   
         return this.characterRoot;
+    }
+
+    static removeConceptCharacter(id:number){
+        if(this.characterRoot){
+            this.characterRoot = this.characterRoot.removeNode(this.characterRoot,id);
+
+        }
     }
 
 }

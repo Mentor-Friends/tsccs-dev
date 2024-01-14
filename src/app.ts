@@ -18,17 +18,22 @@ export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBet
 export { default as GetTheConcept} from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
 export { MakeTheInstanceConceptLocal} from './Services/Local/MakeTheInstanceConceptLocal';
-export { storeToDatabase,getFromDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/indexeddb';
+export { storeToDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/indexeddb';
 export {default as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink } from './Services/GetLink';
 export { GetLinkerConnectionFromConcepts} from './Services/GetLinkerConnectionFromConcept';
+export { DeleteConceptById } from './Services/DeleteConcept';
+export { DeleteConnectionById } from './Services/DeleteConnection';
+export { GetConnectionById } from './Services/GetConnections';
+export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
 
 export {  } from './Api/GetConceptByCharacterAndType';
 
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {ConceptsData} from './DataStructures/ConceptData';
+export { ConnectionData } from './DataStructures/ConnectionData';
 
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import { BinaryTree } from './DataStructures/BinaryTree';
@@ -49,6 +54,7 @@ function init(url:string = "", aiurl:string=""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    InitializeSystem().then(()=>{
+      console.log("starting the system");
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{
          IdentifierFlags.isDataLoaded= true;
@@ -56,8 +62,9 @@ function init(url:string = "", aiurl:string=""){
          IdentifierFlags.isTypeLoaded= true;
          let elapsed = new Date().getTime() - start;
          console.log("The time taken to prepare concept  data is  ", elapsed);
-         console.log(BinaryTypeTree.typeRoot);
+         console.log(BinaryTree.root);
       });
+
       
       // CreateCharacterBinaryTreeFromData().then(()=>{
       //    IdentifierFlags.isCharacterLoaded= true;

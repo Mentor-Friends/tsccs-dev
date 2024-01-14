@@ -38,7 +38,7 @@ export  async function GetDataFromIndexDb(){
     console.log("this is the connection list from db",connectionList);
     if(Array.isArray(connectionList)){
         for(var i=0 ;i < connectionList.length ;i++){
-            ConnectionData.AddConnection(connectionList[i]);
+            ConnectionData.AddConnectionToMemory(connectionList[i]);
         }
 
     }
