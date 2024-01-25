@@ -20,6 +20,7 @@ export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';
 export { GetConnectionById } from './Services/GetConnections';
 export { MakeTheTimestamp } from './Services/MakeTheTimestamp';
+export { RecursiveSearchApi } from './Api/RecursiveSearch';
 export {} from './Api/GetConceptByCharacterAndType';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';

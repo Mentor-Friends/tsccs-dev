@@ -7,7 +7,6 @@ export class BinaryTypeTree{
 
     static async addNodeToTree(node:Node){
         if(this.typeRoot == null){
-            console.log("this is type root ", node);
             this.typeRoot = node;
             return this.typeRoot;
         }

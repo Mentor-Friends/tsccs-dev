@@ -8,7 +8,6 @@ import { AiUpdateFlag, GetStatsFromDatabase } from "../Database/indexeddb";
 export default async function InitializeSystem(){
     var statsData = await GetStatsFromDatabase();
     var settings = statsData as SettingData;
-    console.log(settings);
     if(!settings.isOnlineSync){
         console.log("prefetching");
        // await GetAllPrefetchConnections(10267,2000);

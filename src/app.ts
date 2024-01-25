@@ -27,6 +27,7 @@ export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';
 export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
+export {RecursiveSearchApi} from './Api/RecursiveSearch';
 
 export {  } from './Api/GetConceptByCharacterAndType';
 
@@ -54,7 +55,6 @@ function init(url:string = "", aiurl:string=""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    InitializeSystem().then(()=>{
-      console.log("starting the system");
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{
          IdentifierFlags.isDataLoaded= true;
@@ -62,7 +62,6 @@ function init(url:string = "", aiurl:string=""){
          IdentifierFlags.isTypeLoaded= true;
          let elapsed = new Date().getTime() - start;
          console.log("The time taken to prepare concept  data is  ", elapsed);
-         console.log(BinaryTree.root);
       });
 
       

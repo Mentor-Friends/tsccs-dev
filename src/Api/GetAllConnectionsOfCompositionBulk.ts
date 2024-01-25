@@ -5,27 +5,21 @@ import { GetAllConnectionsOfCompositionBulkUrl } from '../Constants/ApiConstants
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetConceptBulk } from './GetConceptBulk';
+import { FindConceptsFromConnections } from '../Services/FindConeceptsFromConnection';
+import { FindConnectionsOfCompositionsBulkInMemory } from '../Services/FindConnectionsOfCompositionBulkInMemory';
+import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
       
         var connectionList: Connection[] = [];
         var conceptList: number[] = [];
+        if(composition_ids.length <= 0){
+          return connectionList;
+        }
+        var oldConnectionList = await FindConnectionsOfCompositionsBulkInMemory(composition_ids);
         var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_ids);
         connectionList = connectionListString as Connection[];
-        if(connectionList.length > 0){
-          for(let i=0;i < connectionList.length; i++){
-
-            if(!conceptList.includes(connectionList[i].ofTheConceptId )){
-              conceptList.push(connectionList[i].ofTheConceptId);
-            }
-            if(!conceptList.includes(connectionList[i].toTheConceptId)){
-              conceptList.push(connectionList[i].toTheConceptId);
-            }
-
-          }
-
-          await GetConceptBulk(conceptList);
-
-        }
+        CheckForConnectionDeletion(connectionList, oldConnectionList);
+        await FindConceptsFromConnections(connectionList);
         return connectionList;
         
      

@@ -17,6 +17,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/get_concept_bulk';
     }
 
+    static GetConnectionBulkUrl(){
+        return this.BASE_URL + '/api/get_connection_bulk';
+    }
+
     static  GetAllConceptsOfUserUrl(){
         return this.BASE_URL +  '/api/get_all_concepts_of_user';
     }
@@ -67,6 +71,10 @@ export class BaseUrl{
 
     static DeleteConceptUrl(){
         return this.BASE_URL + '/api/delete_concept';
+    }
+
+    static RecursiveSearchUrl(){
+        return this.BASE_URL + '/api/recursivesearch-concept-connection';
     }
 
 

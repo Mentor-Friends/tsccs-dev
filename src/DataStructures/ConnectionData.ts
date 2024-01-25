@@ -53,14 +53,15 @@ export class ConnectionData{
     }
 
     static RemoveConnection(connection: Connection){
-       for(var i=0; i<this.connectionArray.length; i++){
-        if(this.connectionArray[i].id == connection.id){
-            this.connectionArray.splice(i, 1);
-        }
-       }
+    //    for(var i=0; i<this.connectionArray.length; i++){
+    //     if(this.connectionArray[i].id == connection.id){
+    //         this.connectionArray.splice(i, 1);
+    //     }
+    //    }
        if(connection.id != 0){
         removeFromDatabase("connection",connection.id);
-
+        ConnectionBinaryTree.removeNodeFromTree(connection.id);
+        ConnectionTypeTree.removeTypeConcept(connection.typeId, connection.id);
        }
     }
 

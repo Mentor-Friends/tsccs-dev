@@ -13,7 +13,6 @@ export  async function CreateLocalCharacterBinaryTreeFromData(){
             }
 
         }
-        console.log(LocalBinaryCharacterTree.LocalCharacterRoot);
     var endTime = new Date().getTime();
     var time = endTime - startTime;
 

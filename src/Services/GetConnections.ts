@@ -7,7 +7,6 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 export  async function GetConnectionById(id:number){
 
      var connection =   await ConnectionData.GetConnection(id);
-     console.log("this is the connection getting from the local data", connection);
      if((connection == null || connection.id == 0) && id != null && id != undefined){
         var connectionString = await  GetConnection(id);
         connection = connectionString as Connection;

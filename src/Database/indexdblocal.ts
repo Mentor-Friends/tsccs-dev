@@ -12,7 +12,6 @@ export function openDatabase(databaseName:string){
   if(LocalIndexDb.db){
     resolve( LocalIndexDb.db);
   }
-    console.log("where am i going with this");
     const request = indexedDB.open("FreeSchemaLocal",version);
   
     request.onerror = (event) => {
@@ -82,7 +81,6 @@ export function openDatabase(databaseName:string){
         let transaction = LocalIndexDb.db.transaction(databaseName, "readwrite") as IDBTransaction;
         let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
         var allobjects = objectStore.getAll();
-        console.log("this is the request success for local", allobjects);
         allobjects.onsuccess = ()=> {
           const students = allobjects.result;
 

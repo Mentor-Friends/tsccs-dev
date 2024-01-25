@@ -60,8 +60,6 @@ export class LocalBinaryCharacterTree{
             return null;
         }
         if(this.LocalCharacterRoot){
-            console.log("searching .................");
-            console.log(value);
             var Node = this.LocalCharacterRoot.getFromNodeWithCharacterAndType(value, typeId,this.LocalCharacterRoot);
             return Node;
         }   

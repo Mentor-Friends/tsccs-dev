@@ -10,7 +10,6 @@ export async function GetConcept(id: number){
             return conceptUse;
         }
         else{
-            console.log("getting data from online");
             const response = await fetch(BaseUrl.GetConceptUrl(),{
                 method: 'POST',
                 headers:{

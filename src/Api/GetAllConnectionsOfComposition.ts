@@ -4,6 +4,7 @@ import { GetMaximumConnectionSyncTime } from '../Services/GetMaximumConnectionSy
 import { GetAllConnectionsOfCompositionUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionBinaryTree } from '../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree';
+import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
@@ -15,7 +16,9 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
         }
         else{
           console.log("not waiting for this");
-          GetAllConnectionsOfCompositionOnline(composition_id);
+          var newConnectionsString = await GetAllConnectionsOfCompositionOnline(composition_id);
+          var newConnections = newConnectionsString as Connection[];
+          CheckForConnectionDeletion(newConnections, connectionList);
           console.log("forward from this");
         }
         return connectionList;

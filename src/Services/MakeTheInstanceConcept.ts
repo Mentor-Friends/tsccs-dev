@@ -39,7 +39,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             if(composition){
                var   typeConceptString = await MakeTheTypeConcept(type, sessionInformationId, userId, userId );
                typeConcept = typeConceptString as Concept;
-                console.log("For compsosition", typeConcept);
                var conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                 referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
 

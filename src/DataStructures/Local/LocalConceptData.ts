@@ -62,7 +62,6 @@ export class LocalConceptsData{
 
         var Node = LocalBinaryCharacterTree.getNodeFromTree(characterValue);
         if(Node){
-            console.log("got the character");
             concept  = Node.value;
         }
          return concept;
@@ -82,8 +81,6 @@ export class LocalConceptsData{
         if(Node){
 
             concept =  Node.value;
-            console.log("found the output");
-            console.log(concept);
         }
         return concept;
 

@@ -4,6 +4,7 @@ export declare class BaseUrl {
     static GetConceptUrl(): string;
     static GetConnectionUrl(): string;
     static GetConceptBulkUrl(): string;
+    static GetConnectionBulkUrl(): string;
     static GetAllConceptsOfUserUrl(): string;
     static GetAllConnectionsOfUserUrl(): string;
     static GetAllConnectionsOfCompositionUrl(): string;
@@ -17,6 +18,7 @@ export declare class BaseUrl {
     static GetAllPrefetchConnectionsUrl(): string;
     static GetAllLinkerConnectionOfConceptUrl(): string;
     static DeleteConceptUrl(): string;
+    static RecursiveSearchUrl(): string;
     static GetReservedIdUrl(): string;
     static CreateTheTextDataUrl(): string;
     static CreateTheCharacterDataUrl(): string;

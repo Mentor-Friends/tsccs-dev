@@ -2,7 +2,7 @@ import { Connection } from "../DataStructures/Connection";
 import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndType";
 import { GetConnectionOfTheConcept } from "../Api/GetConnectionOfTheConcept";
 import { Concept } from "./../DataStructures/Concept";
-import { GetComposition, GetCompositionWithId } from "./GetComposition";
+import { GetComposition, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 
@@ -23,7 +23,7 @@ export async function GetLink(id:number, linker:string, inpage:number=10, page:n
       for(var i=0; i<connections.length; i++){
         let toConceptId = connections[i].toTheConceptId;
         let toConcept = await GetTheConcept(toConceptId);
-        let newComposition = await GetCompositionWithId(toConcept.id);
+        let newComposition = await GetCompositionWithIdFromMemory(toConcept.id);
         output.push(newComposition);
       }
     }

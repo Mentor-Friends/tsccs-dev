@@ -35,7 +35,6 @@ export  async function GetDataFromIndexDb(){
 
  async function GetConnectionsFromIndexDb(){
     var connectionList = await getFromDatabaseWithTypeOld("connection");
-    console.log("this is the connection list from db",connectionList);
     if(Array.isArray(connectionList)){
         for(var i=0 ;i < connectionList.length ;i++){
             ConnectionData.AddConnectionToMemory(connectionList[i]);

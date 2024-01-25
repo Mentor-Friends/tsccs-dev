@@ -16,7 +16,6 @@ export async function GetConceptBulk(conceptIds: number[]){
             return bulkConceptFetch;
         }
         else{
-            console.log("getting data from online");
             const response = await fetch(BaseUrl.GetConceptBulkUrl(),{
                 method: 'POST',
                 headers:{

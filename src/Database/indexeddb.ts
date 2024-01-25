@@ -14,7 +14,6 @@ export class IndexDb{
 export function openDatabase(databaseName:string){
   return new Promise(function(resolve, reject){
   if(IndexDb.db){
-    console.log("this is from the memory");
     resolve( IndexDb.db);
   }
   const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchema",version);
