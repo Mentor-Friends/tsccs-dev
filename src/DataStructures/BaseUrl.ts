@@ -77,6 +77,14 @@ export class BaseUrl{
         return this.BASE_URL + '/api/recursivesearch-concept-connection';
     }
 
+    static MakeTheNameInBackendUrl(){
+        return this.BASE_URL + '/api/make-name-from-frontend';
+    }
+
+    static LoginUrl(){
+        return this.BASE_URL + '/api/auth/login';
+    }
+
 
 
 
