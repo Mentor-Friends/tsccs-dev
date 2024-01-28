@@ -37,7 +37,7 @@ export default async  function MakeTheTypeConcept(typeString: string, sessionId:
 
                 if(typeConcept){
                     
-                    var concept = await CreateTheConceptImmediate(typeString, userId, categoryId, userId,typeConcept.id, userId, referentId, userId,
+                    var concept = await CreateTheConcept(typeString, userId, categoryId, userId,typeConcept.id, userId, referentId, userId,
                         securityId, userId,accessId, userId, sessionId, userId );
                     existingConcept = concept as Concept;
                 }
