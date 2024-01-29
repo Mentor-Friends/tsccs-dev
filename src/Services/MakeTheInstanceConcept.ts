@@ -18,7 +18,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             var securityUserId: number = userId;
             var sessionInformationUserId: number = userId;
             // change this
-            var accessId: number = 4;
+            var accessId: number = accessId;
             var accessUserId: number = userId;
 
             var stringToCheck: string = "";
