@@ -66,15 +66,15 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 var conceptByCharTypeString = await GetConceptByCharacterAndType(referent,typeConcept.id);
                 var conceptTypeCharacter = conceptByCharTypeString as Concept;
 
-                var makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
-                var makeTheNameConcept = makeTheNameString as Concept;
-                concept = conceptTypeCharacter;
-                if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
-                    var conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                        makeTheNameConcept.id, makeTheNameConcept.userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
-                    concept = conceptString as Concept;
-                }
+            var makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
+            var makeTheNameConcept = makeTheNameString as Concept;
+            concept = conceptTypeCharacter;
+            if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
+                var conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
+                    makeTheNameConcept.id, makeTheNameConcept.userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+                concept = conceptString as Concept;
             }
+        }
             // if(concept){
             //     if(concept.type == null){
             //         var conceptType = ConceptsData.GetConcept(concept.typeId);
