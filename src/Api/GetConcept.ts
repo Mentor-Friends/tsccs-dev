@@ -26,6 +26,7 @@ export async function GetConcept(id: number){
                 ConceptsData.AddConcept(result);
                 return result;
             }
+            return result;
 
         }
     }

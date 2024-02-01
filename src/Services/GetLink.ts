@@ -22,6 +22,7 @@ export async function GetLink(id:number, linker:string, inpage:number=10, page:n
       await GetAllConnectionsOfCompositionBulk(prefetch);
       for(var i=0; i<connections.length; i++){
         let toConceptId = connections[i].toTheConceptId;
+        console.log("this is the to concept id ",toConceptId);
         let toConcept = await GetTheConcept(toConceptId);
         let newComposition = await GetCompositionWithIdFromMemory(toConcept.id);
         output.push(newComposition);
