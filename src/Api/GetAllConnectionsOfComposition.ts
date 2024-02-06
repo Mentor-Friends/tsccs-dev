@@ -9,17 +9,15 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
         connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
-        console.log("this is the connection list from local", connectionList);
         if(connectionList.length == 0){
           var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_id);
           connectionList = connectionListString as Connection[];
         }
         else{
-          console.log("not waiting for this");
           var newConnectionsString = await GetAllConnectionsOfCompositionOnline(composition_id);
           var newConnections = newConnectionsString as Connection[];
           CheckForConnectionDeletion(newConnections, connectionList);
-          console.log("forward from this");
+          connectionList = newConnections;
         }
         return connectionList;
         

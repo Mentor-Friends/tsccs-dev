@@ -85,6 +85,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/auth/login';
     }
 
+    static GetCompositionConnectionBetweenTwoConceptsUrl(){
+        return this.BASE_URL + '/api/get-composition-connection-between-two-concepts';
+    }
+
 
 
 

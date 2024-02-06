@@ -21,6 +21,7 @@ export declare class BaseUrl {
     static RecursiveSearchUrl(): string;
     static MakeTheNameInBackendUrl(): string;
     static LoginUrl(): string;
+    static GetCompositionConnectionBetweenTwoConceptsUrl(): string;
     static GetReservedIdUrl(): string;
     static CreateTheTextDataUrl(): string;
     static CreateTheCharacterDataUrl(): string;

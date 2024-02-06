@@ -19,6 +19,7 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
         var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_ids);
         connectionList = connectionListString as Connection[];
         CheckForConnectionDeletion(connectionList, oldConnectionList);
+        console.log("checking for connection bulk");
         await FindConceptsFromConnections(connectionList);
         return connectionList;
         

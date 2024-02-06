@@ -6,16 +6,20 @@ import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 export async function GetConnectionBulk(connectionIds: number[]){
     try{
+        var connectionList:Connection[] = [];
         var bulkConnectionFetch = [];
         for(let i=0; i<connectionIds.length; i++){
             let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
             if(conceptUse.id == 0){
                 bulkConnectionFetch.push(connectionIds[i]);
             }
+            else{
+                connectionList.push(conceptUse);
+            }
         }
         if(bulkConnectionFetch.length == 0){
 
-            return bulkConnectionFetch;
+            return connectionList;
         }
         else{
             const response = await fetch(BaseUrl.GetConnectionBulkUrl(),{
@@ -26,9 +30,10 @@ export async function GetConnectionBulk(connectionIds: number[]){
                 body: JSON.stringify(bulkConnectionFetch)
             });
             if(!response.ok){
+                return connectionList;
                 throw new Error(`Error! status: ${response.status}`);
             }
-            var connectionList:Connection[] = [];
+
 
             const result = await response.json();
             if(result.length > 0){

@@ -59,9 +59,9 @@ export class ConnectionData{
     //     }
     //    }
        if(connection.id != 0){
-        removeFromDatabase("connection",connection.id);
-        ConnectionBinaryTree.removeNodeFromTree(connection.id);
-        ConnectionTypeTree.removeTypeConcept(connection.typeId, connection.id);
+         removeFromDatabase("connection",connection.id);
+         ConnectionBinaryTree.removeNodeFromTree(connection.id);
+         ConnectionTypeTree.removeTypeConcept(connection.typeId, connection.id);
        }
     }
 

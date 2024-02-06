@@ -10,7 +10,6 @@ import { ReservedIds } from "./ReservedIds";
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
     static  connectionSyncArray: Connection[] = [];
-    
 
     static  CheckContains(concept: Concept){
         var contains = false;
@@ -54,6 +53,8 @@ export class SyncData{
         }
      }
 
+
+
      static RemoveConcept(concept: Concept){
         for(var i=0; i<this.conceptsSyncArray.length; i++){
          if(this.conceptsSyncArray[i].id == concept.id){
@@ -90,7 +91,7 @@ export class SyncData{
         }
          if(this.connectionSyncArray.length > 0){
 
-             CreateTheConnectionApi(this.connectionSyncArray);
+            await CreateTheConnectionApi(this.connectionSyncArray);
             this.connectionSyncArray = [];
         }
         return "done";

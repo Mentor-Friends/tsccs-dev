@@ -29,6 +29,7 @@ export async function GetCompositionBulkWithDataId(ids:number[]=[]){
 
 export async function GetCompositionFromConnectionsWithDataId(ids:number[]=[], connections:number[] = []){
     var newConnections = await GetConnectionBulk(connections);
+    var myNewConnections = newConnections as Connection[];
     var oldConnections = await FindConnectionsOfCompositionsBulkInMemory(ids);
     CheckForConnectionDeletionWithIds(connections,oldConnections);
     var compositions: any[] = [];

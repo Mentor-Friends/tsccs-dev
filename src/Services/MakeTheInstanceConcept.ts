@@ -1,8 +1,9 @@
 import { CreateTextData } from "../Api/Create/CreateTheTextData";
 import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndType";
+import { MakeTheNameInBackend } from "../Api/MakeTheNameInBackend";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
-import CreateTheConcept from "./CreateTheConcept";
+import CreateTheConcept, { CreateTheConceptImmediate, CreateTheConceptTemporary } from "./CreateTheConcept";
 import { MakeTheName } from "./MakeTheName";
 import MakeTheTypeConcept from "./MakeTheTypeConcept";
 
@@ -65,14 +66,17 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 typeConcept = typeConceptString  as Concept;
                 var conceptByCharTypeString = await GetConceptByCharacterAndType(referent,typeConcept.id);
                 var conceptTypeCharacter = conceptByCharTypeString as Concept;
+                concept = conceptTypeCharacter;
 
-            var makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
-            var makeTheNameConcept = makeTheNameString as Concept;
-            concept = conceptTypeCharacter;
                 if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
-                    var conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                        makeTheNameConcept.id, makeTheNameConcept.userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+                    // var makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
+                    // var makeTheNameConcept = makeTheNameString as Concept;
+                    // concept = conceptTypeCharacter;
+                    var conceptString = await CreateTheConceptImmediate(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
+                        12, 12, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
                     concept = conceptString as Concept;
+                    MakeTheNameInBackend(concept.id, `${referent}`, typeConcept.id, userId);
+
                 }
             }
             // if(concept){

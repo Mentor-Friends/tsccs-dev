@@ -1,6 +1,7 @@
 import { TheCharacter } from "../DataStructures/TheCharacter";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { TokenStorage } from "../DataStructures/TokenStorage";
+import { Concept } from "../app";
 export async function MakeTheNameInBackend(newConceptId:number, referent:string, typeId: number, typeUserId:number){
     try{
         var object = {
@@ -16,16 +17,11 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
 
         var requestObject = JSON.stringify(object);
         console.log('this is the request object', requestObject);
-            const response = await fetch(BaseUrl.MakeTheNameInBackendUrl(),{
+            const response =  fetch(BaseUrl.MakeTheNameInBackendUrl(),{
                 method: 'POST',
                 headers: myHeaders,
                 body: requestObject
             });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
-            }
-             const result = await response.json() as TheCharacter;
-            return result;
     }
     catch (error) {
         if (error instanceof Error) {
