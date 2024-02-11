@@ -28,4 +28,4 @@ export { Concept } from './DataStructures/Concept';
 export { ConceptsData } from './DataStructures/ConceptData';
 export { ConnectionData } from './DataStructures/ConnectionData';
 export { BaseUrl } from './DataStructures/BaseUrl';
-declare function init(url?: string, aiurl?: string): void;
+declare function init(url?: string, aiurl?: string, accessToken?: string): void;

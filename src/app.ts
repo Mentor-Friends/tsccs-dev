@@ -51,11 +51,13 @@ import { GetAiData } from './Api/GetAiData';
 import { GetStatsFromDatabase } from './Database/indexeddb';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
+import { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {BaseUrl} from './DataStructures/BaseUrl';
 
-function init(url:string = "", aiurl:string=""){
+function init(url:string = "", aiurl:string="", accessToken:string = ""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
+   TokenStorage.BearerAccessToken = accessToken;
    InitializeSystem().then(()=>{
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{

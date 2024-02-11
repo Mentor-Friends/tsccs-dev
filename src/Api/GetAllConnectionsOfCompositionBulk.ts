@@ -8,6 +8,7 @@ import { GetConceptBulk } from './GetConceptBulk';
 import { FindConceptsFromConnections } from '../Services/FindConeceptsFromConnection';
 import { FindConnectionsOfCompositionsBulkInMemory } from '../Services/FindConnectionsOfCompositionBulkInMemory';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
+import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
       
         var connectionList: Connection[] = [];
@@ -29,11 +30,10 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
 export async function GetAllConnectionsOfCompositionOnline(composition_ids: number[] = []){
   try{
       var connectionList: Connection[] = [];
+      var header = GetRequestHeader();
       const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionBulkUrl(),{
         method: 'POST',
-        headers:{
-            'Content-Type': 'application/json'
-        },
+        headers: header,
         body: JSON.stringify(composition_ids)
       });
       if(!response.ok){

@@ -4,6 +4,7 @@ import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConnectionBulk(connectionIds: number[]){
     try{
         var connectionList:Connection[] = [];
@@ -22,11 +23,10 @@ export async function GetConnectionBulk(connectionIds: number[]){
             return connectionList;
         }
         else{
+            var header = GetRequestHeader();
             const response = await fetch(BaseUrl.GetConnectionBulkUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
+                headers: header,
                 body: JSON.stringify(bulkConnectionFetch)
             });
             if(!response.ok){

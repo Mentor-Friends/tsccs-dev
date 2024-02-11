@@ -1,14 +1,13 @@
 import { CreateTheTextDataUrl } from "../../Constants/ApiConstants";
 import { TheTexts } from "../../DataStructures/TheTexts";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 export async function CreateTextData(textData: TheTexts){
     try{
-
+            var header = GetRequestHeader();
             const response = await fetch(BaseUrl.CreateTheTextDataUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
+                headers:header,
                 body: JSON.stringify(textData),
             });
             if(!response.ok){

@@ -2,6 +2,7 @@ import { Concept } from "./../DataStructures/Concept";
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConcept(id: number){
     try{
         var conceptUse :Concept= await ConceptsData.GetConcept(id);
@@ -10,11 +11,10 @@ export async function GetConcept(id: number){
             return conceptUse;
         }
         else{
+            var header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetConceptUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers:header,
                 body: `id=${id}`
             });
             if(!response.ok){

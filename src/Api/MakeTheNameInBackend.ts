@@ -1,7 +1,5 @@
-import { TheCharacter } from "../DataStructures/TheCharacter";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { TokenStorage } from "../DataStructures/TokenStorage";
-import { Concept } from "../app";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function MakeTheNameInBackend(newConceptId:number, referent:string, typeId: number, typeUserId:number){
     try{
         var object = {
@@ -11,12 +9,9 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
             'typeUserId': typeUserId
         }
 
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.append("Authorization", "Bearer "+ TokenStorage.token);
+        var myHeaders = GetRequestHeader();
 
         var requestObject = JSON.stringify(object);
-        console.log('this is the request object', requestObject);
             const response =  fetch(BaseUrl.MakeTheNameInBackendUrl(),{
                 method: 'POST',
                 headers: myHeaders,

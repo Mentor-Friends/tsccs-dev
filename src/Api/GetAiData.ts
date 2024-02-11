@@ -1,17 +1,16 @@
 import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
+import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAiData(){
     try{
       const start = new Date().getTime();
-
+        var header = GetRequestHeader('application/x-www-form-urlencoded');
         const response = await fetch(BaseUrl.GetAllAiData(),{
             method: 'GET',
-            headers:{
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
+            headers: header,
         });
         if(!response.ok){
             throw new Error(`Error! status: ${response.status}`);

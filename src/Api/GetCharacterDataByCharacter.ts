@@ -3,14 +3,13 @@ import {  GetCharacterByCharacterUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
 import { TheCharacter } from "../DataStructures/TheCharacter";
 import { BaseUrl } from "../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetCharacterByCharacter(characterValue: string){
     try{
-
+            var header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetCharacterByCharacterUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: header,
                 body: `character_value=${characterValue}`
             });
             if(!response.ok){

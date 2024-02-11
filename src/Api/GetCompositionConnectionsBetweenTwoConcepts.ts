@@ -1,6 +1,7 @@
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 
 export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:number, toConcept:number, mainKey:number){
     try{
@@ -10,8 +11,10 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:nu
         formdata.append("ofConceptId", ofConceptId.toString());
         formdata.append("mainKey", mainKey.toString());
         formdata.append("toConceptId", toConcept.toString());
+        var header = GetRequestHeader();
         const response = await fetch(BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl(),{
           method: 'POST',
+          headers: header,
           body: formdata
         });
         if(!response.ok){
