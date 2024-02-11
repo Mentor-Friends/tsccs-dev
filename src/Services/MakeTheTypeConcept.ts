@@ -2,7 +2,7 @@ import { CreateTextData } from "../Api/Create/CreateTheTextData";
 import { GetCharacterByCharacter } from "../Api/GetCharacterDataByCharacter";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
-import CreateTheConcept from "./CreateTheConcept";
+import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
 import GetConceptByCharacter from "./GetConceptByCharacter";
 import MakeTheCharacter from "./MakeTheCharacter";
 import { SplitStrings } from "./SplitStrings";
@@ -37,7 +37,7 @@ export default async  function MakeTheTypeConcept(typeString: string, sessionId:
 
                 if(typeConcept){
                     
-                    var concept = await CreateTheConcept(typeString, userId, categoryId, userId,typeConcept.id, userId, referentId, userId,
+                    var concept = await CreateTheConceptImmediate(typeString, userId, categoryId, userId,typeConcept.id, userId, referentId, userId,
                         securityId, userId,accessId, userId, sessionId, userId );
                     existingConcept = concept as Concept;
                 }

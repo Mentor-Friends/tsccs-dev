@@ -15,7 +15,7 @@ export async function CreateConnectionBetweenTwoConcepts(concept1Data: Concept, 
         var sessionInformationId = 999;
         var sessionInformationUserId = 999;
         if(both){
-            let prefix1: string = concept1Data.type?.characterValue + "_s";
+            let prefix1: string = concept2Data.type?.characterValue + "_s";
             let linkerAdd1 = linker + "_by";
             let backwardLinker = prefix1 + "_" + linkerAdd1;  
 

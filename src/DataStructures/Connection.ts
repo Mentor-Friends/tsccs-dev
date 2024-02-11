@@ -1,3 +1,4 @@
+import { Concept } from "./Concept";
 import { ConnectionData } from "./ConnectionData";
 
 export class Connection{
@@ -23,6 +24,7 @@ export class Connection{
     sessionInformationUserId: number;
     localSyncTime: Date;
     isTemp:boolean = false;
+    type: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
 
     constructor(id: number = 0, ofTheConceptId: number, toTheConceptId: number, ofTheConceptUserId: number, toTheConceptUserId: number,
         userId: number, typeId: number, typeUserId: number, orderId: number, orderUserId: number, securityId: number, securityUserId: number,

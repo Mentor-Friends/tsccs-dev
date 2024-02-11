@@ -2,11 +2,11 @@ import { CreateTheConceptUrl } from "../../Constants/ApiConstants";
 import { Concept } from "../../DataStructures/Concept";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
-
+import { BaseUrl } from "../../DataStructures/BaseUrl";
 export async function CreateTheConceptApi(conceptData: any){
     try{
             
-            const response = await fetch(CreateTheConceptUrl,{
+            const response = await fetch(BaseUrl.CreateTheConceptUrl(),{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'

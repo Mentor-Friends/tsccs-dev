@@ -4,7 +4,6 @@ import { getFromDatabaseWithTypeOld } from "../app";
 
 export  async function CreateCharacterBinaryTreeFromData(){
     var tree = new BinaryCharacterTree();
-    var startTime = new Date().getTime();
     var conceptList = await getFromDatabaseWithTypeOld("concept");
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
@@ -14,9 +13,6 @@ export  async function CreateCharacterBinaryTreeFromData(){
             }
 
         }
-        console.log("what is this");
-        console.log(BinaryCharacterTree.characterRoot);
-    var endTime = new Date().getTime();
-    var time = endTime - startTime;
+
 
 }

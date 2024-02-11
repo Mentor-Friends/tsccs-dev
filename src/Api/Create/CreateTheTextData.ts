@@ -1,10 +1,10 @@
 import { CreateTheTextDataUrl } from "../../Constants/ApiConstants";
 import { TheTexts } from "../../DataStructures/TheTexts";
-
+import { BaseUrl } from "../../DataStructures/BaseUrl";
 export async function CreateTextData(textData: TheTexts){
     try{
 
-            const response = await fetch(CreateTheTextDataUrl,{
+            const response = await fetch(BaseUrl.CreateTheTextDataUrl(),{
                 method: 'POST',
                 headers:{
                     'Content-Type': 'application/json'

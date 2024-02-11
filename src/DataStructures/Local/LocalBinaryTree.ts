@@ -53,7 +53,7 @@ export class LocalBinaryTree{
             var Node = this.root.getFromNode(id, this.root);
             return Node;
         }
-        return this.root;
+        return null;
     }
 
 
@@ -63,5 +63,11 @@ export class LocalBinaryTree{
             return Node;
         }   
         return this.root;
+    }
+
+    static async removeNodeFromTree(id:number){
+        if(this.root){
+            this.root = this.root.removeNode(this.root,id);
+        }
     }
 }

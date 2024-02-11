@@ -1,7 +1,8 @@
 import { BinaryCharacterTree } from "../DataStructures/BinaryCharacterTree";
 import { BinaryTree } from "../DataStructures/BinaryTree";
 import { Node } from "../DataStructures/Node";
-import { getFromDatabaseWithTypeOld } from "../app";
+import { getFromDatabaseWithTypeOld } from "../Database/indexeddb";
+import { ConceptsData } from "../DataStructures/ConceptData";
 
 export default  async function CreateBinaryTreeFromData(){
     var startTime = new Date().getTime();
@@ -9,8 +10,9 @@ export default  async function CreateBinaryTreeFromData(){
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
-                let node = new Node(concept.id, concept, null, null);
-                BinaryTree.addNodeToTree(node);
+                ConceptsData.AddConceptToMemory(concept);
+                // let node = new Node(concept.id, concept, null, null);
+                // BinaryTree.addNodeToTree(node);
             }
 
         }

@@ -1,6 +1,6 @@
 import { GetConcept } from "../Api/GetConcept";
 import { Concept } from "./Concept";
-import { getFromDatabase, getFromDatabaseWithType, getFromDatabaseWithTypeOld, removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import {  getFromDatabaseWithType, getFromDatabaseWithTypeOld, removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
 import { BinaryTree } from "./BinaryTree";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
@@ -25,6 +25,11 @@ export class ConceptsData{
         return contains;
     }
 
+    static AddConceptToStorage(concept: Concept){
+        if(concept.id > 0){
+        storeToDatabase("concept",concept);
+        }
+    }
 
     static AddConcept(concept: Concept){
         if(concept.id > 0){
@@ -36,9 +41,23 @@ export class ConceptsData{
           //  }
              storeToDatabase("concept",concept);
              BinaryTree.addConceptToTree(concept);
-             BinaryTypeTree.addConceptToTree(concept);
-             BinaryCharacterTree.addConceptToTree(concept);
-             this.conceptsArray.push(concept);
+              BinaryTypeTree.addConceptToTree(concept);
+              BinaryCharacterTree.addConceptToTree(concept);
+        }
+
+    }
+
+    static AddConceptToMemory(concept: Concept){
+        if(concept.id > 0){
+            //var contains = this.CheckContains(concept);
+           // this.conceptDictionary[concept.id] = concept;
+     
+        //    if(contains){
+          //   this.RemoveConcept(concept);
+          //  }
+             BinaryTree.addConceptToTree(concept);
+              BinaryTypeTree.addConceptToTree(concept);
+              BinaryCharacterTree.addConceptToTree(concept);
         }
 
     }
@@ -160,6 +179,10 @@ export class ConceptsData{
         let ConceptList: Concept[] = [];
         ConceptList = await BinaryTypeTree.getTypeVariantsFromTreeWithUserId(typeId, userId);
          return ConceptList;
+     }
+
+     static GetBinaryCharacterTree(){
+        return BinaryCharacterTree.characterRoot;
      }
 
 

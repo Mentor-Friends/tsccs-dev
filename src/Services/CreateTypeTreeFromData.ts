@@ -1,6 +1,6 @@
 import { BinaryTypeTree } from "../DataStructures/BinaryTypeTree";
 import { Node } from "../DataStructures/Node";
-import { getFromDatabaseWithTypeOld } from "../app";
+import { getFromDatabaseWithTypeOld } from "../Database/indexeddb";
 
 export  async function CreateTypeTreeFromData(){
     var startTime = new Date().getTime();
@@ -13,8 +13,6 @@ export  async function CreateTypeTreeFromData(){
             }
 
         }
-        console.log("what is this");
-        console.log(BinaryTypeTree.typeRoot);
     var endTime = new Date().getTime();
     var time = endTime - startTime;
 

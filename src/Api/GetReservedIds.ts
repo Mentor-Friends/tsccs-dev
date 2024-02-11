@@ -2,10 +2,11 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetReservedIdUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
 import { ReservedIds } from "../DataStructures/ReservedIds";
+import { BaseUrl } from "../DataStructures/BaseUrl";
 export async function GetReservedIds(){
     try{
 
-            const response = await fetch(GetReservedIdUrl,{
+            const response = await fetch(BaseUrl.GetReservedIdUrl(),{
                 method: 'GET',
                 headers:{
                     'Content-Type': 'application/x-www-form-urlencoded'
