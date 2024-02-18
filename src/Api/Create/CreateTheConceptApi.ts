@@ -3,14 +3,13 @@ import { Concept } from "../../DataStructures/Concept";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 export async function CreateTheConceptApi(conceptData: any){
     try{
-            
+            var header = GetRequestHeader();
             const response = await fetch(BaseUrl.CreateTheConceptUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
+                headers: header,
                 body: JSON.stringify(conceptData),
             });
             if(!response.ok){

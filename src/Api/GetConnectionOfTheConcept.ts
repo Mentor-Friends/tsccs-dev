@@ -4,6 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { TheCharacter } from "../DataStructures/TheCharacter";
 import { Connection } from "../DataStructures/Connection";
 import { BaseUrl } from "../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
     try{
         var urlencoded = new URLSearchParams();
@@ -12,11 +13,11 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
         urlencoded.append("userId", `${userId}`);
         urlencoded.append("inpage", `${inpage}`);
         urlencoded.append("page", `${page}`);
+
+        var header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetAllConnectionsOfConceptUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: header,
                 body: urlencoded
             });
             if(!response.ok){

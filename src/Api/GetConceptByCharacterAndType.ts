@@ -2,6 +2,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptByCharacterAndTypeUrl } from './../Constants/ApiConstants';
 import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
 
     try{
@@ -12,13 +13,10 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           'type_id': typeId 
         };
         var toSendJson = JSON.stringify(json);
-
+          var header = GetRequestHeader();
           const response = await fetch(BaseUrl.GetConceptByCharacterAndTypeUrl(),{
               method: 'POST',
-              headers:{
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
+              headers: header,
               body: toSendJson,
           });
           if(!response.ok){

@@ -5,6 +5,7 @@ import { GetAllConnectionsOfCompositionUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionBinaryTree } from '../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
+import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
@@ -27,11 +28,10 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
 export async function GetAllConnectionsOfCompositionOnline(composition_id: number){
   try{
       var connectionList: Connection[] = [];
+      var header = GetRequestHeader('application/x-www-form-urlencoded');
       const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
-        headers:{
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
+        headers: header,
         body: `composition_id=${composition_id}`
       });
       if(!response.ok){

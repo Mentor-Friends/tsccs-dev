@@ -1,13 +1,12 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Concept } from "../DataStructures/Concept";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConcept(id:number){
     try{
-
+           var headers = GetRequestHeader();
             const response = await fetch(BaseUrl.DeleteConceptUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: headers,
                 body: `id=${id}`
             });
             if(!response.ok){

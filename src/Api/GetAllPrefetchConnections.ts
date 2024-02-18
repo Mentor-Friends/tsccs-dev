@@ -1,6 +1,7 @@
 import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
+import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { ConnectionData } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
@@ -9,11 +10,10 @@ export async function GetAllPrefetchConnections(userId:number, inpage:number){
       const start = new Date().getTime();
       var urlencoded = new URLSearchParams();
       urlencoded.append("user_id", userId.toString());
+      var header = GetRequestHeader('application/x-www-form-urlencoded');
         const response = await fetch(BaseUrl.GetAllPrefetchConnectionsUrl(),{
             method: 'POST',
-            headers:{
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
+            headers: header,
             body: urlencoded
         });
         if(!response.ok){

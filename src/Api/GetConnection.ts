@@ -2,6 +2,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { Connection } from "../DataStructures/Connection";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConnection(id: number){
     try{
         var connectionUse :Connection= await ConnectionData.GetConnection(id);
@@ -10,12 +11,10 @@ export async function GetConnection(id: number){
             return connectionUse;
         }
         else{
-            console.log("getting connection from online");
+            var header = GetRequestHeader('application/x-www-form-urlencoded')
             const response = await fetch(BaseUrl.GetConnectionUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: header,
                 body: `id=${id}`
             });
             if(!response.ok){

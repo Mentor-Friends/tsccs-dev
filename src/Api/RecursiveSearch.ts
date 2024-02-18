@@ -3,6 +3,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { SearchQuery } from "../DataStructures/SearchQuery";
 import { GetCompositionFromConnectionsWithDataId } from "../Services/GetCompositionBulk";
 import { ConnectionData } from "../DataStructures/ConnectionData";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 
 export  async function RecursiveSearchApi(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
 
@@ -13,10 +14,7 @@ try{
     searchQuery.textSearch = textSearch;
     var raw = JSON.stringify(searchQuery);
     var Connections :Connection [] = []; 
-
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjEwMjY3IiwiZW1haWwiOiJuaXNjYWxiaGFuZGFyaTEyQGdtYWlsLmNvbSIsInVwbiI6IjEwMDEyODM5MiIsInByaW1hcnlzaWQiOiIxMDAyMDcxMTAiLCJuYmYiOjE3MDUyMjAxNTMsImV4cCI6MTcwNTMwNjU1MywiaWF0IjoxNzA1MjIwMDkzfQ.60UmKDgfGpEtWXWBkdCThnIWehgsDZVjn1SrjqRXI2Y");
+    var myHeaders = GetRequestHeader();
     const response = await fetch(BaseUrl.RecursiveSearchUrl(),{
         method: 'POST',
         headers: myHeaders,

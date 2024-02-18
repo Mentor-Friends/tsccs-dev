@@ -1,4 +1,4 @@
-export {init};
+export {init, updateAccessToken};
 
 import { SyncData } from './DataStructures/SyncData';
 import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
@@ -28,6 +28,7 @@ export { DeleteConnectionById } from './Services/DeleteConnection';
 export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
 export {RecursiveSearchApi} from './Api/RecursiveSearch';
+export {GetCompositionBulkWithDataId,GetCompositionBulk} from './Services/GetCompositionBulk';
 
 export { LoginToBackend } from './Api/Login';
 
@@ -51,11 +52,17 @@ import { GetAiData } from './Api/GetAiData';
 import { GetStatsFromDatabase } from './Database/indexeddb';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
+import { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {BaseUrl} from './DataStructures/BaseUrl';
 
-function init(url:string = "", aiurl:string=""){
+function updateAccessToken(accessToken:string = ""){
+   TokenStorage.BearerAccessToken = accessToken;
+}
+
+function init(url:string = "", aiurl:string="", accessToken:string = ""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
+   TokenStorage.BearerAccessToken = accessToken;
    InitializeSystem().then(()=>{
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{

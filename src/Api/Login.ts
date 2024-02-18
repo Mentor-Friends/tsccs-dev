@@ -1,5 +1,5 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { TokenStorage } from '../DataStructures/TokenStorage';
+import { TokenStorage } from '../DataStructures/Security/TokenStorage';
 
 export async function LoginToBackend(email:string, password:string){
     try{
@@ -23,8 +23,8 @@ export async function LoginToBackend(email:string, password:string){
             }
              const result = await response.json();
              console.log(result.data);
-             TokenStorage.token = result.data.token;
-             console.log("this is the token",TokenStorage.token);
+             TokenStorage.BearerAccessToken = result.data.token;
+             console.log("this is the token",TokenStorage.BearerAccessToken);
             return result;
     }
     catch (error) {

@@ -2,6 +2,7 @@ import { Concept } from "./../DataStructures/Concept";
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConceptBulk(conceptIds: number[]){
     try{
         var bulkConceptFetch = [];
@@ -16,11 +17,10 @@ export async function GetConceptBulk(conceptIds: number[]){
             return bulkConceptFetch;
         }
         else{
+            var header = GetRequestHeader();
             const response = await fetch(BaseUrl.GetConceptBulkUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
+                headers: header,
                 body: JSON.stringify(bulkConceptFetch)
             });
             if(!response.ok){

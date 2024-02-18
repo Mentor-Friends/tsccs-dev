@@ -1,16 +1,15 @@
 import { Connection } from "../DataStructures/Connection";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { BaseUrl } from "../app";
 
 export async function GetAllLinkerConnectionsFromTheConcept(conceptId:number){
     try{
         var connections: Connection[] = [];
         const start = new Date().getTime();
-  
+          var header = GetRequestHeader('application/x-www-form-urlencoded');
           const response = await fetch(BaseUrl.GetAllLinkerConnectionOfConceptUrl() + `?conceptId=${conceptId}`,{
               method: 'GET',
-              headers:{
-                  'Content-Type': 'application/x-www-form-urlencoded'
-              },
+              headers: header,
           });
           if(!response.ok){
               throw new Error(`Error! status: ${response.status}`);
