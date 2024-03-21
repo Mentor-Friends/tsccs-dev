@@ -1,7 +1,7 @@
 import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { SyncData } from "../../DataStructures/SyncData";
-import { storeToDatabase } from "../../Database/indexdblocal";
+import { storeToDatabase } from "../../Database/NoIndexDb";
 import { genHexString } from "./../GenerateHexNumber";
 
 export default function CreateTheConnectionLocal(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,

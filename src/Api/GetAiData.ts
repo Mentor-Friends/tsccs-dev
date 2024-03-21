@@ -17,10 +17,10 @@ export async function GetAiData(){
         }
          const result = await response.json();
         for(var i=0; i< result.length; i++){
-            ConceptsData.AddConceptToStorage(result[i]);
+            ConceptsData.AddConcept(result[i]);
         }
         console.log("got all the concepts data from ai");
-        PurgatoryDatabaseUpdated();
+        //PurgatoryDatabaseUpdated();
         let elapsed = new Date().getTime() - start;
         console.log("The time taken is ", elapsed);
 

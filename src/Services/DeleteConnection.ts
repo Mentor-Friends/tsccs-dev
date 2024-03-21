@@ -1,6 +1,6 @@
 import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree";
 import { ConnectionTypeTree } from "../DataStructures/ConnectionBinaryTree/ConnectionTypeTree";
-import { removeFromDatabase } from "../Database/indexeddb";
+import { removeFromDatabase } from "../Database/NoIndexDb";
 import {GetConnectionById} from "./GetConnections";
 
 export  async function DeleteConnectionById(id:number){

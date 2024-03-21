@@ -3,7 +3,7 @@ import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { ReservedIds } from "../../DataStructures/ReservedIds";
 import { SyncData } from "../../DataStructures/SyncData";
-import { storeToDatabase } from "../../Database/indexdblocal";
+import { storeToDatabase } from "../../Database/NoIndexDb";
 
 export default async function CreateTheConceptLocal(referent:string, userId:number, categoryId:number, categoryUserId:number,
 typeId:number, typeUserId:number,referentId:number, referentUserId:number,securityId:number, securityUserId:number,

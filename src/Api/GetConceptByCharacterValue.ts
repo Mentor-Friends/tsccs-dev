@@ -6,15 +6,19 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConceptByCharacterValue(characterValue: string){
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
+
+            console.log("this is the character url",BaseUrl.GetConceptByCharacterValueUrl());
             const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',
               headers: header,
               body: `character_value=${characterValue}`
           });
           if(!response.ok){
+            console.log("this is the web testing");
               throw new Error(`Error! status: ${response.status}`);
           }
           else{
+            console.log("this is another condition");
             const result = await response.json() as Concept;
             if(result.id > 0){
               ConceptsData.AddConcept(result);
@@ -26,7 +30,8 @@ export async function GetConceptByCharacterValue(characterValue: string){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
+          console.log("this is the character url",BaseUrl.GetConceptByCharacterValueUrl());
+          console.log('error message: ', error);
           return error.message;
         } else {
           console.log('unexpected error: ', error);

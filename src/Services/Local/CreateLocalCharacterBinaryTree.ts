@@ -1,6 +1,6 @@
 import { LocalBinaryCharacterTree } from "../../DataStructures/Local/LocalBinaryCharacterTree";
 import { Node } from "../../DataStructures/Node";
-import { getAllFromLocalDb } from "../../Database/indexdblocal";
+import { getAllFromLocalDb } from "../../Database/NoIndexDb";
 
 export  async function CreateLocalCharacterBinaryTreeFromData(){
     var startTime = new Date().getTime();

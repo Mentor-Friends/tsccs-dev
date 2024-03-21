@@ -1,7 +1,7 @@
 import { BinaryCharacterTree } from "../DataStructures/BinaryCharacterTree";
 import { BinaryTree } from "../DataStructures/BinaryTree";
 import { Node } from "../DataStructures/Node";
-import { getFromDatabaseWithTypeOld } from "../Database/indexeddb";
+import { getFromDatabaseWithTypeOld } from "../Database/NoIndexDb";
 import { ConceptsData } from "../DataStructures/ConceptData";
 
 export default  async function CreateBinaryTreeFromData(){

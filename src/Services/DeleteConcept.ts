@@ -2,7 +2,7 @@ import DeleteTheConcept from "../Api/DeleteTheConcept";
 import { BinaryCharacterTree } from "../DataStructures/BinaryCharacterTree";
 import { BinaryTree } from "../DataStructures/BinaryTree";
 import { BinaryTypeTree } from "../DataStructures/BinaryTypeTree";
-import { removeFromDatabase } from "../Database/indexeddb";
+import { removeFromDatabase } from "../Database/NoIndexDb";
 import GetTheConcept from "./GetTheConcept";
 
 export  async function DeleteConceptById(id:number){

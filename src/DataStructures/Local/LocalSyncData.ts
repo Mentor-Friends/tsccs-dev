@@ -2,7 +2,7 @@ import { Concept } from "./../Concept";
 import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "./../Connection";
 import { LocalConnectionData } from "./LocalConnectionData";
-import { storeToDatabase } from "../../Database/indexdblocal";
+import { storeToDatabase } from "../../Database/NoIndexDb";
 
 export class LocalSyncData{
     static  conceptsSyncArray:Concept[] = [];

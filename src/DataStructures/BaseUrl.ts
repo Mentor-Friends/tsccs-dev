@@ -1,5 +1,5 @@
 export class BaseUrl{
-    static BASE_URL: string  = "";
+    static BASE_URL: string  = "https://localhost:7053/";
 
     static AI_URL: string ="https://ai.freeschema.com";
 

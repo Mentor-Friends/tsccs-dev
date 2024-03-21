@@ -1,4 +1,4 @@
-import {storeToDatabase } from "../../Database/indexdblocal";
+import {storeToDatabase } from "../../Database/NoIndexDb";
 import { IdentifierFlags } from "../IdentifierFlags";
 import { Connection } from "./../Connection";
 export class LocalConnectionData{

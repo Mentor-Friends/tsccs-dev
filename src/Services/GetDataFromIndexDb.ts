@@ -3,8 +3,8 @@ import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/Con
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { LocalConceptsData } from "../DataStructures/Local/LocalConceptData";
 import { LocalConnectionData } from "../DataStructures/Local/LocalConnectionData";
-import { getAllFromLocalDb } from "../Database/indexdblocal";
-import { getFromDatabaseWithTypeOld } from "../Database/indexeddb";
+import { getAllFromLocalDb } from "../Database/NoIndexDb";
+import { getFromDatabaseWithTypeOld } from "../Database/NoIndexDb";
 
 export  async function GetDataFromIndexDb(){
 

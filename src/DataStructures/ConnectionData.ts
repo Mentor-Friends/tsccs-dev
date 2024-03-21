@@ -1,4 +1,4 @@
-import { removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import { removeFromDatabase, storeToDatabase } from "../Database/NoIndexDb";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Connection } from "./Connection";
 import { ConnectionBinaryTree } from "./ConnectionBinaryTree/ConnectionBinaryTree";

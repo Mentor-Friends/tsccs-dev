@@ -11,7 +11,7 @@ export { CreateConnectionBetweenTwoConcepts } from './Services/CreateConnectionB
 export { default as GetTheConcept } from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept } from './Services/MakeTheInstanceConcept';
 export { MakeTheInstanceConceptLocal } from './Services/Local/MakeTheInstanceConceptLocal';
-export { storeToDatabase, getFromDatabaseWithType, getFromDatabaseWithTypeOld } from './Database/indexeddb';
+export { storeToDatabase, getFromDatabaseWithType, getFromDatabaseWithTypeOld } from './Database/NoIndexDb';
 export { default as CreateTheConnection } from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink } from './Services/GetLink';

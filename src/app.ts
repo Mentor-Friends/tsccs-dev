@@ -18,7 +18,7 @@ export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBet
 export { default as GetTheConcept} from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
 export { MakeTheInstanceConceptLocal} from './Services/Local/MakeTheInstanceConceptLocal';
-export { storeToDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/indexeddb';
+export { storeToDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/NoIndexDb';
 export {default as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink } from './Services/GetLink';
@@ -49,7 +49,7 @@ import { BinaryTypeTree } from './DataStructures/BinaryTypeTree';
 import { CreateLocalCharacterBinaryTreeFromData } from './Services/Local/CreateLocalCharacterBinaryTree';
 import { CreateLocalBinaryTypeTreeFromData } from './Services/Local/CreateLocalBinaryTypeTreeFromData';
 import { GetAiData } from './Api/GetAiData';
-import { GetStatsFromDatabase } from './Database/indexeddb';
+import { GetStatsFromDatabase } from './Database/NoIndexDb';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
@@ -62,6 +62,7 @@ function updateAccessToken(accessToken:string = ""){
 function init(url:string = "", aiurl:string="", accessToken:string = ""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
+   console.log("This ist he base url", BaseUrl.BASE_URL);
    TokenStorage.BearerAccessToken = accessToken;
    InitializeSystem().then(()=>{
       const start = new Date().getTime();

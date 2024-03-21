@@ -27,7 +27,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             var  stringLength:number = referent.length;
             var typeConcept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
             var concept: Concept;
-
             var startsWithThe = type.startsWith("the_");
 
             if(startsWithThe){
