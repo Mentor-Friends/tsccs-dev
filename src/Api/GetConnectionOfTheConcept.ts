@@ -28,10 +28,10 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
+          console.log('GetConnetionOfTheConcept error message: ', error.message);
           return error.message;
         } else {
-          console.log('unexpected error: ', error);
+          console.log('GetConnetionOfTheConcept unexpected error: ', error);
           return 'An unexpected error occurred';
         }
       }

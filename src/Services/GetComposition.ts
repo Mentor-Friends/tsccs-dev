@@ -144,7 +144,7 @@ export async function GetCompositionWithId(id:number){
 }
 
 
- async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[]){
+export async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[]){
 
     var output : any= {};
     var arroutput: any = [];

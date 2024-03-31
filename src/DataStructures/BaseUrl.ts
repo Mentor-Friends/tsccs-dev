@@ -59,7 +59,7 @@ export class BaseUrl{
     }
     
     static GetAllAiData(){
-        return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=500';
+        return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
 
     static GetAllPrefetchConnectionsUrl(){
@@ -120,6 +120,14 @@ export class BaseUrl{
         return this.BASE_URL + '/api/create_the_connection';
     }
 
+
+
+    ////////////////////////////////////////////////////////////////////////
+    /////////////////////API FOR Deleting Connection //////////////////////
+
+    static DeleteTheConnectionUrl(){
+        return this.BASE_URL + '/api/delete_connection';
+    }
 
 
 

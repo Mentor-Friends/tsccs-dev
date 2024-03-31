@@ -5,9 +5,9 @@ import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
 export default  async function CreateTheComposition(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null)
 {
-    var localUserId:number = userId ?? 10267;
-    var localAccessId: number = accessId ?? 10267;
-    var localSessionId: number = sessionInformationId ?? 10267;
+    var localUserId:number = userId ?? 999;
+    var localAccessId: number = accessId ?? 999;
+    var localSessionId: number = sessionInformationId ?? 999;
     var MainKeyLocal: number = mainKey ?? 0;
     var MainConcept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
     for (const key in json) {

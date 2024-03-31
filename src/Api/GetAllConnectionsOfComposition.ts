@@ -37,7 +37,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
       if(!response.ok){
           throw new Error(`Error! status: ${response.status}`);
       }
-      console.log("waiting and watching");
       const result = await response.json();
       for(var i=0; i< result.length; i++){
           ConnectionData.AddConnection(result[i]);

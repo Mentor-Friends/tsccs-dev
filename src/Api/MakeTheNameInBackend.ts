@@ -20,10 +20,10 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
+          console.log('make the name in backend error message: ', error.message);
           return error.message;
         } else {
-          console.log('unexpected error: ', error);
+          console.log('make the name in backend unexpected error: ', error);
           return 'An unexpected error occurred';
         }
       }

@@ -21,10 +21,10 @@ export async function GetReservedIds(){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
+          console.log('get reserved ids error message: ', error.message);
           return error.message;
         } else {
-          console.log('unexpected error: ', error);
+          console.log('get reserved ids  unexpected error: ', error);
           return 'An unexpected error occurred';
         }
       }

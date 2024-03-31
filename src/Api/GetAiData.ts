@@ -2,6 +2,7 @@ import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { BinaryTree } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAiData(){
@@ -19,7 +20,6 @@ export async function GetAiData(){
         for(var i=0; i< result.length; i++){
             ConceptsData.AddConcept(result[i]);
         }
-        console.log("got all the concepts data from ai");
         //PurgatoryDatabaseUpdated();
         let elapsed = new Date().getTime() - start;
         console.log("The time taken is ", elapsed);

@@ -10,7 +10,7 @@ export { SplitStrings} from './Services/SplitStrings';
 export { GetCompositionList,GetCompositionListWithId }  from './Services/GetCompositionList';
 export { GetCompositionListLocal, GetCompositionListLocalWithId} from './Services/Local/GetCompositionListLocal';
 export {GetAllConnectionsOfComposition} from './Api/GetAllConnectionsOfComposition';
-export {GetComposition,GetCompositionWithId} from './Services/GetComposition';
+export {GetComposition,GetCompositionWithId, recursiveFetch} from './Services/GetComposition';
 export {GetCompositionLocal, GetCompositionLocalWithId} from './Services/Local/GetCompositionLocal';
 export {default as CreateComposition} from './Services/CreateTheComposition';
 export { CreateTheCompositionLocal } from './Services/Local/CreateTheCompositionLocal';
@@ -26,18 +26,23 @@ export { GetLinkerConnectionFromConcepts} from './Services/GetLinkerConnectionFr
 export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';
 export { GetConnectionById } from './Services/GetConnections';
+export {default} from './Services/CreateTheConnection';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
 export {RecursiveSearchApi} from './Api/RecursiveSearch';
-export {GetCompositionBulkWithDataId,GetCompositionBulk} from './Services/GetCompositionBulk';
-
+export {GetCompositionBulkWithDataId,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
+export { GetConceptBulk } from './Api/GetConceptBulk';
+export { GetConnectionBulk } from './Api/GetConnectionBulk';
 export { LoginToBackend } from './Api/Login';
 
 export {  } from './Api/GetConceptByCharacterAndType';
 
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
+export {Connection} from './DataStructures/Connection';
 export {ConceptsData} from './DataStructures/ConceptData';
 export { ConnectionData } from './DataStructures/ConnectionData';
+export {BinaryTree} from './DataStructures/BinaryTree';
+export {SearchQuery} from './DataStructures/SearchQuery';
 
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import { BinaryTree } from './DataStructures/BinaryTree';

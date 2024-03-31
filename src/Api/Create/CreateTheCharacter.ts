@@ -35,10 +35,10 @@ export async function CreateTheCharacter(characterData: TheCharacter){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
+          console.log('create the character error message: ', error.message);
           return error.message;
         } else {
-          console.log('unexpected error: ', error);
+          console.log('create the character unexpected error: ', error);
           return 'An unexpected error occurred';
         }
       }
