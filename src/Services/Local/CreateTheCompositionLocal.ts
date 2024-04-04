@@ -1,5 +1,6 @@
 import { Concept } from "../../DataStructures/Concept";
 import { SyncData } from "../../DataStructures/SyncData";
+import { CreateDefaultConcept } from "../CreateDefaultConcept";
 import CreateTheConnectionLocal from "./CreateTheConnectionLocal";
 import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
 
@@ -9,7 +10,7 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
     var localAccessId: number = accessId ?? 10267;
     var localSessionId: number = sessionInformationId ?? 10267;
     var MainKeyLocal: number = mainKey ?? 0;
-    var MainConcept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+    var MainConcept = CreateDefaultConcept();
     for (const key in json) {
         if(typeof json[key] != 'string' && typeof json[key] != 'number' ){
             if(ofTheConceptId == null && ofTheConceptUserId == null){

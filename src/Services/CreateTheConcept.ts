@@ -10,8 +10,10 @@ accessId:number, accessUserId:number, sessionInformationId:number, sessionInform
 
 var id = await ReservedIds.getId();
 var isNew: boolean = true;
+let created_on:Date = new Date();
+let updated_on:Date = new Date();
 var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
-    securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
+    securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on,updated_on);
 concept.isTemp = false;
 SyncData.AddConcept(concept);
 return concept;
@@ -24,8 +26,10 @@ export  async function CreateTheConceptTemporary(referent:string, userId:number,
     
     var id = await ReservedIds.getId();
     var isNew: boolean = true;
+    let created_on:Date = new Date();
+    let updated_on:Date = new Date();
     var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
-        securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
+        securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on, updated_on);
     concept.isTemp = true;
     return concept;
     
@@ -37,8 +41,10 @@ export  async function CreateTheConceptImmediate(referent:string, userId:number,
     
     var id = await ReservedIds.getId();
     var isNew: boolean = false;
+    let created_on:Date = new Date();
+let updated_on:Date = new Date();
     var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
-        securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
+        securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on, updated_on);
     ConceptsData.AddConcept(concept);
     
     CreateTheConceptApi([concept]);

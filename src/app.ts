@@ -21,7 +21,8 @@ export { MakeTheInstanceConceptLocal} from './Services/Local/MakeTheInstanceConc
 export { storeToDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/NoIndexDb';
 export {default as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
-export { GetLink } from './Services/GetLink';
+export { GetLink,GetLinkRaw } from './Services/GetLink';
+export {CreateDefaultConcept} from './Services/CreateDefaultConcept';
 export { GetLinkerConnectionFromConcepts} from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';
@@ -32,7 +33,9 @@ export {RecursiveSearchApi} from './Api/RecursiveSearch';
 export {GetCompositionBulkWithDataId,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
 export { GetConceptBulk } from './Api/GetConceptBulk';
 export { GetConnectionBulk } from './Api/GetConnectionBulk';
+export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
 export { LoginToBackend } from './Api/Login';
+export {GetConnectionOfTheConcept} from './Api/GetConnectionOfTheConcept';
 
 export {  } from './Api/GetConceptByCharacterAndType';
 

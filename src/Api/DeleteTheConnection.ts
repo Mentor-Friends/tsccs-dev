@@ -2,11 +2,12 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConnection(id:number){
     try{
-           var headers = GetRequestHeader();
+           const formdata = new FormData();
+           formdata.append("id", id.toString());
             const response = await fetch(BaseUrl.DeleteTheConnectionUrl(),{
                 method: 'POST',
-                headers: headers,
-                body: `id=${id}`
+                body: formdata,  
+                redirect: "follow"
             });
             if(!response.ok){
                 throw new Error(`Error! status: ${response.status}`);

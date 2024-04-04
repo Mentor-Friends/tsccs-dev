@@ -83,7 +83,6 @@ export class LocalSyncData{
                 storeToDatabase("localconnection",this.connectionSyncArray[i]);
             }
          this.connectionSyncArray = [];
-         console.log(this.connectionSyncArray);
         }
         return "done";
      }

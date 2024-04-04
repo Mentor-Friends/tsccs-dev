@@ -76,8 +76,6 @@ export class BinaryCharacterTree{
             return null;
         }
         if(this.characterRoot){
-            console.log("searching .................");
-            console.log(value);
             var Node = this.characterRoot.getFromNodeWithCharacterAndType(value, typeId,this.characterRoot);
             return Node;
         }   

@@ -11,8 +11,10 @@ accessId:number, accessUserId:number, sessionInformationId:number, sessionInform
 
 var id = Math.floor(Math.random() * 100000000);
 var isNew: boolean = true;
+let created_on:Date = new Date();
+let updated_on:Date = new Date();
 var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
-    securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
+    securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on,updated_on);
 concept.isTemp = true;
 LocalConceptsData.AddConcept(concept);
 storeToDatabase("localconcept",concept);

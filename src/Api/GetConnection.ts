@@ -23,7 +23,6 @@ export async function GetConnection(id: number){
 
             const result = await response.json() as Connection;
             ConnectionData.AddConnection(result);
-            console.log("this is the connection added", result);
             return result;
             
 

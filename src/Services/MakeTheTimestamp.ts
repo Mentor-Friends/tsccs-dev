@@ -1,4 +1,5 @@
 import { Concept } from "../DataStructures/Concept";
+import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import MakeTheConcept from "./MakeTheConcept";
 import MakeTheTypeConcept from "./MakeTheTypeConcept";
 
@@ -18,7 +19,7 @@ export async function MakeTheTimestamp(type:string, referent:string, userId: num
         var accessUserId: number = userId;
         var stringToCheck: string = "";
         var startsWithThe = type.startsWith("the_");
-        var typeConcept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+        var typeConcept = CreateDefaultConcept();
         var concept: Concept;
         if(startsWithThe){
             stringToCheck = type;

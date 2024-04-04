@@ -17,7 +17,6 @@ export async function GetCompositionBulk(ids:number[]=[]){
 
 
 export async function GetCompositionBulkWithDataId(ids:number[]=[]){
-    console.log("these are the ids", ids);
     await GetAllConnectionsOfCompositionBulk(ids);
     var compositions: any[] = [];
     for(let i=0; i< ids.length;i++){

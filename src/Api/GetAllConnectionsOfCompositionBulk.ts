@@ -1,10 +1,6 @@
 import { Connection } from '../DataStructures/Connection';
 import { ConnectionData } from '../DataStructures/ConnectionData';
-import { GetMaximumConnectionSyncTime } from '../Services/GetMaximumConnectionSyncTime';
-import { GetAllConnectionsOfCompositionBulkUrl } from '../Constants/ApiConstants';
-import { ConceptsData } from "./../DataStructures/ConceptData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetConceptBulk } from './GetConceptBulk';
 import { FindConceptsFromConnections } from '../Services/FindConeceptsFromConnection';
 import { FindConnectionsOfCompositionsBulkInMemory } from '../Services/FindConnectionsOfCompositionBulkInMemory';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
@@ -19,8 +15,8 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
         var oldConnectionList = await FindConnectionsOfCompositionsBulkInMemory(composition_ids);
         var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_ids);
         connectionList = connectionListString as Connection[];
+
         CheckForConnectionDeletion(connectionList, oldConnectionList);
-        console.log("checking for connection bulk");
         await FindConceptsFromConnections(connectionList);
         return connectionList;
         

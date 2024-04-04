@@ -1,9 +1,10 @@
 import { GetConcept } from "../Api/GetConcept";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
+import { CreateDefaultConcept } from "./CreateDefaultConcept";
 
 export default async function GetTheConcept(id: number){
-    var concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+    var concept = CreateDefaultConcept();
     concept = await ConceptsData.GetConcept(id);
     if((concept == null || concept.id == 0) && id != null && id != undefined){
      var conceptString = await  GetConcept(id);

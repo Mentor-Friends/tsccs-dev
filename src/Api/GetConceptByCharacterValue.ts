@@ -7,7 +7,6 @@ export async function GetConceptByCharacterValue(characterValue: string){
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
 
-            console.log("this is the character url",BaseUrl.GetConceptByCharacterValueUrl());
             const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',
               headers: header,
@@ -18,7 +17,6 @@ export async function GetConceptByCharacterValue(characterValue: string){
               throw new Error(`Error! status: ${response.status}`);
           }
           else{
-            console.log("this is another condition");
             const result = await response.json() as Concept;
             if(result.id > 0){
               ConceptsData.AddConcept(result);
@@ -30,7 +28,6 @@ export async function GetConceptByCharacterValue(characterValue: string){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log("this is the character url",BaseUrl.GetConceptByCharacterValueUrl());
           console.log('error message: ', error);
           return error.message;
         } else {

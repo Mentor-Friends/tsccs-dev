@@ -6,7 +6,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
 
     try{
-    var concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
+    let concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
       if(concept == null || concept.id == 0){
         var json = {
           'character_value': `${characterValue}`,
@@ -22,7 +22,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           if(!response.ok){
               throw new Error(`Error! status: ${response.status}`);
           }
-            var conceptString = await response.json() ;
+            let conceptString = await response.json() ;
             concept = conceptString as Concept;
             ConceptsData.AddConcept(concept);
       }

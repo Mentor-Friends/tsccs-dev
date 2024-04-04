@@ -4,6 +4,7 @@ import {  getFromDatabaseWithType, getFromDatabaseWithTypeOld, removeFromDatabas
 import { BinaryTree } from "./BinaryTree";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
+import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 export class ConceptsData{
 
     name: string;
@@ -83,7 +84,7 @@ export class ConceptsData{
     }
 
     static async GetConcept(id: number){
-       var  myConcept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+       var  myConcept: Concept = CreateDefaultConcept();
         var node = await BinaryTree.getNodeFromTree(id);
         if(node?.value){
             var returnedConcept = node.value;
@@ -102,7 +103,7 @@ export class ConceptsData{
     }
 
     static async GetConceptByCharacter(characterValue: string){
-        var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+        var concept: Concept = CreateDefaultConcept();
         //  for(var i=0; i<this.conceptsArray.length; i++){
         //      if(this.conceptsArray[i].characterValue == characterValue){
         //         concept = this.conceptsArray[i];
@@ -111,7 +112,6 @@ export class ConceptsData{
 
         var Node = BinaryCharacterTree.getNodeFromTree(characterValue);
         if(Node){
-            console.log("got the character");
             concept  = Node.value;
         }
         // console.log(characterValue);
@@ -126,7 +126,7 @@ export class ConceptsData{
      }
 
      static async GetConceptByCharacterAndTypeLocal(character_value:string, typeId: number){
-        var concept: Concept = new Concept(0,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,false);
+        var concept: Concept = CreateDefaultConcept();
         //var Node = await BinaryCharacterTree.getCharacterAndTypeFromTree(character_value,typeId);
         concept = await BinaryTypeTree.getTypeVariantsWithCharacterValue(character_value,typeId);
         // if(Node){

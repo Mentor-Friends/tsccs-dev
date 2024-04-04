@@ -4,7 +4,8 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 import { GetComposition, GetCompositionFromMemory, GetCompositionWithId, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetConceptByCharacter from "./GetConceptByCharacter";
 
-
+// get the list of compositions from the type 
+// for eg get list of boomgpt
 export  async function GetCompositionList(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
    var concept = await GetConceptByCharacter(compositionName);
    var CompositionList :any = [];

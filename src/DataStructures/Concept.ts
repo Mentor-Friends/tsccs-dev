@@ -18,6 +18,8 @@ export  class Concept{
     accessUserId: number;
     sessionId: number;
     sessionUserId: number;
+    entryTimeStamp: Date;
+    updatedTimeStamp:Date;
     referent: number;
     type: Concept | null | void;
     isNew: boolean;
@@ -27,7 +29,7 @@ export  class Concept{
     constructor(id: number, userId: number, typeId:number, typeUserId:number, categoryId:number, categoryUserId:number,
              referentId:number, referentUserId:number, characterValue:string,
             securityId:number, securityUserId:number, accessId:number, accessUserId:number, sessionId:number,
-             sessionUserId:number, isNew:boolean=false){
+             sessionUserId:number, isNew:boolean=false, entryTimeStamp: Date, updatedTimeStamp:Date){
         this.id = id;
         this.userId = userId;
         this.typeId  = typeId;
@@ -48,6 +50,8 @@ export  class Concept{
         this.y = 0;
         this.type = null;
         this.isNew = isNew;
+        this.entryTimeStamp = entryTimeStamp;
+        this.updatedTimeStamp = updatedTimeStamp;
        // ConceptsData.AddConcept(this);
     }
 

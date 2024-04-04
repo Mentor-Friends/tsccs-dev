@@ -3,11 +3,11 @@ import { Concept } from "../DataStructures/Concept";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConcept(id:number){
     try{
-           var headers = GetRequestHeader();
+           const formdata = new FormData();
+           formdata.append("id", id.toString());
             const response = await fetch(BaseUrl.DeleteConceptUrl(),{
                 method: 'POST',
-                headers: headers,
-                body: `id=${id}`
+                body: formdata
             });
             if(!response.ok){
                 throw new Error(`Error! status: ${response.status}`);

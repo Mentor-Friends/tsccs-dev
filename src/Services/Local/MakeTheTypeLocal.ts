@@ -18,8 +18,6 @@ export default async  function MakeTheTypeConceptLocal(typeString: string, sessi
 
     var existingConcept = await GetConceptByCharacterLocal(typeString);
 
-    console.log("existing here", typeString);
-    console.log(existingConcept);
     if(existingConcept){
         if(existingConcept.id == 0 || existingConcept.userId == 0){
             var splittedStringArray = SplitStrings(typeString);
