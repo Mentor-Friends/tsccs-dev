@@ -27,10 +27,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             let stringToCheck: string = "";
 
             let  stringLength:number = referent.length;
-            let referentType: string = typeof(referent);
-            console.log("This is the referent type" , referentType);
-            console.log("This is the ref type",type );
-            console.log("This is the ref value",referent );
             let typeConcept = CreateDefaultConcept();
             let concept: Concept;
             let startsWithThe = type.startsWith("the_");
@@ -63,9 +59,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
 
                 CreateTextData(TheTextsData);
 
-            }
-            else if(referentType == "Date"){
-               concept  = await MakeTheTimestamp(type, referent, userId, accessId, sessionInformationId);
             }
             else{
                 let typeConceptString = await MakeTheTypeConcept(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
