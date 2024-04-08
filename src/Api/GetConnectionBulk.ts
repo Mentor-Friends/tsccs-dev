@@ -6,8 +6,9 @@ import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConnectionBulk(connectionIds: number[] = []){
+    var connectionList:Connection[] = [];
+
     try{
-        var connectionList:Connection[] = [];
         var bulkConnectionFetch = [];
         for(let i=0; i<connectionIds.length; i++){
             let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
@@ -30,8 +31,9 @@ export async function GetConnectionBulk(connectionIds: number[] = []){
                 body: JSON.stringify(bulkConnectionFetch)
             });
             if(!response.ok){
+              //  throw new Error(`Error! status: ${response.status}`);
+
                 return connectionList;
-                throw new Error(`Error! status: ${response.status}`);
             }
 
 
@@ -55,10 +57,9 @@ export async function GetConnectionBulk(connectionIds: number[] = []){
     catch (error) {
         if (error instanceof Error) {
           console.log('Get Connection Bulk error message: ', error.message);
-          return error.message;
         } else {
           console.log('Get Connection Bulk unexpected error: ', error);
-          return 'An unexpected error occurred';
         }
+        return connectionList;
       }
 }

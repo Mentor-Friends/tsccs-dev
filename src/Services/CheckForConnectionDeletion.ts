@@ -3,9 +3,12 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 
 export  function CheckForConnectionDeletion(newConnections:Connection[] = [], oldConnections:Connection[] = []){
     for(let i=0; i<oldConnections.length; i++){
-        if(!newConnections.find(obj => obj.id === oldConnections[i].id)){
-             ConnectionData.RemoveConnection(oldConnections[i]);
+        if(newConnections){
+            if(!newConnections.find(obj => obj.id === oldConnections[i].id)){
+                ConnectionData.RemoveConnection(oldConnections[i]);
+           }
         }
+
     }
 }
 

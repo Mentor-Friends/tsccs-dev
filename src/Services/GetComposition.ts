@@ -176,13 +176,16 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
 
     var output : any= {};
     var arroutput: any = [];
+    if(id == 0){
+        return null;
+    }
     var concept = await ConceptsData.GetConcept(id);
     if((concept == null || concept.id == 0) && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
 
-    if(concept){
+    if(concept.id != 0){
         if(concept.type == null){
 
             var toConceptTypeId: number  = concept.typeId;
