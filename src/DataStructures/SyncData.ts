@@ -84,13 +84,18 @@ export class SyncData{
         }
         
         if(this.conceptsSyncArray.length > 0){
-             CreateTheConceptApi(this.conceptsSyncArray);
-            this.conceptsSyncArray = [];
+            let conceptsArray = this.connectionSyncArray.slice();
+            this.connectionSyncArray = [];
+            CreateTheConceptApi(conceptsArray);
         }
          if(this.connectionSyncArray.length > 0){
 
-            await CreateTheConnectionApi(this.connectionSyncArray);
+            // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
+            //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
+            // }
+            let connectionsArray = this.connectionSyncArray.slice();
             this.connectionSyncArray = [];
+            await CreateTheConnectionApi(connectionsArray);
         }
         return "done";
 

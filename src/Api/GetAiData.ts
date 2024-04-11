@@ -14,9 +14,9 @@ export async function GetAiData(){
             headers: header,
         });
         if(!response.ok){
-            throw new Error(`Error! status: ${response.status}`);
+          console.log('Ai Error Message: ', "Cannot get response");
         }
-         const result = await response.json();
+        const result = await response.json();
         for(var i=0; i< result.length; i++){
             ConceptsData.AddConcept(result[i]);
         }
@@ -28,10 +28,10 @@ export async function GetAiData(){
 }
 catch (error) {
     if (error instanceof Error) {
-      console.log('error message: ', error.message);
+      console.log('Ai Error Message: ', error.message);
       return error.message;
     } else {
-      console.log('unexpected error: ', error);
+      console.log('Ai Error Message: ', error);
       return 'An unexpected error occurred';
     }
   }

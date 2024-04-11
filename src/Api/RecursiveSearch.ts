@@ -6,6 +6,7 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 
 export  async function RecursiveSearchApi(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
+  var concepts:any[] = [];
 
 try{
     var searchQuery = new SearchQuery();
@@ -20,27 +21,25 @@ try{
         headers: myHeaders,
         body: raw
     });
-    if(!response.ok){
-        throw new Error(`Error! status: ${response.status}`);
+    if(response.ok){
+      const result = await response.json();
+      var conceptIds = result.compositionIds;
+      var connections = result.internalConnections;
+      concepts = await GetCompositionFromConnectionsWithDataId(conceptIds,connections);
     }
-
-    const result = await response.json();
-    var conceptIds = result.compositionIds;
-    var connections = result.internalConnections;
-    var concepts:any[] = [];
-    concepts = await GetCompositionFromConnectionsWithDataId(conceptIds,connections);
+    else{
+      console.log("recursive search error ", response.status);
+    }
     return concepts;
-    
 
 }
 
 catch (error) {
     if (error instanceof Error) {
       console.log('recursive search error message: ', error.message);
-      return error.message;
     } else {
       console.log('recursive search unexpected error: ', error);
-      return 'An unexpected error occurred';
     }
+    return concepts;
   }
 }

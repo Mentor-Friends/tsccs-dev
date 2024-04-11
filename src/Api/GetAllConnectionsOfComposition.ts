@@ -26,8 +26,9 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_id: number){
+  var connectionList: Connection[] = [];
+
   try{
-      var connectionList: Connection[] = [];
       var header = GetRequestHeader('application/x-www-form-urlencoded');
       const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
@@ -40,7 +41,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
       const result = await response.json();
       for(var i=0; i< result.length; i++){
           ConnectionData.AddConnection(result[i]);
-          // ConnectionData.AddToDictionary(result[i]);
           connectionList.push(result[i]);
       }
 
@@ -48,11 +48,10 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
     }
     catch (error) {
       if (error instanceof Error) {
-        console.log('error message: ', error.message);
-        return error.message;
+        console.log('Get all connection of composition error : ', error.message);
       } else {
-        console.log('unexpected error: ', error);
-        return 'An unexpected error occurred';
+        console.log('Get all connection of composition error : ', error);
       }
+      return connectionList;
     }
 }

@@ -4,6 +4,7 @@ import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConceptBulk(conceptIds: number[]){
+    let result:Concept[] = [];
     try{
         var bulkConceptFetch = [];
         for(let i=0; i<conceptIds.length; i++){
@@ -14,7 +15,7 @@ export async function GetConceptBulk(conceptIds: number[]){
         }
         if(bulkConceptFetch.length == 0){
 
-            return bulkConceptFetch;
+            return result;
         }
         else{
             var header = GetRequestHeader();
@@ -23,29 +24,30 @@ export async function GetConceptBulk(conceptIds: number[]){
                 headers: header,
                 body: JSON.stringify(bulkConceptFetch)
             });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            if(result.length > 0){
-                for(let i=0 ; i<result.length; i++){
-                    let concept = result[i] as Concept;
-                    ConceptsData.AddConcept(concept);
+            if(response.ok){
+                result = await response.json();
+                if(result.length > 0){
+                    for(let i=0 ; i<result.length; i++){
+                        let concept = result[i] as Concept;
+                        ConceptsData.AddConcept(concept);
+                    }
+    
                 }
-
             }
+            else{
+                console.log("Get Concept Bulk error", response.status);
+            }
+
             return result;
 
         }
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Get Concept Bulk  error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('Get Concept Bulk  unexpected error: ', error);
         }
+        return result;
       }
 }

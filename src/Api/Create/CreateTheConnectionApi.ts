@@ -9,7 +9,6 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
 
         var header = GetRequestHeader();
         var jsonData = JSON.stringify(connectionData);
-
             const response = await fetch(BaseUrl.CreateTheConnectionUrl(),{
                 method: 'POST',
                 headers:header,

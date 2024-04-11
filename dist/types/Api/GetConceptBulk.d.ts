@@ -1,1 +1,2 @@
-export declare function GetConceptBulk(conceptIds: number[]): Promise<any>;
+import { Concept } from "./../DataStructures/Concept";
+export declare function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>;

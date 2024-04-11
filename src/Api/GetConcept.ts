@@ -3,7 +3,9 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { CreateDefaultConcept } from "../app";
 export async function GetConcept(id: number){
+    let result = CreateDefaultConcept();
     try{
         var conceptUse :Concept= await ConceptsData.GetConcept(id);
         if(conceptUse.id != 0){
@@ -17,14 +19,14 @@ export async function GetConcept(id: number){
                 headers:header,
                 body: `id=${id}`
             });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
+            if(response.ok){
+                result = await response.json() as Concept;
+                if(result.id > 0){
+                    ConceptsData.AddConcept(result);
+                }
             }
-
-            const result = await response.json() as Concept;
-            if(result.id > 0){
-                ConceptsData.AddConcept(result);
-                return result;
+            else{
+                console.log("Get the concept error", response.status);
             }
             return result;
 
@@ -32,11 +34,10 @@ export async function GetConcept(id: number){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Get the concept error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('Get the concept unexpected error: ', error);
         }
+        return result;
       }
 }

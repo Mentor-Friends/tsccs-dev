@@ -1,1 +1,1 @@
-export declare function GetAllConceptsByType(type: string, userId: number): Promise<string | undefined>;
+export declare function GetAllConceptsByType(type: string, userId: number): Promise<void>;

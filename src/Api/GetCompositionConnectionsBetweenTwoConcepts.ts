@@ -4,8 +4,9 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 
 export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:number, toConcept:number, mainKey:number){
+  var connectionList: Connection[] = [];
+    
     try{
-        var connectionList: Connection[] = [];
 
         var formdata = new FormData();
         formdata.append("ofConceptId", ofConceptId.toString());
@@ -17,24 +18,26 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:nu
           headers: header,
           body: formdata
         });
-        if(!response.ok){
-            throw new Error(`Error! status: ${response.status}`);
+        if(response.ok){
+          const result = await response.json();
+          for(var i=0; i< result.length; i++){
+              ConnectionData.AddConnection(result[i]);
+              connectionList.push(result[i]);
+          }
         }
-        const result = await response.json();
-        for(var i=0; i< result.length; i++){
-            ConnectionData.AddConnection(result[i]);
-            connectionList.push(result[i]);
+        else{
+          console.log("Get composition connection between two concepts", response.status);
         }
+
   
         return connectionList;
       }
       catch (error) {
         if (error instanceof Error) {
           console.log('error message: ', error.message);
-          return error.message;
         } else {
           console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
         }
+        return connectionList;
       }
   }

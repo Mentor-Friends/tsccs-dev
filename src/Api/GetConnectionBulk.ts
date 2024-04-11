@@ -30,26 +30,23 @@ export async function GetConnectionBulk(connectionIds: number[] = []){
                 headers: header,
                 body: JSON.stringify(bulkConnectionFetch)
             });
-            if(!response.ok){
-              //  throw new Error(`Error! status: ${response.status}`);
-
-                return connectionList;
-            }
-
-
-            const result = await response.json();
-            if(result.length > 0){
-                for(let i=0 ; i<result.length; i++){
-                    let connection = result[i] as Connection;
-                    connectionList.push(connection);
-                    ConnectionData.AddConnection(connection);
+            if(response.ok){
+                const result = await response.json();
+                if(result.length > 0){
+                    for(let i=0 ; i<result.length; i++){
+                        let connection = result[i] as Connection;
+                        connectionList.push(connection);
+                        ConnectionData.AddConnection(connection);
+                    }
+                    await FindConceptsFromConnections(connectionList);
                 }
-
-                await FindConceptsFromConnections(connectionList);
-
-                
-
             }
+            else{
+                console.log("Get Connection Bulk error", response.status);
+            }
+
+
+
             return connectionList;
 
         }

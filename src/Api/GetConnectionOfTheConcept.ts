@@ -6,7 +6,8 @@ import { Connection } from "../DataStructures/Connection";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
-    try{
+  let connectionList:Connection[] = []; 
+  try{
         var urlencoded = new URLSearchParams();
         urlencoded.append("typeId", `${typeId}`);
         urlencoded.append("ofTheConceptId", `${ofTheConceptId}`);
@@ -19,19 +20,20 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
                 headers: header,
                 body: urlencoded
             });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
+            if(response.ok){
+              connectionList = await response.json() as Connection[];
             }
-             const result = await response.json() as Connection[];
-            return result;
+            else{
+              console.log("Get connection of concept error", response.status);
+            }
+            return connectionList;
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('GetConnetionOfTheConcept error message: ', error.message);
-          return error.message;
+          console.log('Get connection of concept  error message: ', error.message);
         } else {
-          console.log('GetConnetionOfTheConcept unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('Get connection of concept unexpected error: ', error);
         }
+        return connectionList;
       }
 }

@@ -24,32 +24,33 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_ids: number[] = []){
+  var connectionList: Connection[] = [];
+
   try{
-      var connectionList: Connection[] = [];
       var header = GetRequestHeader();
       const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionBulkUrl(),{
         method: 'POST',
         headers: header,
         body: JSON.stringify(composition_ids)
       });
-      if(!response.ok){
-          throw new Error(`Error! status: ${response.status}`);
+      if(response.ok){
+        const result = await response.json();
+        for(var i=0; i< result.length; i++){
+            ConnectionData.AddConnection(result[i]);
+            connectionList.push(result[i]);
+        }
       }
-      const result = await response.json();
-      for(var i=0; i< result.length; i++){
-          ConnectionData.AddConnection(result[i]);
-          connectionList.push(result[i]);
+      else{
+        console.log('Get all connections of composition bulk error message: ', "Cannot get response");
       }
-
       return connectionList;
     }
     catch (error) {
       if (error instanceof Error) {
-        console.log('error message: ', error.message);
-        return error.message;
+        console.log('Get all connections of composition bulk error message: ', error.message);
       } else {
-        console.log('unexpected error: ', error);
-        return 'An unexpected error occurred';
+        console.log('Get all connections of composition bulk unexpected error: ', error);
       }
+      return connectionList;
     }
 }
