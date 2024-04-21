@@ -1,7 +1,7 @@
 import { Concept } from "../DataStructures/Concept";
 import { SyncData } from "../DataStructures/SyncData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
-import createTheConnection from "./CreateTheConnection";
+import {createTheConnection} from "./CreateTheConnection";
 import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
 export default  async function CreateTheComposition(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null)

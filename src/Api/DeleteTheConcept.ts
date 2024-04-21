@@ -18,11 +18,9 @@ export default async function DeleteTheConcept(id:number){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Delete concept error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('Delete concept unexpected error: ', error);
         }
       }
 }

@@ -4,6 +4,7 @@ import { Connection } from "../../DataStructures/Connection";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 export async function CreateTheConnectionApi(connectionData: Connection[]){
+  let result = new Connection(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
     try{
 
 
@@ -14,20 +15,23 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
                 headers:header,
                 body: jsonData
             });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
-            }
-             const result = await response.json();
+            if(response.ok){
+              const result = await response.json();
 
+            }
+            else{
+              console.log('Create the connection error message: ', response.status);
+            }
             return result;
+
+
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Create the connection error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log(' Create the connection unexpected error: ', error);
         }
+        return result;
       }
 }

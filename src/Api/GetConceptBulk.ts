@@ -51,3 +51,38 @@ export async function GetConceptBulk(conceptIds: number[]){
         return result;
       }
 }
+
+export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
+    const conceptList: Concept[] = []
+    if (bulkConceptFetch.length > 0) {
+      const myHeaders = {
+        'Content-Type': 'application/json',
+      }
+      try {
+        const response = await fetch(BaseUrl.GetConceptBulkUrl(), {
+          method: 'POST',
+          headers: myHeaders,
+          body: JSON.stringify(bulkConceptFetch),
+        })
+        if (response.ok) {
+          const result = await response.json()
+          if (result.length > 0) {
+            for (let i = 0; i < result.length; i++) {
+              const concept = result[i] as Concept
+              conceptList.push(concept)
+              ConceptsData.AddConcept(concept)
+            }
+          }
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log('bulk concept getter api error: ', error.message)
+        } else {
+          console.log('bulk concept getter api error: ', error)
+        }
+      }
+    }
+  
+    return conceptList
+  }
+  

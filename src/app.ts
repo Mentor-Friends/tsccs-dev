@@ -3,6 +3,7 @@ export {init, updateAccessToken};
 import { SyncData } from './DataStructures/SyncData';
 import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
 import {CreateCharacterBinaryTreeFromData} from './Services/CreateCharacterBinaryTreeFromData';
+import mqtt from "mqtt"; 
 
 import { IdentifierFlags } from './DataStructures/IdentifierFlags';
 
@@ -10,7 +11,7 @@ export { SplitStrings} from './Services/SplitStrings';
 export { GetCompositionList,GetCompositionListWithId }  from './Services/GetCompositionList';
 export { GetCompositionListLocal, GetCompositionListLocalWithId} from './Services/Local/GetCompositionListLocal';
 export {GetAllConnectionsOfComposition} from './Api/GetAllConnectionsOfComposition';
-export {GetComposition,GetCompositionWithId, recursiveFetch} from './Services/GetComposition';
+export {GetComposition,GetCompositionWithId, recursiveFetch,GetCompositionWithAllIds} from './Services/GetComposition';
 export {GetCompositionLocal, GetCompositionLocalWithId} from './Services/Local/GetCompositionLocal';
 export {default as CreateComposition} from './Services/CreateTheComposition';
 export { CreateTheCompositionLocal } from './Services/Local/CreateTheCompositionLocal';
@@ -19,15 +20,15 @@ export { default as GetTheConcept} from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
 export { MakeTheInstanceConceptLocal} from './Services/Local/MakeTheInstanceConceptLocal';
 export { storeToDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/NoIndexDb';
-export {default as CreateTheConnection} from './Services/CreateTheConnection';
+export { createTheConnection as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink,GetLinkRaw } from './Services/GetLink';
 export {CreateDefaultConcept} from './Services/CreateDefaultConcept';
 export { GetLinkerConnectionFromConcepts} from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';
+export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend'
 export { GetConnectionById } from './Services/GetConnections';
-export {default} from './Services/CreateTheConnection';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
 export {RecursiveSearchApi} from './Api/RecursiveSearch';
 export {GetCompositionBulkWithDataId,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
@@ -36,6 +37,11 @@ export { GetConnectionBulk } from './Api/GetConnectionBulk';
 export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
 export { LoginToBackend } from './Api/Login';
 export {GetConnectionOfTheConcept} from './Api/GetConnectionOfTheConcept';
+export  {default as Signup} from  './Api/Signup';
+export { default as Signin} from './Api/Signin';
+export { default as UpdateComposition} from './Services/UpdateComposition';
+export {SearchAllConcepts} from './Api/Search/Search';
+export {GetCompositionWithCache, GetCompositionWithDataIdWithCache, GetCompositionWithDataIdBulk} from './Services/Composition/CompositionCache';
 
 export {  } from './Api/GetConceptByCharacterAndType';
 
@@ -46,6 +52,10 @@ export {ConceptsData} from './DataStructures/ConceptData';
 export { ConnectionData } from './DataStructures/ConnectionData';
 export {BinaryTree} from './DataStructures/BinaryTree';
 export {SearchQuery} from './DataStructures/SearchQuery';
+export {SignupModel} from './DataStructures/SignupModel';
+export {SigninModel} from './DataStructures/SigninModel';
+export {FreeschemaResponse} from './DataStructures/Responses/StandardResponses'
+export {PatcherStructure} from './DataStructures/PatcherStructure';
 
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import { BinaryTree } from './DataStructures/BinaryTree';
@@ -61,8 +71,9 @@ import { GetStatsFromDatabase } from './Database/NoIndexDb';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+import SignupApi from './Api/Signup';
 export {BaseUrl} from './DataStructures/BaseUrl';
-
+import { CompositionBinaryTree } from './DataStructures/Composition/CompositionBinaryTree';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }

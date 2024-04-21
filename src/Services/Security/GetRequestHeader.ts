@@ -12,3 +12,16 @@ export function GetRequestHeader(contentType:string ='application/json',
     
     return headers;
 }
+
+export function GetRequestHeaderWithAuthorization(contentType:string ='application/json', 
+token: string = "",Accept: string = 'application/json', 
+){
+
+    var headers = {
+        'Content-Type':contentType,
+        'Authorization': "Bearer " + token,
+        'Accept': Accept,
+    };
+    
+    return headers;
+}

@@ -1,7 +1,16 @@
+import { CompositionBinaryTree } from './Composition/CompositionBinaryTree';
+
+
 export class BaseUrl{
     static BASE_URL: string  = "https://localhost:7053/";
 
     static AI_URL: string ="https://ai.freeschema.com";
+
+    static MQTT_URL: string = '192.168.1.249';
+
+    static MQTT_CONNECTION:any ;
+
+
 
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';
 
@@ -85,8 +94,16 @@ export class BaseUrl{
         return this.BASE_URL + '/api/auth/login';
     }
 
+    static SignupUrl(){
+        return this.BASE_URL + '/api/auth/signup';
+    }
+
     static GetCompositionConnectionBetweenTwoConceptsUrl(){
         return this.BASE_URL + '/api/get-composition-connection-between-two-concepts';
+    }
+
+    static  SearchCompositionsUrl(){
+        return this.BASE_URL + '/api/search-compositions';
     }
 
 

@@ -2,7 +2,7 @@ import { Connection } from "../DataStructures/Connection";
 import { SyncData } from "../DataStructures/SyncData";
 import { genHexString } from "./GenerateHexNumber";
 
-export default function createTheConnection(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,
+export  function createTheConnection(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,
      typeId: number, sessionInformationId: number, sessionInformationUserId: number
     ):Connection{  
         var orderId: number = 1;

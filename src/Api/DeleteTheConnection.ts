@@ -10,7 +10,7 @@ export default async function DeleteTheConnection(id:number){
                 redirect: "follow"
             });
             if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
+              console.log('Delete connection error status: ', response.status);
             }
 
 
@@ -18,11 +18,9 @@ export default async function DeleteTheConnection(id:number){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Delete connection error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('Delete connection unexpected error: ', error);
         }
       }
 }

@@ -34,9 +34,9 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:nu
       }
       catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
+          console.log('Get composition connection between two concepts error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
+          console.log('Get composition connection between two concepts unexpected error: ', error);
         }
         return connectionList;
       }
