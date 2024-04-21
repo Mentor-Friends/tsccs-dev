@@ -19,6 +19,7 @@ export { CreateDefaultConcept } from './Services/CreateDefaultConcept';
 export { GetLinkerConnectionFromConcepts } from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';
+export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend';
 export { GetConnectionById } from './Services/GetConnections';
 export { MakeTheTimestamp } from './Services/MakeTheTimestamp';
 export { RecursiveSearchApi } from './Api/RecursiveSearch';
