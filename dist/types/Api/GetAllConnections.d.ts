@@ -1,1 +1,1 @@
-export declare function GetAllUserConnections(userId: number): Promise<string | undefined>;
+export declare function GetAllUserConnections(userId: number): Promise<void>;

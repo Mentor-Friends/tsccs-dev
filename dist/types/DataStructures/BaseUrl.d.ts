@@ -1,6 +1,8 @@
 export declare class BaseUrl {
     static BASE_URL: string;
     static AI_URL: string;
+    static MQTT_URL: string;
+    static MQTT_CONNECTION: any;
     static GetConceptUrl(): string;
     static GetConnectionUrl(): string;
     static GetConceptBulkUrl(): string;
@@ -21,7 +23,9 @@ export declare class BaseUrl {
     static RecursiveSearchUrl(): string;
     static MakeTheNameInBackendUrl(): string;
     static LoginUrl(): string;
+    static SignupUrl(): string;
     static GetCompositionConnectionBetweenTwoConceptsUrl(): string;
+    static SearchCompositionsUrl(): string;
     static GetReservedIdUrl(): string;
     static CreateTheTextDataUrl(): string;
     static CreateTheCharacterDataUrl(): string;

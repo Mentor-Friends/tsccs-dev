@@ -1,1 +1,1 @@
-export default function DeleteTheConnection(id: number): Promise<string | undefined>;
+export default function DeleteTheConnection(id: number): Promise<void>;

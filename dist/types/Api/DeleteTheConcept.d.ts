@@ -1,1 +1,1 @@
-export default function DeleteTheConcept(id: number): Promise<string | undefined>;
+export default function DeleteTheConcept(id: number): Promise<void>;
