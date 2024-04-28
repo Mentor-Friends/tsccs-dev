@@ -26,7 +26,7 @@
   const compositionList: number[] = []
   let concept = await ConceptsData.GetConcept(id)
   if (concept.id == 0 && id != null && id != undefined) {
-    const conceptString = await GetTheConcept(id)
+    const conceptString = await GetConcept(id)
     concept = conceptString as Concept
   }
   if (x == null) {
@@ -99,7 +99,7 @@
   const compositionList: number[] = []
   let concept = await ConceptsData.GetConcept(id)
   if (concept.id == 0 && id != null && id != undefined) {
-    const conceptString = await GetTheConcept(id)
+    const conceptString = await GetConcept(id)
     concept = conceptString as Concept
   }
 
