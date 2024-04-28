@@ -19,53 +19,55 @@
     connectionListPassed: Connection[] = [],
   ) {
     let connectionList: Connection[] = []
-    const conceptIdList: number[] = []
-    const returnOutput: any = {}
-    let output: any = {}
-    const x = await CompositionBinaryTree.getNodeFromTree(id)
-    const compositionList: number[] = []
-    let concept = await ConceptsData.GetConcept(id)
-    if (concept.id == 0 && id != null && id != undefined) {
-      const conceptString = await GetConcept(id)
-      concept = conceptString as Concept
-    }
-    if (x == null) {
-      let connectionListString: any = []
-      if (connectionListPassed.length > 0) {
-        connectionListString = getMyConnections(id, connectionListPassed)
-      } else {
-        connectionListString = await GetAllConnectionsOfComposition(id)
-      }
-      connectionList = connectionListString as Connection[]
-      //connectionList = ConnectionData.GetConnectionsOfComposition(id);
-  
-      for (let i = 0; i < connectionList.length; i++) {
-        if (!compositionList.includes(connectionList[i].ofTheConceptId)) {
-          compositionList.push(connectionList[i].ofTheConceptId)
-          conceptIdList.push(connectionList[i].ofTheConceptId)
-        }
-        if (!conceptIdList.includes(connectionList[i].toTheConceptId)) {
-          conceptIdList.push(connectionList[i].toTheConceptId)
-        }
-      }
-  
-      SaveToCompositionCache(
-        concept,
-        connectionList,
-        conceptIdList,
-        compositionList,
-      )
-      output = await recursiveFetch(id, connectionList, compositionList)
+  const conceptIdList: number[] = []
+  let returnOutput: any = {}
+  let output: any = {}
+  const x = await CompositionBinaryTree.getNodeFromTree(id)
+  const compositionList: number[] = []
+  let concept = await ConceptsData.GetConcept(id)
+  if (concept.id == 0 && id != null && id != undefined) {
+    const conceptString = await GetTheConcept(id)
+    concept = conceptString as Concept
+  }
+  if (x == null) {
+    let connectionListString: any = []
+    if (connectionListPassed.length > 0) {
+      connectionListString = getMyConnections(id, connectionListPassed)
     } else {
-      output = x.value.cached
+      connectionListString = await GetAllConnectionsOfComposition(id)
     }
-  
-    if (concept.id == 0) {
-      return ''
+    connectionList = connectionListString as Connection[]
+    //connectionList = ConnectionData.GetConnectionsOfComposition(id);
+
+    for (let i = 0; i < connectionList.length; i++) {
+      if (!compositionList.includes(connectionList[i].ofTheConceptId)) {
+        compositionList.push(connectionList[i].ofTheConceptId)
+        conceptIdList.push(connectionList[i].ofTheConceptId)
+      }
+      if (!conceptIdList.includes(connectionList[i].toTheConceptId)) {
+        conceptIdList.push(connectionList[i].toTheConceptId)
+      }
     }
+
+    SaveToCompositionCache(
+      concept,
+      connectionList,
+      conceptIdList,
+      compositionList,
+    )
+    output = await recursiveFetch(id, connectionList, compositionList)
     const mainString = concept?.type?.characterValue ?? ''
     returnOutput[mainString] = output
-    return returnOutput
+  } else {
+    output = x.value.GetDataCache()
+    returnOutput = output
+  }
+
+  if (concept.id == 0) {
+    return ''
+  }
+
+  return returnOutput
   }
   
   // this gets the list of connections of a composition from a list of bulk connection pull
@@ -87,57 +89,59 @@
     id: number,
     connectionListPassed: Connection[] = [],
   ) {
-    let connectionList: Connection[] = []
-    const conceptIdList: number[] = []
-    let output: any
-    const returnOutput: any = {}
-    const x = await CompositionBinaryTree.getNodeFromTree(id)
-  
-    const compositionList: number[] = []
-    let concept = await ConceptsData.GetConcept(id)
-    if (concept.id == 0 && id != null && id != undefined) {
-      const conceptString = await GetConcept(id)
-      concept = conceptString as Concept
-    }
-    if (x == null) {
-      let connectionListString: any = []
-      if (connectionListPassed.length > 0) {
-        connectionListString = getMyConnections(id, connectionListPassed)
-      } else {
-        connectionListString = await GetAllConnectionsOfComposition(id)
-      }
-      connectionList = connectionListString as Connection[]
-      //connectionList = ConnectionData.GetConnectionsOfComposition(id);
-  
-      for (let i = 0; i < connectionList.length; i++) {
-        if (!compositionList.includes(connectionList[i].ofTheConceptId)) {
-          compositionList.push(connectionList[i].ofTheConceptId)
-          conceptIdList.push(connectionList[i].ofTheConceptId)
-        }
-        if (!conceptIdList.includes(connectionList[i].toTheConceptId)) {
-          conceptIdList.push(connectionList[i].toTheConceptId)
-        }
-      }
-  
-      SaveToCompositionCache(
-        concept,
-        connectionList,
-        conceptIdList,
-        compositionList,
-      )
-      output = await recursiveFetch(id, connectionList, compositionList)
+    let FinalReturn: any = {}
+  let connectionList: Connection[] = []
+  const conceptIdList: number[] = []
+  let output: any
+  const returnOutput: any = {}
+  const x = await CompositionBinaryTree.getNodeFromTree(id)
+
+  const compositionList: number[] = []
+  let concept = await ConceptsData.GetConcept(id)
+  if (concept.id == 0 && id != null && id != undefined) {
+    const conceptString = await GetTheConcept(id)
+    concept = conceptString as Concept
+  }
+
+  if (x == null) {
+    let connectionListString: any = []
+    if (connectionListPassed.length > 0) {
+      connectionListString = getMyConnections(id, connectionListPassed)
     } else {
-      output = x.value.cached
+      connectionListString = await GetAllConnectionsOfComposition(id)
     }
-    if (concept.id == 0) {
-      return ''
+    connectionList = connectionListString as Connection[]
+    //connectionList = ConnectionData.GetConnectionsOfComposition(id);
+
+    for (let i = 0; i < connectionList.length; i++) {
+      if (!compositionList.includes(connectionList[i].ofTheConceptId)) {
+        compositionList.push(connectionList[i].ofTheConceptId)
+        conceptIdList.push(connectionList[i].ofTheConceptId)
+      }
+      if (!conceptIdList.includes(connectionList[i].toTheConceptId)) {
+        conceptIdList.push(connectionList[i].toTheConceptId)
+      }
     }
+
+    SaveToCompositionCache(
+      concept,
+      connectionList,
+      conceptIdList,
+      compositionList,
+    )
+    output = await recursiveFetch(id, connectionList, compositionList)
     const mainString = concept?.type?.characterValue ?? ''
     returnOutput[mainString] = output
-    const FinalReturn: any = {}
     FinalReturn['data'] = returnOutput
     FinalReturn['id'] = id
-    return FinalReturn
+  } else {
+    output = x.value.GetDataCache()
+    FinalReturn = output
+  }
+  if (concept.id == 0) {
+    return ''
+  }
+  return FinalReturn
   }
   
   // this function needs to be passed with bulk compositions and bulk internal connections of them

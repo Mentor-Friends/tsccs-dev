@@ -42,7 +42,6 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                typeConcept = typeConceptString as Concept;
                let conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                 referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
-
                 concept = conceptString as Concept;
             }
             else if(stringLength > 255){
