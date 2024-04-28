@@ -14,8 +14,8 @@ export declare class Concept {
     securityUserId: number;
     accessId: number;
     accessUserId: number;
-    sessionId: number;
-    sessionUserId: number;
+    sessionInformationId: number;
+    sessionInformationUserId: number;
     entryTimeStamp: Date;
     updatedTimeStamp: Date;
     referent: number;

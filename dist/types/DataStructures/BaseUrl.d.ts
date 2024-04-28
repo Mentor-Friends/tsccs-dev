@@ -26,6 +26,9 @@ export declare class BaseUrl {
     static SignupUrl(): string;
     static GetCompositionConnectionBetweenTwoConceptsUrl(): string;
     static SearchCompositionsUrl(): string;
+    static SearchLinkMultipleAll(): string;
+    static CreateSessionId(): string;
+    static CreateSessionVisitUrl(): string;
     static GetReservedIdUrl(): string;
     static CreateTheTextDataUrl(): string;
     static CreateTheCharacterDataUrl(): string;

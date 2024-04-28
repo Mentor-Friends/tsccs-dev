@@ -16,8 +16,8 @@ export  class Concept{
     securityUserId: number;
     accessId: number;
     accessUserId: number;
-    sessionId: number;
-    sessionUserId: number;
+    sessionInformationId: number;
+    sessionInformationUserId: number;
     entryTimeStamp: Date;
     updatedTimeStamp:Date;
     referent: number;
@@ -44,8 +44,8 @@ export  class Concept{
         this.securityUserId = securityUserId;
         this.accessId = accessId;
         this.accessUserId = accessUserId;
-        this.sessionId = sessionId;
-        this.sessionUserId = sessionUserId;
+        this.sessionInformationId = sessionId;
+        this.sessionInformationUserId = sessionUserId;
         this.x = 0;
         this.y = 0;
         this.type = null;

@@ -226,8 +226,8 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
     }
 
     var mainString = concept?.type?.characterValue ?? "";
-
     if(!compositionList.includes(id)){
+
         return concept?.characterValue;
     }
     else{
@@ -236,12 +236,14 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
 
             if(connectionList[i].ofTheConceptId == id){
                 var toConceptId = connectionList[i].toTheConceptId;
-
+            
                 var toConcept = await ConceptsData.GetConcept(toConceptId);
                 if((toConcept == null || toConcept.id == 0) && toConceptId != null && toConceptId != undefined){
                  var conceptString = await  GetConcept(toConceptId);
                  toConcept = conceptString as Concept;
                 }
+
+
                 if(toConcept){
                     if(toConcept?.type == null){
 
@@ -279,6 +281,7 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
                     output = arroutput;
 
                 }
+
 
 
             }     

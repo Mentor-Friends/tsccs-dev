@@ -106,6 +106,18 @@ export class BaseUrl{
         return this.BASE_URL + '/api/search-compositions';
     }
 
+    static SearchLinkMultipleAll(){
+        return this.BASE_URL + '/api/Connection/search-link-multiple-all';
+    }
+
+    static CreateSessionId(){
+        return this.BASE_URL + '/api/create-session-id-remote'
+    }
+
+    static CreateSessionVisitUrl(){
+        return this.BASE_URL + '/api/create-remote-session-visit'
+    }
+
 
 
 
