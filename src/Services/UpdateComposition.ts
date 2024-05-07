@@ -3,8 +3,10 @@
   import { Concept } from '../DataStructures/Concept';
   import InsertUniqueNumber from '../Helpers/UniqueInsert'
   import {
+    CheckAllConnectionsConnectedInConnectionArray,
     CheckIfToTheConceptExistsInConnectionArray,
     CheckIfTypeConceptExistsInArray,
+    CheckIfTypeConceptsExistsInArray,
   } from '../Helpers/CheckIfExists'
   
   import {
@@ -22,6 +24,9 @@ import { SyncData } from '../DataStructures/SyncData';
 import { recursiveFetch } from './GetComposition';
 import { CompositionBinaryTree } from '../DataStructures/Composition/CompositionBinaryTree';
 import { Composition } from '../DataStructures/Composition/Composition';
+import CreateTheComposition from './CreateTheComposition';
+import {CreateTheCompositionWithCache} from './Composition/CreateCompositionCache';
+import DeleteTheConnection from '../Api/DeleteTheConnection';
   
   // function to update the cache composition
   export default async function UpdateComposition(
@@ -41,7 +46,7 @@ import { Composition } from '../DataStructures/Composition/Composition';
 
   // if you want to edit the subcompositions of the composition then you have to pass to this
   const ofTheConceptId = patcherStructure.ofTheCompositionId
-  const toDeleteConnections: Connection[] = []
+  let toDeleteConnections: Connection[] = []
 
   // get all connections from the backend because it needs latest data
   const connectionListString = await GetAllConnectionsOfComposition(compositionId)
@@ -53,12 +58,18 @@ import { Composition } from '../DataStructures/Composition/Composition';
   // put this in the upper section before updating because this will tell all other distributed
   //servers to destroy the copy of the composition that they have as new composition is coming up
   compositionCache.isUpdating()
+
   // get all the connections that are inside of the composition and store them in
+  let allConcepts = [];
   for (let i = 0; i < connectionList.length; i++) {
     InsertUniqueNumber(compositionList, connectionList[i].ofTheConceptId)
     InsertUniqueNumber(conceptIdList, connectionList[i].ofTheConceptId)
     InsertUniqueNumber(conceptIdList, connectionList[i].toTheConceptId)
+    allConcepts.push(connectionList[i].ofTheConceptId);
   }
+
+  compositionCache.subcompositions = compositionList
+  compositionCache.connections = connectionList
   // get all the concepts that are inside of the composition and store them in a conceptList
   for (let i = 0; i < conceptIdList.length; i++) {
     const conceptString = await GetTheConcept(conceptIdList[i])
@@ -75,6 +86,7 @@ import { Composition } from '../DataStructures/Composition/Composition';
   // now trying to patch the new object into the composition
   const object = patcherStructure.patchObject
   for (const key in object) {
+    let insertingConcept: Concept = CreateDefaultConcept();
     const value = object[key]
     let localConcept = composition
 
@@ -83,75 +95,99 @@ import { Composition } from '../DataStructures/Composition/Composition';
       localConcept = parentConcept
     }
 
-    // make the new concept in the object
-    const insertingConcept: Concept = await MakeTheInstanceConcept(
-      key,
-      value,
-      false,
-      userId,
-      accessId,
-      sessionId,
-    )
-
-    // check if the concept exists in the concept list because if it exists then we have to delete old connection
-    const ExistingConcept: Concept = CheckIfTypeConceptExistsInArray(
-      conceptList,
-      insertingConcept,
-    )
-    // if the existing concept then start the process for deleting the concept in the list
-    if (ExistingConcept.id > 0) {
-      const deletingConnection: Connection =
-        CheckIfToTheConceptExistsInConnectionArray(
-          connectionList,
-          ExistingConcept.id,
-        )
-
-      toDeleteConnections.push(deletingConnection)
-      toDeleteConcepts.push(ExistingConcept)
+    if(Array.isArray(value) || typeof value == 'object'){
+      insertingConcept = await MakeTheInstanceConcept(key, "", true, composition.userId, 4, 999);
+      compositionCache.subcompositions.push(insertingConcept.id);
+      await CreateTheCompositionWithCache(object[key], insertingConcept.id, insertingConcept.userId, composition.id, composition.userId, 4, 999,compositionCache);
+    }
+    else{
+      // make the new concept in the object
+      insertingConcept =  await MakeTheInstanceConcept(
+        key,
+        value,
+        false,
+        userId,
+        accessId,
+        sessionId,
+      )
     }
 
-    // create the connection between the new concept and the old composition
-    const connectionString = createTheConnection(
-      localConcept.id,
-      localConcept.userId,
-      insertingConcept.id,
-      insertingConcept.userId,
-      composition.id,
-      sessionId,
-      userId,
-    )
-    const connection = connectionString as Connection
-    connectionList.push(connection)
-    conceptList.push(insertingConcept)
-  }
-  // now you have to delete the connection in bulk
-  for (let j = 0; j < toDeleteConnections.length; j++) {
-    // remove from the cache list
-    RemoveConnectionFromList(connectionList, toDeleteConnections[j])
-    // delete the connection in the backend
-    DeleteConnectionById(toDeleteConnections[j].id)
-  }
 
-  // also delete the existing concept from the cache.
+      // check if the concept exists in the concept list because if it exists then we have to delete old connection
+      const ExistingConcepts: Concept[] = CheckIfTypeConceptsExistsInArray(
+        conceptList,
+        insertingConcept,
+      )
 
-  for (let k = 0; k < toDeleteConcepts.length; k++) {
-    // remove concept from the cache concept list
-    RemoveConceptFromList(conceptList, toDeleteConcepts[k])
-  }
+      // if the existing concept then start the process for deleting the concept in the list
+      for(let i=0 ; i< ExistingConcepts.length; i++){
+        if (ExistingConcepts[i].id > 0) {
+          const deletingConnections: Connection[] =
+            CheckAllConnectionsConnectedInConnectionArray(
+              connectionList,
+              ExistingConcepts[i].id,
+            )
+            // for(let j=0; j<connectionList.length; j++){
+            //   if(ExistingConcepts[i].id == connectionList[j].OfTheConceptId){
 
+            //   }
+            // }
+          toDeleteConnections = toDeleteConnections.concat(deletingConnections);
+          toDeleteConcepts.push(ExistingConcepts[i]);
+        }
+    
+      }
+
+
+
+      
+
+
+      // create the connection between the new concept and the old composition
+      const connectionString = createTheConnection(
+        localConcept.id,
+        localConcept.userId,
+        insertingConcept.id,
+        insertingConcept.userId,
+        composition.id,
+        sessionId,
+        userId,
+      )
+      const connection = connectionString as Connection
+      connectionList.push(connection)
+      conceptList.push(insertingConcept)
+      compositionCache.connections.push(connection);
+
+    }
+    // now you have to delete the connection in bulk
+    for (let j = 0; j < toDeleteConnections.length; j++) {
+      // remove from the cache list
+      RemoveConnectionFromList(connectionList, toDeleteConnections[j])
+      // delete the connection in the backend
+      DeleteConnectionById(toDeleteConnections[j].id)
+    }
+
+    // also delete the existing concept from the cache.
+
+    for (let k = 0; k < toDeleteConcepts.length; k++) {
+      // remove concept from the cache concept list
+      RemoveConceptFromList(conceptList, toDeleteConcepts[k])
+    }
+
+    
   // now create a composition cache object to cache it into node server
-  compositionCache.connections = connectionList
 
-  compositionCache.concepts = conceptList
-  compositionCache.subcompositions = compositionList
+  compositionCache.concepts = compositionCache.concepts.concat(conceptList);
   compositionCache.mainConcept = composition
   compositionCache.id = composition.id
-  // create a cache
-  await compositionCache.updateCache()
+
+
+  // // create a cache
+ await compositionCache.updateCache()
   // update it the binary tree
   CompositionBinaryTree.addCompositionToTree(compositionCache)
   SyncData.SyncDataOnline()
-  return compositionCache.GetDataCache()
-
+  let x =  compositionCache.GetDataCache()
+  return x;
   }
   

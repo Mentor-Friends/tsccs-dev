@@ -13,7 +13,7 @@
     conceptList: Concept[],
     compositionList: number[],
   ) {
-    let output: any = {}
+    let output: any = {};
     const arroutput: any = []
     if (id == 0) {
       return ''
@@ -29,7 +29,6 @@
       const conceptString = await GetTheConcept(id)
       concept = conceptString as Concept
     }
-  
     if (concept.id != 0) {
       // if the concept type is non existent then you have to get the type from the backend
       if (concept.type == null) {
@@ -116,8 +115,8 @@
                 conceptList,
                 compositionList,
               )
-  
-              output[localKey] = result
+              output[localKey] =  result
+
             }
           } else {
             // if the type is a number then put it inside an array
@@ -127,14 +126,16 @@
               conceptList,
               compositionList,
             )
-            arroutput[localKey] = result
+            arroutput[localKey] =  result
             output = arroutput
+
           }
+
         }
       }
     }
+    return output;
   
-    return output
   }
   
   // gets the concept from the list of concepts using the conceptId

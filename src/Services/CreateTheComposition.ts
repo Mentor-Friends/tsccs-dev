@@ -12,7 +12,7 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
     var MainKeyLocal: number = mainKey ?? 0;
     var MainConcept = CreateDefaultConcept();
     for (const key in json) {
-        if(typeof json[key] != 'string' && typeof json[key] != 'number' ){
+        if((typeof json[key] != 'string' && typeof json[key] != 'number') ){
             if(ofTheConceptId == null && ofTheConceptUserId == null){
 
                 var localMainKey = MainKeyLocal;
@@ -27,10 +27,11 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
             }
             else{
                 var ofThe:number = ofTheConceptId ?? 999;
-                var ofTheUser:number = ofTheConceptUserId ?? 10267;
+                var ofTheUser:number = ofTheConceptUserId ?? 999;
                 var localMainKey = MainKeyLocal;
                 var conceptString = await MakeTheInstanceConcept(key, "", true, localUserId, localAccessId, localSessionId  );
                 var concept = conceptString as Concept;
+                MainConcept = concept;
                 await createTheConnection(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
                 await CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
             }

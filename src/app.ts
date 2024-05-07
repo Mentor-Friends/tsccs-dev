@@ -43,6 +43,8 @@ export {GetCompositionWithCache, GetCompositionWithDataIdWithCache, GetCompositi
 export {CreateSession} from './Api/Session/CreateSession';
 export {CreateSessionVisit} from './Api/Session/CreateSessionVisit';
 export {  } from './Api/GetConceptByCharacterAndType';
+export { recursiveFetchNew} from './Services/Composition/BuildComposition'
+export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
 
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
@@ -56,6 +58,9 @@ export {SigninModel} from './DataStructures/SigninModel';
 export {FreeschemaResponse} from './DataStructures/Responses/StandardResponses'
 export {PatcherStructure} from './DataStructures/PatcherStructure';
 export {SessionData} from './DataStructures/Session/SessionData';
+export {Composition} from './DataStructures/Composition/Composition';
+export {CompositionBinaryTree} from './DataStructures/Composition/CompositionBinaryTree';
+export {CompositionNode} from './DataStructures/Composition/CompositionNode';
 
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';

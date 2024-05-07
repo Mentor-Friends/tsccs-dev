@@ -33,6 +33,24 @@ export function CheckIfTypeConceptExistsInArray(
   return foundConcept
 }
 
+export function CheckIfTypeConceptsExistsInArray(
+  conceptList: Concept[] = [],
+  concept: Concept,
+) {
+  let foundConcepts: Concept[] = [];
+  if (Array.isArray(conceptList)) {
+    for(let i=0 ; i<conceptList.length; i++){
+      if (concept.typeId == conceptList[i].typeId) {
+        foundConcepts.push(conceptList[i]);
+      }
+    }
+
+  }
+
+  return foundConcepts
+}
+
+
 export function CheckIfConnectionExistsInArray(
   connectionList: Connection[] = [],
   connection: Connection,
@@ -64,9 +82,11 @@ export function CheckIfConnectionExistsInArray(
   return foundConnection
 }
 
+
+
 export function CheckIfToTheConceptExistsInConnectionArray(
   connectionList: Connection[] = [],
-  toTheConceptId: number,
+  conceptId: number,
 ) {
   let foundConnection = new Connection(
     0,
@@ -87,10 +107,33 @@ export function CheckIfToTheConceptExistsInConnectionArray(
     0,
   )
   if (Array.isArray(connectionList)) {
-    const check = connectionList.find(c => c.toTheConceptId === toTheConceptId)
+    const check = connectionList.find(c => c.toTheConceptId === conceptId)
     if (check) {
       foundConnection = check
+    }
+    const toCheck = connectionList.find(c => c.ofTheConceptId === conceptId)
+    if (toCheck) {
+      foundConnection = toCheck
     }
   }
   return foundConnection
 }
+
+export function CheckAllConnectionsConnectedInConnectionArray(
+  connectionList: Connection[] = [],
+  conceptId: number,
+){
+  let foundConnections = [];
+  if (Array.isArray(connectionList)) {
+    const check = connectionList.find(c => c.toTheConceptId == conceptId)
+    if (check) {
+      foundConnections.push(check);
+    }
+    const toCheck = connectionList.find(c => c.ofTheConceptId == conceptId)
+    if (toCheck) {
+      foundConnections.push(toCheck);
+    }
+  }
+  return foundConnections
+}
+

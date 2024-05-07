@@ -38,6 +38,8 @@ export { GetCompositionWithCache, GetCompositionWithDataIdWithCache, GetComposit
 export { CreateSession } from './Api/Session/CreateSession';
 export { CreateSessionVisit } from './Api/Session/CreateSessionVisit';
 export {} from './Api/GetConceptByCharacterAndType';
+export { recursiveFetchNew } from './Services/Composition/BuildComposition';
+export { CreateTheCompositionWithCache } from './Services/Composition/CreateCompositionCache';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { Connection } from './DataStructures/Connection';
@@ -50,6 +52,9 @@ export { SigninModel } from './DataStructures/SigninModel';
 export { FreeschemaResponse } from './DataStructures/Responses/StandardResponses';
 export { PatcherStructure } from './DataStructures/PatcherStructure';
 export { SessionData } from './DataStructures/Session/SessionData';
+export { Composition } from './DataStructures/Composition/Composition';
+export { CompositionBinaryTree } from './DataStructures/Composition/CompositionBinaryTree';
+export { CompositionNode } from './DataStructures/Composition/CompositionNode';
 export { BaseUrl } from './DataStructures/BaseUrl';
 declare function updateAccessToken(accessToken?: string): void;
 declare function init(url?: string, aiurl?: string, accessToken?: string): void;
