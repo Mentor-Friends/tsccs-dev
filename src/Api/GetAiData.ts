@@ -1,22 +1,30 @@
+import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
+import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
+import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAiData(){
     try{
-
-        const response = await fetch(GetAllAiData,{
+      const start = new Date().getTime();
+        var header = GetRequestHeader('application/x-www-form-urlencoded');
+        const response = await fetch(BaseUrl.GetAllAiData(),{
             method: 'GET',
-            headers:{
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
+            headers: header,
         });
         if(!response.ok){
             throw new Error(`Error! status: ${response.status}`);
         }
          const result = await response.json();
         for(var i=0; i< result.length; i++){
-            ConceptsData.AddConcept(result[i]);
+            ConceptsData.AddConceptToStorage(result[i]);
         }
+        console.log("got all the concepts data from ai");
+        PurgatoryDatabaseUpdated();
+        let elapsed = new Date().getTime() - start;
+        console.log("The time taken is ", elapsed);
+
+
 }
 catch (error) {
     if (error instanceof Error) {

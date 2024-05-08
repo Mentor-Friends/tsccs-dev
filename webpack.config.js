@@ -9,14 +9,16 @@ module.exports = env => ({
    output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'dist'),
+     // libraryTarget: 'commonjs',
       library: {
          name: 'tsccs', // you then can access it via window: `window.youLib`
          type: 'umd',
          umdNamedDefine: true,
+        // type: "module"
        },
    },
    resolve: {
-      extensions: ['.ts', '.js'],
+      extensions: ['.tsx', '.ts', '.js'],
    },
    module: {
       rules: [

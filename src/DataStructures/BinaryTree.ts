@@ -54,8 +54,28 @@ export class BinaryTree{
             var Node = this.root.getFromNode(id, this.root);
             return Node;
         }
-        return this.root;
+        return null;
     }
+    
+
+    static async removeNodeFromTree(id:number){
+        if(this.root){
+            this.root = this.root.removeNode(this.root,id);
+        }
+    }
+
+
+
+
+    static countNumberOfNodes(){
+        if(this.root){
+            return this.root.countNodeBelow(this.root);
+
+        }
+        return 0;
+    }
+
+
 
 
 

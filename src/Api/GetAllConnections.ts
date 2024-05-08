@@ -1,13 +1,13 @@
 import { ConnectionData } from '../DataStructures/ConnectionData';
 import { GetAllConnectionsOfUserUrl } from './../Constants/ApiConstants';
+import { BaseUrl } from "../DataStructures/BaseUrl";
+import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 export async function GetAllUserConnections(userId: number){
     try{
-
-            const response = await fetch(GetAllConnectionsOfUserUrl,{
+            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            const response = await fetch(BaseUrl.GetAllConnectionsOfUserUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: header,
                 body: `user_id=${userId}`
             });
             if(!response.ok){

@@ -13,7 +13,6 @@ export  async function CreateLocalBinaryTypeTreeFromData(){
             }
 
         }
-        console.log(LocalBinaryTypeTree.LocalTypeRoot);
     var endTime = new Date().getTime();
     var time = endTime - startTime;
 

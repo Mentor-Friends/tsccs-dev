@@ -1,19 +1,18 @@
 import { CreateTheConnectionUrl } from "../../Constants/ApiConstants";
 import { Concept } from "../../DataStructures/Concept";
 import { Connection } from "../../DataStructures/Connection";
-
+import { BaseUrl } from "../../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 export async function CreateTheConnectionApi(connectionData: Connection[]){
     try{
 
 
-
+        var header = GetRequestHeader();
         var jsonData = JSON.stringify(connectionData);
 
-            const response = await fetch(CreateTheConnectionUrl,{
+            const response = await fetch(BaseUrl.CreateTheConnectionUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
+                headers:header,
                 body: jsonData
             });
             if(!response.ok){

@@ -7,7 +7,6 @@ export class LocalBinaryTypeTree{
 
     static async addNodeToTree(node:Node){
         if(this.LocalTypeRoot == null){
-            console.log("this is type root ", node);
             this.LocalTypeRoot = node;
             return this.LocalTypeRoot;
         }
@@ -23,6 +22,13 @@ export class LocalBinaryTypeTree{
             this.addNodeToTree(node);
         }
 
+    }
+    
+    static removeConceptType(typeId:number,id:number){
+        if(this.LocalTypeRoot){
+            this.LocalTypeRoot = this.LocalTypeRoot.removeNodeWithVariants(this.LocalTypeRoot,typeId, id);
+
+        }
     }
 
     static getNodeFromTree(id:number){

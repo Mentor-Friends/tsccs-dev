@@ -10,7 +10,6 @@ import { ReservedIds } from "./ReservedIds";
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
     static  connectionSyncArray: Connection[] = [];
-    
 
     static  CheckContains(concept: Concept){
         var contains = false;
@@ -25,6 +24,7 @@ export class SyncData{
     static SyncDataDelete(id:number){
         for(var i=0; i< this.conceptsSyncArray.length;i++){
             if(id == this.conceptsSyncArray[i].id){
+                console.log("this is the deleting of ", this.conceptsSyncArray[i]);
                 this.conceptsSyncArray.splice(i, 1);
             }
         }
@@ -52,6 +52,8 @@ export class SyncData{
          this.conceptsSyncArray.push(concept);
         }
      }
+
+
 
      static RemoveConcept(concept: Concept){
         for(var i=0; i<this.conceptsSyncArray.length; i++){
@@ -83,16 +85,14 @@ export class SyncData{
             ConnectionData.AddConnection(this.connectionSyncArray[i]);
         }
         
-        console.log("syncing online tese connections",this.connectionSyncArray);
         if(this.conceptsSyncArray.length > 0){
-
-            await CreateTheConceptApi(this.conceptsSyncArray);
+             CreateTheConceptApi(this.conceptsSyncArray);
             this.conceptsSyncArray = [];
         }
          if(this.connectionSyncArray.length > 0){
 
-         await CreateTheConnectionApi(this.connectionSyncArray);
-         this.connectionSyncArray = [];
+            await CreateTheConnectionApi(this.connectionSyncArray);
+            this.connectionSyncArray = [];
         }
         return "done";
 

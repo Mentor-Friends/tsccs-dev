@@ -9,7 +9,9 @@ export default async function GetTheConcept(id: number){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
-    if(concept){
+
+    if( concept.id != 0){
+
         if(concept.type == null){
             var conceptType = await ConceptsData.GetConcept(concept.typeId);
             if(conceptType == null && concept.typeId != null && concept.typeId != undefined){
@@ -19,5 +21,6 @@ export default async function GetTheConcept(id: number){
             }
         }
     }
+
     return concept;
 }

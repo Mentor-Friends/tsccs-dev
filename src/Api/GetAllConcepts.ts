@@ -1,13 +1,13 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetAllConceptsOfUserUrl } from './../Constants/ApiConstants';
+import { BaseUrl } from "../DataStructures/BaseUrl";
+import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetAllUserConcepts(userId: number){
     try{
-
-            const response = await fetch(GetAllConceptsOfUserUrl,{
+            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            const response = await fetch(BaseUrl.GetAllConceptsOfUserUrl(),{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
+                headers: header,
                 body: `user_id=${userId}`
             });
             if(!response.ok){

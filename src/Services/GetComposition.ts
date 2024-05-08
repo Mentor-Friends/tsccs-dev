@@ -22,7 +22,7 @@ export async function GetComposition(id:number){
     }
 
     var concept = await ConceptsData.GetConcept(id);
-    if(concept == null && id != null && id != undefined){
+    if(concept.id == 0 && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
@@ -32,7 +32,90 @@ export async function GetComposition(id:number){
     return returnOutput;
 }
 
+export async function GetCompositionFromMemory(id:number){
+    var connectionList:Connection[] = [];
+    var returnOutput: any = {};
+    connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+    //connectionList = ConnectionData.GetConnectionsOfComposition(id);
+    var compositionList:number[] = [];
+
+    for(var i=0; i<connectionList.length; i++){
+        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+            compositionList.push(connectionList[i].ofTheConceptId);
+        }
+    }
+
+    var concept = await ConceptsData.GetConcept(id);
+    if(concept.id == 0 && id != null && id != undefined){
+     var conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    var output = await recursiveFetch(id, connectionList, compositionList);
+    var mainString = concept?.type?.characterValue ?? "";
+    returnOutput[mainString] = output;
+    return returnOutput;
+}
+
+
+export async function GetCompositionWithIdFromMemory(id:number){
+    var connectionList:Connection[] = [];
+    var returnOutput: any = {};
+    connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+
+    var compositionList:number[] = [];
+
+    for(var i=0; i<connectionList.length; i++){
+        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+            compositionList.push(connectionList[i].ofTheConceptId);
+        }
+    }
+
+    var concept = await ConceptsData.GetConcept(id);
+    if(concept.id == 0 && id != null && id != undefined){
+     var conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    var output = await recursiveFetch(id, connectionList, compositionList);
+    var mainString = concept?.type?.characterValue ?? "";
+    returnOutput[mainString] = output;
+    var FinalReturn: any = {};
+    FinalReturn['data'] = returnOutput;
+    FinalReturn['id'] = id;
+
+    return FinalReturn;
+}
+
+export async function GetCompositionWithIdFromMemoryFromConnections(id:number, connectionList:Connection[]){
+    var connectionList:Connection[] = [];
+    var returnOutput: any = {};
+    //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+
+    console.log("this is the recursive search connection list", connectionList);
+    var compositionList:number[] = [];
+
+    for(var i=0; i<connectionList.length; i++){
+        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+            compositionList.push(connectionList[i].ofTheConceptId);
+        }
+    }
+
+    var concept = await ConceptsData.GetConcept(id);
+    if(concept.id == 0 && id != null && id != undefined){
+     var conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    var output = await recursiveFetch(id, connectionList, compositionList);
+    var mainString = concept?.type?.characterValue ?? "";
+    returnOutput[mainString] = output;
+    var FinalReturn: any = {};
+    FinalReturn['data'] = returnOutput;
+    FinalReturn['id'] = id;
+
+    return FinalReturn;
+}
+
 export async function GetCompositionWithId(id:number){
+    console.log("this is what biprash has called", id);
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
     var connectionListString = await GetAllConnectionsOfComposition(id);
@@ -46,7 +129,7 @@ export async function GetCompositionWithId(id:number){
     }
 
     var concept = await ConceptsData.GetConcept(id);
-    if(concept == null && id != null && id != undefined){
+    if(concept.id == 0 && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }

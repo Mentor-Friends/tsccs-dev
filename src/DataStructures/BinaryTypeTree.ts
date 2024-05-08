@@ -7,7 +7,6 @@ export class BinaryTypeTree{
 
     static async addNodeToTree(node:Node){
         if(this.typeRoot == null){
-            console.log("this is type root ", node);
             this.typeRoot = node;
             return this.typeRoot;
         }
@@ -22,8 +21,17 @@ export class BinaryTypeTree{
             var node: Node = new Node(concept.typeId, concept, null, null);
             this.addNodeToTree(node);
         }
-
     }
+
+    static removeTypeConcept(typeId:number,id:number){
+        if(this.typeRoot){
+            this.typeRoot = this.typeRoot.removeNodeWithVariants(this.typeRoot,typeId,id);
+
+        }
+    }
+
+
+
 
     static getNodeFromTree(id:number){
         if(this.typeRoot){
@@ -87,7 +95,18 @@ export class BinaryTypeTree{
                 }
                 for(let i=0; i< Node.variants.length; i++){
                     if(Node.variants[i].value.userId == userId ){
-                        concepts.push(Node.variants[i].value);
+                        var isPresent = false;
+
+                        for(let j=0; j<concepts.length;j++){
+                            if(concepts[j].id == Node.variants[i].value.id){
+                                isPresent = true;
+                            }
+                        }
+                        if(!isPresent){
+                            concepts.push(Node.variants[i].value);
+
+                        }
+
                     }
                 }
             }
@@ -115,6 +134,14 @@ export class BinaryTypeTree{
                 }
             }
         return concept;
+    }
+
+    static countNumberOfNodes(){
+        if(this.typeRoot){
+            return this.typeRoot.countNodeBelow(this.typeRoot);
+
+        }
+        return 0;
     }
 
 

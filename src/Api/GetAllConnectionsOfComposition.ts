@@ -2,16 +2,23 @@ import { Connection } from '../DataStructures/Connection';
 import { ConnectionData } from '../DataStructures/ConnectionData';
 import { GetMaximumConnectionSyncTime } from '../Services/GetMaximumConnectionSyncTime';
 import { GetAllConnectionsOfCompositionUrl } from './../Constants/ApiConstants';
+import { BaseUrl } from "../DataStructures/BaseUrl";
+import { ConnectionBinaryTree } from '../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree';
+import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
+import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
-        connectionList = ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
+        connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
         if(connectionList.length == 0){
           var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_id);
           connectionList = connectionListString as Connection[];
         }
         else{
-          GetAllConnectionsOfCompositionOnline(composition_id);
+          var newConnectionsString = await GetAllConnectionsOfCompositionOnline(composition_id);
+          var newConnections = newConnectionsString as Connection[];
+          CheckForConnectionDeletion(newConnections, connectionList);
+          connectionList = newConnections;
         }
         return connectionList;
         
@@ -21,20 +28,20 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
 export async function GetAllConnectionsOfCompositionOnline(composition_id: number){
   try{
       var connectionList: Connection[] = [];
-      const response = await fetch(GetAllConnectionsOfCompositionUrl,{
+      var header = GetRequestHeader('application/x-www-form-urlencoded');
+      const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
-        headers:{
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
+        headers: header,
         body: `composition_id=${composition_id}`
       });
       if(!response.ok){
           throw new Error(`Error! status: ${response.status}`);
       }
+      console.log("waiting and watching");
       const result = await response.json();
       for(var i=0; i< result.length; i++){
           ConnectionData.AddConnection(result[i]);
-          ConnectionData.AddToDictionary(result[i]);
+          // ConnectionData.AddToDictionary(result[i]);
           connectionList.push(result[i]);
       }
 

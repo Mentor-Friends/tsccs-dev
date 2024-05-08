@@ -15,8 +15,6 @@ var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,
     securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
 concept.isTemp = true;
 LocalConceptsData.AddConcept(concept);
-console.log("adding this concept to local");
-console.log(concept);
 storeToDatabase("localconcept",concept);
 return concept;
 
