@@ -26,8 +26,6 @@ export async function CreateConnectionBetweenTwoConcepts(ofTheConcept: Concept, 
             if(count){
                await CountRelationship(linkerAdd1, toTheConcept, userId);
               }
-              console.log("this is the backward linker", backwardLinker);
-              console.log("this is the backward concept", toTheConcept);
             var connectionConceptReverse = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
             let newConnection = new Connection(0,toTheConcept.id, ofTheConcept.id,toTheConcept.userId, ofTheConcept.userId, toTheConcept.userId,
                connectionConceptReverse.id, connectionConceptReverse.userId, 1000, userId, securityId, securityUserId, accessId, accessUserId,sessionInformationId,sessionInformationUserId  );

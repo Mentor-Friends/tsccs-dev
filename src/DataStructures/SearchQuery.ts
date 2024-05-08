@@ -7,6 +7,7 @@ export class SearchQuery{
      inpage:number = 10;
      page:number = 1;
      listLinkers:string[] = [];
+     fullLinkers:string[] = [];
      textSearch:string = "";
      logic: string = "or";
      filterSearches:FilterSearch[]  = [];
