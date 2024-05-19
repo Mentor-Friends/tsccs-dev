@@ -7,7 +7,7 @@ import GetConceptByCharacter from "./GetConceptByCharacter";
 import MakeTheCharacter from "./MakeTheCharacter";
 import { SplitStrings } from "./SplitStrings";
 
-export default async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number,
+export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number,
     )
 {
     var referentId: number = 999;
@@ -25,25 +25,28 @@ export default async  function MakeTheTypeConcept(typeString: string, sessionId:
     if(existingConcept){
         if(existingConcept.id == 0 || existingConcept.userId == 0){
             var splittedStringArray = SplitStrings(typeString);
-            if(splittedStringArray[0] == typeString){
-              var conceptString =  await MakeTheCharacter(typeString, userId, securityId, accessId, accessUserId, sessionId);
-              existingConcept = conceptString as Concept;
-
-            }   
-            else{
-                var categoryId:number = 1;
-                var categoryConcept = MakeTheTypeConcept(splittedStringArray[0], sessionId, sessionUserId, userId);
-                var typeConcept = await MakeTheTypeConcept(splittedStringArray[1], sessionId, sessionUserId, userId );
-
-                if(typeConcept){
-                    
-                    var concept = await CreateTheConceptImmediate(typeString, userId, categoryId, userId,typeConcept.id, userId, referentId, userId,
-                        securityId, userId,accessId, userId, sessionId, userId );
-                    existingConcept = concept as Concept;
+            if(splittedStringArray.length > 0){
+                console.log(splittedStringArray);
+                if(splittedStringArray[0] == typeString){
+                  var conceptString =  await MakeTheCharacter(typeString, userId, securityId, accessId, accessUserId, sessionId);
+                  existingConcept = conceptString as Concept;
+    
+                }   
+                else{
+                    var categoryId:number = 1;
+                    var categoryConcept = await MakeTheTypeConcept(splittedStringArray[0], sessionId, sessionUserId, userId);
+                    var typeConcept = await MakeTheTypeConcept(splittedStringArray[1], sessionId, sessionUserId, userId );
+                    if(typeConcept){
+                        
+                        var concept = await CreateTheConceptImmediate(typeString, userId, categoryConcept.id, userId,typeConcept.id, userId, referentId, userId,
+                            securityId, userId,accessId, userId, sessionId, userId );
+                        existingConcept = concept as Concept;
+                    }
+    
+    
                 }
-
-
             }
+
         }
 
     }

@@ -149,6 +149,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/create_the_connection';
     }
 
+    static MakeTheTypeConceptUrl(){
+        return this.BASE_URL + '/api/make_the_type_concept';
+    }
+
 
 
     ////////////////////////////////////////////////////////////////////////

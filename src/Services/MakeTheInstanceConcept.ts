@@ -3,11 +3,12 @@ import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndTyp
 import { MakeTheNameInBackend } from "../Api/MakeTheNameInBackend";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
+import { MakeTheTypeConceptApi } from "../app";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import CreateTheConcept, { CreateTheConceptImmediate, CreateTheConceptTemporary } from "./CreateTheConcept";
 import { MakeTheName } from "./MakeTheName";
 import { MakeTheTimestamp } from "./MakeTheTimestamp";
-import MakeTheTypeConcept from "./MakeTheTypeConcept";
+import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
 
 export default async function MakeTheInstanceConcept(type:string, referent:string, composition:boolean=false, userId: number, 
         passedAccessId:number, passedSessionId: number=999){
@@ -38,7 +39,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 stringToCheck = "the_" + type;
             }
             if(composition){
-               let   typeConceptString = await MakeTheTypeConcept(type, sessionInformationId, userId, userId );
+               let   typeConceptString = await MakeTheTypeConceptApi(type, userId);
                typeConcept = typeConceptString as Concept;
                let conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                 referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
@@ -46,7 +47,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             }
             else if(stringLength > 255){
 
-                let typeConceptString = await MakeTheTypeConcept(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
+                let typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
                 typeConcept = typeConceptString  as Concept;
                 let conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                     referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
@@ -60,7 +61,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
 
             }
             else{
-                let typeConceptString = await MakeTheTypeConcept(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
+                let typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
                 typeConcept = typeConceptString  as Concept;
                 let conceptByCharTypeString = await GetConceptByCharacterAndType(referent,typeConcept.id);
                 let conceptTypeCharacter = conceptByCharTypeString as Concept;
