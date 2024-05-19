@@ -21,6 +21,8 @@ export { createTheConnection as CreateTheConnection} from './Services/CreateTheC
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink,GetLinkRaw } from './Services/GetLink';
 export {CreateDefaultConcept} from './Services/CreateDefaultConcept';
+export {MakeTheTypeConcept} from './Services/MakeTheTypeConcept';
+export {MakeTheTypeConceptApi} from './Api/MakeTheTypeConceptApi';
 export { GetLinkerConnectionFromConcepts} from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';

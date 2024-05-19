@@ -1,7 +1,8 @@
 import { Concept } from "../DataStructures/Concept";
+import { MakeTheTypeConceptApi } from "../app";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import MakeTheConcept from "./MakeTheConcept";
-import MakeTheTypeConcept from "./MakeTheTypeConcept";
+import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
 
 export async function MakeTheTimestamp(type:string, referent:string, userId: number, 
     accessId:number, sessionInformationId: number=999){
@@ -27,7 +28,7 @@ export async function MakeTheTimestamp(type:string, referent:string, userId: num
         else{
             stringToCheck = "the_" + type;
         }
-    var typeConceptString = await MakeTheTypeConcept(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
+    var typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
     typeConcept = typeConceptString  as Concept;
     var conceptString = await MakeTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
         referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );

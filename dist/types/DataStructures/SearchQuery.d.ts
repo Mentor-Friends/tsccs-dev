@@ -6,6 +6,7 @@ export declare class SearchQuery {
     inpage: number;
     page: number;
     listLinkers: string[];
+    fullLinkers: string[];
     textSearch: string;
     logic: string;
     filterSearches: FilterSearch[];
