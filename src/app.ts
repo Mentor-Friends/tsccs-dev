@@ -47,6 +47,7 @@ export {CreateSessionVisit} from './Api/Session/CreateSessionVisit';
 export {  } from './Api/GetConceptByCharacterAndType';
 export { recursiveFetchNew} from './Services/Composition/BuildComposition'
 export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
+export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
 
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
