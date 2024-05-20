@@ -1,4 +1,5 @@
 import { CreateDefaultLConcept } from "../../Services/Local/CreateDefaultLConcept";
+import { Concept } from "../Concept";
 import { LConcept } from "./LConcept";
 
 export class LConnection{

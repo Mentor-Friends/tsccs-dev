@@ -1,3 +1,4 @@
+import { GetReservedConnectionIds } from "../Api/GetReservedConnectionIds";
 import { GetReservedIds } from "../Api/GetReservedIds";
 
 export class ReservedIds{
@@ -24,7 +25,7 @@ export class ReservedConnectionIds{
     static connectionIds: number[] = [];
     static async getId(){
         if(this.connectionIds.length < 5){
-            var connectionIds =  await GetReservedIds();
+            var connectionIds =  await GetReservedConnectionIds();
         }
         var id = this.connectionIds[0];
         this.connectionIds.shift();
