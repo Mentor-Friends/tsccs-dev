@@ -1,11 +1,11 @@
-import { Concept } from "../../DataStructures/Concept";
+import { LConcept } from "../../DataStructures/Local/LConcept";
 import { IdentifierFlags } from "../IdentifierFlags";
-import { Node } from "./../Node";
+import { LNode } from "./../Local/LNode";
 
 export class LocalBinaryTree{
-    static root: Node | null = null;
+    static root: LNode | null = null;
 
-    static addNodeToTree(node:Node){
+    static addNodeToTree(node:LNode){
         if(this.root == null){
             this.root = node;
             return this.root;
@@ -15,9 +15,9 @@ export class LocalBinaryTree{
         }
     }
 
-    static addConceptToTree(concept:Concept){
-        var node: Node = new Node(concept.id, concept, null, null);
-        var characterNode: Node = new Node(concept.characterValue, concept, null,null);
+    static addConceptToTree(concept:LConcept){
+        var node: LNode = new LNode(concept.id, concept, null, null);
+        var characterNode: LNode = new LNode(concept.characterValue, concept, null,null);
         this.addNodeToTree(node);
     }
 

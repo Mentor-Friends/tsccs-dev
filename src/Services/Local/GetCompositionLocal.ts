@@ -2,13 +2,13 @@ import { GetConcept } from "../../Api/GetConcept";
 import { GetAllConnectionsOfComposition } from "../../Api/GetAllConnectionsOfComposition";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
-import { Connection } from "../../DataStructures/Connection";
+import { LConnection } from "../../DataStructures/Local/LConnection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 
 
 
 export async function GetCompositionLocal(id:number){
-    var connectionList:Connection[] = [];
+    var connectionList:LConnection[] = [];
     var returnOutput: any = {};
     connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
@@ -28,7 +28,7 @@ export async function GetCompositionLocal(id:number){
 }
 
 export async function GetCompositionLocalWithId(id:number){
-    var connectionList:Connection[] = [];
+    var connectionList:LConnection[] = [];
     var returnOutput: any = {};
     connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
     var compositionList:number[] = [];
@@ -54,7 +54,7 @@ export async function GetCompositionLocalWithId(id:number){
 }
 
 
- async function recursiveFetchLocal(id:number, connectionList:Connection[], compositionList:number[]){
+ async function recursiveFetchLocal(id:number, connectionList:LConnection[], compositionList:number[]){
 
     var output : any= {};
     var arroutput: any = [];

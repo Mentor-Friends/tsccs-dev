@@ -1,5 +1,5 @@
 import { LocalBinaryTypeTree } from "../../DataStructures/Local/LocalBinaryTypeTree";
-import { Node } from "../../DataStructures/Node";
+import { LNode } from "../../DataStructures/Local/LNode";
 import { getAllFromLocalDb } from "../../Database/NoIndexDb";
 
 export  async function CreateLocalBinaryTypeTreeFromData(){
@@ -8,7 +8,7 @@ export  async function CreateLocalBinaryTypeTreeFromData(){
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
-                let node = new Node(concept.typeId, concept, null, null);
+                let node = new LNode(concept.typeId, concept, null, null);
                  LocalBinaryTypeTree.addNodeToTree(node);
             }
 
