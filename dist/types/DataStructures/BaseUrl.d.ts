@@ -32,6 +32,7 @@ export declare class BaseUrl {
     static CreateGhostConceptApiUrl(): string;
     static CreateGhostConnectionApiUrl(): string;
     static GetReservedIdUrl(): string;
+    static GetReservedConnectionIdUrl(): string;
     static CreateTheTextDataUrl(): string;
     static CreateTheCharacterDataUrl(): string;
     static CreateTheConceptUrl(): string;

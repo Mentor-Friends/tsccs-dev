@@ -19,3 +19,22 @@ export class ReservedIds{
         }
     }
 }
+
+export class ReservedConnectionIds{
+    static connectionIds: number[] = [];
+    static async getId(){
+        if(this.connectionIds.length < 5){
+            var connectionIds =  await GetReservedIds();
+        }
+        var id = this.connectionIds[0];
+        this.connectionIds.shift();
+        return id;
+
+    }
+
+    static AddId(id:number){
+        if(!this.connectionIds.includes(id)){
+            this.connectionIds.push(id);
+        }
+    }
+}

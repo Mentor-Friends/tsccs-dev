@@ -136,6 +136,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/get_reserved_ids';
     }
 
+    static GetReservedConnectionIdUrl(){
+        return this.BASE_URL + '/api/get_reserved_connection_ids';
+    }
+
 
     /////////////////////////////////////////////////////////////////////////////
     ////////////////API For Creating Data //////////////////////////////////////
