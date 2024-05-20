@@ -5,6 +5,7 @@ import { ConnectionData } from "./ConnectionData";
 export class Connection{
     id: number;
     userId: number;
+    ghostId: number;
     OfTheConceptId: number;
     ToTheConceptId: number;
     ofTheConceptId: number;
@@ -39,6 +40,7 @@ export class Connection{
             this.ToTheConceptUserId = toTheConceptUserId;
             this.userId = userId;
             this.typeId = typeId;
+            this.ghostId = id;
             this.typeUserId = typeUserId;
             this.orderId = orderId;
             this.orderUserId = orderUserId;

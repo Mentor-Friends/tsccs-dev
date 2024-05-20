@@ -1,23 +1,15 @@
-import { Connection } from "../../DataStructures/Connection";
+import { LConnection } from "../../DataStructures/Local/LConnection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { SyncData } from "../../DataStructures/SyncData";
 import { storeToDatabase } from "../../Database/indexdblocal";
 import { genHexString } from "./../GenerateHexNumber";
 
-export default function CreateTheConnectionLocal(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,
-     typeId: number, sessionInformationId: number, sessionInformationUserId: number
+export default function CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, 
+     typeId: number,orderId:number = 1,
     ){  
-        var orderId: number = 1;
-        var orderUserId: number = ofTheConceptUserId;
-        var typeUserId: number = ofTheConceptUserId;
-        var userId : number = ofTheConceptUserId;
-        var securityId: number = 0;
-        var securityUserId: number = ofTheConceptUserId;
         var accessId : number = 4;
-        var accessUserId: number = ofTheConceptUserId;
         if(ofTheConceptId != toTheConceptId){
-            var connection = new Connection(0,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
-                typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
+            var connection = new LConnection(0, ofTheConceptId, toTheConceptId, typeId, orderId, accessId);
             connection.isTemp = true;
             connection.id = Math.floor(Math.random() * 100000000);
             LocalConnectionData.AddConnection(connection);

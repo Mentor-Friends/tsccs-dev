@@ -1,5 +1,5 @@
 import { LocalBinaryCharacterTree } from "../../DataStructures/Local/LocalBinaryCharacterTree";
-import { Node } from "../../DataStructures/Node";
+import { LNode } from "../../DataStructures/Local/LNode";
 import { getAllFromLocalDb } from "../../Database/NoIndexDb";
 
 export  async function CreateLocalCharacterBinaryTreeFromData(){
@@ -8,7 +8,7 @@ export  async function CreateLocalCharacterBinaryTreeFromData(){
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
-                let node = new Node(concept.characterValue, concept, null, null);
+                let node = new LNode(concept.characterValue, concept, null, null);
                 LocalBinaryCharacterTree.addNodeToTree(node);
             }
 

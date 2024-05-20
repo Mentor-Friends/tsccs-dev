@@ -2,6 +2,7 @@ export declare class Concept {
     x: number;
     y: number;
     id: number;
+    ghostId: number;
     userId: number;
     typeId: number;
     typeUserId: number;

@@ -1,6 +1,5 @@
-import { Concept } from "../../DataStructures/Concept";
-import { SyncData } from "../../DataStructures/SyncData";
-import { CreateDefaultConcept } from "../CreateDefaultConcept";
+import { LConcept } from "../../DataStructures/Local/LConcept";
+import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept";
 import CreateTheConnectionLocal from "./CreateTheConnectionLocal";
 import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
 
@@ -10,14 +9,14 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
     var localAccessId: number = accessId ?? 999;
     var localSessionId: number = sessionInformationId ?? 999;
     var MainKeyLocal: number = mainKey ?? 0;
-    var MainConcept = CreateDefaultConcept();
+    var MainConcept = CreateDefaultLConcept();
     for (const key in json) {
         if(typeof json[key] != 'string' && typeof json[key] != 'number' ){
             if(ofTheConceptId == null && ofTheConceptUserId == null){
 
                 var localMainKey = MainKeyLocal;
                 let conceptString = await MakeTheInstanceConceptLocal(key, "", true, localUserId, localAccessId, localSessionId);
-                var concept = conceptString as Concept;
+                var concept = conceptString as LConcept;
                 MainConcept = concept;
                 localMainKey = concept.id;
                 MainKeyLocal = concept.id;
@@ -29,8 +28,8 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
                 var ofTheUser:number = ofTheConceptUserId ?? 999;
                 var localMainKey = MainKeyLocal;
                 var conceptString = await MakeTheInstanceConceptLocal(key, "", true, localUserId, localAccessId, localSessionId  );
-                var concept = conceptString as Concept;
-                await CreateTheConnectionLocal(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
+                var concept = conceptString as LConcept;
+                await CreateTheConnectionLocal(ofThe, concept.id, localMainKey);
                 await CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
             }
         }
@@ -39,8 +38,8 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
             var ofTheUser:number = ofTheConceptUserId ?? 999;
             var localMainKey = MainKeyLocal;
             var conceptString = await MakeTheInstanceConceptLocal(key, json[key], false, localUserId, localAccessId, localSessionId);
-            var concept = conceptString as Concept;
-            await CreateTheConnectionLocal(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
+            var concept = conceptString as LConcept;
+            await CreateTheConnectionLocal(ofThe, concept.id, localMainKey);
 
         }
 

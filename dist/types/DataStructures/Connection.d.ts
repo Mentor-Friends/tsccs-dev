@@ -2,6 +2,7 @@ import { Concept } from "./Concept";
 export declare class Connection {
     id: number;
     userId: number;
+    ghostId: number;
     OfTheConceptId: number;
     ToTheConceptId: number;
     ofTheConceptId: number;

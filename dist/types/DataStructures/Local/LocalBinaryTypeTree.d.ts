@@ -1,13 +1,13 @@
-import { Concept } from "../../DataStructures/Concept";
-import { Node } from "./../Node";
+import { LConcept } from "../../DataStructures/Local/LConcept";
+import { LNode } from "./LNode";
 export declare class LocalBinaryTypeTree {
-    static LocalTypeRoot: Node | null;
-    static addNodeToTree(node: Node): Promise<Node | null>;
-    static addConceptToTree(concept: Concept): void;
+    static LocalTypeRoot: LNode | null;
+    static addNodeToTree(node: LNode): Promise<LNode | null>;
+    static addConceptToTree(concept: LConcept): void;
     static removeConceptType(typeId: number, id: number): void;
-    static getNodeFromTree(id: number): Node | null;
-    static getTypeVariantsFromTree(typeId: number): Concept[] | undefined;
+    static getNodeFromTree(id: number): LNode | null;
+    static getTypeVariantsFromTree(typeId: number): LConcept[] | undefined;
     static waitForDataToLoad(): Promise<unknown>;
     static checkFlag(resolve: any): any;
-    static getTypeVariantsFromTreeWithUserId(typeId: number, userId: number): Promise<Concept[]>;
+    static getTypeVariantsFromTreeWithUserId(typeId: number, userId: number): Promise<LConcept[]>;
 }

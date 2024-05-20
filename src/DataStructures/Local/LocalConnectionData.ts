@@ -1,16 +1,16 @@
 import {storeToDatabase } from "../../Database/NoIndexDb";
 import { IdentifierFlags } from "../IdentifierFlags";
-import { Connection } from "./../Connection";
+import { LConnection } from "./LConnection";
 export class LocalConnectionData{
     
     name: string;
     constructor(){
         this.name = "Connection Array";
     }
-    static  connectionArray:Connection[] = [];
+    static  connectionArray:LConnection[] = [];
 
-    static connectionDictionary:Connection[] = [];
-    static  CheckContains(connection: Connection){
+    static connectionDictionary:LConnection[] = [];
+    static  CheckContains(connection: LConnection){
         var contains = false;
         for(var i=0; i<this.connectionArray.length; i++){
          if(this.connectionArray[i].id == connection.id){
@@ -22,7 +22,7 @@ export class LocalConnectionData{
     }
 
 
-    static AddConnection(connection: Connection){
+    static AddConnection(connection: LConnection){
        var contains = this.CheckContains(connection);
         if(contains){
             this.RemoveConnection(connection);
@@ -34,11 +34,11 @@ export class LocalConnectionData{
         this.connectionArray.push(connection);
     }
 
-    static AddToDictionary(connection: Connection){
+    static AddToDictionary(connection: LConnection){
         this.connectionDictionary[connection.id] = connection;
     }
 
-    static RemoveConnection(connection: Connection){
+    static RemoveConnection(connection: LConnection){
        for(var i=0; i<this.connectionArray.length; i++){
         if(this.connectionArray[i].id == connection.id){
             this.connectionArray.splice(i, 1);
@@ -51,7 +51,7 @@ export class LocalConnectionData{
     }
 
     static GetConnection(id: number){
-       var  myConcept: Connection|null;
+       var  myConcept: LConnection|null;
        myConcept = null;
         for(var i=0; i<this.connectionArray.length; i++){
             if(this.connectionArray[i].id == id){
@@ -82,7 +82,7 @@ export class LocalConnectionData{
       };
 
     static async GetConnectionsOfCompositionLocal(id: number){
-        var connectionList:Connection[] = [];
+        var connectionList:LConnection[] = [];
 
         try{
             var data = await this.waitForDataToLoad();

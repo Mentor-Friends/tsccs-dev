@@ -1,9 +1,9 @@
-import { Concept } from "../../DataStructures/Concept";
+import { LConcept } from "../../DataStructures/Local/LConcept";
 import { IdentifierFlags } from "./../IdentifierFlags";
-import { Node } from "./../Node";
+import { LNode } from "./../Local/LNode";
 
 export class LocalBinaryCharacterTree{
-    static LocalCharacterRoot: Node | null = null;
+    static LocalCharacterRoot: LNode | null = null;
 
 
     static async waitForDataToLoad(){
@@ -24,7 +24,7 @@ export class LocalBinaryCharacterTree{
             setTimeout(LocalBinaryCharacterTree.checkFlag, 1000, resolve);
         }
       };
-    static async addNodeToTree(node:Node){
+    static async addNodeToTree(node:LNode){
         if(this.LocalCharacterRoot == null){
             this.LocalCharacterRoot = node;
             return this.LocalCharacterRoot;
@@ -35,9 +35,9 @@ export class LocalBinaryCharacterTree{
         return this.LocalCharacterRoot;
     }
 
-    static addConceptToTree(concept:Concept){
+    static addConceptToTree(concept:LConcept){
         if(concept.characterValue != ""){
-            var node: Node = new Node(concept.characterValue, concept, null, null);
+            var node: LNode = new LNode(concept.characterValue, concept, null, null);
             this.addNodeToTree(node);
         }
 

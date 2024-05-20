@@ -1,16 +1,16 @@
-import { Connection } from "./../Connection";
+import { LConnection } from "./LConnection";
 export declare class LocalConnectionData {
     name: string;
     constructor();
-    static connectionArray: Connection[];
-    static connectionDictionary: Connection[];
-    static CheckContains(connection: Connection): boolean;
-    static AddConnection(connection: Connection): void;
-    static AddToDictionary(connection: Connection): void;
-    static RemoveConnection(connection: Connection): void;
-    static GetConnection(id: number): Connection | null;
+    static connectionArray: LConnection[];
+    static connectionDictionary: LConnection[];
+    static CheckContains(connection: LConnection): boolean;
+    static AddConnection(connection: LConnection): void;
+    static AddToDictionary(connection: LConnection): void;
+    static RemoveConnection(connection: LConnection): void;
+    static GetConnection(id: number): LConnection | null;
     static waitForDataToLoad(): Promise<unknown>;
     static checkFlag(resolve: any): any;
-    static GetConnectionsOfCompositionLocal(id: number): Promise<Connection[]>;
+    static GetConnectionsOfCompositionLocal(id: number): Promise<LConnection[]>;
     getName(): string;
 }

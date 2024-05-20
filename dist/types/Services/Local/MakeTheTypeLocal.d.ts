@@ -1,2 +1,2 @@
-import { Concept } from "../../DataStructures/Concept";
-export default function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number): Promise<Concept>;
+import { LConcept } from "../../DataStructures/Local/LConcept";
+export default function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number): Promise<LConcept>;
