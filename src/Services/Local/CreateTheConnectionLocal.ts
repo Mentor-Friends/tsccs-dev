@@ -2,9 +2,8 @@ import { LConnection } from "../../DataStructures/Local/LConnection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { SyncData } from "../../DataStructures/SyncData";
 import { storeToDatabase } from "../../Database/NoIndexDb";
-import { genHexString } from "./../GenerateHexNumber";
 
-export default function CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, 
+export  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, 
      typeId: number,orderId:number = 1,
     ){  
         var accessId : number = 4;
@@ -14,6 +13,7 @@ export default function CreateTheConnectionLocal(ofTheConceptId:number, toTheCon
             connection.id = Math.floor(Math.random() * 100000000);
             LocalConnectionData.AddConnection(connection);
             storeToDatabase("localconnection", connection);
+            return connection;
         }
       
 }
