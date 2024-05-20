@@ -4,6 +4,7 @@ export  class Concept{
     x: number;
     y: number;
     id: number;
+    ghostId: number;
     userId: number;
     typeId: number;
     typeUserId: number;
@@ -34,6 +35,7 @@ export  class Concept{
         this.userId = userId;
         this.typeId  = typeId;
         this.typeUserId = typeUserId;
+        this.ghostId = id;
         this.categoryId = categoryId;
         this.categoryUserId = categoryUserId;
         this.referentId = referentId;
