@@ -3,7 +3,6 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import GetConceptByCharacterLocal from "./GetConceptByCharacterLocal";
 import { SplitStrings } from "../SplitStrings";
 import MakeTheConceptLocal from "./MakeTheConceptLocal";
-import { LocalBinaryCharacterTree } from "../../DataStructures/Local/LocalBinaryCharacterTree";
 
 export default async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number,
     )
