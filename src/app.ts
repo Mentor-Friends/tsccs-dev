@@ -69,6 +69,7 @@ import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTre
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+import { LocalBinaryCharacterTree } from './DataStructures/Local/LocalBinaryCharacterTree';
 export {BaseUrl} from './DataStructures/BaseUrl';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
@@ -96,6 +97,7 @@ function init(url:string = "", aiurl:string="", accessToken:string = ""){
          IdentifierFlags.isLocalTypeLoaded = true;
          IdentifierFlags.isLocalCharacterLoaded = true;
          let elapsed = new Date().getTime() - start;
+         console.log("This is the binary tree for local", LocalBinaryCharacterTree.LocalCharacterRoot);
          console.log("The time taken to prepare local concept  ", elapsed);
       });
       

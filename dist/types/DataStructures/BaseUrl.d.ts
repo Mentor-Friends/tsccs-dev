@@ -29,6 +29,8 @@ export declare class BaseUrl {
     static SearchLinkMultipleAll(): string;
     static CreateSessionId(): string;
     static CreateSessionVisitUrl(): string;
+    static CreateGhostConceptApiUrl(): string;
+    static CreateGhostConnectionApiUrl(): string;
     static GetReservedIdUrl(): string;
     static CreateTheTextDataUrl(): string;
     static CreateTheCharacterDataUrl(): string;

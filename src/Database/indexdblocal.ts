@@ -49,6 +49,33 @@ export function openDatabase(databaseName:string){
   
   }
 
+  export async function getFromDatabaseWithTypeOld(databaseName:string){
+    return new Promise(function(resolve, reject){
+    openDatabase(databaseName).then(()=>{
+
+
+      var concept: Concept|null;
+      var ConceptList: Concept[] = [];
+    
+        var db = LocalIndexDb.db;
+      let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+      let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
+      var allobjects = objectStore.getAll();
+
+      allobjects.onsuccess = ()=> {
+        const students = allobjects.result;
+
+        for(var i=0; i<students.length; i++){
+            ConceptList.push(students[i]);
+        }
+        resolve(ConceptList); 
+
+      }
+    });
+
+  });
+}
+
 
   export function storeToDatabase(databaseName:string, object:any){
 

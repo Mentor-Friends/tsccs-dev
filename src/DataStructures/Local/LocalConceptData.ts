@@ -1,6 +1,6 @@
 import { GetConcept } from "../../Api/GetConcept";
 import { Concept } from "./../Concept";
-import {  storeToDatabase } from "../../Database/NoIndexDb";
+import {  storeToDatabase } from "../../Database/indexdblocal";
 import { BinaryTree } from "./../BinaryTree";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { LocalBinaryCharacterTree } from "./LocalBinaryCharacterTree";

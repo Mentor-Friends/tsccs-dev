@@ -120,6 +120,14 @@ export class BaseUrl{
 
 
 
+    static CreateGhostConceptApiUrl(){
+        return this.BASE_URL + '/api/v1/create-ghost-concepts'
+    }
+
+    static CreateGhostConnectionApiUrl(){
+        return this.BASE_URL + '/api/create_the_connection';
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////
     //////////////// API For Reserved Ids ///////////////////////////////////////

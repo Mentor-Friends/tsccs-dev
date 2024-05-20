@@ -8,6 +8,9 @@ export  function SplitStrings(typeString: string)
     
          SplittedStrings = [rest, last];
     }
+    else{
+        SplittedStrings = [typeString];
+    }
 
 
     return SplittedStrings;

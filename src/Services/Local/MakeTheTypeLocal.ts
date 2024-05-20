@@ -3,6 +3,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import GetConceptByCharacterLocal from "./GetConceptByCharacterLocal";
 import { SplitStrings } from "../SplitStrings";
 import MakeTheConceptLocal from "./MakeTheConceptLocal";
+import { LocalBinaryCharacterTree } from "../../DataStructures/Local/LocalBinaryCharacterTree";
 
 export default async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number,
     )
@@ -17,7 +18,6 @@ export default async  function MakeTheTypeConceptLocal(typeString: string, sessi
     var securityUserId: number = userId;
 
     var existingConcept = await GetConceptByCharacterLocal(typeString);
-
     if(existingConcept){
         if(existingConcept.id == 0 || existingConcept.userId == 0){
             var splittedStringArray = SplitStrings(typeString);
@@ -29,13 +29,14 @@ export default async  function MakeTheTypeConceptLocal(typeString: string, sessi
             }   
             else{
                 var categoryId:number = 1;
-                var categoryConcept = MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
+                var categoryConcept = await MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
                 var typeConcept = await MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId );
 
                 if(typeConcept){
                     
-                    var concept = await CreateTheConceptLocal(typeString, userId, categoryId, userId,typeConcept.id, userId, referentId, userId,
+                    var concept = await CreateTheConceptLocal(typeString, userId, categoryConcept.id, userId,typeConcept.id, userId, referentId, userId,
                         securityId, userId,accessId, userId, sessionId, userId );
+
                     existingConcept = concept as Concept;
                 }
 

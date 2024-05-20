@@ -1,7 +1,7 @@
 import { LocalBinaryTree } from "../../DataStructures/Local/LocalBinaryTree";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { Node } from "../../DataStructures/Node";
-import { getAllFromLocalDb } from "../../Database/NoIndexDb";
+import { getAllFromLocalDb } from "../../Database/indexdblocal";
 
 export default  async function CreateLocalBinaryTreeFromData(){
     var conceptList = await getAllFromLocalDb("localconcept");

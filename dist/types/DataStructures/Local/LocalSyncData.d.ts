@@ -8,6 +8,7 @@ export declare class LocalSyncData {
     static CheckContainsConnection(connection: Connection): boolean;
     static AddConcept(concept: Concept): void;
     static RemoveConcept(concept: Concept): void;
+    static SyncDataOnline(): Promise<string>;
     static AddConnection(connection: Connection): void;
     static RemoveConnection(connection: Connection): void;
     static syncDataLocalDb(): Promise<string>;

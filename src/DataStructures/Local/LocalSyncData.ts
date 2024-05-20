@@ -2,7 +2,9 @@ import { Concept } from "./../Concept";
 import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "./../Connection";
 import { LocalConnectionData } from "./LocalConnectionData";
-import { storeToDatabase } from "../../Database/NoIndexDb";
+import { storeToDatabase } from "../../Database/indexdblocal";
+import { CreateTheGhostConceptApi } from "../../Api/Create/CreateTheGhostConceptApi";
+import { CreateTheGhostConnectionApi } from "../../Api/Create/CreateTheGhostConnectionApi";
 
 export class LocalSyncData{
     static  conceptsSyncArray:Concept[] = [];
@@ -56,6 +58,26 @@ export class LocalSyncData{
              this.conceptsSyncArray.splice(i, 1);
          }
         }
+     }
+
+     static async  SyncDataOnline(){
+        
+        if(this.conceptsSyncArray.length > 0){
+            let conceptsArray = this.conceptsSyncArray.slice();
+            this.conceptsSyncArray = [];
+            CreateTheGhostConceptApi(conceptsArray);
+        }
+         if(this.connectionSyncArray.length > 0){
+
+            // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
+            //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
+            // }
+            let connectionsArray = this.connectionSyncArray.slice();
+            this.connectionSyncArray = [];
+            await CreateTheGhostConnectionApi(connectionsArray);
+        }
+        return "done";
+
      }
 
      static AddConnection(connection: Connection){

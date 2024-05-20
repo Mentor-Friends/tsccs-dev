@@ -1,4 +1,4 @@
-import { storeToDatabase } from "./../Database/NoIndexDb";
+import { storeToDatabase } from "./../Database/indexeddb";
 import { CreateTheConceptApi } from "../Api/Create/CreateTheConceptApi";
 import { CreateTheConnectionApi } from "../Api/Create/CreateTheConnectionApi";
 import { Concept } from "./Concept";
