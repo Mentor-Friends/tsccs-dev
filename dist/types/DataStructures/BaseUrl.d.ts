@@ -30,6 +30,7 @@ export declare class BaseUrl {
     static CreateSessionId(): string;
     static CreateSessionVisitUrl(): string;
     static GetReservedIdUrl(): string;
+    static GetReservedConnectionIdUrl(): string;
     static CreateTheTextDataUrl(): string;
     static CreateTheCharacterDataUrl(): string;
     static CreateTheConceptUrl(): string;
