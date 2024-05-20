@@ -1,1 +1,1 @@
-export default function GetConceptByCharacterLocal(characterValue: string): Promise<import("../../app").Concept>;
+export default function GetConceptByCharacterLocal(characterValue: string): Promise<import("../../DataStructures/Local/LConcept").LConcept>;

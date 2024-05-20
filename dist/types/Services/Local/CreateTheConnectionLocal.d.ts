@@ -1,1 +1,1 @@
-export default function CreateTheConnectionLocal(ofTheConceptId: number, ofTheConceptUserId: number, toTheConceptId: number, toTheConceptUserId: number, typeId: number, sessionInformationId: number, sessionInformationUserId: number): void;
+export default function CreateTheConnectionLocal(ofTheConceptId: number, toTheConceptId: number, typeId: number, orderId?: number): void;

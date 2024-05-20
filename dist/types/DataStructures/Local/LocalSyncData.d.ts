@@ -1,14 +1,14 @@
-import { Concept } from "./../Concept";
-import { Connection } from "./../Connection";
+import { LConcept } from "./LConcept";
+import { LConnection } from "./LConnection";
 export declare class LocalSyncData {
-    static conceptsSyncArray: Concept[];
-    static connectionSyncArray: Connection[];
-    static CheckContains(concept: Concept): boolean;
+    static conceptsSyncArray: LConcept[];
+    static connectionSyncArray: LConnection[];
+    static CheckContains(concept: LConcept): boolean;
     static SyncDataDelete(id: number): void;
-    static CheckContainsConnection(connection: Connection): boolean;
-    static AddConcept(concept: Concept): void;
-    static RemoveConcept(concept: Concept): void;
-    static AddConnection(connection: Connection): void;
-    static RemoveConnection(connection: Connection): void;
+    static CheckContainsConnection(connection: LConnection): boolean;
+    static AddConcept(concept: LConcept): void;
+    static RemoveConcept(concept: LConcept): void;
+    static AddConnection(connection: LConnection): void;
+    static RemoveConnection(connection: LConnection): void;
     static syncDataLocalDb(): Promise<string>;
 }
