@@ -13,6 +13,7 @@ export  class LConcept{
     updatedTimeStamp:Date;
     type: LConcept | null | void | Concept;
     isNew: boolean;
+    isComposition: boolean = false;
     isTemp: boolean = false;
 
 
