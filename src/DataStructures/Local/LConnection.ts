@@ -1,5 +1,6 @@
 import { CreateDefaultLConcept } from "../../Services/Local/CreateDefaultLConcept";
 import { LConcept } from "./LConcept";
+import { LocalConnectionData } from "./LocalConnectionData";
 
 export class LConnection{
     id: number;
@@ -17,7 +18,7 @@ export class LConnection{
     isTemp:boolean = false;
     type: LConcept = CreateDefaultLConcept();
 
-    constructor(id: number = 0, ofTheConceptId: number, toTheConceptId: number,
+    constructor(id: number, ofTheConceptId: number, toTheConceptId: number,
          typeId: number, orderId: number,
         accessId: number){
             this.id = id;

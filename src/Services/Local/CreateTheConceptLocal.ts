@@ -4,6 +4,7 @@ import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { ReservedIds } from "../../DataStructures/ReservedIds";
 import { SyncData } from "../../DataStructures/SyncData";
 import { storeToDatabase } from "../../Database/indexdblocal";
+import { LocalSyncData } from "../../app";
 
 export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, 
 typeId:number, 

@@ -121,11 +121,11 @@ export class BaseUrl{
 
 
     static CreateGhostConceptApiUrl(){
-        return this.BASE_URL + '/api/v1/create-ghost-concepts'
+        return "http://localhost:5001" + '/api/v1/local-concepts'
     }
 
     static CreateGhostConnectionApiUrl(){
-        return this.BASE_URL + '/api/create_the_connection';
+        return "http://localhost:5001" + '/api/v1/local-connections';
     }
 
 

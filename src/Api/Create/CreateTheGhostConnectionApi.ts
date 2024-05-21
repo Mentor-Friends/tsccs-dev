@@ -2,27 +2,28 @@ import { CreateTheConnectionUrl } from "../../Constants/ApiConstants";
 import { Concept } from "../../DataStructures/Concept";
 import { LConnection } from "../../DataStructures/Local/LConnection";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 export async function CreateTheGhostConnectionApi(connectionData: LConnection[]){
-  let result = new LConnection(0,0,0,0,0,0);
+  let result:LConnection[] = [];
     try{
 
 
-        var header = GetRequestHeader();
-        var jsonData = JSON.stringify(connectionData);
+      var header = GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
+      var jsonData = JSON.stringify(connectionData);
             const response = await fetch(BaseUrl.CreateGhostConnectionApiUrl(),{
                 method: 'POST',
                 headers:header,
                 body: jsonData
             });
             if(response.ok){
-              const result = await response.json();
+              result = await response.json();
+              return result;
 
             }
             else{
               console.log('Create the connection error message: ', response.status);
             }
-            return result;
 
 
     }

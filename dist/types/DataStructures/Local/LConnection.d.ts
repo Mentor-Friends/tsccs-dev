@@ -14,5 +14,5 @@ export declare class LConnection {
     localSyncTime: Date;
     isTemp: boolean;
     type: LConcept;
-    constructor(id: number | undefined, ofTheConceptId: number, toTheConceptId: number, typeId: number, orderId: number, accessId: number);
+    constructor(id: number, ofTheConceptId: number, toTheConceptId: number, typeId: number, orderId: number, accessId: number);
 }

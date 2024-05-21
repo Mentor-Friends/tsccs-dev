@@ -67,6 +67,7 @@ export {SessionData} from './DataStructures/Session/SessionData';
 export {Composition} from './DataStructures/Composition/Composition';
 export {CompositionBinaryTree} from './DataStructures/Composition/CompositionBinaryTree';
 export {CompositionNode} from './DataStructures/Composition/CompositionNode';
+export {LocalSyncData} from './DataStructures/Local/LocalSyncData';
 
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';

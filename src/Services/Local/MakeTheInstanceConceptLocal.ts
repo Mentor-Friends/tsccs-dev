@@ -7,6 +7,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import { MakeTheName } from "../MakeTheName";
 import MakeTheTypeConceptLocal from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
+import { LocalSyncData } from "../../app";
 
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
     accessId:number, sessionInformationId: number=999){
@@ -64,6 +65,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
         }
 
         concept.type = typeConcept;
+        LocalSyncData.AddConcept(concept);
         return concept;
 
 }

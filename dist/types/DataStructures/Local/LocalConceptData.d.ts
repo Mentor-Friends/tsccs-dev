@@ -4,6 +4,7 @@ export declare class LocalConceptsData {
     constructor();
     static localconceptsArray: LConcept[];
     static AddConcept(concept: LConcept): void;
+    static AddPermanentConcept(concept: LConcept): void;
     static AddConceptToMemory(concept: LConcept): void;
     static GetConcept(id: number): Promise<LConcept>;
     static GetConceptByCharacter(characterValue: string): Promise<LConcept>;

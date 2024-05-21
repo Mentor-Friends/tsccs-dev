@@ -1,4 +1,5 @@
-import {storeToDatabase } from "../../Database/NoIndexDb";
+import {storeToDatabase } from "../../Database/indexdblocal";
+import { removeFromDatabase } from "../../Database/indexdblocal";
 import { IdentifierFlags } from "../IdentifierFlags";
 import { LConnection } from "./LConnection";
 export class LocalConnectionData{
@@ -27,7 +28,7 @@ export class LocalConnectionData{
         if(contains){
             this.RemoveConnection(connection);
         }
-        if(connection.id != 0 || connection.isTemp){
+        if(connection.id != 0){
 
             storeToDatabase("localconnection",connection);
         }
@@ -48,6 +49,14 @@ export class LocalConnectionData{
       //  removeFromDatabase("connection",connection.id);
 
        }
+    }
+
+    static AddPermanentConnection(connection: LConnection){
+        if(connection.id > 0){
+
+            removeFromDatabase("localconnection", connection.ghostId);
+            this.AddConnection(connection);
+        }
     }
 
     static GetConnection(id: number){

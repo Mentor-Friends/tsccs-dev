@@ -1,3 +1,4 @@
+import { LocalConceptsData } from "./LocalConceptData";
 
 export  class LConcept{
     id: number;
@@ -29,7 +30,6 @@ export  class LConcept{
         this.typeCharacter = typeCharacter;
         this.entryTimeStamp = entryTimeStamp;
         this.updatedTimeStamp = updatedTimeStamp;
-       // ConceptsData.AddConcept(this);
     }
 
     getType(){

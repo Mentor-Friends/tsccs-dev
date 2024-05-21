@@ -1,5 +1,5 @@
 import { LConcept } from "./../Local/LConcept";
-import {  storeToDatabase } from "../../Database/NoIndexDb";
+import {  removeFromDatabase, storeToDatabase } from "../../Database/indexdblocal";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { LocalBinaryCharacterTree } from "./LocalBinaryCharacterTree";
 import { LocalBinaryTypeTree } from "./LocalBinaryTypeTree";
@@ -23,6 +23,16 @@ export class LocalConceptsData{
             this.localconceptsArray.push(concept);
         }
 
+    }
+
+    static AddPermanentConcept(concept: LConcept){
+        if(concept.id > 0){
+            LocalBinaryTree.removeNodeFromTree(concept.ghostId);
+            LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
+            LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
+            removeFromDatabase("localconcept", concept.ghostId);
+            this.AddConcept(concept);
+        }
     }
 
     static AddConceptToMemory(concept: LConcept){

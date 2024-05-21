@@ -3,22 +3,33 @@ import { Concept } from "../../DataStructures/Concept";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept } from "../../app";
-export async function CreateTheGhostConceptApi(conceptData: any){
-  let result = CreateDefaultConcept();
+import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import {  LConcept } from "../../DataStructures/Local/LConcept";
+import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
+import { LConnection } from "../../app";
+export async function CreateTheGhostConceptApi(conceptData: LConcept[], connectionData: LConnection[]){
+  let result = {
+    "concepts": [],
+    "connections": []
+  };
     try{
-            var header = GetRequestHeader();
+            var header = GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
+            console.log("This is the header", header);
+            let myBody = {
+              "concepts": conceptData,
+              "connections": connectionData
+            }
             const response = await fetch(BaseUrl.CreateGhostConceptApiUrl(),{
                 method: 'POST',
                 headers: header,
-                body: JSON.stringify(conceptData),
+                body: JSON.stringify(myBody),
             });
             if(!response.ok){
                 throw new Error(`Error! status: ${response.status}`);
             }
              const resultString = await response.json();
-            result = resultString as Concept;
+            result.concepts = resultString.concepts;
+            result.connections = resultString.connections;
 
             return result;
     }
