@@ -1,1 +1,1 @@
-export declare function GetReservedIds(): Promise<string | undefined>;
+export declare function GetReservedConnectionIds(): Promise<string | undefined>;

@@ -1,4 +1,4 @@
-import { LocalConceptsData } from "./LocalConceptData";
+import { Concept } from "../Concept";
 
 export  class LConcept{
     id: number;
@@ -11,8 +11,9 @@ export  class LConcept{
     typeCharacter: string;
     entryTimeStamp: Date;
     updatedTimeStamp:Date;
-    type: LConcept | null | void;
+    type: LConcept | null | void | Concept;
     isNew: boolean;
+    isComposition: boolean = false;
     isTemp: boolean = false;
 
 
