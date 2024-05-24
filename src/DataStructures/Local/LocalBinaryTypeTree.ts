@@ -88,11 +88,12 @@ export class LocalBinaryTypeTree{
             var Node = this.getNodeFromTree(typeId);
     
             if(Node){
-                if(Node.value.userId == userId ){
+                console.log("this is the node to type", Node);
+                if(Node.value.userId == userId || Node.value.userId == 999){
                     concepts.push(Node?.value);
                 }
                 for(let i=0; i< Node.variants.length; i++){
-                    if(Node.variants[i].value.userId == userId ){
+                    if(Node.variants[i].value.userId == userId || Node.value.userId == 999 ){
                         concepts.push(Node.variants[i].value);
                     }
                 }

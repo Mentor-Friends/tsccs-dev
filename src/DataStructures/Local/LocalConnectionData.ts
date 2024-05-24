@@ -1,5 +1,7 @@
 import {storeToDatabase } from "../../Database/indexdblocal";
 import { removeFromDatabase } from "../../Database/indexdblocal";
+import { ConvertFromLConnectionToConnection } from "../../Services/Local/ConvertFromLConnectionToConnection";
+import { ConnectionData } from "../ConnectionData";
 import { IdentifierFlags } from "../IdentifierFlags";
 import { LConnection } from "./LConnection";
 export class LocalConnectionData{
@@ -55,7 +57,7 @@ export class LocalConnectionData{
         if(connection.id > 0){
 
             removeFromDatabase("localconnection", connection.ghostId);
-            this.AddConnection(connection);
+            ConnectionData.AddConnection(ConvertFromLConnectionToConnection(connection));
         }
     }
 

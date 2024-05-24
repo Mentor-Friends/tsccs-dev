@@ -35,7 +35,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
            var   typeConceptString = await MakeTheTypeConceptLocal(type, sessionInformationId, userId, userId );
            typeConcept = typeConceptString as LConcept;
             
-           var conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId );
+           var conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId, true );
 
             concept = conceptString as LConcept;
         }

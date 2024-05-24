@@ -30,21 +30,23 @@ export async function GetCompositionLocal(id:number){
 export async function GetCompositionLocalWithId(id:number){
     var connectionList:LConnection[] = [];
     var returnOutput: any = {};
+    var FinalReturn: any = {};
+
     connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
     var compositionList:number[] = [];
+    console.log("Connections", connectionList);
 
     for(var i=0; i<connectionList.length; i++){
         if(!compositionList.includes(connectionList[i].ofTheConceptId)){
             compositionList.push(connectionList[i].ofTheConceptId);
         }
     }
-
+    console.log("recursion with id", id);
     var concept = await LocalConceptsData.GetConcept(id);
     if(concept.id != 0){
         var output = await recursiveFetchLocal(id, connectionList, compositionList);
         var mainString = concept?.type?.characterValue ?? "top";
         returnOutput[mainString] = output;
-        var FinalReturn: any = {};
     }
 
     FinalReturn['data'] = returnOutput;
@@ -59,7 +61,8 @@ export async function GetCompositionLocalWithId(id:number){
     var output : any= {};
     var arroutput: any = [];
     var concept = await LocalConceptsData.GetConcept(id);
-
+    console.log("inside recursion", id);
+    console.log("inside recursion", concept);
     if(concept.id != 0){
         if(concept.type == null){
 

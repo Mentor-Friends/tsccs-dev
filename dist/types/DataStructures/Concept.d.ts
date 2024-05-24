@@ -1,3 +1,4 @@
+import { LConcept } from "../app";
 export declare class Concept {
     x: number;
     y: number;
@@ -20,7 +21,7 @@ export declare class Concept {
     entryTimeStamp: Date;
     updatedTimeStamp: Date;
     referent: number;
-    type: Concept | null | void;
+    type: Concept | null | void | LConcept;
     isNew: boolean;
     isTemp: boolean;
     constructor(id: number, userId: number, typeId: number, typeUserId: number, categoryId: number, categoryUserId: number, referentId: number, referentUserId: number, characterValue: string, securityId: number, securityUserId: number, accessId: number, accessUserId: number, sessionId: number, sessionUserId: number, isNew: boolean | undefined, entryTimeStamp: Date, updatedTimeStamp: Date);

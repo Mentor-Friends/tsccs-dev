@@ -1,3 +1,4 @@
+import { LConcept } from "../app";
 import { ConceptsData } from "./ConceptData";
 
 export  class Concept{
@@ -22,7 +23,7 @@ export  class Concept{
     entryTimeStamp: Date;
     updatedTimeStamp:Date;
     referent: number;
-    type: Concept | null | void;
+    type: Concept | null | void | LConcept;
     isNew: boolean;
     isTemp: boolean = false;
 

@@ -200,6 +200,8 @@ export async function GetCompositionWithId(id:number){
 export async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[]){
 
     var output : any= {};
+    console.log("this is the recursive seaarch", id);
+
     var arroutput: any = [];
     if(id == 0){
         return null;
@@ -235,56 +237,63 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
         for(var i=0; i<connectionList.length; i++){
 
             if(connectionList[i].ofTheConceptId == id){
-                var toConceptId = connectionList[i].toTheConceptId;
+                if(id != connectionList[i].toTheConceptId){
+                    var toConceptId = connectionList[i].toTheConceptId;
             
-                var toConcept = await ConceptsData.GetConcept(toConceptId);
-                if((toConcept == null || toConcept.id == 0) && toConceptId != null && toConceptId != undefined){
-                 var conceptString = await  GetConcept(toConceptId);
-                 toConcept = conceptString as Concept;
-                }
+                    var toConcept = await ConceptsData.GetConcept(toConceptId);
+                    if((toConcept == null || toConcept.id == 0) && toConceptId != null && toConceptId != undefined){
+                    var conceptString = await  GetConcept(toConceptId);
+                    toConcept = conceptString as Concept;
+                    }
 
 
-                if(toConcept){
-                    if(toConcept?.type == null){
+                    if(toConcept){
+                        if(toConcept?.type == null){
 
-                        var toConceptTypeId: number  = toConcept.typeId;
-                        var toConceptType = await ConceptsData.GetConcept(toConceptTypeId);
+                            var toConceptTypeId: number  = toConcept.typeId;
+                            var toConceptType = await ConceptsData.GetConcept(toConceptTypeId);
 
-                        toConcept.type = toConceptType;
-                        if(toConceptType == null && toConceptTypeId != null && toConceptTypeId != undefined){
-                            var conceptString = await  GetConcept(toConceptTypeId);
-                            toConceptType = conceptString as Concept;
                             toConcept.type = toConceptType;
-                           }
+                            if(toConceptType == null && toConceptTypeId != null && toConceptTypeId != undefined){
+                                var conceptString = await  GetConcept(toConceptTypeId);
+                                toConceptType = conceptString as Concept;
+                                toConcept.type = toConceptType;
+                            }
+                        }
                     }
-                }
 
-                var regex = "the_";
+                    var regex = "the_";
 
 
-                var localmainString = toConcept?.type?.characterValue ?? "";
+                    var localmainString = toConcept?.type?.characterValue ?? "";
 
-                var localKey = localmainString.replace(regex, "");
+                    var localKey = localmainString.replace(regex, "");
 
-                if(isNaN(Number(localKey)) ){
+                    if(isNaN(Number(localKey)) ){
 
-                    if(localKey){
+                        if(localKey){
+                            const result = await recursiveFetch(toConceptId, connectionList, compositionList);
+                            output[localKey] = result;
+                        }
+
+                    }
+                    else{
+
                         const result = await recursiveFetch(toConceptId, connectionList, compositionList);
-                        output[localKey] = result;
+                        arroutput[localKey] = result;
+                        output = arroutput;
+
                     }
 
-                }
+
+
+                } 
                 else{
-
-                    const result = await recursiveFetch(toConceptId, connectionList, compositionList);
-                    arroutput[localKey] = result;
-                    output = arroutput;
-
+                    console.log("this is the faulty connection ", connectionList[i]);
                 }
+            }
 
 
-
-            }     
         }
     }
 

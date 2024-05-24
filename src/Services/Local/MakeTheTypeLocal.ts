@@ -3,6 +3,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import GetConceptByCharacterLocal from "./GetConceptByCharacterLocal";
 import { SplitStrings } from "../SplitStrings";
 import MakeTheConceptLocal from "./MakeTheConceptLocal";
+import { LocalSyncData } from "../../app";
 
 export default async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number,
     )
@@ -14,7 +15,7 @@ export default async  function MakeTheTypeConceptLocal(typeString: string, sessi
         if(existingConcept.id == 0 || existingConcept.userId == 0){
             var splittedStringArray = SplitStrings(typeString);
             if(splittedStringArray[0] == typeString){
-                var concept = await MakeTheConceptLocal(typeString,"the", userId,  4, 51);
+                var concept = await MakeTheConceptLocal(typeString, "the", userId,  1, 51);
                 existingConcept = concept as LConcept;
 
             }   
@@ -26,10 +27,12 @@ export default async  function MakeTheTypeConceptLocal(typeString: string, sessi
                     
                     var concept = await CreateTheConceptLocal(typeString,splittedStringArray[1],  userId, categoryConcept.id, typeConcept.id, accessId );
                     existingConcept = concept as LConcept;
+
                 }
 
 
             }
+            LocalSyncData.AddConcept(existingConcept);
         }
 
     }

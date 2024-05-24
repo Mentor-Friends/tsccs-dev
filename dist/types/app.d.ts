@@ -45,6 +45,7 @@ export { CreateTheCompositionWithCache } from './Services/Composition/CreateComp
 export { CreateDefaultLConcept } from './Services/Local/CreateDefaultLConcept';
 export { CreateTheConnectionGeneral } from './Services/CreateTheConnectionGeneral';
 export { CreateTheConnectionLocal } from './Services/Local/CreateTheConnectionLocal';
+export { GetCompositionListAll, GetCompositionListAllWithId } from './Services/GetCompositionList';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';

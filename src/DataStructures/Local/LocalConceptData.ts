@@ -4,6 +4,8 @@ import { LocalBinaryTree } from "./LocalBinaryTree";
 import { LocalBinaryCharacterTree } from "./LocalBinaryCharacterTree";
 import { LocalBinaryTypeTree } from "./LocalBinaryTypeTree";
 import { CreateDefaultLConcept } from "../../Services/Local/CreateDefaultLConcept";
+import { ConceptsData } from "../ConceptData";
+import { ConvertFromLConceptToConcept } from "../../Services/Local/ConvertFromLConceptToConcept";
 export class LocalConceptsData{
 
     name: string;
@@ -31,7 +33,7 @@ export class LocalConceptsData{
             LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
             LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
             removeFromDatabase("localconcept", concept.ghostId);
-            this.AddConcept(concept);
+            ConceptsData.AddConcept(ConvertFromLConceptToConcept(concept));
         }
     }
 
