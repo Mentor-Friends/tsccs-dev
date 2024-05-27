@@ -3,7 +3,6 @@ import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 
 export default async function GetConceptByCharacterLocal(characterValue: string){
     var concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
-    console.log("This is the concept local for character", concept);
     return concept;
 }
 
@@ -14,6 +13,5 @@ export  async function GetConceptByCharacterLocalFull(characterValue: string){
         await GetLocalConceptByCharacterValue(characterValue);
         concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
     }
-    console.log("This is the concept local for character", concept);
     return concept;
 }

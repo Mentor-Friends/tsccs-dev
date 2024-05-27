@@ -3,7 +3,7 @@ import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept";
 import {CreateTheConnectionLocal} from "./CreateTheConnectionLocal";
 import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
 
-export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null)
+export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null, automaticSync: boolean  = false)
 {
     var localUserId:number = userId ?? 999;
     var localAccessId: number = accessId ?? 999;

@@ -5,7 +5,7 @@ import { TheTexts } from "../../DataStructures/TheTexts";
 import CreateTheConcept from "../CreateTheConcept";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import { MakeTheName } from "../MakeTheName";
-import MakeTheTypeConceptLocal from "./MakeTheTypeLocal";
+import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalSyncData } from "../../app";
 

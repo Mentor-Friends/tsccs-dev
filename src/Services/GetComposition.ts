@@ -86,7 +86,6 @@ export async function GetCompositionWithIdFromMemory(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
-
     var compositionList:number[] = [];
 
     for(var i=0; i<connectionList.length; i++){
@@ -200,7 +199,6 @@ export async function GetCompositionWithId(id:number){
 export async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[]){
 
     var output : any= {};
-    console.log("this is the recursive seaarch", id);
 
     var arroutput: any = [];
     if(id == 0){
@@ -247,7 +245,7 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
                     }
 
 
-                    if(toConcept){
+                    if(toConcept.id != 0){
                         if(toConcept?.type == null){
 
                             var toConceptTypeId: number  = toConcept.typeId;

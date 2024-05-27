@@ -49,8 +49,11 @@ export class LocalSyncData{
     }
 
     static AddConcept(concept: LConcept){
-        var contains = false;
-       // ConceptsData.AddConceptTemporary(concept);
+        let contains = false;
+        let existingConcept = LocalSyncData.CheckIfTheConceptIdExists(concept.id, this.conceptsSyncArray);
+        if(existingConcept.id != 0){
+            contains = true;
+        }
         if(!contains){
          this.conceptsSyncArray.push(concept);
         }
@@ -71,17 +74,14 @@ export class LocalSyncData{
         this.conceptsSyncArray = [];
         if(connectionsArray.length > 0){
             await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, conceptsArray);
-            console.log("this is the sending connections", connectionsArray);
             let result = await CreateTheGhostConceptApi(conceptsArray, connectionsArray);
             let concepts = result.concepts;
             let connections = result.connections;
             for(let i =0 ; i< concepts.length; i++){
-                console.log("adding this to permanent Connection", concepts[i]);
                 LocalConceptsData.AddPermanentConcept(concepts[i]);
 
             }
             for(let i =0 ; i< connections.length; i++){
-                console.log("adding this to permanent Connection", connections[i]);
                 LocalConnectionData.AddPermanentConnection(connections[i]);
             }
 

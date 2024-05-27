@@ -9,5 +9,6 @@ export function ConvertFromLConnectionToConnection(lconnection: LConnection){
     connection.ToTheConceptId = lconnection.ToTheConceptId;
     connection.typeId = lconnection.typeId;
     connection.orderId = lconnection.orderId;
+    connection.id = lconnection.id;
     return connection;
 }

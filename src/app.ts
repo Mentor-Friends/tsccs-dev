@@ -21,6 +21,7 @@ export { createTheConnection as CreateTheConnection} from './Services/CreateTheC
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink,GetLinkRaw } from './Services/GetLink';
 export {CreateDefaultConcept} from './Services/CreateDefaultConcept';
+export { MakeTheTypeConceptLocal} from './Services/Local/MakeTheTypeLocal';
 export {MakeTheTypeConcept} from './Services/MakeTheTypeConcept';
 export {MakeTheTypeConceptApi} from './Api/MakeTheTypeConceptApi';
 export { GetLinkerConnectionFromConcepts} from './Services/GetLinkerConnectionFromConcept';
@@ -104,7 +105,6 @@ function init(url:string = "", aiurl:string="", accessToken:string = ""){
          IdentifierFlags.isLocalTypeLoaded = true;
          IdentifierFlags.isLocalCharacterLoaded = true;
          let elapsed = new Date().getTime() - start;
-         console.log("This is the binary tree for local", LocalBinaryCharacterTree.LocalCharacterRoot);
          console.log("The time taken to prepare local concept  ", elapsed);
       });
       

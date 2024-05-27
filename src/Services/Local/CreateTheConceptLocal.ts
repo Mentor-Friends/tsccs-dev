@@ -10,7 +10,7 @@ export default async function CreateTheConceptLocal(referent:string, typecharact
 typeId:number, 
 accessId:number, isComposition: boolean = false){
 
-var id = Math.floor(Math.random() * 100000000);
+var id = -Math.floor(Math.random() * 100000000);
 var isNew: boolean = true;
 let created_on:Date = new Date();
 let updated_on:Date = new Date();
@@ -18,6 +18,7 @@ let updated_on:Date = new Date();
 var concept = new LConcept(id,userId,typeId,categoryId,accessId, referent,typecharacter, isNew,created_on,updated_on);
 concept.isTemp = true;
 concept.isComposition = isComposition;
+console.log("This is the local type concept", concept);
 LocalConceptsData.AddConcept(concept);
 storeToDatabase("localconcept",concept);
 return concept;

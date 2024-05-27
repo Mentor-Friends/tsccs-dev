@@ -5,12 +5,13 @@ import { CreateDefaultConcept } from "../CreateDefaultConcept";
 export function ConvertFromLConceptToConcept(lconcept: LConcept){
     let concept: Concept = CreateDefaultConcept();
     concept.id = lconcept.id;
-    concept.ghostId = lconcept.id;
+    concept.ghostId = lconcept.ghostId;
     concept.accessId = lconcept.accessId;
     concept.categoryId = lconcept.categoryId;
     concept.typeId = lconcept.typeId;
     concept.type = lconcept.type;
     concept.entryTimeStamp = lconcept.entryTimeStamp;
     concept.userId = lconcept.userId;
+    concept.characterValue = lconcept.characterValue;
     return concept;
 }

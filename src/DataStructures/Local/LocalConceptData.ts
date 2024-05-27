@@ -6,6 +6,7 @@ import { LocalBinaryTypeTree } from "./LocalBinaryTypeTree";
 import { CreateDefaultLConcept } from "../../Services/Local/CreateDefaultLConcept";
 import { ConceptsData } from "../ConceptData";
 import { ConvertFromLConceptToConcept } from "../../Services/Local/ConvertFromLConceptToConcept";
+import { LocalGhostIdTree } from "./LocalGhostIdTree";
 export class LocalConceptsData{
 
     name: string;
@@ -17,7 +18,8 @@ export class LocalConceptsData{
 
 
     static AddConcept(concept: LConcept){
-        if(concept.id > 0){
+        if(concept.id != 0){
+            LocalGhostIdTree.addConceptToTree(concept);
              storeToDatabase("localconcept",concept);
             LocalBinaryTree.addConceptToTree(concept);
             LocalBinaryCharacterTree.addConceptToTree(concept);
@@ -28,17 +30,18 @@ export class LocalConceptsData{
     }
 
     static AddPermanentConcept(concept: LConcept){
-        if(concept.id > 0){
+        if(concept.id != 0){
             LocalBinaryTree.removeNodeFromTree(concept.ghostId);
             LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
             LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
+            LocalGhostIdTree.addConceptToTree(concept);
             removeFromDatabase("localconcept", concept.ghostId);
             ConceptsData.AddConcept(ConvertFromLConceptToConcept(concept));
         }
     }
 
     static AddConceptToMemory(concept: LConcept){
-        if(concept.id > 0){
+        if(concept.id != 0){
             LocalBinaryTree.addConceptToTree(concept);
             LocalBinaryCharacterTree.addConceptToTree(concept);
             LocalBinaryTypeTree.addConceptToTree(concept);
@@ -62,6 +65,19 @@ export class LocalConceptsData{
 
         return myConcept;
     }
+
+    static async GetConceptByGhostId(id: number){
+        var  myConcept: LConcept = CreateDefaultLConcept();
+        var node = await LocalGhostIdTree.getNodeFromTree(id);
+        if(node?.value){
+            var returnedConcept = node.value;
+            if(returnedConcept){
+                myConcept = returnedConcept as LConcept;
+            }
+        }
+ 
+         return myConcept;
+     }
 
     static async GetConceptByCharacter(characterValue: string){
         var concept: LConcept = CreateDefaultLConcept();

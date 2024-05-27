@@ -2,6 +2,7 @@ import { Concept } from "../Concept";
 
 export  class LConcept{
     id: number;
+    structureType: string = "lconcept";
     ghostId: number;
     userId: number;
     typeId: number;
