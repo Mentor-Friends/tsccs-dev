@@ -45,6 +45,7 @@ export { CreateTheCompositionWithCache } from './Services/Composition/CreateComp
 export { CreateDefaultLConcept } from './Services/Local/CreateDefaultLConcept';
 export { CreateTheConnectionGeneral } from './Services/CreateTheConnectionGeneral';
 export { CreateTheConnectionLocal } from './Services/Local/CreateTheConnectionLocal';
+export { GetUserGhostId, AddGhostConcept } from './Services/User/UserTranslation';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';
@@ -62,6 +63,7 @@ export { SessionData } from './DataStructures/Session/SessionData';
 export { Composition } from './DataStructures/Composition/Composition';
 export { CompositionBinaryTree } from './DataStructures/Composition/CompositionBinaryTree';
 export { CompositionNode } from './DataStructures/Composition/CompositionNode';
+export { UserBinaryTree } from './DataStructures/User/UserBinaryTree';
 export { BaseUrl } from './DataStructures/BaseUrl';
 declare function updateAccessToken(accessToken?: string): void;
 declare function init(url?: string, aiurl?: string, accessToken?: string): void;
