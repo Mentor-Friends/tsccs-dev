@@ -8,5 +8,6 @@ export declare class LocalBinaryTree {
     static checkFlag(resolve: any): any;
     static getNodeFromTree(id: number): Promise<LNode | null>;
     static getCharacterAndTypeFromTree(value: string, typeId: number): LNode | null;
+    static updateSyncStatus(id: number): LNode | null;
     static removeNodeFromTree(id: number): Promise<void>;
 }

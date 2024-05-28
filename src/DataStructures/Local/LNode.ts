@@ -399,6 +399,26 @@ export class LNode{
 
     }
 
+    public updateNodeSyncStatus(id: number,  value:any, node: LNode | null) :LNode | null{
+        if(node){
+            if(id == node.key){
+                let lconcept = node.value;
+                lconcept.isSynced = value;
+                node.value = lconcept;
+                return node;
+            }
+            else if(id < node.key){
+                return this.updateNodeSyncStatus(id,value, node.leftNode);
+            }
+            else if (id > node.key) {
+                return this.updateNodeSyncStatus(id, value, node.rightNode);
+            }
+            return node;
+        }
+        return node;
+
+    }
+
     public getCharacterFromNode(value: string, node:LNode | null) :LNode | null{
         if(node){
             if(value == node.key){

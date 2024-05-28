@@ -19,7 +19,6 @@ export class LocalConceptsData{
 
     static AddConcept(concept: LConcept){
         if(concept.id != 0){
-            LocalGhostIdTree.addConceptToTree(concept);
              storeToDatabase("localconcept",concept);
             LocalBinaryTree.addConceptToTree(concept);
             LocalBinaryCharacterTree.addConceptToTree(concept);
@@ -65,6 +64,10 @@ export class LocalConceptsData{
 
         return myConcept;
     }
+
+    static async UpdateConceptSyncStatus(id: number){
+        LocalBinaryTree.updateSyncStatus(id); 
+     }
 
     static async GetConceptByGhostId(id: number){
         var  myConcept: LConcept = CreateDefaultLConcept();

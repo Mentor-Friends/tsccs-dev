@@ -1,6 +1,6 @@
 import { GetConcept } from "../Api/GetConcept";
 import { Concept } from "./Concept";
-import {  getFromDatabaseWithType, getFromDatabaseWithTypeOld, removeFromDatabase, storeToDatabase } from "../Database/indexdblocal";
+import {  getFromDatabaseWithType, getFromDatabaseWithTypeOld, removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
 import { BinaryTree } from "./BinaryTree";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";

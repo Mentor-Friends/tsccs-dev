@@ -7,6 +7,7 @@ export declare class LocalConceptsData {
     static AddPermanentConcept(concept: LConcept): void;
     static AddConceptToMemory(concept: LConcept): void;
     static GetConcept(id: number): Promise<LConcept>;
+    static UpdateConceptSyncStatus(id: number): Promise<void>;
     static GetConceptByGhostId(id: number): Promise<LConcept>;
     static GetConceptByCharacter(characterValue: string): Promise<LConcept>;
     static GetConceptByCharacterAndTypeLocal(character_value: string, typeId: number): Promise<LConcept>;

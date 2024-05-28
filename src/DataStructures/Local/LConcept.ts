@@ -16,6 +16,7 @@ export  class LConcept{
     isNew: boolean;
     isComposition: boolean = false;
     isTemp: boolean = false;
+    isSynced : boolean = false;
 
 
     constructor(id: number, userId: number, typeId:number, categoryId:number,accessId: number, characterValue:string, typeCharacter:string,
@@ -32,6 +33,7 @@ export  class LConcept{
         this.typeCharacter = typeCharacter;
         this.entryTimeStamp = entryTimeStamp;
         this.updatedTimeStamp = updatedTimeStamp;
+        this.isSynced = false;
     }
 
     getType(){

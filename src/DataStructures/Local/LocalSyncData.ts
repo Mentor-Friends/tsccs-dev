@@ -8,6 +8,7 @@ import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "../Connection";
 import { CreateDefaultConcept, CreateDefaultLConcept } from "../../app";
 import { LocalConnectionData } from "./LocalConnectionData";
+import { LocalBinaryTree } from "./LocalBinaryTree";
 
 export class LocalSyncData{
     static  conceptsSyncArray:LConcept[] = [];
@@ -69,6 +70,17 @@ export class LocalSyncData{
 
      static async  SyncDataOnline(){
         let conceptsArray = this.conceptsSyncArray.slice();
+        for(let i= 0; i< conceptsArray.length; i++){
+
+            let before = await LocalConceptsData.GetConcept(conceptsArray[i].id)
+            console.log("Before syncing mechanism", before.isSynced);
+            // this is used to denote that the local concept has already been synced with the online db
+            await LocalConceptsData.UpdateConceptSyncStatus(conceptsArray[i].id);
+
+            let after = await LocalConceptsData.GetConcept(conceptsArray[i].id)
+            console.log("After syncing mechanism", after.isSynced);
+
+        }
         let connectionsArray = this.connectionSyncArray.slice();
         this.connectionSyncArray = [];
         this.conceptsSyncArray = [];
@@ -140,21 +152,69 @@ export class LocalSyncData{
             let ofTheConceptId = connectionArray[i].ofTheConceptId;
             let toTheConceptId = connectionArray[i].toTheConceptId;
             let typeId = connectionArray[i].typeId;
-            let ofTheConcept = this.CheckIfTheConceptIdExists(ofTheConceptId, conceptsArray);
-            let toTheConcept = this.CheckIfTheConceptIdExists(toTheConceptId, conceptsArray);
-            let type = this.CheckIfTheConceptIdExists(typeId, conceptsArray);
-            if(ofTheConcept.id == 0){
-                ofTheConcept = await LocalConceptsData.GetConcept(ofTheConceptId);
-                conceptsArray.push(ofTheConcept);
+            if(ofTheConceptId < 0){
+                let ofTheConcept = this.CheckIfTheConceptIdExists(ofTheConceptId, conceptsArray);
+                if(ofTheConcept.id == 0){
+                    ofTheConcept = await LocalConceptsData.GetConceptByGhostId(ofTheConceptId);
+                    if(ofTheConcept.id != 0){
+                        if(ofTheConcept.id != ofTheConcept.ghostId){
+                            connectionArray[i].ofTheConceptId = ofTheConcept.id;
+                        }
+                    }
+                    else{
+                        ofTheConcept = await LocalConceptsData.GetConcept(ofTheConceptId);
+                        // if this has already been synced before and is a composition type then do not send it again
+                        if(!ofTheConcept.isSynced && !ofTheConcept.isComposition){
+                            conceptsArray.push(ofTheConcept);
+                        }
+                    }
+
+                }
             }
-            if(toTheConcept.id == 0){
-                toTheConcept = await LocalConceptsData.GetConcept(toTheConceptId);
-                conceptsArray.push(toTheConcept);
+
+            if(toTheConceptId < 0){
+                let toTheConcept = this.CheckIfTheConceptIdExists(toTheConceptId, conceptsArray);
+                if(toTheConcept.id == 0){
+                    toTheConcept = await LocalConceptsData.GetConceptByGhostId(ofTheConceptId);
+                    if(toTheConcept.id != 0){
+                        if(toTheConcept.id != toTheConcept.ghostId){
+                            connectionArray[i].toTheConceptId = toTheConcept.id;
+                        }
+                    }
+                    else{
+                        toTheConcept = await LocalConceptsData.GetConcept(toTheConceptId);
+                        // if this has already been synced before and is a composition type then do not send it again
+                         if(!toTheConcept.isSynced && !toTheConcept.isComposition){
+                             conceptsArray.push(toTheConcept);
+     
+                         }
+                    }
+
+                }
             }
-            if(type.id == 0){
-                type = await LocalConceptsData.GetConcept(typeId);
-                conceptsArray.push(type);
+
+            if(typeId < 0){
+                let type = this.CheckIfTheConceptIdExists(typeId, conceptsArray);
+                if(type.id == 0){
+
+                    type = await LocalConceptsData.GetConceptByGhostId(ofTheConceptId);
+                    if(type.id != 0){
+                        if(type.id != type.ghostId){
+                            connectionArray[i].typeId = type.id;
+                        }
+                    }
+                    else{
+                        type = await LocalConceptsData.GetConcept(typeId);
+
+                        // if this has already been synced before and is a composition type then do not send it again
+                        if(!type.isSynced && !type.isComposition){
+                            conceptsArray.push(type);
+                        }
+                    }
+
+                }
             }
+
 
         }
      }

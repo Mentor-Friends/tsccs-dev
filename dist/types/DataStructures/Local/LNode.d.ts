@@ -18,6 +18,7 @@ export declare class LNode {
     getHeight(node: LNode | null): number;
     getBalanceFactor(N: LNode | null): number;
     getFromNode(id: number, node: LNode | null): LNode | null;
+    updateNodeSyncStatus(id: number, value: any, node: LNode | null): LNode | null;
     getCharacterFromNode(value: string, node: LNode | null): LNode | null;
     getFromNodeWithCharacterAndType(value: string, typeId: number, node: LNode | null): LNode | null;
     removeNode(passedNode: LNode | null, id: number): LNode | null;

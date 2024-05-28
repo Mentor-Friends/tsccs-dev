@@ -65,6 +65,14 @@ export class LocalBinaryTree{
         return this.root;
     }
 
+    static updateSyncStatus(id:number){
+        if(this.root){
+            var Node = this.root.updateNodeSyncStatus(id, true, this.root );
+            return Node;
+        }
+        return this.root;
+    }
+
     static async removeNodeFromTree(id:number){
         if(this.root){
             this.root = this.root.removeNode(this.root,id);

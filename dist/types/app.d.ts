@@ -66,4 +66,7 @@ export { Composition } from './DataStructures/Composition/Composition';
 export { CompositionBinaryTree } from './DataStructures/Composition/CompositionBinaryTree';
 export { CompositionNode } from './DataStructures/Composition/CompositionNode';
 export { LocalSyncData } from './DataStructures/Local/LocalSyncData';
+export { UserBinaryTree } from './DataStructures/User/UserBinaryTree';
+export { BaseUrl } from './DataStructures/BaseUrl';
 declare function updateAccessToken(accessToken?: string): void;
+declare function init(url?: string, aiurl?: string, accessToken?: string): void;
