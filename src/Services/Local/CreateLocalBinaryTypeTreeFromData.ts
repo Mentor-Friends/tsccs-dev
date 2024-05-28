@@ -1,6 +1,6 @@
 import { LocalBinaryTypeTree } from "../../DataStructures/Local/LocalBinaryTypeTree";
 import { LNode } from "../../DataStructures/Local/LNode";
-import { getAllFromLocalDb } from "../../Database/NoIndexDb";
+import { getAllFromLocalDb } from "../../Database/indexdblocal";
 
 export  async function CreateLocalBinaryTypeTreeFromData(){
     var startTime = new Date().getTime();

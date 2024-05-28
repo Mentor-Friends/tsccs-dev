@@ -3,7 +3,7 @@ import { GetAllPrefetchConnections } from "../Api/GetAllPrefetchConnections";
 import { BinaryTree } from "../DataStructures/BinaryTree";
 import { SettingData } from "../DataStructures/SettingData";
 import { Settings } from "../DataStructures/Settings";
-import { AiUpdateFlag, GetStatsFromDatabase } from "../Database/NoIndexDb";
+import { AiUpdateFlag, GetStatsFromDatabase } from "../Database/indexeddb";
 
 export default async function InitializeSystem(){
     var statsData = await GetStatsFromDatabase();

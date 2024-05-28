@@ -2,7 +2,7 @@ import { CreateTheGhostConceptApi } from "../../Api/Create/CreateTheGhostConcept
 import { CreateTheGhostConnectionApi } from "../../Api/Create/CreateTheGhostConnectionApi";
 import { LConcept } from "./LConcept";
 import { LConnection } from "./LConnection";
-import { storeToDatabase } from "../../Database/NoIndexDb";
+import { storeToDatabase } from "../../Database/indexdblocal";
 import { ConceptsData } from "../ConceptData";
 import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "../Connection";
