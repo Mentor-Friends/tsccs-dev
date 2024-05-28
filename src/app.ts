@@ -52,6 +52,7 @@ export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
 export { CreateTheConnectionGeneral} from './Services/CreateTheConnectionGeneral';
 export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLocal';
 export { GetCompositionListAll, GetCompositionListAllWithId } from './Services/GetCompositionList';
+export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
 
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
@@ -71,6 +72,7 @@ export {Composition} from './DataStructures/Composition/Composition';
 export {CompositionBinaryTree} from './DataStructures/Composition/CompositionBinaryTree';
 export {CompositionNode} from './DataStructures/Composition/CompositionNode';
 export {LocalSyncData} from './DataStructures/Local/LocalSyncData';
+export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
 
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';
