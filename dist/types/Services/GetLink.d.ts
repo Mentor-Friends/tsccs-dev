@@ -1,3 +1,0 @@
-import { Concept } from "./../DataStructures/Concept";
-export declare function GetLink(id: number, linker: string, inpage?: number, page?: number): Promise<any[]>;
-export declare function GetLinkRaw(id: number, linker: string, inpage?: number, page?: number): Promise<Concept[]>;

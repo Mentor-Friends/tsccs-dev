@@ -2,7 +2,7 @@ node_modules/
 
 dist/bundle.js
 dist/types
-
+.vscode
 .env
 .env.development
 .env.production
