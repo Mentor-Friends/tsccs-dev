@@ -69,4 +69,4 @@ export { LocalSyncData } from './DataStructures/Local/LocalSyncData';
 export { UserBinaryTree } from './DataStructures/User/UserBinaryTree';
 export { BaseUrl } from './DataStructures/BaseUrl';
 declare function updateAccessToken(accessToken?: string): void;
-declare function init(url?: string, aiurl?: string, accessToken?: string): void;
+declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string): void;

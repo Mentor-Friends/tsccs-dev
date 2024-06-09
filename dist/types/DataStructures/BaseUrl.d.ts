@@ -2,6 +2,7 @@ export declare class BaseUrl {
     static BASE_URL: string;
     static AI_URL: string;
     static MQTT_URL: string;
+    static NODE_URL: string;
     static MQTT_CONNECTION: any;
     static GetConceptUrl(): string;
     static GetConnectionUrl(): string;

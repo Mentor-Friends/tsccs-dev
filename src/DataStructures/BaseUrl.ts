@@ -8,6 +8,8 @@ export class BaseUrl{
 
     static MQTT_URL: string = '192.168.1.249';
 
+    static NODE_URL: string = "http://localhost:5001";
+
     static MQTT_CONNECTION:any ;
 
 
@@ -121,11 +123,11 @@ export class BaseUrl{
 
 
     static CreateGhostConceptApiUrl(){
-        return "http://localhost:5001" + '/api/v1/local-concepts'
+        return BaseUrl.NODE_URL + '/api/v1/local-concepts'
     }
 
     static CreateGhostConnectionApiUrl(){
-        return "http://localhost:5001" + '/api/v1/local-connections';
+        return BaseUrl.NODE_URL + '/api/v1/local-connections';
     }
 
 
