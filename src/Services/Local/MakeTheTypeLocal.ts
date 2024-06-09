@@ -32,10 +32,12 @@ export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: n
 
 
             }
-            LocalSyncData.AddConcept(existingConcept);
+
         }
 
     }
+    console.log("This is the existing type concept", existingConcept);
+    LocalSyncData.AddConcept(existingConcept);
     return existingConcept;
 
 

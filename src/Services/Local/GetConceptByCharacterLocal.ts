@@ -4,7 +4,6 @@ import { LocalSyncData } from "../../app";
 
 export default async function GetConceptByCharacterLocal(characterValue: string){
     var concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
-    LocalSyncData.AddConcept(concept);
     return concept;
 }
 

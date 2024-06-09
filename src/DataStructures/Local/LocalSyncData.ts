@@ -73,12 +73,10 @@ export class LocalSyncData{
         for(let i= 0; i< conceptsArray.length; i++){
 
             let before = await LocalConceptsData.GetConcept(conceptsArray[i].id)
-            console.log("Before syncing mechanism", before.isSynced);
             // this is used to denote that the local concept has already been synced with the online db
             await LocalConceptsData.UpdateConceptSyncStatus(conceptsArray[i].id);
 
             let after = await LocalConceptsData.GetConcept(conceptsArray[i].id)
-            console.log("After syncing mechanism", after.isSynced);
 
         }
         let connectionsArray = this.connectionSyncArray.slice();
