@@ -1,1 +1,0 @@
-export declare function DeleteConnectionById(id: number): Promise<void>;

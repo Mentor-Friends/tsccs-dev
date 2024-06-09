@@ -196,7 +196,7 @@ export async function GetCompositionWithId(id:number){
 }
 
 
-export async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[]){
+export async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[], visitedConcepts: number[] = []){
 
     var output : any= {};
 
@@ -231,6 +231,12 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
         return concept?.characterValue;
     }
     else{
+        if(visitedConcepts.includes(id)){
+            return "";
+          }
+          else{
+            visitedConcepts.push(id);
+          }
 
         for(var i=0; i<connectionList.length; i++){
 
@@ -270,14 +276,14 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
                     if(isNaN(Number(localKey)) ){
 
                         if(localKey){
-                            const result = await recursiveFetch(toConceptId, connectionList, compositionList);
+                            const result = await recursiveFetch(toConceptId, connectionList, compositionList,visitedConcepts);
                             output[localKey] = result;
                         }
 
                     }
                     else{
 
-                        const result = await recursiveFetch(toConceptId, connectionList, compositionList);
+                        const result = await recursiveFetch(toConceptId, connectionList, compositionList,visitedConcepts);
                         arroutput[localKey] = result;
                         output = arroutput;
 

@@ -1,2 +1,0 @@
-import { PatcherStructure } from '../DataStructures/PatcherStructure';
-export default function UpdateComposition(patcherStructure: PatcherStructure): Promise<any>;

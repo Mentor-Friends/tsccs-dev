@@ -55,7 +55,8 @@
       conceptIdList,
       compositionList,
     )
-    output = await recursiveFetch(id, connectionList, compositionList)
+    let visitedConcepts: number [] = []
+    output = await recursiveFetch(id, connectionList, compositionList, visitedConcepts)
     const mainString = concept?.type?.characterValue ?? ''
     returnOutput[mainString] = output
   } else {
@@ -176,11 +177,13 @@
     composition.id = concept.id
     composition.subcompositions = numbers
     composition.mainConcept = concept
+    let visitedConcepts: number[] = [];
     const output = await recursiveFetchNew(
       concept.id,
       connections,
       concepts,
       numbers,
+      visitedConcepts
     )
     composition.cached = output
     CompositionBinaryTree.addCompositionToTree(composition)

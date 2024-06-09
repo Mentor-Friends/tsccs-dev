@@ -12,6 +12,7 @@
     connectionList: Connection[],
     conceptList: Concept[],
     compositionList: number[],
+    visitedConcepts: number[] = []
   ) {
     let output: any = {};
     const arroutput: any = []
@@ -56,6 +57,12 @@
     if (!compositionList.includes(id)) {
       return concept?.characterValue
     } else {
+      if(visitedConcepts.includes(id)){
+        return "";
+      }
+      else{
+        visitedConcepts.push(id);
+      }
       // loop over all the connections
       for (let i = 0; i < connectionList.length; i++) {
         // if the connection has the id that has been passed in the recursion
@@ -114,6 +121,7 @@
                 connectionList,
                 conceptList,
                 compositionList,
+                visitedConcepts
               )
               output[localKey] =  result
 
@@ -125,6 +133,7 @@
               connectionList,
               conceptList,
               compositionList,
+              visitedConcepts
             )
             arroutput[localKey] =  result
             output = arroutput
