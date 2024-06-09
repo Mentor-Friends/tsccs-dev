@@ -20,11 +20,13 @@ export class Composition {
           this.mainConcept = this.concepts[i]
         }
       }
+    let visitedConcepts: number[] = [];
     this.cached = await recursiveFetchNew(
       this.id,
       this.connections,
       this.concepts,
       this.subcompositions,
+      visitedConcepts
     )
   }
 
