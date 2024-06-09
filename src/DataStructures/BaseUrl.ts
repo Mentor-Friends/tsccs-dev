@@ -8,6 +8,9 @@ export class BaseUrl{
 
     static MQTT_URL: string = '192.168.1.249';
 
+    
+    static NODE_URL: string = 'http://localhost:5001/';
+
     static MQTT_CONNECTION:any ;
 
 
