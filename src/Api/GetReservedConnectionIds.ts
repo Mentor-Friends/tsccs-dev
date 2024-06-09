@@ -16,7 +16,6 @@ export async function GetReservedConnectionIds(){
             }
              const result = await response.json();
              for(var i=0; i< result.length; i++){
-                console.log("This is the reserved id ", result[i]);
                 ReservedConnectionIds.AddId(result[i]);
              }
     }

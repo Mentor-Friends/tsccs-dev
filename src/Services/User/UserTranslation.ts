@@ -9,10 +9,8 @@ export async function GetUserGhostId(userId:number, ghostId:number){
     if(userNode){
         for(let i=0 ; i<userNode.value.length; i++ ){
             let testConcept: LConcept = userNode.value[i];
-            console.log(`This is the equality measurer  ${ghostId} , ${testConcept.ghostId}`);
             if(testConcept.ghostId == ghostId){
                 realConcept = testConcept;
-                console.log("this is the real concept", realConcept);
 
             }
         }
@@ -21,6 +19,5 @@ export async function GetUserGhostId(userId:number, ghostId:number){
 }
 
 export async function AddGhostConcept(concept: LConcept, userId: number){
-    console.log("Adding this ghost to tree", concept.ghostId);
     UserBinaryTree.addConceptToTree(concept,userId);
 }
