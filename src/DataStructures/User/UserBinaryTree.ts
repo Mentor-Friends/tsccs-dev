@@ -40,7 +40,6 @@ export class UserBinaryTree{
     }
 
     static async getNodeFromTree(id:number){
-
         try{
             var data = await this.waitForDataToLoad();
         }
