@@ -1,8 +1,10 @@
 import { GetLocalConceptByCharacterValue } from "../../Api/Local/GetLocalConceptByCharacterValue";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
+import { LocalSyncData } from "../../app";
 
 export default async function GetConceptByCharacterLocal(characterValue: string){
     var concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
+    LocalSyncData.AddConcept(concept);
     return concept;
 }
 

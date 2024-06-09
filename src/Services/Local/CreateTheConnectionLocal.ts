@@ -16,7 +16,7 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
         let realTypeId = 0;
         realOfTheConceptId = ofTheConceptId;
         realToTheConceptId = toTheConceptId;
-        realTypeId = realTypeId;
+        realTypeId = typeId;
 
 
 
