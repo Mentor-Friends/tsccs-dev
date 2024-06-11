@@ -71,7 +71,8 @@ export class BaseUrl{
     }
     
     static GetAllAiData(){
-        return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
+        return this.BASE_URL + '/api/get-preloaded-concepts';
+       // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
 
     static GetAllPrefetchConnectionsUrl(){
@@ -87,6 +88,10 @@ export class BaseUrl{
 
     static RecursiveSearchUrl(){
         return this.BASE_URL + '/api/recursivesearch-concept-connection';
+    }
+
+    static SearchLinkMultipleAllApiUrl(){
+        return this.BASE_URL + '/api/Connection/search-link-multiple-all-ccs';
     }
 
     static MakeTheNameInBackendUrl(){

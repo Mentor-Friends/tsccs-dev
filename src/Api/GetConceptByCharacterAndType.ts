@@ -5,7 +5,6 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
   let concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
-
     try{
       if(concept == null || concept.id == 0){
         var json = {
