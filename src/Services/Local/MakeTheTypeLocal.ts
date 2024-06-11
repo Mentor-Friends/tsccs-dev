@@ -20,15 +20,15 @@ export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: n
 
             }   
             else{
-                var categoryConcept = await MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
-                var typeConcept = await MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId );
+                // var categoryConcept = await MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
+                // var typeConcept = await MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId );
 
-                if(typeConcept){
+                // if(typeConcept){
                     
-                    var concept = await CreateTheConceptLocal(typeString,splittedStringArray[1],  userId, categoryConcept.id, typeConcept.id, accessId );
+                    var concept = await CreateTheConceptLocal(typeString,splittedStringArray[1],  userId, 2, 2, accessId );
                     existingConcept = concept as LConcept;
 
-                }
+             //   }
 
 
             }
