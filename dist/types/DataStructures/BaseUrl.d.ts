@@ -39,6 +39,7 @@ export declare class BaseUrl {
     static CreateTheCharacterDataUrl(): string;
     static CreateTheConceptUrl(): string;
     static CreateTheConnectionUrl(): string;
+    static CreateTheConnectionNewUrl(): string;
     static MakeTheTypeConceptUrl(): string;
     static DeleteTheConnectionUrl(): string;
 }

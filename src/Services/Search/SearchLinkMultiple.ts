@@ -1,11 +1,7 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
 import { GetConnectionBulk, GetTheConcept } from "../../app";
-<<<<<<< HEAD
-import {  GetCompositionFromConnectionsWithDataIdInObject } from "../GetCompositionBulk";
-=======
 import { GetCompositionFromConnectionsWithDataIdInObject } from "../GetCompositionBulk";
->>>>>>> 70182880e443124114673458e142acbe911fcab1
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string=""){
   var concepts:any[] = [];
@@ -20,10 +16,6 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
   return out;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 70182880e443124114673458e142acbe911fcab1
 export async function FormatFromConnections(linkers:number[], compositionData: any[], mainComposition: number){
   let mainData: any;
   let connections = await GetConnectionBulk(linkers);
