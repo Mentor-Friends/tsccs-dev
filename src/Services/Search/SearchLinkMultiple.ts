@@ -1,6 +1,7 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
 import { GetConnectionBulk, GetTheConcept } from "../../app";
+import { GetCompositionFromConnectionsWithDataIdInObject } from "../GetCompositionBulk";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string=""){
   var concepts:any[] = [];
