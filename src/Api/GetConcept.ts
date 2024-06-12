@@ -8,7 +8,8 @@ export async function GetConcept(id: number){
     let result = CreateDefaultConcept();
     try{
         var conceptUse :Concept= await ConceptsData.GetConcept(id);
-        if(conceptUse.id != 0){
+        let isNpc = ConceptsData.GetNpc(id);
+        if(conceptUse.id != 0 || isNpc){
 
             return conceptUse;
         }
@@ -23,6 +24,9 @@ export async function GetConcept(id: number){
                 result = await response.json() as Concept;
                 if(result.id > 0){
                     ConceptsData.AddConcept(result);
+                }
+                else{
+                    ConceptsData.AddNpc(id);
                 }
             }
             else{

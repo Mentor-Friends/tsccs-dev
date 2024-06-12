@@ -13,6 +13,8 @@ export class ConceptsData{
     }
     static  conceptsArray:Concept[] = [];
 
+    static NPC: number[] = [];
+
     static conceptDictionary:Concept[] = [];
 
     static  CheckContains(concept: Concept){
@@ -24,6 +26,22 @@ export class ConceptsData{
         }
 
         return contains;
+    }
+
+    static AddNpc(id: number){
+        if(!this.NPC.includes(id)){
+            if(this.NPC.length > 10){
+                this.NPC = [];
+            }
+            this.NPC.push(id);
+        }
+    }
+
+    static GetNpc(id: number){
+        if(this.NPC.includes(id)){
+            return true;
+        }
+        return false;
     }
 
     static AddConceptToStorage(concept: Concept){
