@@ -16,7 +16,9 @@ export function GetRequestHeader(contentType:string ='application/json',
 export function GetRequestHeaderWithAuthorization(contentType:string ='application/json', 
 token: string = "",Accept: string = 'application/json', 
 ){
-
+    if(token == ""){
+        token = TokenStorage.BearerAccessToken;
+    }
     var headers = {
         'Content-Type':contentType,
         'Authorization': "Bearer " + token,
