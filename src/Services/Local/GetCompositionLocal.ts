@@ -54,7 +54,7 @@ export async function GetCompositionLocalWithId(id:number){
 }
 
 
- async function recursiveFetchLocal(id:number, connectionList:LConnection[], compositionList:number[]){
+ async function recursiveFetchLocal(id:number, connectionList:LConnection[], compositionList:number[], visitedConcepts: number[] = []){
 
     var output : any= {};
     var arroutput: any = [];
@@ -76,7 +76,12 @@ export async function GetCompositionLocalWithId(id:number){
         return concept?.characterValue;
     }
     else{
-
+        if(visitedConcepts.includes(id)){
+            return "";
+          }
+          else{
+            visitedConcepts.push(id);
+          }
         for(var i=0; i<connectionList.length; i++){
 
             if(connectionList[i].ofTheConceptId == id){

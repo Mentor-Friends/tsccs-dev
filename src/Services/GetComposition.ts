@@ -299,7 +299,7 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
 
  }
 
- export async function recursiveFetchWithSubCompositions(id:number, connectionList:Connection[], compositionList:number[]){
+ export async function recursiveFetchWithSubCompositions(id:number, connectionList:Connection[], compositionList:number[], visitedConcepts: number[] = []){
 
     var output : any= {};
     var arroutput: any = [];
@@ -333,6 +333,12 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
         return concept?.characterValue;
     }
     else{
+        if(visitedConcepts.includes(id)){
+            return "";
+          }
+          else{
+            visitedConcepts.push(id);
+          }
         output["id"] = id;
         for(var i=0; i<connectionList.length; i++){
 
