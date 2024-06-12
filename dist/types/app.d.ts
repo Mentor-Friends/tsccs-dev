@@ -22,6 +22,7 @@ export { GetConnectionById } from './Services/GetConnections';
 export { MakeTheTimestamp } from './Services/MakeTheTimestamp';
 export { RecursiveSearchApi } from './Api/RecursiveSearch';
 export { GetCompositionBulkWithDataId, GetCompositionBulk } from './Services/GetCompositionBulk';
+export { GetConceptBulk } from './Api/GetConceptBulk';
 export { LoginToBackend } from './Api/Login';
 export {} from './Api/GetConceptByCharacterAndType';
 export { SyncData } from './DataStructures/SyncData';
