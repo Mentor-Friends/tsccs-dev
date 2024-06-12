@@ -22,6 +22,7 @@ export declare class BaseUrl {
     static GetAllLinkerConnectionOfConceptUrl(): string;
     static DeleteConceptUrl(): string;
     static RecursiveSearchUrl(): string;
+    static SearchLinkMultipleAllApiUrl(): string;
     static MakeTheNameInBackendUrl(): string;
     static LoginUrl(): string;
     static SignupUrl(): string;
