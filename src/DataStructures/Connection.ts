@@ -26,6 +26,7 @@ export class Connection{
     sessionInformationUserId: number;
     localSyncTime: Date;
     isTemp:boolean = false;
+    toUpdate:boolean = false;
     type: Concept = CreateDefaultConcept();
 
     constructor(id: number = 0, ofTheConceptId: number, toTheConceptId: number, ofTheConceptUserId: number, toTheConceptUserId: number,
