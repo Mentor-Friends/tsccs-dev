@@ -29,7 +29,7 @@ import { CreateDefaultLConcept, CreateTheConnectionLocal, LConcept, LConnection 
 import { convertFromConceptToLConcept, convertFromConnectionToLConnection } from '../Conversion/ConvertConcepts';
 
 // function to update the cache composition
-export default async function UpdateCompositionLocal(
+export  async function UpdateCompositionLocal(
   patcherStructure: PatcherStructure,
 ) {
    // get all the default userId, sessionId, accessId passed by the patcherStructure

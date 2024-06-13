@@ -54,6 +54,7 @@ export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLoca
 export { GetCompositionListAll, GetCompositionListAllWithId } from './Services/GetCompositionList';
 export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
 export {SearchLinkMultipleAll} from './Services/Search/SearchLinkMultiple';
+export {UpdateCompositionLocal} from './Services/Local/UpdateCompositionLocal';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
