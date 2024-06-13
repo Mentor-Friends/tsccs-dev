@@ -1,5 +1,6 @@
 import { Concept } from "../DataStructures/Concept"
 import { Connection } from "../DataStructures/Connection"
+import { LConnection } from "../app"
 
 export function RemoveConceptFromList(
   conceptList: Concept[] = [],
@@ -18,6 +19,20 @@ export function RemoveConceptFromList(
 export function RemoveConnectionFromList(
   connectionList: Connection[] = [],
   connection: Connection,
+) {
+  if (Array.isArray(connectionList)) {
+    connectionList.splice(
+      connectionList.findIndex(function (i) {
+        return i.id === connection.id
+      }),
+      1,
+    )
+  }
+}
+
+export function RemoveLConnectionFromList(
+  connectionList: LConnection[] = [],
+  connection: LConnection,
 ) {
   if (Array.isArray(connectionList)) {
     connectionList.splice(
