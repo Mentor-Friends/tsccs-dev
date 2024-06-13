@@ -52,6 +52,7 @@ export { CreateTheConnectionGeneral} from './Services/CreateTheConnectionGeneral
 export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLocal';
 export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
 export {SearchLinkMultipleAll} from './Services/Search/SearchLinkMultiple';
+export {UpdateCompositionLocal} from './Services/Local/UpdateCompositionLocal';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
