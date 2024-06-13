@@ -19,6 +19,8 @@ export async  function CreateTheConnectionGeneral(ofTheConceptId:number, ofTheCo
             connection.toTheConceptId = 1;
             return connection;
         }
+        // this will cause the connection to go and update the existing with the reserved id
+        connection.toUpdate = true;
         connection.isTemp = false;
         SyncData.AddConnection(connection);
         return connection;
