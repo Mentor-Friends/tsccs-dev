@@ -1,6 +1,7 @@
 import { Concept } from "../DataStructures/Concept"
 import { Connection } from "../DataStructures/Connection"
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept"
+import { LConcept, LConnection } from "../app"
 
 
 
@@ -49,6 +50,25 @@ export function CheckIfTypeConceptsExistsInArray(
 
   return foundConcepts
 }
+
+
+export function CheckIfTypeLConceptsExistsInArray(
+  conceptList: LConcept[] = [],
+  concept: LConcept,
+) {
+  let foundConcepts: LConcept[] = [];
+  if (Array.isArray(conceptList)) {
+    for(let i=0 ; i<conceptList.length; i++){
+      if (concept.typeId == conceptList[i].typeId) {
+        foundConcepts.push(conceptList[i]);
+      }
+    }
+
+  }
+
+  return foundConcepts
+}
+
 
 
 export function CheckIfConnectionExistsInArray(
@@ -121,6 +141,26 @@ export function CheckIfToTheConceptExistsInConnectionArray(
 
 export function CheckAllConnectionsConnectedInConnectionArray(
   connectionList: Connection[] = [],
+  conceptId: number,
+){
+  let foundConnections = [];
+  if (Array.isArray(connectionList)) {
+    const check = connectionList.find(c => c.toTheConceptId == conceptId)
+    if (check) {
+      foundConnections.push(check);
+    }
+    const toCheck = connectionList.find(c => c.ofTheConceptId == conceptId)
+    if (toCheck) {
+      foundConnections.push(toCheck);
+    }
+  }
+  return foundConnections
+}
+
+
+
+export function CheckAllConnectionsConnectedInLConnectionArray(
+  connectionList: LConnection[] = [],
   conceptId: number,
 ){
   let foundConnections = [];
