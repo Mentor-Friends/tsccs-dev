@@ -17,16 +17,14 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
         realOfTheConceptId = ofTheConceptId;
         realToTheConceptId = toTheConceptId;
         realTypeId = typeId;
-
-
-
-        if(realOfTheConceptId != realToTheConceptId){
-            var connection = new LConnection(randomid, realOfTheConceptId, realToTheConceptId, realTypeId, orderId, accessId);
+        let connection = new LConnection(0,0,0,0,0,0);
+        if(ofTheConceptId != toTheConceptId){
+             connection = new LConnection(0, ofTheConceptId, toTheConceptId, typeId, orderId, accessId);
             connection.isTemp = true;
             LocalConnectionData.AddConnection(connection);
             storeToDatabase("localconnection", connection);
-            LocalSyncData.AddConnection(connection);
-            return connection;
         }
+        return connection;
+
       
 }

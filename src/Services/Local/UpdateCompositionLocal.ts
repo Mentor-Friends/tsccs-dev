@@ -141,7 +141,7 @@ for (const key in object) {
 
 
     // create the connection between the new concept and the old composition
-    const connectionString = CreateTheConnectionLocal(
+    const connectionString =  await CreateTheConnectionLocal(
       localConcept.id,
       insertingConcept.id,
       composition.id,
