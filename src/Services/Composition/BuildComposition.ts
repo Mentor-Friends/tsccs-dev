@@ -19,7 +19,9 @@
     if (id == 0) {
       return ''
     }
-  
+
+
+
     // get concept from a list of concepts
     let concept = getConceptFromList(conceptList, id)
   
@@ -69,9 +71,11 @@
         // oftheconceptId -----> toTheConceptId
         // this only gives the valid concept id that are inside of this id
         if (connectionList[i].ofTheConceptId == id) {
+
           // then take out the toTheConceptId from the connection
           const toConceptId = connectionList[i].toTheConceptId
-  
+
+          if(compositionList.includes(id)){
           // convert the toTheConceptId to a real Concept Object
           let toConcept = getConceptFromList(conceptList, toConceptId)
   
@@ -103,7 +107,7 @@
               }
             }
           }
-  
+
           // the regex to filter out the the_ from the type concepts
           const regex = 'the_'
   
@@ -112,7 +116,6 @@
   
           // replace the the_ with an empty string
           const localKey = localmainString.replace(regex, '')
-  
           // if the  type  is a number then put it inside of an object
           if (isNaN(Number(localKey))) {
             if (localKey) {
@@ -139,6 +142,9 @@
             output = arroutput
 
           }
+          }
+  
+
 
         }
       }

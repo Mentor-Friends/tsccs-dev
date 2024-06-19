@@ -117,6 +117,7 @@ export  async function CreateTheCompositionWithCache(
       )
       const connection = connectionString as Connection
       composition.connections.push(connection)
+
     }
   }
   // return the main concept

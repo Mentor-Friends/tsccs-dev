@@ -4,7 +4,6 @@ export default async function DeleteTheConnection(id:number){
     try{
            const formdata = new FormData();
            formdata.append("id", id.toString());
-           console.log("trying to delete", id);
             const response = await fetch(BaseUrl.DeleteTheConnectionUrl(),{
                 method: 'POST',
                 body: formdata,  
