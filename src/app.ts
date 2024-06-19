@@ -45,6 +45,7 @@ export {GetCompositionWithCache, GetCompositionWithDataIdWithCache, GetCompositi
 export {CreateSession} from './Api/Session/CreateSession';
 export {CreateSessionVisit} from './Api/Session/CreateSessionVisit';
 export {  } from './Api/GetConceptByCharacterAndType';
+export {GetRelation, GetRelationRaw} from './Services/GetRelation';
 export { recursiveFetchNew} from './Services/Composition/BuildComposition'
 export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
 export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
