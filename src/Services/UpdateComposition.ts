@@ -67,7 +67,6 @@ import DeleteTheConnection from '../Api/DeleteTheConnection';
     InsertUniqueNumber(conceptIdList, connectionList[i].toTheConceptId)
     allConcepts.push(connectionList[i].ofTheConceptId);
   }
-
   compositionCache.subcompositions = compositionList
   compositionCache.connections = connectionList
   // get all the concepts that are inside of the composition and store them in a conceptList
@@ -96,9 +95,31 @@ import DeleteTheConnection from '../Api/DeleteTheConnection';
     }
 
     if(Array.isArray(value) || typeof value == 'object'){
+
       insertingConcept = await MakeTheInstanceConcept(key, "", true, composition.userId, 4, 999);
       compositionCache.subcompositions.push(insertingConcept.id);
+            // check if the concept exists in the concept list because if it exists then we have to delete old connection
+            const ExistingConcepts: Concept[] = CheckIfTypeConceptsExistsInArray(
+              conceptList,
+              insertingConcept,
+            )
+            // if the existing concept then start the process for deleting the concept in the list
+            for(let i=0 ; i< ExistingConcepts.length; i++){
+              if (ExistingConcepts[i].id > 0) {
+                const deletingConnections: Connection[] =
+                  CheckAllConnectionsConnectedInConnectionArray(
+                    compositionCache.connections,
+                    ExistingConcepts[i].id,
+                  )
+                toDeleteConnections = toDeleteConnections.concat(deletingConnections);
+                toDeleteConcepts.push(ExistingConcepts[i]);
+              }
+          
+            }
       await CreateTheCompositionWithCache(object[key], insertingConcept.id, insertingConcept.userId, composition.id, composition.userId, 4, 999,compositionCache);
+
+
+
     }
     else{
       // make the new concept in the object
@@ -110,7 +131,7 @@ import DeleteTheConnection from '../Api/DeleteTheConnection';
         accessId,
         sessionId,
       )
-    }
+    
 
 
       // check if the concept exists in the concept list because if it exists then we have to delete old connection
@@ -118,13 +139,12 @@ import DeleteTheConnection from '../Api/DeleteTheConnection';
         conceptList,
         insertingConcept,
       )
-
       // if the existing concept then start the process for deleting the concept in the list
       for(let i=0 ; i< ExistingConcepts.length; i++){
         if (ExistingConcepts[i].id > 0) {
           const deletingConnections: Connection[] =
             CheckAllConnectionsConnectedInConnectionArray(
-              connectionList,
+              compositionCache.connections,
               ExistingConcepts[i].id,
             )
             // for(let j=0; j<connectionList.length; j++){
@@ -138,31 +158,25 @@ import DeleteTheConnection from '../Api/DeleteTheConnection';
     
       }
 
-
-
-      
-
-
-      // create the connection between the new concept and the old composition
-      const connectionString = createTheConnection(
-        localConcept.id,
-        localConcept.userId,
-        insertingConcept.id,
-        insertingConcept.userId,
-        composition.id,
-        sessionId,
-        userId,
-      )
-      const connection = connectionString as Connection
-      connectionList.push(connection)
-      conceptList.push(insertingConcept)
-      compositionCache.connections.push(connection);
-
     }
+        // create the connection between the new concept and the old composition
+          const connectionString = createTheConnection(
+            localConcept.id,
+            localConcept.userId,
+            insertingConcept.id,
+            insertingConcept.userId,
+            composition.id,
+            sessionId,
+            userId,
+          )
+          const connection = connectionString as Connection
+          conceptList.push(insertingConcept)
+          compositionCache.connections.push(connection);
+  }
     // now you have to delete the connection in bulk
     for (let j = 0; j < toDeleteConnections.length; j++) {
       // remove from the cache list
-      RemoveConnectionFromList(connectionList, toDeleteConnections[j])
+      RemoveConnectionFromList(compositionCache.connections, toDeleteConnections[j])
       // delete the connection in the backend
       DeleteConnectionById(toDeleteConnections[j].id)
     }
@@ -173,15 +187,10 @@ import DeleteTheConnection from '../Api/DeleteTheConnection';
       // remove concept from the cache concept list
       RemoveConceptFromList(conceptList, toDeleteConcepts[k])
     }
-
-    
   // now create a composition cache object to cache it into node server
-
   compositionCache.concepts = compositionCache.concepts.concat(conceptList);
   compositionCache.mainConcept = composition
   compositionCache.id = composition.id
-
-
   // // create a cache
  await compositionCache.updateCache()
   // update it the binary tree
