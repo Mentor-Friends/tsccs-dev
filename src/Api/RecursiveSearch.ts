@@ -25,6 +25,7 @@ try{
       const result = await response.json();
       var conceptIds = result.compositionIds;
       var connections = result.internalConnections;
+      var externalConnections = result.externalConnections;
       concepts = await GetCompositionFromConnectionsWithDataId(conceptIds,connections);
     }
     else{

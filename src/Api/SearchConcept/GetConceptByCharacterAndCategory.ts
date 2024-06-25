@@ -9,7 +9,7 @@ export async function GetConceptByCharacterAndCategory(characterValue: string){
 
     try{
         var header = GetRequestHeader('application/x-www-form-urlencoded');
-          const response = await fetch(BaseUrl.GetConceptByCharacterAndTypeUrl(),{
+          const response = await fetch(BaseUrl.GetConceptByCharacterAndCategoryUrl(),{
               method: 'POST',
               headers: header,
               body:  `character_value=${characterValue}`,

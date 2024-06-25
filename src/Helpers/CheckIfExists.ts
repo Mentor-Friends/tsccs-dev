@@ -19,29 +19,45 @@ export function CheckIfConceptsExistsInArray(
   return foundConcept
 }
 
-export function CheckIfTypeConceptExistsInArray(
-  conceptList: Concept[] = [],
-  concept: Concept,
-) {
-  let foundConcept = CreateDefaultConcept()
-  if (Array.isArray(conceptList)) {
-    const check = conceptList.find(c => c.typeId == concept.typeId)
-    if (check) {
-      foundConcept = check
-    }
-  }
+// export function CheckIfTypeConceptExistsInArray(
+//   conceptList: Concept[] = [],
+//   concept: Concept,
+// ) {
+//   let newConceptType = concept.type?.characterValue;
+//   if(!newConceptType?.startsWith("the_")){
+//     newConceptType = "the_" + newConceptType;
+//   }
+//   let startsWith = conceptList[i].type?.characterValue;
+//   if(!startsWith?.startsWith("the_")){
+//     startsWith = "the_" + startsWith;
+//   }
+//   let foundConcept = CreateDefaultConcept()
+//   if (Array.isArray(conceptList)) {
+//     const check = conceptList.find(c => c.typeId == concept.typeId)
+//     if (check) {
+//       foundConcept = check
+//     }
+//   }
 
-  return foundConcept
-}
+//   return foundConcept
+// }
 
 export function CheckIfTypeConceptsExistsInArray(
   conceptList: Concept[] = [],
   concept: Concept,
 ) {
   let foundConcepts: Concept[] = [];
+  let newConceptType = concept.type?.characterValue;
+  if(!newConceptType?.startsWith("the_")){
+    newConceptType = "the_" + newConceptType;
+  }
   if (Array.isArray(conceptList)) {
     for(let i=0 ; i<conceptList.length; i++){
-      if (concept.typeId == conceptList[i].typeId) {
+      let startsWith = conceptList[i].type?.characterValue;
+      if(!startsWith?.startsWith("the_")){
+        startsWith = "the_" + startsWith;
+      }
+      if (concept.typeId == conceptList[i].typeId || newConceptType == startsWith) {
         foundConcepts.push(conceptList[i]);
       }
     }
@@ -57,9 +73,17 @@ export function CheckIfTypeLConceptsExistsInArray(
   concept: LConcept,
 ) {
   let foundConcepts: LConcept[] = [];
+  let newConceptType = concept.typeCharacter;
+  if(!newConceptType?.startsWith("the_")){
+    newConceptType = "the_" + newConceptType;
+  }
   if (Array.isArray(conceptList)) {
     for(let i=0 ; i<conceptList.length; i++){
-      if (concept.typeId == conceptList[i].typeId) {
+      let startsWith = conceptList[i].typeCharacter;
+      if(!startsWith?.startsWith("the_")){
+        startsWith = "the_" + startsWith;
+      }
+      if (concept.typeId == conceptList[i].typeId || newConceptType == startsWith) {
         foundConcepts.push(conceptList[i]);
       }
     }

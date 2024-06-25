@@ -34,6 +34,9 @@ export class ConnectionNode{
             return node;
         }
         var contains = false;
+        if(passedNode.value.id == node.value.id){
+            contains = true;
+        }
         for(let i=0; i<node.variants.length; i++){
             if(node.variants[i].value.id == passedNode.value.id){
                 contains = true;
