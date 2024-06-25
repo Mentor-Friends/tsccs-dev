@@ -104,7 +104,7 @@ export async function GetCompositionWithIdFromMemory(id:number){
     var mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     var FinalReturn: any = {};
-    FinalReturn['created_on'] = concept.entryTimeStamp;
+    FinalReturn['created_at'] = concept.entryTimeStamp;
     FinalReturn['data'] = returnOutput;
     FinalReturn['id'] = id;
 
@@ -135,7 +135,7 @@ export async function GetCompositionWithIdAndDateFromMemory(id:number){
     var FinalReturn: any = {};
     FinalReturn['data'] = returnOutput;
     FinalReturn['id'] = id;
-    FinalReturn['created_on'] = concept.entryTimeStamp;
+    FinalReturn['created_at'] = concept.entryTimeStamp;
 
 
     return FinalReturn;

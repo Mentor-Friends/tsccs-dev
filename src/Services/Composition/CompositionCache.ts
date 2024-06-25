@@ -133,6 +133,7 @@
     output = await recursiveFetch(id, connectionList, compositionList)
     const mainString = concept?.type?.characterValue ?? ''
     returnOutput[mainString] = output
+    FinalReturn["created_at"] = concept.entryTimeStamp
     FinalReturn['data'] = returnOutput
     FinalReturn['id'] = id
   } else {

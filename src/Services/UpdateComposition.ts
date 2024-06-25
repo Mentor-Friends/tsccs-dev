@@ -4,8 +4,6 @@
   import InsertUniqueNumber from '../Helpers/UniqueInsert'
   import {
     CheckAllConnectionsConnectedInConnectionArray,
-    CheckIfToTheConceptExistsInConnectionArray,
-    CheckIfTypeConceptExistsInArray,
     CheckIfTypeConceptsExistsInArray,
   } from '../Helpers/CheckIfExists'
   
