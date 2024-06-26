@@ -367,7 +367,6 @@ public removeNodeWithVariants(passedNode:ConnectionNode|null,typeIdentifier:any,
     }
 
     if(passedNode.variants.length > 0){
-
         //condition if the main node is equal to the value
         if(passedNode.value.id == conceptId ){
             var newNode = passedNode.variants[0];

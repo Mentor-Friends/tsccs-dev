@@ -253,7 +253,7 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
 
 
                     if(toConcept.id != 0){
-                        if(toConcept?.type == null){
+                        if(toConcept?.type == null ){
 
                             var toConceptTypeId: number  = toConcept.typeId;
                             var toConceptType = await ConceptsData.GetConcept(toConceptTypeId);
