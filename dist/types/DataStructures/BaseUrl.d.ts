@@ -14,6 +14,7 @@ export declare class BaseUrl {
     static GetAllConnectionsOfCompositionBulkUrl(): string;
     static GetConceptByCharacterValueUrl(): string;
     static GetConceptByCharacterAndTypeUrl(): string;
+    static GetConceptByCharacterAndCategoryUrl(): string;
     static GetCharacterByCharacterUrl(): string;
     static GetAllConceptsByTypeUrl(): string;
     static GetAllConnectionsOfConceptUrl(): string;

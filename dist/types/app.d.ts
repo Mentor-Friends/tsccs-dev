@@ -7,7 +7,7 @@ export { GetComposition, GetCompositionWithId, recursiveFetch, GetCompositionWit
 export { GetCompositionLocal, GetCompositionLocalWithId } from './Services/Local/GetCompositionLocal';
 export { default as CreateComposition } from './Services/CreateTheComposition';
 export { CreateTheCompositionLocal } from './Services/Local/CreateTheCompositionLocal';
-export { CreateConnectionBetweenTwoConcepts } from './Services/CreateConnectionBetweenTwoConcepts';
+export { CreateConnectionBetweenTwoConcepts, CreateConnectionBetweenTwoConceptsGeneral } from './Services/CreateConnectionBetweenTwoConcepts';
 export { default as GetTheConcept } from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept } from './Services/MakeTheInstanceConcept';
 export { MakeTheInstanceConceptLocal } from './Services/Local/MakeTheInstanceConceptLocal';
@@ -41,6 +41,7 @@ export { GetCompositionWithCache, GetCompositionWithDataIdWithCache, GetComposit
 export { CreateSession } from './Api/Session/CreateSession';
 export { CreateSessionVisit } from './Api/Session/CreateSessionVisit';
 export {} from './Api/GetConceptByCharacterAndType';
+export { GetRelation, GetRelationRaw } from './Services/GetRelation';
 export { recursiveFetchNew } from './Services/Composition/BuildComposition';
 export { CreateTheCompositionWithCache } from './Services/Composition/CreateCompositionCache';
 export { CreateDefaultLConcept } from './Services/Local/CreateDefaultLConcept';
@@ -48,8 +49,9 @@ export { CreateTheConnectionGeneral } from './Services/CreateTheConnectionGenera
 export { CreateTheConnectionLocal } from './Services/Local/CreateTheConnectionLocal';
 export { GetCompositionListAll, GetCompositionListAllWithId } from './Services/GetCompositionList';
 export { GetUserGhostId, AddGhostConcept } from './Services/User/UserTranslation';
-export { SearchLinkMultipleAll } from './Services/Search/SearchLinkMultiple';
+export { SearchLinkMultipleAll, FormatFromConnections } from './Services/Search/SearchLinkMultiple';
 export { UpdateCompositionLocal } from './Services/Local/UpdateCompositionLocal';
+export { GetCompositionFromConnectionsWithDataIdInObject } from './Services/GetCompositionBulk';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';
