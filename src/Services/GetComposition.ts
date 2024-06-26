@@ -267,7 +267,7 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
                 }
 
                 var regex = "the_";
-
+             //   console.log("To the concept", connectionList[i].id,connectionList[i].ofTheConceptId, connectionList[i].toTheConceptId, connectionList[i].typeId, toConcept.id, toConcept.typeId, toConcept.characterValue, toConcept.type?.characterValue);
 
                 var localmainString = toConcept?.type?.characterValue ?? "";
 

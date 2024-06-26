@@ -38,14 +38,19 @@ export class ConnectionData{
     //         storeToDatabase("connection",connection);
     //     }
     //     this.connectionArray.push(connection);
+    if(!connection.isTemp){
         storeToDatabase("connection", connection);
         ConnectionBinaryTree.addConnectionToTree(connection);
         ConnectionTypeTree.addConnectionToTree(connection);
     }
 
+    }
+
     static AddConnectionToMemory(connection:Connection){
+        if(!connection.isTemp){
         ConnectionBinaryTree.addConnectionToTree(connection);
         ConnectionTypeTree.addConnectionToTree(connection);
+        }
     }
 
     static AddToDictionary(connection: Connection){

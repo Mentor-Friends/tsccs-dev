@@ -19,12 +19,9 @@ import MakeTheInstanceConcept from './MakeTheInstanceConcept';
 import { createTheConnection }  from './CreateTheConnection';
 import { DeleteConnectionById } from './DeleteConnection';
 import { SyncData } from '../DataStructures/SyncData';
-import { recursiveFetch } from './GetComposition';
 import { CompositionBinaryTree } from '../DataStructures/Composition/CompositionBinaryTree';
 import { Composition } from '../DataStructures/Composition/Composition';
-import CreateTheComposition from './CreateTheComposition';
 import {CreateTheCompositionWithCache} from './Composition/CreateCompositionCache';
-import DeleteTheConnection from '../Api/DeleteTheConnection';
   
   // function to update the cache composition
   export default async function UpdateComposition(
@@ -178,6 +175,8 @@ import DeleteTheConnection from '../Api/DeleteTheConnection';
       // delete the connection in the backend
       DeleteConnectionById(toDeleteConnections[j].id)
     }
+
+
 
     // also delete the existing concept from the cache.
 

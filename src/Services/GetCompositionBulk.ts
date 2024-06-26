@@ -52,6 +52,7 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(ids:number
     await GetConnectionBulk(remainingConnections);
     var compositions:any = {};
     for(let i=0; i< ids.length;i++){
+        //console.log("tHIS IS THE START", ids[i])
        var comp = await GetCompositionWithIdFromMemory(ids[i]);
         compositions[ids[i]] = comp;
     }
