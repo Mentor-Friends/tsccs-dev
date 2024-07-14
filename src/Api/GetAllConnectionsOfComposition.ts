@@ -35,6 +35,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
         headers: header,
         body: `composition_id=${composition_id}`
       });
+      console.log("this is getting connection from online", BaseUrl.GetAllConnectionsOfCompositionUrl(), composition_id);
       if(!response.ok){
           throw new Error(`Error! status: ${response.status}`);
       }
@@ -43,7 +44,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
           ConnectionData.AddConnection(result[i]);
           connectionList.push(result[i]);
       }
-
+      
       return connectionList;
     }
     catch (error) {

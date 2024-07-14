@@ -95,7 +95,6 @@ export async function GetCompositionListAllWithId(compositionName: string,userId
    let conceptListOnline : Concept[] = [];
    if(conceptLocal.id != 0){
        conceptListLocal = await LocalConceptsData.GetConceptsByTypeIdAndUser(conceptLocal.id,userId);
-
    }
    if(conceptOnline.id != 0){
 
@@ -115,6 +114,8 @@ export async function GetCompositionListAllWithId(compositionName: string,userId
          }
 
    }
+
+   console.log("This is the all list", finalLocal)
    let AllList: any[] = [];
   
    AllList = await FormatTheConcepts(conceptList, finalLocal, inpage, page);

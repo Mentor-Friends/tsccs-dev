@@ -468,6 +468,35 @@ export class LNode{
 
     }
 
+    public getFromNodeWithCharacterAndCategory(value: string, categoryId: number, node:LNode | null) :LNode | null{
+        value = `${value}`;
+        if(node){
+            if(value == node.key){
+
+                if( value == node.value.characterValue && categoryId == node.value.categoryId){
+                    return node;
+                }
+                else{
+                    for(let i=0;i<node.variants.length;i++){
+                        if(node.variants[i].value.categoryId == categoryId){
+                            return node.variants[i];
+                        }
+                    }
+                   // return this.getFromNodeWithCharacterAndType(value, typeId, node.currentNode);
+                }
+            }
+            else if(value < node.key){
+                return this.getFromNodeWithCharacterAndCategory(value, categoryId, node.leftNode);
+            }
+            else if (value > node.key) {
+                return this.getFromNodeWithCharacterAndCategory(value,categoryId, node.rightNode);
+            }
+            return null;
+        }
+        return node;
+
+    }
+
     public removeNode(passedNode:LNode|null,id:number){
             if(passedNode == null){
                 return passedNode;

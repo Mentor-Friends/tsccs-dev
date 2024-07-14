@@ -7,7 +7,7 @@ export default async function GetConceptByCharacter(characterValue: string){
     var literalCharacter = `${characterValue}`;
     if((concept == null || concept?.id == 0) && literalCharacter){
         await GetConceptByCharacterValue(characterValue);
-        concept = await ConceptsData.GetConceptByCharacter(characterValue);
+        concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
     }
     return concept;
 }

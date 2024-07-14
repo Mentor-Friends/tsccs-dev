@@ -13,5 +13,6 @@ export declare class LocalConnectionData {
     static waitForDataToLoad(): Promise<unknown>;
     static checkFlag(resolve: any): any;
     static GetConnectionsOfCompositionLocal(id: number): Promise<LConnection[]>;
+    static GetConnectionOfCompositionAndTypeLocal(typeId: number, ofTheConceptId: number): Promise<LConnection[]>;
     getName(): string;
 }

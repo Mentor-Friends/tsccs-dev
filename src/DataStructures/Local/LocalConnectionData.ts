@@ -110,6 +110,24 @@ export class LocalConnectionData{
     }
     }
 
+    static async GetConnectionOfCompositionAndTypeLocal(typeId: number, ofTheConceptId: number){
+        var connectionList:LConnection[] = [];
+
+        try{
+            var data = await this.waitForDataToLoad();
+            console.log("this is the connections", this.connectionArray, typeId, ofTheConceptId);
+        for(var i=0; i<this.connectionArray.length; i++){
+            if(this.connectionArray[i].typeId == typeId && this.connectionArray[i].ofTheConceptId == ofTheConceptId){
+                connectionList.push(this.connectionArray[i]);
+            }
+        }
+        return connectionList;
+    }
+    catch(exception){
+        return connectionList;
+    }
+    }
+
     getName(){
         return this.name;
     }

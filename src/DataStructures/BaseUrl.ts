@@ -139,6 +139,10 @@ export class BaseUrl{
         return BaseUrl.NODE_URL + '/api/v1/local-connections';
     }
 
+    static GetRealConceptById(){
+        return BaseUrl.NODE_URL + '/api/v1/local-concepts-translate';
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////
     //////////////// API For Reserved Ids ///////////////////////////////////////

@@ -66,6 +66,21 @@ export class LocalBinaryCharacterTree{
         return this.LocalCharacterRoot;
     }
 
+    static async getCharacterAndCategoryFromTree(value:string, categoryId: number){
+
+        try{
+            var data = await this.waitForDataToLoad();
+        }
+        catch(exception){
+            return null;
+        }
+        if(this.LocalCharacterRoot){
+            var Node = this.LocalCharacterRoot.getFromNodeWithCharacterAndCategory(value, categoryId,this.LocalCharacterRoot);
+            return Node;
+        }   
+        return this.LocalCharacterRoot;
+    }
+
     
     static removeConceptType(character:string,id:number){
         if(this.LocalCharacterRoot){

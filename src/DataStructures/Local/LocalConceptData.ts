@@ -116,6 +116,18 @@ export class LocalConceptsData{
 
      }
 
+     static async GetConceptByCharacterAndCategoryLocal(character_value:string, categoryId: number){
+        var concept: LConcept = CreateDefaultLConcept();
+
+        var Node = await LocalBinaryCharacterTree.getCharacterAndCategoryFromTree(character_value,categoryId);
+        if(Node){
+
+            concept =  Node.value;
+        }
+        return concept;
+
+     }
+
      static  GetConceptsByTypeId(typeId: number){
         var  myConcept: LConcept|null;
         let ConceptList: LConcept[] = [];

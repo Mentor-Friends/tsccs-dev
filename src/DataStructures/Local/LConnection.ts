@@ -17,6 +17,7 @@ export class LConnection{
     orderId: number;
     localSyncTime: Date;
     isTemp:boolean = false;
+    typeCharacter: string;
     type: LConcept = CreateDefaultLConcept();
 
     constructor(id: number, ofTheConceptId: number, toTheConceptId: number,
@@ -31,6 +32,7 @@ export class LConnection{
             this.ghostId = id;
             this.orderId = orderId;
             this.accessId = accessId;
+            this.typeCharacter  = "";
             this.entryTimeStamp = new Date();
             this.terminationDateTime  = new Date();
             this.localSyncTime = new Date();

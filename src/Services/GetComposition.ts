@@ -12,6 +12,7 @@ export async function GetComposition(id:number){
     var returnOutput: any = {};
     var connectionListString = await GetAllConnectionsOfComposition(id);
     connectionList = connectionListString as Connection[];
+    console.log("this is the connection list online", connectionList);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     var compositionList:number[] = [];
 

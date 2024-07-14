@@ -11,6 +11,7 @@ export declare class LocalConceptsData {
     static GetConceptByGhostId(id: number): Promise<LConcept>;
     static GetConceptByCharacter(characterValue: string): Promise<LConcept>;
     static GetConceptByCharacterAndTypeLocal(character_value: string, typeId: number): Promise<LConcept>;
+    static GetConceptByCharacterAndCategoryLocal(character_value: string, categoryId: number): Promise<LConcept>;
     static GetConceptsByTypeId(typeId: number): LConcept[];
     static GetConceptsByTypeIdAndUser(typeId: number, userId: number): Promise<LConcept[]>;
     getName(): string;

@@ -4,6 +4,8 @@ import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LConnection } from "../../DataStructures/Local/LConnection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
+import { TranslateLocalToReal } from "../../Api/Translate/TranslateLocalToReal";
+import { GetComposition } from "../GetComposition";
 
 
 
@@ -21,6 +23,12 @@ export async function GetCompositionLocal(id:number){
     }
 
     var concept = await LocalConceptsData.GetConcept(id);
+    if(concept.id == 0){
+       let realConcept:Concept = await TranslateLocalToReal(id);
+       if(realConcept.id > 0){
+        return await GetComposition(realConcept.id);
+       }
+    }
     var output = await recursiveFetchLocal(id, connectionList, compositionList);
     var mainString = concept?.type?.characterValue ?? "top";
     returnOutput[mainString] = output;

@@ -34,6 +34,7 @@ export declare class BaseUrl {
     static CreateSessionVisitUrl(): string;
     static CreateGhostConceptApiUrl(): string;
     static CreateGhostConnectionApiUrl(): string;
+    static GetRealConceptById(): string;
     static GetReservedIdUrl(): string;
     static GetReservedConnectionIdUrl(): string;
     static CreateTheTextDataUrl(): string;

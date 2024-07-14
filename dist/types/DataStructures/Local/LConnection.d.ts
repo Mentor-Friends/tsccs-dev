@@ -13,6 +13,7 @@ export declare class LConnection {
     orderId: number;
     localSyncTime: Date;
     isTemp: boolean;
+    typeCharacter: string;
     type: LConcept;
     constructor(id: number, ofTheConceptId: number, toTheConceptId: number, typeId: number, orderId: number, accessId: number);
 }

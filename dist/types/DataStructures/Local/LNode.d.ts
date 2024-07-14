@@ -21,6 +21,7 @@ export declare class LNode {
     updateNodeSyncStatus(id: number, value: any, node: LNode | null): LNode | null;
     getCharacterFromNode(value: string, node: LNode | null): LNode | null;
     getFromNodeWithCharacterAndType(value: string, typeId: number, node: LNode | null): LNode | null;
+    getFromNodeWithCharacterAndCategory(value: string, categoryId: number, node: LNode | null): LNode | null;
     removeNode(passedNode: LNode | null, id: number): LNode | null;
     removeNodeWithVariants(passedNode: LNode | null, typeIdentifier: any, conceptId: number): LNode | null;
     countNodeBelow(root: LNode | null): number;

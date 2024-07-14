@@ -8,6 +8,9 @@ typeId:number){
     var conceptString = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent,typeId);
     var concept = conceptString as LConcept;
     let accessId = 4;
+    if(typeCharacter == "the"){
+        categoryId = 1;
+    }
     if(concept.id == 0){
 
        conceptString = await  CreateTheConceptLocal(referent,typeCharacter,userId,categoryId,typeId,accessId );

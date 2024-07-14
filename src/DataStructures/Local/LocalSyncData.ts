@@ -70,21 +70,23 @@ export class LocalSyncData{
 
      static async  SyncDataOnline(){
         let conceptsArray = this.conceptsSyncArray.slice();
+        let toSyncConcepts = [];
         for(let i= 0; i< conceptsArray.length; i++){
 
-            let before = await LocalConceptsData.GetConcept(conceptsArray[i].id)
+            //if(!conceptsArray[i].isSynced){
+                toSyncConcepts.push(conceptsArray[i]);
+            //}
             // this is used to denote that the local concept has already been synced with the online db
             await LocalConceptsData.UpdateConceptSyncStatus(conceptsArray[i].id);
 
-            let after = await LocalConceptsData.GetConcept(conceptsArray[i].id)
 
         }
         let connectionsArray = this.connectionSyncArray.slice();
         this.connectionSyncArray = [];
         this.conceptsSyncArray = [];
-        if(connectionsArray.length > 0){
-            await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, conceptsArray);
-            let result = await CreateTheGhostConceptApi(conceptsArray, connectionsArray);
+        //if(connectionsArray.length > 0){
+            await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, toSyncConcepts);
+            let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray);
             let concepts = result.concepts;
             let connections = result.connections;
             for(let i =0 ; i< concepts.length; i++){
@@ -95,7 +97,7 @@ export class LocalSyncData{
                 LocalConnectionData.AddPermanentConnection(connections[i]);
             }
 
-        }
+        //}
         return "done";
      }
 
