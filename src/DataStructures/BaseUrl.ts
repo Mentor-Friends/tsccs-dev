@@ -137,6 +137,9 @@ export class BaseUrl{
         return this.BASE_URL + '/api/view-api-internal-data-ccs-ids'
     }
 
+    static SearchInternalWithAuthenticatedCcsUrl(){
+        return this.BASE_URL + '/api/search-composition-internal-authenticated-ccs';
+    }
 
 
     static CreateGhostConceptApiUrl(){
