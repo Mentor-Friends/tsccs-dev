@@ -11,3 +11,13 @@ export default async function GetConceptByCharacter(characterValue: string){
     }
     return concept;
 }
+
+export  async function GetConceptByCharacterUpdated(characterValue: string){
+    var concept = await ConceptsData.GetConceptByCharacter(characterValue);
+    var literalCharacter = `${characterValue}`;
+    if((concept == null || concept?.id == 0) && literalCharacter){
+        await GetConceptByCharacterValue(characterValue);
+        concept = await ConceptsData.GetConceptByCharacter(characterValue);
+    }
+    return concept;
+}

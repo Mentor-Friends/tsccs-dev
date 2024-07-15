@@ -37,11 +37,21 @@ import {CreateTheCompositionWithCache} from './Composition/CreateCompositionCach
   let parentConcept: Concept = CreateDefaultConcept()
   const toDeleteConcepts: Concept[] = []
   // the main composition Id that has the data that needs to be patched
-  const compositionId = patcherStructure.compositionId
+  let compositionId = patcherStructure.compositionId
 
   // if you want to edit the subcompositions of the composition then you have to pass to this
   const ofTheConceptId = patcherStructure.ofTheCompositionId
   let toDeleteConnections: Connection[] = []
+  if(compositionId < 0){
+    let localConcept = await GetTheConcept(compositionId, userId);
+    if(localConcept.id > 0){
+      compositionId = localConcept.id;
+    }
+    else{
+      return null;
+    }
+  }
+
 
   // get all connections from the backend because it needs latest data
   const connectionListString = await GetAllConnectionsOfComposition(compositionId)
@@ -142,11 +152,7 @@ import {CreateTheCompositionWithCache} from './Composition/CreateCompositionCach
               compositionCache.connections,
               ExistingConcepts[i].id,
             )
-            // for(let j=0; j<connectionList.length; j++){
-            //   if(ExistingConcepts[i].id == connectionList[j].OfTheConceptId){
 
-            //   }
-            // }
           toDeleteConnections = toDeleteConnections.concat(deletingConnections);
           toDeleteConcepts.push(ExistingConcepts[i]);
         }

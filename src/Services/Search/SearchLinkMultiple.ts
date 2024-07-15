@@ -1,6 +1,6 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
-import { GetConnectionBulk, GetTheConcept } from "../../app";
+import { Connection, GetConnectionBulk, GetTheConcept } from "../../app";
 import { GetCompositionFromConnectionsWithDataIdInObject } from "../GetCompositionBulk";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string=""){
@@ -17,7 +17,7 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
 }
 
 export async function FormatFromConnections(linkers:number[], compositionData: any[], mainComposition: number){
-  let mainData: any;
+  let mainData: any = {};
   let connections = await GetConnectionBulk(linkers);
   for(let i=0 ; i< connections.length; i++){
     if(compositionData[connections[i].ofTheConceptId]){
@@ -25,12 +25,27 @@ export async function FormatFromConnections(linkers:number[], compositionData: a
       let linkerConcept = await GetTheConcept(connections[i].typeId);
       let newData = mydata?.data;
       let key = Object.keys(newData)[0];
-      if(Array.isArray(newData[key][linkerConcept.characterValue])){
-        newData[key][linkerConcept.characterValue].push(compositionData[connections[i].toTheConceptId]);
+      try{
+
+        if(typeof newData === "string"){
+          newData = {};
+        }
+          if(Array.isArray(newData[key][linkerConcept.characterValue])){
+            newData[key][linkerConcept.characterValue].push(compositionData[connections[i].toTheConceptId]);
+          }
+          else{
+            if(typeof newData[key] === "string"){
+
+              newData[key] = {};
+            }
+
+            newData[key][linkerConcept.characterValue] = [];
+            newData[key][linkerConcept.characterValue].push(compositionData[connections[i].toTheConceptId]);
+          }
+
       }
-      else{
-        newData[key][linkerConcept.characterValue] = [];
-        newData[key][linkerConcept.characterValue].push(compositionData[connections[i].toTheConceptId]);
+      catch(ex){
+        console.log("this is error", ex);
       }
 
     }
@@ -38,3 +53,5 @@ export async function FormatFromConnections(linkers:number[], compositionData: a
   mainData = compositionData[mainComposition];
   return mainData;
 }
+
+

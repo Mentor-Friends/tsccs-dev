@@ -6,6 +6,7 @@ export async function CreateSession(sessionData: SessionData){
     try{
         var header = GetRequestHeader();
         const body = JSON.stringify(sessionData);
+        console.log("This is the session", sessionData);
         const response = await fetch(BaseUrl.CreateSessionId(),{
             method: 'POST',
             headers:header,

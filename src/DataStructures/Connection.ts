@@ -6,8 +6,6 @@ export class Connection{
     id: number;
     userId: number;
     ghostId: number;
-    OfTheConceptId: number;
-    ToTheConceptId: number;
     ofTheConceptId: number;
     toTheConceptId: number;
     OfTheConceptUserId: number;
@@ -33,8 +31,6 @@ export class Connection{
         userId: number, typeId: number, typeUserId: number, orderId: number, orderUserId: number, securityId: number, securityUserId: number,
         accessId: number, accessUserId: number, sessionInformationId: number, sessionInformationUserId: number){
             this.id = id;
-            this.OfTheConceptId = ofTheConceptId;
-            this.ToTheConceptId = toTheConceptId;
             this.ofTheConceptId = ofTheConceptId;
             this.toTheConceptId = toTheConceptId;
             this.OfTheConceptUserId = ofTheConceptUserId;

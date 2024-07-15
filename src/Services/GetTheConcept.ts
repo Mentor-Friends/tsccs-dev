@@ -1,10 +1,16 @@
 import { GetConcept } from "../Api/GetConcept";
+import { convertFromLConceptToConcept, GetUserGhostId, LConcept, UserBinaryTree } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 
-export default async function GetTheConcept(id: number){
+export default async function GetTheConcept(id: number, userId: number = 999){
     var concept = CreateDefaultConcept();
+    if(id < 0){
+       let lconcept:LConcept =  await GetUserGhostId(userId, id);
+       concept = convertFromLConceptToConcept(lconcept)
+       return concept;
+    }
     concept = await ConceptsData.GetConcept(id);
     if((concept == null || concept.id == 0) && id != null && id != undefined){
      var conceptString = await  GetConcept(id);

@@ -5,6 +5,11 @@ import { IdentifierFlags } from "./../IdentifierFlags";
 export class UserBinaryTree{
     static root: UserNode | null = null;
 
+    static compositeKey(userId: number, sessionId: number){
+        let userHex = ('0000' + userId.toString(16).toUpperCase()).slice(-4);
+        let sessionHex = ('0000' + sessionId.toString(16).toUpperCase()).slice(-4);
+        return userHex + sessionHex;
+    }
     static addNodeToTree(node:UserNode){
         if(this.root == null){
             this.root = node;
@@ -34,29 +39,32 @@ export class UserBinaryTree{
         }
       };
 
-    static addConceptToTree(concept:LConcept, userId:number){
-        var node: UserNode = new UserNode(userId, concept, null, null);
+    static addConceptToTree(concept:LConcept, userId:number, sessionId: number = 999){
+        let key = this.compositeKey(userId, sessionId);
+        var node: UserNode = new UserNode(key, concept, null, null);
         this.addNodeToTree(node);
     }
 
-    static async getNodeFromTree(id:number){
+    static async getNodeFromTree(userId:number, sessionId: number ){
         try{
             var data = await this.waitForDataToLoad();
         }
         catch(exception){
             return null;
         }
+        let key = this.compositeKey(userId, sessionId);
         if(this.root){
-            var Node = this.root.getFromNode(id, this.root);
+            var Node = this.root.getFromNode(key, this.root);
             return Node;
         }
         return null;
     }
     
 
-    static async removeNodeFromTree(id:number){
+    static async removeNodeFromTree(userId:number, sessionId: number = 999){
         if(this.root){
-            this.root = this.root.removeNode(this.root,id);
+            let key = this.compositeKey(userId, sessionId);
+            this.root = this.root.removeNode(this.root,key);
         }
     }
 

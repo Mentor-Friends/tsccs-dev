@@ -122,26 +122,28 @@ export class ConceptsData{
 
     static async GetConceptByCharacter(characterValue: string){
         var concept: Concept = CreateDefaultConcept();
-        //  for(var i=0; i<this.conceptsArray.length; i++){
-        //      if(this.conceptsArray[i].characterValue == characterValue){
-        //         concept = this.conceptsArray[i];
-        //      }
-        //  }
 
         var Node = BinaryCharacterTree.getNodeFromTree(characterValue);
         if(Node){
             concept  = Node.value;
         }
-        // console.log(characterValue);
-        // var Node = BinaryCharacterTree.getNodeFromTree(characterValue);
-        // if(Node){
-        //     console.log(Node.value);
 
-        //     return Node.value;
-        // }
 
          return concept;
      }
+
+     static async GetConceptByCharacterUpdated(characterValue: string){
+        var concept: Concept = CreateDefaultConcept();
+
+        var Node = BinaryCharacterTree.getNodeFromTree(characterValue);
+        if(Node){
+            concept  = Node.value;
+        }
+
+
+         return concept;
+     }
+
 
      static async GetConceptByCharacterAndTypeLocal(character_value:string, typeId: number){
         var concept: Concept = CreateDefaultConcept();

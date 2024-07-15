@@ -18,6 +18,8 @@ export class UserNode{
 
 
 
+
+
      public addNode(passedNode:UserNode, node:UserNode|null, height:number){
         if(node  == null){
             node = passedNode;
@@ -128,7 +130,7 @@ export class UserNode{
         return this.getHeight(N.leftNode) - this.getHeight(N.rightNode);
       }
 
-    public getFromNode(id: number, node: UserNode | null) :UserNode | null{
+    public getFromNode(id: string, node: UserNode | null) :UserNode | null{
         if(node){
             if(id == node.key){
                 return node;
@@ -152,7 +154,7 @@ export class UserNode{
     
    
 
-    public removeNode(passedNode:UserNode|null,id:number){
+    public removeNode(passedNode:UserNode|null,id:string){
             if(passedNode == null){
                 return passedNode;
             }

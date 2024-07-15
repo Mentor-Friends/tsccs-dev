@@ -55,6 +55,8 @@ export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
 export {SearchLinkMultipleAll,FormatFromConnections} from './Services/Search/SearchLinkMultiple';
 export {UpdateCompositionLocal} from './Services/Local/UpdateCompositionLocal';
 export {GetCompositionFromConnectionsWithDataIdInObject} from './Services/GetCompositionBulk';
+export {ViewInternalData} from './Services/View/ViewInternalData';
+export {convertFromLConceptToConcept} from './Services/Conversion/ConvertConcepts';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -73,12 +75,14 @@ export {Composition} from './DataStructures/Composition/Composition';
 export {CompositionBinaryTree} from './DataStructures/Composition/CompositionBinaryTree';
 export {CompositionNode} from './DataStructures/Composition/CompositionNode';
 export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
+export {FilterSearch} from './DataStructures/FilterSearch';
 
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+import { from } from 'readable-stream';
 export {BaseUrl} from './DataStructures/BaseUrl';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
