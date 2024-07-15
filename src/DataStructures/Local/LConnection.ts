@@ -16,7 +16,6 @@ export class LConnection{
     typeCharacter: string;
     localSyncTime: Date;
     isTemp:boolean = false;
-    typeCharacter: string;
     type: LConcept = CreateDefaultLConcept();
 
     constructor(id: number, ofTheConceptId: number, toTheConceptId: number,

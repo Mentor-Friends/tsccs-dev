@@ -55,6 +55,9 @@ export { UpdateCompositionLocal } from './Services/Local/UpdateCompositionLocal'
 export { GetCompositionFromConnectionsWithDataIdInObject } from './Services/GetCompositionBulk';
 export { GetRelationLocal } from './Services/Local/GetRelationLocal';
 export { GetConceptByCharacterAndCategoryLocal } from './Services/Local/GetConceptByCharacterLocal';
+export { ViewInternalData } from './Services/View/ViewInternalData';
+export { ViewInternalDataApi } from './Api/View/ViewInternalDataApi';
+export { convertFromLConceptToConcept } from './Services/Conversion/ConvertConcepts';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';
