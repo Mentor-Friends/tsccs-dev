@@ -140,9 +140,7 @@ export class LocalSyncData{
             let newTypeId = LocalSyncData.ghostIdMap.get(typeId) ?? typeId;
             console.log("This is the new oF THE CONCEPT ID ", newOfTheConceptId);
             connectionArray[i].ofTheConceptId = newOfTheConceptId;
-            connectionArray[i].OfTheConceptId = newOfTheConceptId;
             connectionArray[i].toTheConceptId = newToTheConceptId;
-            connectionArray[i].ToTheConceptId = newToTheConceptId;
             connectionArray[i].typeId = newTypeId;
         }
      }

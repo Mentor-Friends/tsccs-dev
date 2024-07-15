@@ -2,8 +2,6 @@ import { LConcept } from "./LConcept";
 export declare class LConnection {
     id: number;
     ghostId: number;
-    OfTheConceptId: number;
-    ToTheConceptId: number;
     ofTheConceptId: number;
     toTheConceptId: number;
     entryTimeStamp: Date;
@@ -11,6 +9,7 @@ export declare class LConnection {
     accessId: number;
     typeId: number;
     orderId: number;
+    typeCharacter: string;
     localSyncTime: Date;
     isTemp: boolean;
     typeCharacter: string;
