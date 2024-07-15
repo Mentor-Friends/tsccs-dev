@@ -6,8 +6,6 @@ import { LocalConnectionData } from "./LocalConnectionData";
 export class LConnection{
     id: number;
     ghostId: number;
-    OfTheConceptId: number;
-    ToTheConceptId: number;
     ofTheConceptId: number;
     toTheConceptId: number;
     entryTimeStamp: Date;
@@ -15,6 +13,7 @@ export class LConnection{
     accessId: number;
     typeId: number;
     orderId: number;
+    typeCharacter: string;
     localSyncTime: Date;
     isTemp:boolean = false;
     typeCharacter: string;
@@ -24,13 +23,12 @@ export class LConnection{
          typeId: number, orderId: number,
         accessId: number){
             this.id = id;
-            this.OfTheConceptId = ofTheConceptId;
-            this.ToTheConceptId = toTheConceptId;
             this.ofTheConceptId = ofTheConceptId;
             this.toTheConceptId = toTheConceptId;
             this.typeId = typeId;
             this.ghostId = id;
             this.orderId = orderId;
+            this.typeCharacter = "";
             this.accessId = accessId;
             this.typeCharacter  = "";
             this.entryTimeStamp = new Date();

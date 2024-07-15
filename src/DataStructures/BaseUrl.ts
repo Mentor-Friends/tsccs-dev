@@ -130,6 +130,14 @@ export class BaseUrl{
     }
 
 
+    //////////////////////////////////////////////////////////////////////////////
+    /////////////////////Api for viewing internal data //////////////////////////
+
+    static ViewInternalDataUrl(){
+        return this.BASE_URL + '/api/view-api-internal-data-ccs-ids'
+    }
+
+
 
     static CreateGhostConceptApiUrl(){
         return BaseUrl.NODE_URL + '/api/v1/local-concepts'

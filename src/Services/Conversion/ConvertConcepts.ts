@@ -2,6 +2,7 @@ import { Concept } from "../../DataStructures/Concept";
 import { Connection } from "../../DataStructures/Connection";
 import { LConcept } from "../../DataStructures/Local/LConcept";
 import { LConnection } from "../../DataStructures/Local/LConnection";
+import { CreateDefaultConcept } from "../CreateDefaultConcept";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
 
   
@@ -19,6 +20,19 @@ import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
     LConcept.isTemp = false
     return LConcept
   }
+
+
+  export function convertFromLConceptToConcept(lconcept: LConcept){
+    const concept: Concept = CreateDefaultConcept();
+    concept. id = lconcept.id
+    concept.ghostId = lconcept.ghostId;
+    concept.userId = lconcept.userId;
+    concept.accessId = lconcept.accessId;
+    concept.entryTimeStamp = lconcept.entryTimeStamp;
+    concept.typeId = lconcept.typeId
+    concept.categoryId = lconcept.categoryId
+    return concept;
+  }
   
   export function convertFromConnectionToLConnection(connection: Connection) {
     const Lconnection: LConnection = new LConnection(0, 0, 0, 0, 0, 0)
@@ -27,8 +41,6 @@ import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
     Lconnection.accessId = connection.accessId
     Lconnection.ofTheConceptId = connection.ofTheConceptId
     Lconnection.toTheConceptId = connection.toTheConceptId
-    Lconnection.OfTheConceptId = connection.ofTheConceptId
-    Lconnection.ToTheConceptId = connection.toTheConceptId
     Lconnection.entryTimeStamp = connection.entryTimeStamp
     Lconnection.typeId = connection.typeId
     Lconnection.isTemp = false

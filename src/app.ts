@@ -58,8 +58,13 @@ export {SearchLinkMultipleAll,FormatFromConnections} from './Services/Search/Sea
 export {GetTheConceptLocal} from './Services/Local/GetTheConceptLocal';
 export {UpdateCompositionLocal} from './Services/Local/UpdateCompositionLocal';
 export {GetCompositionFromConnectionsWithDataIdInObject} from './Services/GetCompositionBulk';
+<<<<<<< HEAD
 export {GetRelationLocal} from './Services/Local/GetRelationLocal';
 export {GetConceptByCharacterAndCategoryLocal} from './Services/Local/GetConceptByCharacterLocal';
+=======
+export {ViewInternalData} from './Services/View/ViewInternalData';
+export {convertFromLConceptToConcept} from './Services/Conversion/ConvertConcepts';
+>>>>>>> 95dd9d1676f04308a63d17e9a689adf2b3d52b4b
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -79,13 +84,18 @@ export {CompositionBinaryTree} from './DataStructures/Composition/CompositionBin
 export {CompositionNode} from './DataStructures/Composition/CompositionNode';
 export {LocalSyncData} from './DataStructures/Local/LocalSyncData';
 export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
+export {FilterSearch} from './DataStructures/FilterSearch';
 
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+<<<<<<< HEAD
 import { LocalBinaryCharacterTree } from './DataStructures/Local/LocalBinaryCharacterTree';
+=======
+import { from } from 'readable-stream';
+>>>>>>> 95dd9d1676f04308a63d17e9a689adf2b3d52b4b
 export {BaseUrl} from './DataStructures/BaseUrl';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;

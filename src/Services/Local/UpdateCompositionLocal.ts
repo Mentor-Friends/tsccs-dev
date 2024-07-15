@@ -124,11 +124,7 @@ for (const key in object) {
             connectionList,
             ExistingConcepts[i].id,
           )
-          // for(let j=0; j<connectionList.length; j++){
-          //   if(ExistingConcepts[i].id == connectionList[j].OfTheConceptId){
 
-          //   }
-          // }
         toDeleteConnections = toDeleteConnections.concat(deletingConnections);
         toDeleteConcepts.push(ExistingConcepts[i]);
       }

@@ -67,6 +67,14 @@ export class BinaryCharacterTree{
         return this.characterRoot;
     }
 
+    static getNodeFromTreeUpdated(value:string){
+        if(this.characterRoot){
+            var Node = this.characterRoot.getCharacterFromNode(value, this.characterRoot);
+            return Node;
+        }
+        return this.characterRoot;
+    }
+
     static async getCharacterAndTypeFromTree(value:string, typeId: number){
 
         try{

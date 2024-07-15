@@ -416,6 +416,23 @@ export class Node{
 
     }
 
+    public getCharacterFromNodeUpdated(value: string, node: Node | null) :Node | null{
+        if(node){
+            if(value == node.key || node.value?.typeId == 51){
+                return node;
+            }
+            else if(value < node.key){
+                return this.getCharacterFromNode(value, node.leftNode);
+            }
+            else if (value > node.key) {
+                return this.getCharacterFromNode(value, node.rightNode);
+            }
+            return node;
+        }
+        return node;
+
+    }
+
 
 
     
