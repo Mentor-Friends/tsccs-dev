@@ -10,7 +10,7 @@ export async function ViewInternalData(ids: number[]){
 
     if(id && localConnections){
         let concepts: number[] = [];
-        
+        let formattedOutput :any = {};
         for(let j=0 ; j< localConnections.length; j++){
 
              if(!concepts.includes(localConnections[j].ofTheConceptId)){
@@ -18,9 +18,10 @@ export async function ViewInternalData(ids: number[]){
              }
         }
        let out = await recursiveFetch(id,localConnections, concepts);
-       out.id = id;
+       formattedOutput.data = out;
+       formattedOutput.id = id;
 
-        output.push(out);
+        output.push(formattedOutput);
     }
 
    }
