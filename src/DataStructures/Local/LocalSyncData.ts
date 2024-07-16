@@ -131,14 +131,10 @@ export class LocalSyncData{
             let ofTheConceptId = connectionArray[i].ofTheConceptId;
             let toTheConceptId = connectionArray[i].toTheConceptId;
             let typeId = connectionArray[i].typeId;
-            console.log("This is the old of the concept  ID ", ofTheConceptId);
-            console.log("this is the ghost map", LocalSyncData.ghostIdMap);
 
-            console.log("This is the check", LocalSyncData.ghostIdMap.get(ofTheConceptId));
             let newOfTheConceptId = LocalSyncData.ghostIdMap.get(ofTheConceptId) ?? ofTheConceptId;
             let newToTheConceptId = LocalSyncData.ghostIdMap.get(toTheConceptId) ?? toTheConceptId;
             let newTypeId = LocalSyncData.ghostIdMap.get(typeId) ?? typeId;
-            console.log("This is the new oF THE CONCEPT ID ", newOfTheConceptId);
             connectionArray[i].ofTheConceptId = newOfTheConceptId;
             connectionArray[i].toTheConceptId = newToTheConceptId;
             connectionArray[i].typeId = newTypeId;
