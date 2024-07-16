@@ -134,7 +134,7 @@ export class BaseUrl{
     /////////////////////Api for viewing internal data //////////////////////////
 
     static ViewInternalDataUrl(){
-        return this.BASE_URL + '/api/view-api-internal-data-ccs-ids'
+        return this.BASE_URL + '/api/view-api-internal-data-ccs-id-bulk'
     }
 
     static SearchInternalWithAuthenticatedCcsUrl(){
