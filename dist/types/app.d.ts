@@ -58,6 +58,7 @@ export { GetConceptByCharacterAndCategoryLocal } from './Services/Local/GetConce
 export { ViewInternalData } from './Services/View/ViewInternalData';
 export { ViewInternalDataApi } from './Api/View/ViewInternalDataApi';
 export { convertFromLConceptToConcept } from './Services/Conversion/ConvertConcepts';
+export { SearchLinkInternal } from './Services/Search/SearchLinkInternal';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';
@@ -78,6 +79,7 @@ export { CompositionNode } from './DataStructures/Composition/CompositionNode';
 export { LocalSyncData } from './DataStructures/Local/LocalSyncData';
 export { UserBinaryTree } from './DataStructures/User/UserBinaryTree';
 export { FilterSearch } from './DataStructures/FilterSearch';
+export { SearchStructure } from './DataStructures/Search/SearchStructure';
 export { BaseUrl } from './DataStructures/BaseUrl';
 declare function updateAccessToken(accessToken?: string): void;
 declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string): void;
