@@ -1,5 +1,6 @@
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { Concept } from "../DataStructures/Concept";
+import { BaseUrl } from "../app";
 
 var version = 4;
 export class LocalIndexDb{
@@ -12,7 +13,7 @@ export function openDatabase(databaseName:string){
   if(LocalIndexDb.db){
     resolve( LocalIndexDb.db);
   }
-    const request = indexedDB.open("FreeSchemaLocal",version);
+    const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchemaLocal",version);
   
     request.onerror = (event) => {
         console.error("Why didn't you allow my web app to use IndexedDB?!");
@@ -82,7 +83,7 @@ export function openDatabase(databaseName:string){
      openDatabase(databaseName);
       let db;
   
-      const request = indexedDB.open("FreeSchemaLocal",version);
+      const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchemaLocal",version);
   
       request.onerror = (event) => {
           console.error("Why didn't you allow my web app to use IndexedDB?!");
@@ -134,7 +135,7 @@ export function openDatabase(databaseName:string){
 
   export function removeFromDatabase(databaseName:string, id:number){
     openDatabase(databaseName);
-    const request = indexedDB.open("FreeSchemaLocal",version);
+    const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchemaLocal",version);
 
     request.onsuccess = function(event) {
         var target = event.target as IDBOpenDBRequest;

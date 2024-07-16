@@ -5,12 +5,18 @@ import { SettingData } from "../DataStructures/SettingData";
 import { Settings } from "../DataStructures/Settings";
 import { AiUpdateFlag, GetStatsFromDatabase } from "../Database/indexeddb";
 
-export default async function InitializeSystem(){
-    var statsData = await GetStatsFromDatabase();
-    var settings = statsData as SettingData;
-    await GetAiData();
-    return true;
+export default async function InitializeSystem(enableAi: boolean = true){
+    if(enableAi){
+        var statsData = await GetStatsFromDatabase();
+        var settings = statsData as SettingData;
+        if(settings.isOnlineSync){
+            return true;
+        }
+        await GetAiData();
 
+    }
+
+    return true;
 }
 
 export async function PurgatoryDatabaseUpdated(){

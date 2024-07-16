@@ -96,13 +96,13 @@ function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
 
-function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string =""){
+function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    BaseUrl.NODE_URL = nodeUrl;
    console.log("This ist he base url", BaseUrl.BASE_URL);
    TokenStorage.BearerAccessToken = accessToken;
-   InitializeSystem().then(()=>{
+   InitializeSystem(enableAi).then(()=>{
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{
          IdentifierFlags.isDataLoaded= true;

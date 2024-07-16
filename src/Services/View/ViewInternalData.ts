@@ -19,7 +19,7 @@ export async function ViewInternalData(ids: number[]){
         }
        let out = await recursiveFetch(id,localConnections, concepts);
        out.id = id;
-
+        console.log("this is the out", out);
         output.push(out);
     }
 

@@ -20,7 +20,7 @@ export async function GetAiData(){
         for(var i=0; i< result.length; i++){
             ConceptsData.AddConcept(result[i]);
         }
-        //PurgatoryDatabaseUpdated();
+        PurgatoryDatabaseUpdated();
         let elapsed = new Date().getTime() - start;
         console.log("The time taken is ", elapsed);
 
