@@ -18,7 +18,7 @@ export async function ViewInternalData(ids: number[]){
              }
         }
        let out = await recursiveFetch(id,localConnections, concepts);
-       console.log("This is the local one",out, id, concepts);
+       out.id = id;
 
         output.push(out);
     }
