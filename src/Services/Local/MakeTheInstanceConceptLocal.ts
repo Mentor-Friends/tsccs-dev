@@ -9,7 +9,7 @@ import MakeTheTypeConceptLocal from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
-    accessId:number, sessionInformationId: number=999){
+    accessId:number, sessionInformationId: number=999, referentId: number = 0){
         var sessionInformationId: number = 999;
         var categoryId: number = 4;
         var sessionInformationUserId: number = userId;
@@ -34,7 +34,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
            var   typeConceptString = await MakeTheTypeConceptLocal(type, sessionInformationId, userId, userId );
            typeConcept = typeConceptString as LConcept;
             
-           var conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId );
+           var conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId, referentId );
 
             concept = conceptString as LConcept;
         }

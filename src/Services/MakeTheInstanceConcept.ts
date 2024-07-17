@@ -11,11 +11,10 @@ import { MakeTheTimestamp } from "./MakeTheTimestamp";
 import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
 
 export default async function MakeTheInstanceConcept(type:string, referent:string, composition:boolean=false, userId: number, 
-        passedAccessId:number, passedSessionId: number=999){
+        passedAccessId:number, passedSessionId: number=999, referentId: number = 0){
             let sessionInformationId: number = passedSessionId;
             let categoryId: number = 4;
             let categoryUserId: number = userId; 
-            let referentId: number = 0;
             let referentUserId: number = 999;
             let securityId: number = 999;
             let securityUserId: number = userId;

@@ -10,6 +10,7 @@ export  class LConcept{
     characterValue: string;
     typeCharacter: string;
     entryTimeStamp: Date;
+    referentId: number;
     updatedTimeStamp:Date;
     type: LConcept | null | void | Concept;
     isNew: boolean;
@@ -18,7 +19,7 @@ export  class LConcept{
 
 
     constructor(id: number, userId: number, typeId:number, categoryId:number,accessId: number, characterValue:string, typeCharacter:string,
-         isNew:boolean=false, entryTimeStamp: Date, updatedTimeStamp:Date){
+         isNew:boolean=false, entryTimeStamp: Date, updatedTimeStamp:Date, referentId: number){
         this.id = id;
         this.userId = userId;
         this.typeId  = typeId;
@@ -31,6 +32,7 @@ export  class LConcept{
         this.typeCharacter = typeCharacter;
         this.entryTimeStamp = entryTimeStamp;
         this.updatedTimeStamp = updatedTimeStamp;
+        this.referentId = referentId;
        // ConceptsData.AddConcept(this);
     }
 
