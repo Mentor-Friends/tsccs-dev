@@ -90,6 +90,25 @@ export class BinaryCharacterTree{
         return this.characterRoot;
     }
 
+    static async getCharacterAndCategoryFromTree(value:string, categoryId: number){
+
+        try{
+            var data = await this.waitForDataToLoad();
+        }
+        catch(exception){
+            return null;
+        }
+        if(this.characterRoot){
+            var Node = this.characterRoot.getFromNodeWithCharacterAndCategory(value, categoryId,this.characterRoot);
+            return Node;
+        }   
+        return this.characterRoot;
+    }
+
+
+    
+
+
     static removeConceptCharacter(id:number){
         if(this.characterRoot){
             this.characterRoot = this.characterRoot.removeNode(this.characterRoot,id);

@@ -61,6 +61,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/get_concept_by_character_and_category';
     }
 
+    static GetConceptByCharacterAndCategoryDirectUrl(){
+        return this.BASE_URL + '/api/get_concept_by_character_and_category_direct';
+    }
+
     static GetCharacterByCharacterUrl(){
         return this.BASE_URL + '/api/get_character_by_character';
     }

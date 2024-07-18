@@ -159,6 +159,18 @@ export class ConceptsData{
 
      }
 
+     static async GetConceptByCharacterAndCategoryLocal(character_value:string, categoryId: number){
+        var concept: Concept = CreateDefaultConcept();
+
+        var Node = await BinaryCharacterTree.getCharacterAndCategoryFromTree(character_value,categoryId);
+        if(Node){
+
+            concept =  Node.value;
+        }
+        return concept;
+
+     }
+
      static  GetConceptsByTypeId(typeId: number){
         var  myConcept: Concept|null;
         let ConceptList: Concept[] = [];
