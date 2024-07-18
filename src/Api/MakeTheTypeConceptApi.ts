@@ -3,10 +3,19 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { Concept } from "../DataStructures/Concept";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { GetConceptByCharacter } from "../app";
+import { GetConceptByCharacterAndCategory } from "../Services/ConceptFinding/GetConceptByCharacterAndCategory";
+
+
+// This function is used to check the type concpet of a passed string
+// if the text is "the_person" then the function finds the related concept
 export async function MakeTheTypeConceptApi(type:string, userId:number){
+
+  // create  a default concept with all defaulting to zero
     let concept = CreateDefaultConcept();
     try{
-        concept = await GetConceptByCharacter(type);
+
+       // get the concept by character and category from the api
+        concept = await GetConceptByCharacterAndCategory(type);
         if(concept.id == 0 || concept.typeId == 4){
             var header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.MakeTheTypeConceptUrl(),{

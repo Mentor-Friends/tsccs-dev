@@ -4,7 +4,7 @@ import { Concept } from "./../DataStructures/Concept";
 import { GetCompositionWithIdAndDateFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
-import { GetConceptByCharacterAndCategory } from "../Api/SearchConcept/GetConceptByCharacterAndCategory";
+import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
 
 export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
     var output: any[] = [];

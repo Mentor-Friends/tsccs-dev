@@ -4,15 +4,15 @@ import { Concept } from "./../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../../app";
-export async function GetConceptByCharacterAndCategory(characterValue: string){
+export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: string, category_id: number){
     let concept = CreateDefaultConcept();
 
     try{
         var header = GetRequestHeader('application/x-www-form-urlencoded');
-          const response = await fetch(BaseUrl.GetConceptByCharacterAndCategoryUrl(),{
+          const response = await fetch(BaseUrl.GetConceptByCharacterAndCategoryDirectUrl(),{
               method: 'POST',
               headers: header,
-              body:  `character_value=${characterValue}`,
+              body:  `character_value=${characterValue}&category_id=${category_id}`,
           });
           if(response.ok){
             let conceptString = await response.json() ;
