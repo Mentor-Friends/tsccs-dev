@@ -10,7 +10,7 @@ export default async function GetConceptByCharacterLocal(characterValue: string)
 export async function GetConceptByCharacterAndCategoryLocal(character: string){
     let lconcept: LConcept = CreateDefaultLConcept();
     if(character == "the"){
-        lconcept.id == 1;
+        lconcept.id = 1;
         lconcept.typeId = 5;
         lconcept.characterValue ="the";
         return lconcept;

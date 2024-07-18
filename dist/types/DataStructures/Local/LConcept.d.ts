@@ -10,12 +10,13 @@ export declare class LConcept {
     characterValue: string;
     typeCharacter: string;
     entryTimeStamp: Date;
+    referentId: number;
     updatedTimeStamp: Date;
     type: LConcept | null | void | Concept;
     isNew: boolean;
     isComposition: boolean;
     isTemp: boolean;
     isSynced: boolean;
-    constructor(id: number, userId: number, typeId: number, categoryId: number, accessId: number, characterValue: string, typeCharacter: string, isNew: boolean | undefined, entryTimeStamp: Date, updatedTimeStamp: Date);
+    constructor(id: number, userId: number, typeId: number, categoryId: number, accessId: number, characterValue: string, typeCharacter: string, isNew: boolean | undefined, entryTimeStamp: Date, updatedTimeStamp: Date, referentId: number);
     getType(): void;
 }
