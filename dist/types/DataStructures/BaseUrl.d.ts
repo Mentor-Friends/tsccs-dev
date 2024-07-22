@@ -15,6 +15,7 @@ export declare class BaseUrl {
     static GetConceptByCharacterValueUrl(): string;
     static GetConceptByCharacterAndTypeUrl(): string;
     static GetConceptByCharacterAndCategoryUrl(): string;
+    static GetConceptByCharacterAndCategoryDirectUrl(): string;
     static GetCharacterByCharacterUrl(): string;
     static GetAllConceptsByTypeUrl(): string;
     static GetAllConnectionsOfConceptUrl(): string;
