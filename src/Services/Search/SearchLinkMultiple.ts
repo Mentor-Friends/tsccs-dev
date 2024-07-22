@@ -25,7 +25,7 @@ export async function FormatFromConnections(linkers:number[], compositionData: a
     if(reverse.includes(connections[i].id)){
       reverseFlag = true;
     }
-    if(reverse){
+    if(reverseFlag == true){
 
       if(compositionData[connections[i].ofTheConceptId] && compositionData[connections[i].toTheConceptId]){
         let mydata = compositionData[connections[i].toTheConceptId];
@@ -42,10 +42,9 @@ export async function FormatFromConnections(linkers:number[], compositionData: a
             }
             else{
               if(typeof newData[key] === "string"){
-  
+                
                 newData[key] = {};
               }
-  
               newData[key][reverseCharater] = [];
               newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
             }
@@ -57,7 +56,8 @@ export async function FormatFromConnections(linkers:number[], compositionData: a
         }
       }
     }
-    else{
+    else
+    {
       if(compositionData[connections[i].ofTheConceptId] && compositionData[connections[i].toTheConceptId]){
         let mydata = compositionData[connections[i].ofTheConceptId];
         let linkerConcept = await GetTheConcept(connections[i].typeId);
