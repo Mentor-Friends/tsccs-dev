@@ -90,6 +90,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/get-all-linkers-from-concept';
     }
 
+    static GetAllLinkerConnectionToConceptUrl(){
+        return this.BASE_URL + '/api/get-all-linkers-to-concept';
+    }
+
     static DeleteConceptUrl(){
         return this.BASE_URL + '/api/delete_concept';
     }
