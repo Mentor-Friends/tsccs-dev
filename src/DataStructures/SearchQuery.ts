@@ -10,6 +10,7 @@ export class SearchQuery{
      fullLinkers:string[] = [];
      textSearch:string = "";
      logic: string = "or";
+     reverse: boolean = false;
      filterSearches:FilterSearch[]  = [];
      selectors: string[] = [];
 

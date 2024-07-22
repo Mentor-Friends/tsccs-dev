@@ -11,11 +11,9 @@ export async function GetConceptByCharacterAndCategory(character: string){
         return concept;
     }
     var splittedStringArray = SplitStrings(character);
-    console.log("this is the splitted", splittedStringArray);
     if(splittedStringArray.length > 1){
         let category = 1;
         let prefix = await GetConceptByCharacterAndCategory(splittedStringArray[0])
-        console.log("this is the prefix", prefix);
         if(prefix.id != 0){
             category = prefix.id;
         }
@@ -25,7 +23,6 @@ export async function GetConceptByCharacterAndCategory(character: string){
         concept = await GetConceptByCharacter(character);
 
     }
-    console.log("this is the suffix", concept);
     return concept;
 }
 
