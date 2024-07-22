@@ -23,19 +23,15 @@ export async function FormatFromConnections(linkers:number[], compositionData: a
   for(let i=0 ; i< connections.length; i++){
     let reverseFlag = false;
     if(reverse.includes(connections[i].id)){
-      console.log("this includes", connections[i]);
       reverseFlag = true;
     }
     if(reverse){
 
-      console.log("in the reerse condition", connections[i]);
       if(compositionData[connections[i].ofTheConceptId] && compositionData[connections[i].toTheConceptId]){
-        console.log("in the reerse condition inside", connections[i]);
         let mydata = compositionData[connections[i].toTheConceptId];
         let linkerConcept = await GetTheConcept(connections[i].typeId);
         let newData = mydata?.data;
         let key = Object.keys(newData)[0];
-        console.log("in the reerse key inside", key);
         try{
           let reverseCharater = linkerConcept.characterValue + "_reverse";
           if(typeof newData === "string"){
@@ -54,7 +50,6 @@ export async function FormatFromConnections(linkers:number[], compositionData: a
               newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
             }
 
-            console.log("this is the reverse new Data", newData);
   
         }
         catch(ex){
