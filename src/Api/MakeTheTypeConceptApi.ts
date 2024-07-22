@@ -2,7 +2,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { Concept } from "../DataStructures/Concept";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
-import { GetConceptByCharacter } from "../app";
+import { ConceptsData, GetConceptByCharacter } from "../app";
 import { GetConceptByCharacterAndCategory } from "../Services/ConceptFinding/GetConceptByCharacterAndCategory";
 
 
