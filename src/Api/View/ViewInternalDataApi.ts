@@ -3,7 +3,6 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { Connection, CreateDefaultConcept, GetConceptBulk } from "../../app";
 export async function ViewInternalDataApi(ids: number[]){
     let connectionList: Connection[] = [];
-
     try{
         var header = GetRequestHeader();
 
