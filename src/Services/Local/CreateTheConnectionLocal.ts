@@ -19,7 +19,7 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
         realTypeId = typeId;
         let connection = new LConnection(0,0,0,0,0,0);
         if(ofTheConceptId != toTheConceptId){
-             connection = new LConnection(randomid, ofTheConceptId, toTheConceptId, typeId, orderId, accessId);
+             connection = new LConnection(randomid, realOfTheConceptId, realToTheConceptId, typeId, orderId, accessId);
             connection.isTemp = true;
             connection.typeCharacter = typeString;
             LocalConnectionData.AddConnection(connection);

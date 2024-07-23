@@ -169,7 +169,8 @@ export class LocalSyncData{
             if(toTheConceptId < 0){
                 let toTheConcept = this.CheckIfTheConceptIdExists(toTheConceptId, conceptsArray);
                 if(toTheConcept.id == 0){
-                    toTheConcept = await LocalConceptsData.GetConceptByGhostId(ofTheConceptId);
+                    toTheConcept = await LocalConceptsData.GetConceptByGhostId(toTheConceptId);
+
                     if(toTheConcept.id != 0){
                         if(toTheConcept.id != toTheConcept.ghostId){
                             connectionArray[i].toTheConceptId = toTheConcept.id;
@@ -191,7 +192,7 @@ export class LocalSyncData{
                 let type = this.CheckIfTheConceptIdExists(typeId, conceptsArray);
                 if(type.id == 0){
 
-                    type = await LocalConceptsData.GetConceptByGhostId(ofTheConceptId);
+                    type = await LocalConceptsData.GetConceptByGhostId(typeId);
                     if(type.id != 0){
                         if(type.id != type.ghostId){
                             connectionArray[i].typeId = type.id;
