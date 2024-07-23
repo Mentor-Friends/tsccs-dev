@@ -22,6 +22,7 @@ export declare class BaseUrl {
     static GetAllAiData(): string;
     static GetAllPrefetchConnectionsUrl(): string;
     static GetAllLinkerConnectionOfConceptUrl(): string;
+    static GetAllLinkerConnectionToConceptUrl(): string;
     static DeleteConceptUrl(): string;
     static RecursiveSearchUrl(): string;
     static SearchLinkMultipleAllApiUrl(): string;

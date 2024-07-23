@@ -19,7 +19,7 @@ export { CreateDefaultConcept } from './Services/CreateDefaultConcept';
 export { MakeTheTypeConceptLocal } from './Services/Local/MakeTheTypeLocal';
 export { MakeTheTypeConcept } from './Services/MakeTheTypeConcept';
 export { MakeTheTypeConceptApi } from './Api/MakeTheTypeConceptApi';
-export { GetLinkerConnectionFromConcepts } from './Services/GetLinkerConnectionFromConcept';
+export { GetLinkerConnectionFromConcepts, GetLinkerConnectionToConcepts } from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';
 export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend';
