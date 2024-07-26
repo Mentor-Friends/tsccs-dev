@@ -64,6 +64,7 @@ export {ViewInternalData} from './Services/View/ViewInternalData';
 export {ViewInternalDataApi} from './Api/View/ViewInternalDataApi';
 export {convertFromLConceptToConcept} from './Services/Conversion/ConvertConcepts';
 export {SearchLinkInternal} from './Services/Search/SearchLinkInternal';
+export {CreateConnectionBetweenTwoConceptsLocal} from './Services/Local/CreateConnectionBetweenTwoConceptsLocal';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
