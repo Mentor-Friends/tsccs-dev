@@ -20,6 +20,6 @@ export async function GetUserGhostId(userId:number,  ghostId:number, sessionId:n
 }
 
 export async function AddGhostConcept(concept: LConcept, userId: number, sessionId: number = 999){
-    console.log("adding this to ghost id", userId, sessionId)
     UserBinaryTree.addConceptToTree(concept,userId, sessionId);
+
 }

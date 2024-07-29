@@ -17,6 +17,7 @@ export class UserBinaryTree{
         }
         else{
             this.root = this.root.addNode(node,this.root,this.root.height);
+
         }
     }
 
