@@ -11,6 +11,7 @@ export class SearchQuery{
      textSearch:string = "";
      logic: string = "or";
      reverse: boolean = false;
+     doFilter: boolean = false;
      filterSearches:FilterSearch[]  = [];
      selectors: string[] = [];
 
