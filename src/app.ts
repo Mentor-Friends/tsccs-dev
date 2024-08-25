@@ -51,7 +51,7 @@ export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompos
 export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
 export { CreateTheConnectionGeneral} from './Services/CreateTheConnectionGeneral';
 export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLocal';
-export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
+export {GetUserGhostId,AddGhostConcept, GetUserGhostConnectionId,AddGhostConnection} from './Services/User/UserTranslation';
 export {SearchLinkMultipleAll,FormatFromConnections} from './Services/Search/SearchLinkMultiple';
 export {UpdateCompositionLocal} from './Services/Local/UpdateCompositionLocal';
 export {GetCompositionFromConnectionsWithDataIdInObject} from './Services/GetCompositionBulk';

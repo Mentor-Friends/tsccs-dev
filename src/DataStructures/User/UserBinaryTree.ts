@@ -1,6 +1,8 @@
 import { LConcept } from "../../DataStructures/Local/LConcept";
 import { UserNode } from "./UserNode";
 import { IdentifierFlags } from "./../IdentifierFlags";
+import { LConnection } from "../Local/LConnection";
+import { CreateDefaultLConcept } from "../../app";
 
 export class UserBinaryTree{
     static root: UserNode | null = null;
@@ -42,7 +44,15 @@ export class UserBinaryTree{
 
     static addConceptToTree(concept:LConcept, userId:number, sessionId: number = 999){
         let key = this.compositeKey(userId, sessionId);
-        var node: UserNode = new UserNode(key, concept, null, null);
+        let FakeConnection: LConnection = new LConnection(0,0,0,0,0,0);
+        var node: UserNode = new UserNode(key, concept,FakeConnection,  null, null);
+        this.addNodeToTree(node);
+    }
+
+    static addConnectionToTree(connection:LConnection, userId:number, sessionId: number = 999){
+        let key = this.compositeKey(userId, sessionId);
+        let FakeConcept: LConcept = CreateDefaultLConcept();
+        var node: UserNode = new UserNode(key, FakeConcept,connection, null, null);
         this.addNodeToTree(node);
     }
 

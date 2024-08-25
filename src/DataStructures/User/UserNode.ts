@@ -1,15 +1,23 @@
 import { LConcept } from "../Local/LConcept";
+import { LConnection } from "../Local/LConnection";
 
 export class UserNode{
     key:any;
+    connectionValue: LConnection [] = [];
     value: LConcept [] = [];
     leftNode: UserNode | null;
     rightNode: UserNode | null;
     height:number = 1;
 
-    constructor(key:any, value:LConcept, leftNode: UserNode | null, rightNode:UserNode| null){
+    constructor(key:any, value:LConcept, connectionValue : LConnection, leftNode: UserNode | null, rightNode:UserNode| null){
         this.key = key;
-        this.value.push(value);
+        if(value.id > 0){
+            this.value.push(value);
+
+        }
+        if(connectionValue.id > 0){
+            this.connectionValue.push(connectionValue);
+        }
         this.leftNode = leftNode;
         this.rightNode = rightNode;
     }
