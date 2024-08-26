@@ -81,6 +81,7 @@ export class LocalSyncData{
 
 
         }
+    
         let connectionsArray = this.connectionSyncArray.slice();
         this.connectionSyncArray = [];
         this.conceptsSyncArray = [];

@@ -4,6 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData"
+import { GetConceptBulk } from "../app";
 
 
 
@@ -88,13 +89,11 @@ export async function GetCompositionWithIdFromMemory(id:number){
     var returnOutput: any = {};
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
     var compositionList:number[] = [];
-
     for(var i=0; i<connectionList.length; i++){
         if(!compositionList.includes(connectionList[i].ofTheConceptId)){
             compositionList.push(connectionList[i].ofTheConceptId);
         }
     }
-
     var concept = await ConceptsData.GetConcept(id);
     if(concept.id == 0 && id != null && id != undefined){
      var conceptString = await  GetConcept(id);

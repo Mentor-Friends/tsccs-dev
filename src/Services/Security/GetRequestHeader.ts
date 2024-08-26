@@ -27,3 +27,10 @@ token: string = "",Accept: string = 'application/json',
     
     return headers;
 }
+
+export function GetOnlyTokenHeader(){
+    let token = TokenStorage.BearerAccessToken;
+    const myHeaders = new Headers()
+    myHeaders.append('Authorization', 'Bearer ' + token)
+    return myHeaders;
+}

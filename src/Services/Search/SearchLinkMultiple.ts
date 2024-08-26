@@ -1,7 +1,7 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
-import { Connection, GetConnectionBulk, GetTheConcept } from "../../app";
-import { GetCompositionFromConnectionsWithDataIdInObject } from "../GetCompositionBulk";
+import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept } from "../../app";
+import { GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from "../GetCompositionBulk";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string=""){
   let concepts:any[] = [];
@@ -12,14 +12,28 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
   let connections = result.internalConnections;
   let linkers = result.linkers;
   let reverse = result.reverse;
+  await GetConnectionDataPrefetch(linkers);
   concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds,connections);
   let out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
   return out;
 }
 
+
+
+
 export async function FormatFromConnections(linkers:number[], compositionData: any[], mainComposition: number, reverse: number [] = []){
   let mainData: any = {};
   let connections = await GetConnectionBulk(linkers);
+  let myConcepts: number[] = [];
+  for(let i=0 ; i< connections.length; i++){
+    myConcepts.push(connections[i].toTheConceptId);
+    myConcepts.push(connections[i].ofTheConceptId)
+    myConcepts.push(connections[i].typeId);
+  }
+  await GetConceptBulk(myConcepts);
+  connections.sort(function(x: Connection, y:Connection){
+    return y.id - x.id;
+  })
   for(let i=0 ; i< connections.length; i++){
     let reverseFlag = false;
     if(reverse.includes(connections[i].id)){
