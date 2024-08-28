@@ -1,6 +1,7 @@
 import { CreateTheConceptApi } from "../../Api/Create/CreateTheConceptApi";
 import { LConcept } from "../../DataStructures/Local/LConcept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
+import { LocalId } from "../../DataStructures/Local/LocalId";
 import { ReservedIds } from "../../DataStructures/ReservedIds";
 import { SyncData } from "../../DataStructures/SyncData";
 import { storeToDatabase } from "../../Database/indexdblocal";
@@ -10,7 +11,9 @@ export default async function CreateTheConceptLocal(referent:string, typecharact
 typeId:number, 
 accessId:number, isComposition: boolean = false, referentId:number = 0){
 
-var id = -Math.floor(Math.random() * 100000000);
+//var id = -Math.floor(Math.random() * 100000000);
+var id = LocalId.getConceptId();
+console.log("this is the id got", id);
 var isNew: boolean = true;
 let created_on:Date = new Date();
 let updated_on:Date = new Date();

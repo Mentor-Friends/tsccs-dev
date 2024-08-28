@@ -69,7 +69,12 @@ export class LocalSyncData{
      }
 
      static async  SyncDataOnline(){
+
         let conceptsArray = this.conceptsSyncArray.slice();
+        let connectionsArray = this.connectionSyncArray.slice();
+
+        this.connectionSyncArray = [];
+        this.conceptsSyncArray = [];
         let toSyncConcepts = [];
         for(let i= 0; i< conceptsArray.length; i++){
 
@@ -81,9 +86,7 @@ export class LocalSyncData{
 
 
         }
-        let connectionsArray = this.connectionSyncArray.slice();
-        this.connectionSyncArray = [];
-        this.conceptsSyncArray = [];
+
         //if(connectionsArray.length > 0){
             await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, toSyncConcepts);
             let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray);
@@ -228,6 +231,7 @@ export class LocalSyncData{
 
      static AddConnection(connection: LConnection){
          this.connectionSyncArray.push(connection);
+
      }
 
      static RemoveConnection(connection: LConnection){
