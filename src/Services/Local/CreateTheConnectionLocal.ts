@@ -13,7 +13,6 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
         var accessId : number = 4;
        // let randomid = -Math.floor(Math.random() * 100000000);
        let randomid = LocalId.getConnectionId();
-       console.log("this is the id got", randomid);
         let realOfTheConceptId = 0;
         let realToTheConceptId = 0;
         let realTypeId = 0;
