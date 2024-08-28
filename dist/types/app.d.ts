@@ -52,7 +52,7 @@ export { GetUserGhostId, AddGhostConcept } from './Services/User/UserTranslation
 export { SearchLinkMultipleAll, FormatFromConnections } from './Services/Search/SearchLinkMultiple';
 export { GetTheConceptLocal } from './Services/Local/GetTheConceptLocal';
 export { UpdateCompositionLocal } from './Services/Local/UpdateCompositionLocal';
-export { GetCompositionFromConnectionsWithDataIdInObject, GetCompositionFromConnectionsWithDataIdIndex } from './Services/GetCompositionBulk';
+export { GetCompositionFromConnectionsWithDataIdInObject, GetCompositionFromConnectionsWithIndex, GetCompositionFromConnectionsWithDataIdIndex } from './Services/GetCompositionBulk';
 export { GetRelationLocal } from './Services/Local/GetRelationLocal';
 export { GetConceptByCharacterAndCategoryLocal } from './Services/Local/GetConceptByCharacterLocal';
 export { ViewInternalData } from './Services/View/ViewInternalData';

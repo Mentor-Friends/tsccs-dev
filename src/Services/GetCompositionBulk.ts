@@ -53,6 +53,19 @@ export async function GetCompositionFromConnectionsWithDataIdIndex(ids:number[]=
     return compositions;
 }
 
+export async function GetCompositionFromConnectionsWithIndex(ids:number[]=[], connections:number[] = []){
+    var newConnections = await GetConnectionBulk(connections);
+    var myNewConnections = newConnections as Connection[];
+    var oldConnections = await FindConnectionsOfCompositionsBulkInMemory(ids);
+    CheckForConnectionDeletionWithIds(connections,oldConnections);
+    var compositions: any = {};
+    for(let i=0; i< ids.length;i++){
+       var comp = await GetCompositionFromMemory(ids[i]);
+        compositions[ids[i]] = comp;
+    }
+    return compositions;
+}
+
 export async function GetConnectionDataPrefetch(connections:number[]){
     let remainingConnections: number[] = [];
     let connectionsAll:Connection[] = [];
