@@ -28,7 +28,9 @@ export class LocalId{
                     finalLocalId = localId;
                 }
                 this.AddConceptId({"id":0, "value": finalLocalId})
-                return finalLocalId
+                let id = this.ReservedLocalId[0];
+                this.ReservedLocalId.shift();
+                return id;
 
             }
             else{
@@ -38,7 +40,6 @@ export class LocalId{
             }
         }
         else{
-            console.log("cannot find the reserved ids so falling back to old");
             GetLastUpdatedIds();
             return -Math.floor(Math.random() * 100000000);
         }
@@ -58,24 +59,22 @@ export class LocalId{
                     let localId = this.localId - j;
                     
                     this.ReservedConnectionId.push(localId);
-                    console.log("this is the reserved id when creating", this.ReservedConnectionId)
                     finalLocalId = localId;
                 }
                 this.AddConnectionId({"id":1, "value": finalLocalId})
-                return finalLocalId;
+                let id = this.ReservedConnectionId[0];
+                this.ReservedConnectionId.shift();
+                return id;
 
             }
             else{
-                console.log("this is the connection reserved", this.ReservedConnectionId);
                 let id = this.ReservedConnectionId[0];
                 this.ReservedConnectionId.shift();
-                console.log("this is the connection reserved after shift", this.ReservedConnectionId);
 
                 return id;
             }
         }
         else{
-            console.log("cannot find the reserved ids so falling back to old connection id");
             GetLastUpdatedIds();
             return -Math.floor(Math.random() * 100000000);
         }

@@ -19,7 +19,6 @@ export default  async function CreateLocalBinaryTreeFromData(){
 
 export async function GetLastUpdatedIds(){
     var idList = await getAllFromLocalDb("localid");
-    console.log("this is the id list", idList);
     if(Array.isArray(idList)){
         
         if(idList[0]){

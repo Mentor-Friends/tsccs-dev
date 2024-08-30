@@ -12,6 +12,8 @@ export class BaseUrl{
 
     static MQTT_CONNECTION:any ;
 
+    static BASE_APPLICATION = "";
+
 
 
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';

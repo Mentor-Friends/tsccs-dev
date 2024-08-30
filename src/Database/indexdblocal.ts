@@ -14,14 +14,14 @@ export function openDatabase(databaseName:string){
   if(LocalIndexDb.db){
     resolve( LocalIndexDb.db);
   }
-    const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchemaLocal",version);
-  
+var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATION;
+
+    const request = indexedDB.open(localDbName,version);
     request.onerror = (event) => {
-        console.error("Why didn't you allow my web app to use IndexedDB?!");
+        console.log("Why didn't you allow my web app to use IndexedDB?!");
     };
   
     request.onsuccess = function(event:Event) {
-      console.log("creating a database locally test");
   
         
       var target = event.target as IDBOpenDBRequest;
@@ -32,11 +32,13 @@ export function openDatabase(databaseName:string){
   
   
   request.onupgradeneeded = (event) => {
+
       var target = event.target as IDBOpenDBRequest;
       var db = target.result as IDBDatabase;
       var conceptDb = "localconcept";
       var connectionDb = "localconnection";
       var idDb = "localid";
+
       if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
         let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
         objectStore.transaction.oncomplete = (event: Event) => {
@@ -45,12 +47,10 @@ export function openDatabase(databaseName:string){
       if (!db.objectStoreNames.contains(connectionDb)) { // if there's no database name
         let  objectStore = db.createObjectStore(connectionDb, {keyPath: 'id'}); // create it
         objectStore.transaction.oncomplete = (event: Event) => {
-  
         }
       }
       if (!db.objectStoreNames.contains(idDb)) { // if there's no database name
         let  objectStore = db.createObjectStore(idDb, {keyPath: 'id'}); // create it
-        console.log("this is the type", objectStore);
         objectStore.transaction.oncomplete = (event: Event) => {
             console.log("this is the event", event);
             storeToDatabase(idDb,{"id":0, "value": -100});
@@ -94,8 +94,9 @@ export function openDatabase(databaseName:string){
 
      openDatabase(databaseName);
       let db;
+var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATION;
   
-      const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchemaLocal",version);
+      const request = indexedDB.open(localDbName,version);
   
       request.onerror = (event) => {
           console.error("Why didn't you allow my web app to use IndexedDB?!");
@@ -106,7 +107,6 @@ export function openDatabase(databaseName:string){
           var db = target.result as IDBDatabase;
           let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
           let objStore = transaction.objectStore(databaseName);
-          console.log("this is storing the object", object);
           objStore.add(object);
       };
   }
@@ -115,8 +115,9 @@ export function openDatabase(databaseName:string){
 
     openDatabase(databaseName);
      let db;
+var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATION;
  
-     const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchemaLocal",version);
+     const request = indexedDB.open(localDbName,version);
  
      request.onerror = (event) => {
          console.error("Why didn't you allow my web app to use IndexedDB?!");
@@ -127,7 +128,6 @@ export function openDatabase(databaseName:string){
          var db = target.result as IDBDatabase;
          let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
          let objStore = transaction.objectStore(databaseName);
-         console.log("this is updating the object", object);
          objStore.put(object);
      };
  }
@@ -169,7 +169,9 @@ export function openDatabase(databaseName:string){
 
   export function removeFromDatabase(databaseName:string, id:number){
     openDatabase(databaseName);
-    const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchemaLocal",version);
+var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATION;
+
+    const request = indexedDB.open(localDbName,version);
 
     request.onsuccess = function(event) {
         var target = event.target as IDBOpenDBRequest;

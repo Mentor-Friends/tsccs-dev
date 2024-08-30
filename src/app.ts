@@ -98,11 +98,12 @@ function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
 
-function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true){
+function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string=""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    BaseUrl.NODE_URL = nodeUrl;
    console.log("This ist he base url", BaseUrl.BASE_URL);
+   BaseUrl.BASE_APPLICATION= applicationName;
    TokenStorage.BearerAccessToken = accessToken;
    InitializeSystem(enableAi).then(()=>{
       const start = new Date().getTime();
@@ -130,9 +131,9 @@ function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl
          IdentifierFlags.isLocalConnectionLoaded = true;
       });
 
-      GetLastUpdatedIds().then(()=>{
-         console.log("this is  the last updated ids");
-      });
+      // GetLastUpdatedIds().then(()=>{
+      //    console.log("this is  the last updated ids");
+      // });
       GetDataFromIndexDb().then(()=>{
          IdentifierFlags.isConnectionLoaded = true;
          IdentifierFlags.isConnectionTypeLoaded = true;
