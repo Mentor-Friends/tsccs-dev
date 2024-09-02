@@ -86,7 +86,6 @@ export class LocalSyncData{
 
 
         }
-
         //if(connectionsArray.length > 0){
             await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, toSyncConcepts);
             let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray);

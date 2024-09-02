@@ -15,6 +15,7 @@ export  async function FindConceptsFromConnections(connectionList:Connection[] =
           }
 
         }
+
         await GetConceptBulk(ConceptList);
 
     }
