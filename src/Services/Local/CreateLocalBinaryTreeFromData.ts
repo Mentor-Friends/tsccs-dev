@@ -1,4 +1,5 @@
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
+import { LocalId } from "../../DataStructures/Local/LocalId";
 import { getAllFromLocalDb } from "../../Database/indexdblocal";
 
 export default  async function CreateLocalBinaryTreeFromData(){
@@ -15,3 +16,24 @@ export default  async function CreateLocalBinaryTreeFromData(){
 
 
 }
+
+export async function GetLastUpdatedIds(){
+    var idList = await getAllFromLocalDb("localid");
+    if(Array.isArray(idList)){
+        
+        if(idList[0]){
+            LocalId.AddConceptId(idList[0]);
+
+        }
+        if(idList[1]){
+            LocalId.AddConnectionId(idList[1]);
+
+        }
+        }
+
+    // if(Array.isArray(connectionList)){
+    //     for(var i=0 ;i < connectionList.length ;i++){
+    //         LocalId.AddId(connectionList[i]);
+    //     }
+    // }
+ }

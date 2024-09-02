@@ -5,18 +5,20 @@ import { SettingData } from "../DataStructures/SettingData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 
 var version = 4;
-
 export class IndexDb{
   static db:IDBDatabase;
 }
 
 
 export function openDatabase(databaseName:string){
+
   return new Promise(function(resolve, reject){
   if(IndexDb.db){
     resolve( IndexDb.db);
   }
-  const request = indexedDB.open(BaseUrl.BASE_URL + "_FreeSchema",version);
+var dbName = BaseUrl.BASE_URL + "_FreeSchema"  + BaseUrl.BASE_APPLICATION;
+
+  const request = indexedDB.open(dbName,version);
 
   request.onerror = (event) => {
       console.error("Why didn't you allow my web app to use IndexedDB?!");
@@ -179,7 +181,9 @@ export function storeToDatabase(databaseName:string, object:any){
   export async function getFromDatabaseWithType(databaseName:string, type:string, id:number){
     return new Promise(function(resolve, reject){
     openDatabase(databaseName);
-    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
+    let dbName = BaseUrl.BASE_URL + "_FreeSchema"  + BaseUrl.BASE_APPLICATION;
+
+    const request = indexedDB.open(dbName,version);
     var concept: Concept|null;
     var ConceptList: Concept[] = [];
 
@@ -292,7 +296,9 @@ export function storeToDatabase(databaseName:string, object:any){
 
   export function removeFromDatabase(databaseName:string, id:number){
     openDatabase(databaseName);
-    const request = indexedDB.open(BaseUrl.BASE_URL +"_FreeSchema",version);
+let dbName = BaseUrl.BASE_URL + "_FreeSchema"  + BaseUrl.BASE_APPLICATION;
+
+    const request = indexedDB.open(dbName,version);
 
     request.onsuccess = function(event) {
         var target = event.target as IDBOpenDBRequest;

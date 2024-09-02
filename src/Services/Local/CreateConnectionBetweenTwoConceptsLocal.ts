@@ -12,7 +12,7 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: LCon
         //    await CountRelationship(linkerAdd1, toTheConcept, userId);
         //   }
         var connectionConceptReverse = await MakeTheInstanceConceptLocal("connection",backwardLinker,false,999,999,999);
-        let newConnection = CreateTheConnectionLocal(toTheConcept.id, ofTheConcept.id, connectionConceptReverse.id, 1000)
+        let pewCon = CreateTheConnectionLocal(toTheConcept.id, ofTheConcept.id, connectionConceptReverse.id, 1000)
     }
     let prefix: string = ofTheConcept.type?.characterValue + "_s";
     let linkerAdd = linker + "_s";

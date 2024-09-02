@@ -87,21 +87,23 @@ export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
 export {FilterSearch} from './DataStructures/FilterSearch';
 export {SearchStructure} from './DataStructures/Search/SearchStructure';
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
-import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';
+import CreateLocalBinaryTreeFromData, { GetLastUpdatedIds } from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { LocalBinaryCharacterTree } from './DataStructures/Local/LocalBinaryCharacterTree';
+import { LocalId } from './DataStructures/Local/LocalId';
 export {BaseUrl} from './DataStructures/BaseUrl';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
 
-function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true){
+function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string=""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    BaseUrl.NODE_URL = nodeUrl;
    console.log("This ist he base url", BaseUrl.BASE_URL);
+   BaseUrl.BASE_APPLICATION= applicationName;
    TokenStorage.BearerAccessToken = accessToken;
    InitializeSystem(enableAi).then(()=>{
       const start = new Date().getTime();
@@ -113,7 +115,7 @@ function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl
          console.log("The time taken to prepare concept  data is  ", elapsed);
       });
 
-      
+
 
       CreateLocalBinaryTreeFromData().then(()=>{
          IdentifierFlags.isLocalDataLoaded = true;
@@ -128,6 +130,10 @@ function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl
       GetDataFromIndexDbLocal().then(()=>{
          IdentifierFlags.isLocalConnectionLoaded = true;
       });
+
+      // GetLastUpdatedIds().then(()=>{
+      //    console.log("this is  the last updated ids");
+      // });
       GetDataFromIndexDb().then(()=>{
          IdentifierFlags.isConnectionLoaded = true;
          IdentifierFlags.isConnectionTypeLoaded = true;
