@@ -94,7 +94,7 @@ var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATI
 
      openDatabase(databaseName);
       let db;
-var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATION;
+      var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATION;
   
       const request = indexedDB.open(localDbName,version);
   
