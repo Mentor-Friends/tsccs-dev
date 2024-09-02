@@ -54,12 +54,12 @@ export class LocalId{
     static getConnectionId(): number{
         if(this.localConnectionId){
             if(this.ReservedConnectionId.length < 5){
-                let finalLocalId = this.localId;
+                let finalLocalId = this.localConnectionId;
                 for(let j =1 ; j< 10; j++){
-                    let localId = this.localId - j;
+                    let localConId = this.localConnectionId - j;
                     
-                    this.ReservedConnectionId.push(localId);
-                    finalLocalId = localId;
+                    this.ReservedConnectionId.push(localConId);
+                    finalLocalId = localConId;
                 }
                 this.AddConnectionId({"id":1, "value": finalLocalId})
                 let id = this.ReservedConnectionId[0];
@@ -70,7 +70,6 @@ export class LocalId{
             else{
                 let id = this.ReservedConnectionId[0];
                 this.ReservedConnectionId.shift();
-
                 return id;
             }
         }
