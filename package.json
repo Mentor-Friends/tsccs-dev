@@ -1,10 +1,6 @@
 {
   "name": "mftsccs-browser",
-<<<<<<< HEAD
-  "version": "100.0.50",
-=======
   "version": "100.0.30",
->>>>>>> 8808fd17c1ff17cb80a2354674fa2a32ba3766f7
  "environment": "production",
 "description": "Full Pack of concept and connection system",
   "main": "dist/bundle.js",
