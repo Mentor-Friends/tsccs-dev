@@ -15,11 +15,12 @@ export class LConnection{
     typeCharacter: string;
     localSyncTime: Date;
     isTemp:boolean = false;
+    applicationId: number = 999;
     type: LConcept = CreateDefaultLConcept();
 
     constructor(id: number = 0, ofTheConceptId: number, toTheConceptId: number,
          typeId: number, orderId: number,
-        accessId: number){
+        accessId: number, applicationId: number = 999){
             this.id = id;
             this.ofTheConceptId = ofTheConceptId;
             this.toTheConceptId = toTheConceptId;
@@ -31,6 +32,7 @@ export class LConnection{
             this.entryTimeStamp = new Date();
             this.terminationDateTime  = new Date();
             this.localSyncTime = new Date();
+            this.applicationId = applicationId;
         }
 
 

@@ -18,6 +18,7 @@ import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
     LConcept.typeId = concept.typeId
     LConcept.type = concept.type
     LConcept.isTemp = false
+    LConcept.typeCharacter = concept?.type?.characterValue ?? "";
     return LConcept
   }
 
@@ -31,6 +32,7 @@ import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
     concept.entryTimeStamp = lconcept.entryTimeStamp;
     concept.typeId = lconcept.typeId
     concept.categoryId = lconcept.categoryId
+    concept.characterValue = lconcept.characterValue
     return concept;
   }
   

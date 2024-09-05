@@ -3,9 +3,9 @@ import { LConcept } from './../../DataStructures/Local/LConcept';
 import { UserBinaryTree } from './../../DataStructures/User/UserBinaryTree';
 import { LConnection } from '../../app';
 
-export async function GetUserGhostId(userId:number,  ghostId:number, sessionId:number = 999){
+export async function GetUserGhostId(userId:number,  ghostId:number, sessionId:number = 999, randomizer: number = 999){
 
-    let userNode =   await UserBinaryTree.getNodeFromTree(userId, sessionId);
+    let userNode =   await UserBinaryTree.getNodeFromTree(userId, sessionId, randomizer);
     let realConcept: LConcept = CreateDefaultLConcept();
     if(userNode){
         for(let i=0 ; i<userNode.value.length; i++ ){
@@ -19,9 +19,9 @@ export async function GetUserGhostId(userId:number,  ghostId:number, sessionId:n
     return realConcept;
 }
 
-export async function GetUserGhostConnectionId(userId:number,  ghostId:number, sessionId:number = 999){
+export async function GetUserGhostConnectionId(userId:number,  ghostId:number, sessionId:number = 999, randomizer: number = 999){
 
-    let userNode =   await UserBinaryTree.getNodeFromTree(userId, sessionId);
+    let userNode =   await UserBinaryTree.getNodeFromTree(userId, sessionId, randomizer);
     let realConnection: LConnection = new LConnection(0,0,0,0,0,0);
     if(userNode){
         for(let i=0 ; i<userNode.connectionValue.length; i++ ){
@@ -37,11 +37,9 @@ export async function GetUserGhostConnectionId(userId:number,  ghostId:number, s
 
 export async function AddGhostConcept(concept: LConcept, userId: number, sessionId: number = 999){
     UserBinaryTree.addConceptToTree(concept,userId, sessionId);
-
 }
 
 
 export async function AddGhostConnection(connection: LConnection, userId: number, sessionId: number = 999){
     UserBinaryTree.addConnectionToTree(connection,userId, sessionId);
-
 }

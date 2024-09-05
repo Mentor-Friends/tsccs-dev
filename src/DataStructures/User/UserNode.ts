@@ -47,6 +47,7 @@ export class UserNode{
 
         else{
             node.value.push(...passedNode.value);
+            node.connectionValue.push(...passedNode.connectionValue);
             return node;
         }
 
