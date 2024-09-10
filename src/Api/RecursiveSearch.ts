@@ -123,3 +123,7 @@ catch (error) {
     return concepts;
   }
 }
+
+export async function RecursiveSearchLocal(composition: number, listLinkers: string[] = [], textSearch:string = ""){
+  
+}

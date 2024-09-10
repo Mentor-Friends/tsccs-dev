@@ -13,5 +13,5 @@ export  async function DeleteConceptById(id:number){
     await BinaryTypeTree.removeTypeConcept(typeId,id);
     await BinaryCharacterTree.removeNodeByCharacter(character,id);
     removeFromDatabase("concept",id);
-    DeleteTheConcept(id);
+    await DeleteTheConcept(id);
 }

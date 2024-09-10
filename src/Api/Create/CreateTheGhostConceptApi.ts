@@ -13,15 +13,19 @@ export async function CreateTheGhostConceptApi(conceptData: LConcept[], connecti
     "connections": []
   };
     try{
-            var header = GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
-            console.log("This is the header", header);
+          const myHeaders = new Headers();
             let myBody = {
               "concepts": conceptData,
               "connections": connectionData
             }
+
+           myHeaders.set("Content-Type","application/json" );
+           myHeaders.set('Authorization', "Bearer " + TokenStorage.BearerAccessToken)
+           myHeaders.set('Accept',  'application/json');
+           myHeaders.set('Randomizer', BaseUrl.BASE_RANDOMIZER.toString());
             const response = await fetch(BaseUrl.CreateGhostConceptApiUrl(),{
                 method: 'POST',
-                headers: header,
+                headers: myHeaders,
                 body: JSON.stringify(myBody),
             });
             if(!response.ok){

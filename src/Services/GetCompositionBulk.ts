@@ -98,6 +98,7 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(ids:number
             remainingConnections.push(connections[i]);
         }
     }
+
     let prefetchConcepts : number [] = [];
     let connectionsAll = await GetConnectionBulk(remainingConnections);
     for(let j=0 ; j< connectionsAll.length; j++){

@@ -6,16 +6,17 @@ import { GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefe
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string=""){
   let concepts:any[] = [];
   let conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
-  let mainCompositionId = searchQuery[0].composition;
-  const result = conceptsConnections;
-  let conceptIds = result.compositionIds;
-  let connections = result.internalConnections;
-  let linkers = result.linkers;
-  let reverse = result.reverse;
-  await GetConnectionDataPrefetch(linkers);
-  concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds,connections);
-  let out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
-  return out;
+    let mainCompositionId = searchQuery[0].composition;
+    const result = conceptsConnections;
+    let conceptIds = result.compositionIds;
+    let connections = result.internalConnections;
+    let linkers = result.linkers;
+    let reverse = result.reverse;
+    await GetConnectionDataPrefetch(linkers);
+    concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds,connections);
+    let out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
+    return out;
+
 }
 
 

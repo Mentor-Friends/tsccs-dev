@@ -1,6 +1,7 @@
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 import { getAllFromLocalDb } from "../../Database/indexdblocal";
+import { BaseUrl } from "../../app";
 
 export default  async function CreateLocalBinaryTreeFromData(){
     var conceptList = await getAllFromLocalDb("localconcept");
@@ -28,6 +29,9 @@ export async function GetLastUpdatedIds(){
         if(idList[1]){
             LocalId.AddConnectionId(idList[1]);
 
+        }
+        if(idList[2]){
+            BaseUrl.BASE_RANDOMIZER = idList[2].value;
         }
         }
 

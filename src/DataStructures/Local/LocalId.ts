@@ -70,6 +70,7 @@ export class LocalId{
             else{
                 let id = this.ReservedConnectionId[0];
                 this.ReservedConnectionId.shift();
+
                 return id;
             }
         }

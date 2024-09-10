@@ -24,9 +24,9 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
              connection = new LConnection(randomid, realOfTheConceptId, realToTheConceptId, typeId, orderId, accessId);
             connection.isTemp = true;
             connection.typeCharacter = typeString;
+            await LocalSyncData.AddConnection(connection);
             LocalConnectionData.AddConnection(connection);
             storeToDatabase("localconnection", connection);
-            await LocalSyncData.AddConnection(connection);
         }
         return connection;
 

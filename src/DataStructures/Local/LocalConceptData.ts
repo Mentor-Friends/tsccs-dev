@@ -39,6 +39,15 @@ export class LocalConceptsData{
         }
     }
 
+    static RemoveConcept(concept: LConcept){
+        if(concept.id != 0){
+            LocalBinaryTree.removeNodeFromTree(concept.ghostId);
+            LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
+            LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
+            removeFromDatabase("localconcept", concept.ghostId);
+            }
+    }
+
     static AddConceptToMemory(concept: LConcept){
         if(concept.id != 0){
             LocalBinaryTree.addConceptToTree(concept);

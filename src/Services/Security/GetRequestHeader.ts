@@ -22,7 +22,7 @@ token: string = "",Accept: string = 'application/json',
     var headers = {
         'Content-Type':contentType,
         'Authorization': "Bearer " + token,
-        'Accept': Accept,
+        'Accept': Accept
     };
     
     return headers;

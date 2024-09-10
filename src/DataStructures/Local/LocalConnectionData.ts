@@ -42,6 +42,7 @@ export class LocalConnectionData{
     }
 
     static RemoveConnection(connection: LConnection){
+        console.log("this is removing", connection);
        for(var i=0; i<this.connectionArray.length; i++){
         if(this.connectionArray[i].id == connection.id){
             this.connectionArray.splice(i, 1);

@@ -6,7 +6,7 @@ import {GetConnectionById} from "./GetConnections";
 
 export  async function DeleteConnectionById(id:number){
     var connection = await GetConnectionById(id);
-    DeleteTheConnection(id);
+    await DeleteTheConnection(id);
    removeFromDatabase("connection",id);
    ConnectionBinaryTree.removeNodeFromTree(id);
    ConnectionTypeTree.removeTypeConcept(connection.typeId,id);

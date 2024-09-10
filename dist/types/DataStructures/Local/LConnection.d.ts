@@ -12,6 +12,7 @@ export declare class LConnection {
     typeCharacter: string;
     localSyncTime: Date;
     isTemp: boolean;
+    applicationId: number;
     type: LConcept;
     constructor(id: number, ofTheConceptId: number, toTheConceptId: number, typeId: number, orderId: number, accessId: number);
 }

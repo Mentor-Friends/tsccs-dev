@@ -14,7 +14,6 @@ typeId:number){
     if(concept.id == 0){
 
        conceptString = await  CreateTheConceptLocal(referent,typeCharacter,userId,categoryId,typeId,accessId );
-
         concept = conceptString as LConcept;
     }
 

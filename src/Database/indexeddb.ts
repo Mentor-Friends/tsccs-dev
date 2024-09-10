@@ -4,7 +4,7 @@ import { Settings } from "../DataStructures/Settings";
 import { SettingData } from "../DataStructures/SettingData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 
-var version = 4;
+var version = 9;
 export class IndexDb{
   static db:IDBDatabase;
 }
@@ -21,7 +21,9 @@ var dbName = BaseUrl.BASE_URL + "_FreeSchema"  + BaseUrl.BASE_APPLICATION;
   const request = indexedDB.open(dbName,version);
 
   request.onerror = (event) => {
-      console.error("Why didn't you allow my web app to use IndexedDB?!");
+      console.error("Why didn't you allow my web app to use IndexedDB?!", event);
+      indexedDB.deleteDatabase(dbName);
+      openDatabase(databaseName);
   };
 
   request.onsuccess = function(event:Event) {
@@ -40,6 +42,19 @@ request.onupgradeneeded = (event) => {
     var conceptDb = "concept";
     var connectionDb = "connection";
     var settings = "settings"
+    console.log("this is the version update for index", version);
+    if (db.objectStoreNames.contains(conceptDb)){
+      db.deleteObjectStore(conceptDb);
+
+    }
+    if (db.objectStoreNames.contains(connectionDb)){
+      db.deleteObjectStore(connectionDb);
+
+    }
+    if (db.objectStoreNames.contains(settings)){
+       db.deleteObjectStore(settings);
+
+    }
     if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
       let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
       objectStore.transaction.oncomplete = (event: Event) => {

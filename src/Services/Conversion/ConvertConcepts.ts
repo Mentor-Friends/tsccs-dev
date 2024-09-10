@@ -18,6 +18,7 @@ import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
     LConcept.typeId = concept.typeId
     LConcept.type = concept.type
     LConcept.isTemp = false
+    LConcept.typeCharacter = concept?.type?.characterValue ?? "";
     return LConcept
   }
 

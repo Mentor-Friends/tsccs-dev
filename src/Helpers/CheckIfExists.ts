@@ -83,7 +83,7 @@ export function CheckIfTypeLConceptsExistsInArray(
       if(!startsWith?.startsWith("the_")){
         startsWith = "the_" + startsWith;
       }
-      if (concept.typeId == conceptList[i].typeId || newConceptType == startsWith) {
+      if (concept.typeId == conceptList[i].typeId || newConceptType == startsWith ) {
         foundConcepts.push(conceptList[i]);
       }
     }

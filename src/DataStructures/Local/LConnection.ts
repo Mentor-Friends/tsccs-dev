@@ -1,4 +1,5 @@
 import { CreateDefaultLConcept } from "../../Services/Local/CreateDefaultLConcept";
+import { BaseUrl } from "../BaseUrl";
 import { Concept } from "../Concept";
 import { LConcept } from "./LConcept";
 import { LocalConnectionData } from "./LocalConnectionData";
@@ -16,6 +17,7 @@ export class LConnection{
     typeCharacter: string;
     localSyncTime: Date;
     isTemp:boolean = false;
+    applicationId: number = BaseUrl.BASE_RANDOMIZER;
     type: LConcept = CreateDefaultLConcept();
 
     constructor(id: number, ofTheConceptId: number, toTheConceptId: number,

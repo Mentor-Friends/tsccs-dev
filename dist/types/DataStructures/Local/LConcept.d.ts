@@ -17,6 +17,7 @@ export declare class LConcept {
     isComposition: boolean;
     isTemp: boolean;
     isSynced: boolean;
+    applicationId: number;
     constructor(id: number, userId: number, typeId: number, categoryId: number, accessId: number, characterValue: string, typeCharacter: string, isNew: boolean | undefined, entryTimeStamp: Date, updatedTimeStamp: Date, referentId: number);
     getType(): void;
 }

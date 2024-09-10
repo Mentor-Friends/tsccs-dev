@@ -79,7 +79,7 @@ export class LocalSyncData{
         for(let i= 0; i< conceptsArray.length; i++){
 
             //if(!conceptsArray[i].isSynced){
-                toSyncConcepts.push(conceptsArray[i]);
+            toSyncConcepts.push(conceptsArray[i]);
             //}
             // this is used to denote that the local concept has already been synced with the online db
             await LocalConceptsData.UpdateConceptSyncStatus(conceptsArray[i].id);

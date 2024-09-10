@@ -1,3 +1,4 @@
+import { BaseUrl } from "../BaseUrl";
 import { Concept } from "../Concept";
 
 export  class LConcept{
@@ -18,6 +19,7 @@ export  class LConcept{
     isComposition: boolean = false;
     isTemp: boolean = false;
     isSynced : boolean = false;
+    applicationId: number = BaseUrl.BASE_RANDOMIZER;
 
 
     constructor(id: number, userId: number, typeId:number, categoryId:number,accessId: number, characterValue:string, typeCharacter:string,

@@ -3,7 +3,7 @@ import { Concept } from "../DataStructures/Concept";
 import { BaseUrl } from "../app";
 import { IndexDb } from "./indexeddb";
 
-var version = 5;
+var version = 9;
 export class LocalIndexDb{
   static db:IDBDatabase;
 }
@@ -15,10 +15,12 @@ export function openDatabase(databaseName:string){
     resolve( LocalIndexDb.db);
   }
 var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATION;
-
     const request = indexedDB.open(localDbName,version);
     request.onerror = (event) => {
-        console.log("Why didn't you allow my web app to use IndexedDB?!");
+        console.error("Why didn't you allow my web app to use IndexedDB?!",event);
+        indexedDB.deleteDatabase(localDbName);
+        openDatabase(databaseName);
+
     };
   
     request.onsuccess = function(event:Event) {
@@ -38,7 +40,19 @@ var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATI
       var conceptDb = "localconcept";
       var connectionDb = "localconnection";
       var idDb = "localid";
+      console.log("this is the version upgrade", version)
+      if (db.objectStoreNames.contains(conceptDb)){
+        db.deleteObjectStore(conceptDb);
 
+      }
+      if (db.objectStoreNames.contains(connectionDb)){
+        db.deleteObjectStore(connectionDb);
+
+      }
+      if (db.objectStoreNames.contains(idDb)){
+         db.deleteObjectStore(idDb);
+
+      }
       if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
         let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
         objectStore.transaction.oncomplete = (event: Event) => {
@@ -55,6 +69,7 @@ var localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATI
             console.log("this is the event", event);
             storeToDatabase(idDb,{"id":0, "value": -100});
             storeToDatabase(idDb,{"id":1, "value": -200});
+            storeToDatabase(idDb,{"id":3, "value": BaseUrl.BASE_RANDOMIZER});
         }
       }
     }

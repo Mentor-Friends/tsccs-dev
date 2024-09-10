@@ -14,6 +14,8 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
+    static BASE_RANDOMIZER = 999;
+
 
 
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';

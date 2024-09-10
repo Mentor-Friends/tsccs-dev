@@ -5,6 +5,7 @@ export declare class LocalConceptsData {
     static localconceptsArray: LConcept[];
     static AddConcept(concept: LConcept): void;
     static AddPermanentConcept(concept: LConcept): void;
+    static RemoveConcept(concept: LConcept): void;
     static AddConceptToMemory(concept: LConcept): void;
     static GetConcept(id: number): Promise<LConcept>;
     static UpdateConceptSyncStatus(id: number): Promise<void>;

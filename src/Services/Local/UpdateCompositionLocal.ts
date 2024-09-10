@@ -25,7 +25,7 @@ import { CompositionBinaryTree } from '../../DataStructures/Composition/Composit
 import { Composition } from '../../DataStructures/Composition/Composition';
 import { CreateTheCompositionLocal } from './CreateTheCompositionLocal';
 import { MakeTheInstanceConceptLocal } from './MakeTheInstanceConceptLocal';
-import { CreateDefaultLConcept, CreateTheConnectionLocal, LConcept, LConnection } from '../../app';
+import { CreateDefaultLConcept, CreateTheConnectionLocal, LConcept, LConnection, LocalSyncData } from '../../app';
 import { convertFromConceptToLConcept, convertFromConnectionToLConnection } from '../Conversion/ConvertConcepts';
 
 // function to update the cache composition
@@ -115,7 +115,6 @@ for (const key in object) {
       conceptList,
       insertingConcept,
     )
-
     // if the existing concept then start the process for deleting the concept in the list
     for(let i=0 ; i< ExistingConcepts.length; i++){
       if (ExistingConcepts[i].id > 0) {
@@ -155,5 +154,5 @@ for (const key in object) {
   }
 
 
-SyncData.SyncDataOnline()
+LocalSyncData.SyncDataOnline()
 }

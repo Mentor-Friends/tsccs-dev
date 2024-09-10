@@ -30,7 +30,7 @@ export { DeleteConnectionById } from './Services/DeleteConnection';
 export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend'
 export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
-export {RecursiveSearchApi, RecursiveSearchApiRaw} from './Api/RecursiveSearch';
+export {RecursiveSearchApi, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker} from './Api/RecursiveSearch';
 export {GetCompositionBulkWithDataId,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
 export { GetConceptBulk } from './Api/GetConceptBulk';
 export { GetConnectionBulk } from './Api/GetConnectionBulk';
@@ -62,9 +62,10 @@ export {GetRelationLocal} from './Services/Local/GetRelationLocal';
 export {GetConceptByCharacterAndCategoryLocal} from './Services/Local/GetConceptByCharacterLocal';
 export {ViewInternalData} from './Services/View/ViewInternalData';
 export {ViewInternalDataApi} from './Api/View/ViewInternalDataApi';
-export {convertFromLConceptToConcept} from './Services/Conversion/ConvertConcepts';
+export {convertFromLConceptToConcept, convertFromConceptToLConcept} from './Services/Conversion/ConvertConcepts';
 export {SearchLinkInternal} from './Services/Search/SearchLinkInternal';
 export {CreateConnectionBetweenTwoConceptsLocal} from './Services/Local/CreateConnectionBetweenTwoConceptsLocal';
+export {DeleteConceptLocal} from './Services/Local/DeleteConceptLocal';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -105,6 +106,8 @@ function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl
    console.log("This ist he base url", BaseUrl.BASE_URL);
    BaseUrl.BASE_APPLICATION= applicationName;
    TokenStorage.BearerAccessToken = accessToken;
+   let randomizer = Math.floor(Math.random() * 100000000);
+   BaseUrl.BASE_RANDOMIZER = randomizer;
    InitializeSystem(enableAi).then(()=>{
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{
@@ -131,15 +134,15 @@ function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl
          IdentifierFlags.isLocalConnectionLoaded = true;
       });
 
-      // GetLastUpdatedIds().then(()=>{
-      //    console.log("this is  the last updated ids");
-      // });
+      GetLastUpdatedIds().then(()=>{
+      });
       GetDataFromIndexDb().then(()=>{
          IdentifierFlags.isConnectionLoaded = true;
          IdentifierFlags.isConnectionTypeLoaded = true;
          let elapsed = new Date().getTime() - start;
          console.log("The time taken to prepare connections  ", elapsed);
       });
+
 
 
    });

@@ -42,7 +42,6 @@ export async function GetCompositionLocalWithId(id:number){
 
     connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
     var compositionList:number[] = [];
-
     for(var i=0; i<connectionList.length; i++){
         if(!compositionList.includes(connectionList[i].ofTheConceptId)){
             compositionList.push(connectionList[i].ofTheConceptId);
