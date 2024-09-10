@@ -30,7 +30,7 @@ export { DeleteConnectionById } from './Services/DeleteConnection';
 export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend'
 export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
-export {RecursiveSearchApi, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker} from './Api/RecursiveSearch';
+export {RecursiveSearchApi, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker,RecursiveSearchApiNewRawFullLinker} from './Api/RecursiveSearch';
 export {GetCompositionBulkWithDataId,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
 export { GetConceptBulk } from './Api/GetConceptBulk';
 export { GetConnectionBulk } from './Api/GetConnectionBulk';
