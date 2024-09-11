@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = env => ({
    entry: './src/app.ts',
-   mode: 'development',
-   //devtool: 'inline-source-map',
+   mode: 'development',  // convert to production for production
+   devtool: 'inline-source-map', // remove for production
    watch: true,
    output: {
       filename: 'bundle.js',
@@ -13,7 +13,7 @@ module.exports = env => ({
          name: 'tsccs-browser', // you then can access it via window: `window.youLib`
          type: 'umd', // add this for window library
          umdNamedDefine: true, // add this for window library
-        // type: "module"  // remove this for window library
+       //  type: "module"  // remove this for window library
        },
    },
    resolve: {
