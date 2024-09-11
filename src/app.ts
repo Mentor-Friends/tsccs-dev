@@ -92,8 +92,6 @@ import CreateLocalBinaryTreeFromData, { GetLastUpdatedIds } from './Services/Loc
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
-import { LocalBinaryCharacterTree } from './DataStructures/Local/LocalBinaryCharacterTree';
-import { LocalId } from './DataStructures/Local/LocalId';
 export {BaseUrl} from './DataStructures/BaseUrl';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
