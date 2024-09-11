@@ -12,6 +12,7 @@ export declare class LocalSyncData {
     static SyncDataOnline(): Promise<string>;
     static ConvertGhostIdsInConnections(connectionArray: LConnection[]): void;
     static UpdateConceptListToIncludeRelatedConcepts(connectionArray: LConnection[], conceptsArray: LConcept[]): Promise<void>;
+    static AddConceptIfDoesNotExist(concept: LConcept, conceptList?: LConcept[]): void;
     static CheckIfTheConceptIdExists(id: number, conceptList?: LConcept[]): LConcept;
     static AddConnection(connection: LConnection): void;
     static RemoveConnection(connection: LConnection): void;

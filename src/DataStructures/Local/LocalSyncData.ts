@@ -160,9 +160,9 @@ export class LocalSyncData{
                     else{
                         ofTheConcept = await LocalConceptsData.GetConcept(ofTheConceptId);
                         // if this has already been synced before and is a composition type then do not send it again
-                        if(!ofTheConcept.isSynced && !ofTheConcept.isComposition){
-                            conceptsArray.push(ofTheConcept);
-                        }
+                       // if(!ofTheConcept.isSynced && !ofTheConcept.isComposition){
+                        this.AddConceptIfDoesNotExist(ofTheConcept,conceptsArray)
+                     //   }
                     }
 
                 }
@@ -181,10 +181,10 @@ export class LocalSyncData{
                     else{
                         toTheConcept = await LocalConceptsData.GetConcept(toTheConceptId);
                         // if this has already been synced before and is a composition type then do not send it again
-                         if(!toTheConcept.isSynced && !toTheConcept.isComposition){
-                             conceptsArray.push(toTheConcept);
+                      //   if(!toTheConcept.isSynced && !toTheConcept.isComposition){
+                        this.AddConceptIfDoesNotExist(toTheConcept,conceptsArray)
      
-                         }
+                      //   }
                     }
 
                 }
@@ -204,15 +204,27 @@ export class LocalSyncData{
                         type = await LocalConceptsData.GetConcept(typeId);
 
                         // if this has already been synced before and is a composition type then do not send it again
-                        if(!type.isSynced && !type.isComposition){
-                            conceptsArray.push(type);
-                        }
+                    //    if(!type.isSynced && !type.isComposition){
+                            this.AddConceptIfDoesNotExist(type,conceptsArray)
+                    //    }
                     }
 
                 }
             }
 
 
+        }
+     }
+
+     static AddConceptIfDoesNotExist(concept: LConcept, conceptList: LConcept[] = []){
+        let exists : boolean = false;
+        for(let i= 0 ; i< conceptList.length; i++ ){
+            if(concept.ghostId == conceptList[i].ghostId ){
+                exists = true;
+            }
+        }
+        if(!exists){
+            conceptList.push(concept);
         }
      }
 
