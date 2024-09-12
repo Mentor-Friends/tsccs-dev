@@ -7,12 +7,10 @@ import { CreateDefaultLConcept } from "../../app";
 export class UserBinaryTree{
     static root: UserNode | null = null;
 
-    static compositeKey(userId: number, sessionId: number, randomizer: number){
+    static compositeKey(userId: number, sessionId: number, randomizer: number = 999){
         let userHex = ('0000' + userId.toString(16).toUpperCase()).slice(-4);
         let sessionHex = ('0000' + sessionId.toString(16).toUpperCase()).slice(-4);
         let randomizerHex = ('0000'+ randomizer.toString(16).toUpperCase()).slice(-4);
-        console.log("this is the randomizer", randomizer, randomizerHex);
-        console.log("this is the key", userHex + sessionHex + randomizerHex);
 
         return userHex + sessionHex + randomizerHex;
     }

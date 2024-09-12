@@ -20,7 +20,7 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
 
             }
             else{
-              console.log('Create the connection error message: ', response.status);
+              console.log('Create the connection error message: ', response);
             }
             return result;
 

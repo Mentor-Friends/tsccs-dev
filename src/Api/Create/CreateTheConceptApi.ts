@@ -24,7 +24,7 @@ export async function CreateTheConceptApi(conceptData: any){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('Create the concept api error message: ', error.message);
+          console.log('Create the concept api error message: ', error);
         } else {
           console.log('Create the concept api unexpected error: ', error);
         }
