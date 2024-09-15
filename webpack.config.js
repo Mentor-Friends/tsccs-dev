@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = env => ({
    entry: './src/app.ts',
-   mode: 'development',  // convert to production for production
-   devtool: 'inline-source-map', // remove for production
+   mode: 'production',  // convert to production for production
+  // devtool: 'inline-source-map', // remove for production
    watch: true,
    output: {
       filename: 'bundle.js',

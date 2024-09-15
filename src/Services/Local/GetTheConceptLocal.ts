@@ -7,7 +7,7 @@ export async function GetTheConceptLocal(id: number){
     let lconcept: LConcept = CreateDefaultLConcept();
     if(id < 0){
         lconcept =  await LocalConceptsData.GetConcept(id);
-        if(lconcept.id < 0){
+        if(lconcept.id == 0){
             let localNode = await LocalGhostIdTree.getNodeFromTree(id);
             if(localNode?.value){
                 let returnedConcept = localNode.value;
