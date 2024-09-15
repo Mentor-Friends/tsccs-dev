@@ -10,54 +10,66 @@ import { GetComposition } from "../GetComposition";
 
 
 export async function GetCompositionLocal(id:number){
-    var connectionList:LConnection[] = [];
-    var returnOutput: any = {};
-    connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
-    //connectionList = ConnectionData.GetConnectionsOfComposition(id);
-    var compositionList:number[] = [];
-
-    for(var i=0; i<connectionList.length; i++){
-        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
-            compositionList.push(connectionList[i].ofTheConceptId);
+    try{
+        var connectionList:LConnection[] = [];
+        var returnOutput: any = {};
+        connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
+        //connectionList = ConnectionData.GetConnectionsOfComposition(id);
+        var compositionList:number[] = [];
+    
+        for(var i=0; i<connectionList.length; i++){
+            if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+                compositionList.push(connectionList[i].ofTheConceptId);
+            }
         }
-    }
-
-    var concept = await LocalConceptsData.GetConcept(id);
-    if(concept.id == 0){
-       let realConcept:Concept = await TranslateLocalToReal(id);
-       if(realConcept.id > 0){
-        return await GetComposition(realConcept.id);
-       }
-    }
-    var output = await recursiveFetchLocal(id, connectionList, compositionList);
-    var mainString = concept?.type?.characterValue ?? "top";
-    returnOutput[mainString] = output;
-    return returnOutput;
-}
-
-export async function GetCompositionLocalWithId(id:number){
-    var connectionList:LConnection[] = [];
-    var returnOutput: any = {};
-    var FinalReturn: any = {};
-
-    connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
-    var compositionList:number[] = [];
-    for(var i=0; i<connectionList.length; i++){
-        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
-            compositionList.push(connectionList[i].ofTheConceptId);
+    
+        var concept = await LocalConceptsData.GetConcept(id);
+        if(concept.id == 0){
+           let realConcept:Concept = await TranslateLocalToReal(id);
+           if(realConcept.id > 0){
+            return await GetComposition(realConcept.id);
+           }
         }
-    }
-    var concept = await LocalConceptsData.GetConcept(id);
-    if(concept.id != 0){
         var output = await recursiveFetchLocal(id, connectionList, compositionList);
         var mainString = concept?.type?.characterValue ?? "top";
         returnOutput[mainString] = output;
+        return returnOutput;
+    }
+    catch(error){
+        throw error;
     }
 
-    FinalReturn['data'] = returnOutput;
-    FinalReturn['id'] = id;
+}
 
-    return FinalReturn;
+export async function GetCompositionLocalWithId(id:number){
+    try{
+        var connectionList:LConnection[] = [];
+        var returnOutput: any = {};
+        var FinalReturn: any = {};
+    
+        connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
+        var compositionList:number[] = [];
+        for(var i=0; i<connectionList.length; i++){
+            if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+                compositionList.push(connectionList[i].ofTheConceptId);
+            }
+        }
+        var concept = await LocalConceptsData.GetConcept(id);
+        if(concept.id != 0){
+            var output = await recursiveFetchLocal(id, connectionList, compositionList);
+            var mainString = concept?.type?.characterValue ?? "top";
+            returnOutput[mainString] = output;
+        }
+    
+        FinalReturn['data'] = returnOutput;
+        FinalReturn['id'] = id;
+    
+        return FinalReturn;
+    }
+    catch(error){
+        throw error;
+    }
+
 }
 
 

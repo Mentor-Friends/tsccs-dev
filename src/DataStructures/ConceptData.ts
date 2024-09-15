@@ -1,6 +1,5 @@
-import { GetConcept } from "../Api/GetConcept";
 import { Concept } from "./Concept";
-import {  getFromDatabaseWithType, getFromDatabaseWithTypeOld, removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import { removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
 import { BinaryTree } from "./BinaryTree";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
@@ -180,30 +179,7 @@ export class ConceptsData{
                  ConceptList.push(this.conceptsArray[i]);
              }
          }
-        //  getFromDatabaseWithType("concept","typeId",typeId).then(conceptList=>{
-        //     console.log("thi sis my list");
-        //  });
-        //   var dbConceptList = await getFromDatabaseWithTypeOld("concept","typeId", typeId);
-        //   console.log(dbConceptList);
-        //   if(Array.isArray(dbConceptList)){
-        //         console.log(dbConceptList);
-        //         console.log(dbConceptList.length);
-        //  for(var i=0; i< dbConceptList.length; i++){
-        //     console.log("here to push firsts");
-        //     var contains: boolean = false;
-        //     for(var j=0; j< ConceptList.length; j++){
-        //         if(dbConceptList[i].id == ConceptList[j].id){
-        //             contains = true;
-        //         }
-        //     }
-        //     console.log("here to push");
-        //     if(!contains){
-        //         ConceptList.push(dbConceptList[i]);
-        //     }
-        //  }
-        // }
-        // console.log("this is the concept list");
-        // console.log(ConceptList);
+     
          return ConceptList;
      }
 

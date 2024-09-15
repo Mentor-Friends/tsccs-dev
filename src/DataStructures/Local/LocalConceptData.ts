@@ -34,18 +34,25 @@ export class LocalConceptsData{
             LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
             LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
             LocalGhostIdTree.addConceptToTree(concept);
-            removeFromDatabase("localconcept", concept.ghostId);
+            let removeData = removeFromDatabase("localconcept", concept.ghostId);
+            console.log("this is the remove data", removeData);
             ConceptsData.AddConcept(ConvertFromLConceptToConcept(concept));
         }
     }
 
-    static RemoveConcept(concept: LConcept){
-        if(concept.id != 0){
-            LocalBinaryTree.removeNodeFromTree(concept.ghostId);
-            LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
-            LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
-            removeFromDatabase("localconcept", concept.ghostId);
-            }
+    static async RemoveConcept(concept: LConcept){
+        try{
+            if(concept.id != 0){
+                LocalBinaryTree.removeNodeFromTree(concept.ghostId);
+                LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
+                LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
+                await removeFromDatabase("localconcept", concept.ghostId);
+                }
+        }
+        catch(error){
+            throw error;
+        }
+
     }
 
     static AddConceptToMemory(concept: LConcept){

@@ -1,26 +1,39 @@
+import { BaseUrl } from "../BaseUrl";
+import { FreeschemaResponse } from "./StandardResponses";
+
 /**
  * This is a class that is used to standardize the Response that is sent by FreeSchema.
  * This is done so that we do not have to send a HttpResponse codes.
  */
 export class FreeSchemaResponse{
-    private _message: string
-    private _status: boolean
-    private _statusCode: number
-    private _data: any
+    private message: string
+    private status: number
+    private data: any
+    private ok: boolean
+    private url: string = BaseUrl.BASE_URL;
 
-    constructor(message: string, status:boolean, statusCode: number, data: any ){
-        this._message = message;
-        this._status = status;
-        this._statusCode = statusCode;
-        this._data = data;
+
+    /**
+     * 
+     * @param message this is the message for the response
+     * @param ok  this is the status can be true or false boolean in case that request succeds or fails
+     * @param status this is the standard http codes 200 for ok, 500 for internal error etc.
+     * @param data  this is the standard data that can be anything.
+     */
+    constructor(message: string, ok:boolean, status: number, data: any ){
+        this.message = message;
+        this.ok = ok;
+        this.status = status;
+        this.data = data;
     }
+
 
     /**
      * This function gets the message of the error
      * @returns 
      */
     public getMessage(): string{
-        return this._message;
+        return this.message;
     }
 
     /**
@@ -29,7 +42,7 @@ export class FreeSchemaResponse{
      * @returns 
      */
     public setMessage(message: string): FreeSchemaResponse{
-        this._message = message;
+        this.message = message;
         return this;
     }
 
@@ -37,18 +50,18 @@ export class FreeSchemaResponse{
      * 
      * @returns status code of the FreeSchemaResponse
      */
-    public getStatusCode(): number{
-        return this._statusCode;
+    public getStatus(): number{
+        return this.status;
     }
 
 
     /**
      * 
-     * @param statusCode standard http error codes (200 ok , 401 unauthorized, 500 internal server error etc.)
+     * @param status standard http error codes (200 ok , 401 unauthorized, 500 internal server error etc.)
      * @returns 
      */
-    public setStatusCode(statusCode: number): FreeSchemaResponse{
-        this._statusCode = statusCode;
+    public setStatus(status: number): FreeSchemaResponse{
+        this.status = status;
         return this;
     }
 
@@ -57,7 +70,7 @@ export class FreeSchemaResponse{
      * @returns returns the data for the request
      */
     public getData(): any{
-        return this._data;
+        return this.data;
     }
 
 
@@ -67,7 +80,7 @@ export class FreeSchemaResponse{
      * @returns FreeSchemaReponse
      */
     public setData(data: any): FreeSchemaResponse{
-        this._data = data;
+        this.data = data;
         return this;
     }
 
@@ -75,8 +88,8 @@ export class FreeSchemaResponse{
      * 
      * @returns the status of the FreeSchemaReponse (either true or false)
      */
-    public getStatus(): boolean{
-        return this._status;
+    public getOk(): boolean{
+        return this.ok;
     }
 
     /**
@@ -84,8 +97,26 @@ export class FreeSchemaResponse{
      * @param status if the status is true then the response was successful else the success was not achieved.
      * @returns returns the FreeSchemaResponse
      */
-    public setStatus(status: boolean): FreeSchemaResponse{
-        this._status = status;
+    public setOk(ok: boolean): FreeSchemaResponse{
+        this.ok = ok;
+        return this;
+    }
+
+    /**
+     * 
+     * @returns the url that caused the error
+     */
+    public getUrl(){
+        return this.url;
+    }
+
+    /**
+     * 
+     * @param url the url from which the error or response originates
+     * @returns FreeSchemaResponse
+     */
+    public setUrl(url: string): FreeSchemaResponse{
+        this.url = url;
         return this;
     }
 

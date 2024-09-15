@@ -4,25 +4,31 @@ import { Concept, ConceptsData, CreateDefaultLConcept, GetTheConcept, LConcept }
 import { convertFromConceptToLConcept } from "../Conversion/ConvertConcepts";
 
 export async function GetTheConceptLocal(id: number){
-    let lconcept: LConcept = CreateDefaultLConcept();
-    if(id < 0){
-        lconcept =  await LocalConceptsData.GetConcept(id);
-        if(lconcept.id == 0){
-            let localNode = await LocalGhostIdTree.getNodeFromTree(id);
-            if(localNode?.value){
-                let returnedConcept = localNode.value;
-                if(returnedConcept){
-                    lconcept = returnedConcept as LConcept;
+    try{
+        let lconcept: LConcept = CreateDefaultLConcept();
+        if(id < 0){
+            lconcept =  await LocalConceptsData.GetConcept(id);
+            if(lconcept.id == 0){
+                let localNode = await LocalGhostIdTree.getNodeFromTree(id);
+                if(localNode?.value){
+                    let returnedConcept = localNode.value;
+                    if(returnedConcept){
+                        lconcept = returnedConcept as LConcept;
+                    }
                 }
             }
+    
         }
-
+        else{
+            let concept:Concept =  await GetTheConcept(id);
+            lconcept = convertFromConceptToLConcept(concept);
+        }
+    
+        return lconcept;
     }
-    else{
-        let concept:Concept =  await GetTheConcept(id);
-        lconcept = convertFromConceptToLConcept(concept);
+    catch(error){
+        throw error;
     }
 
-    return lconcept;
 
 }

@@ -87,6 +87,7 @@ export {LocalSyncData} from './DataStructures/Local/LocalSyncData';
 export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
 export {FilterSearch} from './DataStructures/FilterSearch';
 export {SearchStructure} from './DataStructures/Search/SearchStructure';
+export {LocalConceptsData} from './DataStructures/Local/LocalConceptData';
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import CreateLocalBinaryTreeFromData, { GetLastUpdatedIds } from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';

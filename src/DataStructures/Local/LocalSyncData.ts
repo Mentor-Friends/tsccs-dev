@@ -51,14 +51,20 @@ export class LocalSyncData{
     }
 
     static AddConcept(concept: LConcept){
-        let contains = false;
-        let existingConcept = LocalSyncData.CheckIfTheConceptIdExists(concept.id, this.conceptsSyncArray);
-        if(existingConcept.id != 0){
-            contains = true;
+        try{
+            let contains = false;
+            let existingConcept = LocalSyncData.CheckIfTheConceptIdExists(concept.id, this.conceptsSyncArray);
+            if(existingConcept.id != 0){
+                contains = true;
+            }
+            if(!contains){
+             this.conceptsSyncArray.push(concept);
+            }
         }
-        if(!contains){
-         this.conceptsSyncArray.push(concept);
+        catch(error){
+            throw error;
         }
+
      }
 
      static RemoveConcept(concept: LConcept){

@@ -82,6 +82,7 @@ export { LocalSyncData } from './DataStructures/Local/LocalSyncData';
 export { UserBinaryTree } from './DataStructures/User/UserBinaryTree';
 export { FilterSearch } from './DataStructures/FilterSearch';
 export { SearchStructure } from './DataStructures/Search/SearchStructure';
+export { LocalConceptsData } from './DataStructures/Local/LocalConceptData';
 export { BaseUrl } from './DataStructures/BaseUrl';
 declare function updateAccessToken(accessToken?: string): void;
 declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string): void;
