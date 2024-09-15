@@ -3,6 +3,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConceptBulk(conceptIds: number[]){
     let result:Concept[] = [];
     try{
@@ -36,6 +37,7 @@ export async function GetConceptBulk(conceptIds: number[]){
             }
             else{
                 console.log("Get Concept Bulk error", response.status);
+                HandleHttpError(response);
             }
 
             return result;
@@ -48,7 +50,7 @@ export async function GetConceptBulk(conceptIds: number[]){
         } else {
           console.log('Get Concept Bulk  unexpected error: ', error);
         }
-        return result;
+        throw result;
       }
 }
 
@@ -74,12 +76,17 @@ export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
             }
           }
         }
+        else{
+          console.log('bulk concept getter api error: ', response.status)
+          HandleHttpError(response);
+        }
       } catch (error) {
         if (error instanceof Error) {
           console.log('bulk concept getter api error: ', error.message)
         } else {
           console.log('bulk concept getter api error: ', error)
         }
+        throw error;
       }
     }
   

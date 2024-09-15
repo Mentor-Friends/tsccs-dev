@@ -4,6 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { ConceptsData, GetConceptByCharacter } from "../app";
 import { GetConceptByCharacterAndCategory } from "../Services/ConceptFinding/GetConceptByCharacterAndCategory";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 
 
 // This function is used to check the type concpet of a passed string
@@ -24,6 +25,7 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
               body: `type=${type}`
             });
             if(!response.ok){
+               HandleHttpError(response);
                 throw new Error(`Error! status: ${response.status}`);
             }
             let result = await response.json();
@@ -42,6 +44,6 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
         } else {
           console.log('Make The Type Concept Api error : ', error);
         }
-        return concept;
+        throw error;
       }
 }

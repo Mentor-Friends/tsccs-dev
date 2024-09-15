@@ -1,6 +1,7 @@
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { SessionData } from "../../app";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 export async function CreateSession(sessionData: SessionData){
     try{
@@ -14,11 +15,15 @@ export async function CreateSession(sessionData: SessionData){
         if(response.ok){
             return response.json();
         }
-        console.log("Creating session failed", await response.json());
-        return null;
+        else{
+            console.log("Creating session failed", await response.json());
+            HandleHttpError(response);
+            return null;
+        }
+
     }
     catch(ex){
         console.log("Creating session failed", ex);
-        return null;
+        throw ex;
     }
 }

@@ -4,6 +4,7 @@ import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 export async function CreateTheCharacter(characterData: TheCharacter){
     try{
@@ -17,6 +18,7 @@ export async function CreateTheCharacter(characterData: TheCharacter){
           body: JSON.stringify(characterData),
       });
       if(!response.ok){
+          HandleHttpError(response);
           throw new Error(`Error! status: ${response.status}`);
       }
        const resultString = await response.json();
@@ -36,10 +38,9 @@ export async function CreateTheCharacter(characterData: TheCharacter){
     catch (error) {
         if (error instanceof Error) {
           console.log('create the character error message: ', error.message);
-          return error.message;
         } else {
           console.log('create the character unexpected error: ', error);
-          return 'An unexpected error occurred';
         }
+        throw error;
       }
 }

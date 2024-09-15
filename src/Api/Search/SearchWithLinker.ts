@@ -1,5 +1,6 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import {SearchQuery} from '../../DataStructures/SearchQuery';
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
 export async function SearchWithLinker(searchQuery: SearchQuery[], token: string=""){
@@ -19,12 +20,13 @@ export async function SearchWithLinker(searchQuery: SearchQuery[], token: string
         }
         else{
             console.log("This is the searching error", response.status);
+            HandleHttpError(response)
             return [];
         }
 
     }
     catch(ex){
         console.log("This is the searching error", ex);
-        return [];
+        throw ex;
     }
 }

@@ -7,6 +7,7 @@ import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRe
 import {  LConcept } from "../../DataStructures/Local/LConcept";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { LConnection } from "../../app";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheGhostConceptApi(conceptData: LConcept[], connectionData: LConnection[]){
   let result = {
     "concepts": [],
@@ -29,6 +30,7 @@ export async function CreateTheGhostConceptApi(conceptData: LConcept[], connecti
                 body: JSON.stringify(myBody),
             });
             if(!response.ok){
+                HandleHttpError(response);
                 throw new Error(`Error! status: ${response.status}`);
             }
              const resultString = await response.json();
@@ -43,6 +45,6 @@ export async function CreateTheGhostConceptApi(conceptData: LConcept[], connecti
         } else {
           console.log('Create the concept api unexpected error: ', error);
         }
-        return result;
+        throw error;
       }
 }

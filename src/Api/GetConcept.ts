@@ -4,6 +4,7 @@ import { GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../app";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConcept(id: number){
     let result = CreateDefaultConcept();
     try{
@@ -31,6 +32,7 @@ export async function GetConcept(id: number){
             }
             else{
                 console.log("Get the concept error", response.status);
+                HandleHttpError(response);
             }
             return result;
 
@@ -42,6 +44,6 @@ export async function GetConcept(id: number){
         } else {
           console.log('Get the concept unexpected error: ', error);
         }
-        return result;
+        throw error;
       }
 }

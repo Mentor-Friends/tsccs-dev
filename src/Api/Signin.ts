@@ -1,5 +1,6 @@
 import { FreeschemaResponse } from "../DataStructures/Responses/StandardResponses"
 import { SigninModel } from "../DataStructures/SigninModel"
+import { HandleHttpError } from "../Services/Common/ErrorPosting"
 import { BaseUrl } from "../app"
 
 
@@ -34,22 +35,11 @@ export default async function Signin(signinInfo: SigninModel) {
         data: dataObject,
       }
     } else {
-      freeschemaRes = {
-        message: 'cannot authenticate',
-        status: false,
-        statusCode: response.status,
-        data: '',
-      }
+      HandleHttpError(response);
     }
     return freeschemaRes
   } catch (error) {
     console.log('Sign in api error', error)
-    freeschemaRes = {
-      message: 'error',
-      status: false,
-      statusCode: 500,
-      data: '',
-    }
-    return freeschemaRes
+    throw error;
   }
 }

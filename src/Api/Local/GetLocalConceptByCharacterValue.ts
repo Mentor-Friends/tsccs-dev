@@ -4,6 +4,7 @@ import { LConcept } from "../../DataStructures/Local/LConcept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultLConcept } from "../../app";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function GetLocalConceptByCharacterValue(characterValue: string){
   let result = CreateDefaultLConcept();
     try{
@@ -22,6 +23,7 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
           }
           else{
             console.log("Error in Getting Local concept by character value Error", response.status);
+            HandleHttpError(response);
           }
           return result;
 
@@ -33,6 +35,6 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
         } else {
           console.log('Error in Getting Local concept by character value unexpected error: ', error);
         }
-        return result;
+        throw result;
       }
 }

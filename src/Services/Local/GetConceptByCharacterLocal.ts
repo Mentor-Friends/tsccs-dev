@@ -37,11 +37,18 @@ export async function GetConceptByCategoryAndCharacterLocalMemory(value:string, 
 }
 
 export  async function GetConceptByCharacterLocalFull(characterValue: string){
-    var concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
-    var literalCharacter = `${characterValue}`;
-    if((concept == null || concept?.id == 0) && literalCharacter){
-        await GetLocalConceptByCharacterValue(characterValue);
-        concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
+    try{
+        var concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
+        var literalCharacter = `${characterValue}`;
+        if((concept == null || concept?.id == 0) && literalCharacter){
+            await GetLocalConceptByCharacterValue(characterValue);
+            concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
+        }
+        return concept;
     }
-    return concept;
+    catch(error){
+        console.log("this is the error in Get Concept By Character Local full", error);
+        throw error;
+    }
+
 }

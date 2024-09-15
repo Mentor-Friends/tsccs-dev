@@ -1,4 +1,5 @@
 import { BaseUrl, SearchStructure } from "../../app";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
 export async function SearchInternalApi(search: SearchStructure, token: string = ""){
@@ -17,13 +18,14 @@ export async function SearchInternalApi(search: SearchStructure, token: string =
         }
         else{
             console.log("This is the searching internal error", response.status);
+            HandleHttpError(response);
             return [];
         }
 
     }
     catch(ex){
         console.log("This is the searching internal error", ex);
-        return [];
+        throw ex;
     }
 
 

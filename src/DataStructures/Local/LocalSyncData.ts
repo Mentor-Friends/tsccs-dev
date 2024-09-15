@@ -9,6 +9,7 @@ import { Connection } from "../Connection";
 import { CreateDefaultConcept, CreateDefaultLConcept } from "../../app";
 import { LocalConnectionData } from "./LocalConnectionData";
 import { LocalBinaryTree } from "./LocalBinaryTree";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 export class LocalSyncData{
     static  conceptsSyncArray:LConcept[] = [];
@@ -69,38 +70,43 @@ export class LocalSyncData{
      }
 
      static async  SyncDataOnline(){
-
-        let conceptsArray = this.conceptsSyncArray.slice();
-        let connectionsArray = this.connectionSyncArray.slice();
-
-        this.connectionSyncArray = [];
-        this.conceptsSyncArray = [];
-        let toSyncConcepts = [];
-        for(let i= 0; i< conceptsArray.length; i++){
-
-            //if(!conceptsArray[i].isSynced){
-            toSyncConcepts.push(conceptsArray[i]);
+        try{
+            let conceptsArray = this.conceptsSyncArray.slice();
+            let connectionsArray = this.connectionSyncArray.slice();
+    
+            this.connectionSyncArray = [];
+            this.conceptsSyncArray = [];
+            let toSyncConcepts = [];
+            for(let i= 0; i< conceptsArray.length; i++){
+    
+                //if(!conceptsArray[i].isSynced){
+                toSyncConcepts.push(conceptsArray[i]);
+                //}
+                // this is used to denote that the local concept has already been synced with the online db
+                await LocalConceptsData.UpdateConceptSyncStatus(conceptsArray[i].id);
+    
+    
+            }
+            //if(connectionsArray.length > 0){
+                await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, toSyncConcepts);
+                let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray);
+                let concepts = result.concepts;
+                let connections = result.connections;
+                for(let i =0 ; i< concepts.length; i++){
+                    LocalConceptsData.AddPermanentConcept(concepts[i]);
+    
+                }
+                for(let i =0 ; i< connections.length; i++){
+                    LocalConnectionData.AddPermanentConnection(connections[i]);
+                }
+    
             //}
-            // this is used to denote that the local concept has already been synced with the online db
-            await LocalConceptsData.UpdateConceptSyncStatus(conceptsArray[i].id);
-
-
+            return conceptsArray;
         }
-        //if(connectionsArray.length > 0){
-            await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, toSyncConcepts);
-            let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray);
-            let concepts = result.concepts;
-            let connections = result.connections;
-            for(let i =0 ; i< concepts.length; i++){
-                LocalConceptsData.AddPermanentConcept(concepts[i]);
+        catch(error){
+            throw error;
+        }
 
-            }
-            for(let i =0 ; i< connections.length; i++){
-                LocalConnectionData.AddPermanentConnection(connections[i]);
-            }
-
-        //}
-        return "done";
      }
 
     //  static async  SyncDataOnline(){

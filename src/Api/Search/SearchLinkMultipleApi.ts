@@ -1,5 +1,6 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import {SearchQuery} from '../../DataStructures/SearchQuery';
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
 export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: string=""){
@@ -18,13 +19,15 @@ export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: s
 
         }
         else{
+            HandleHttpError(response);
             console.log("This is the searching multiple error", response.status);
             return [];
+
         }
 
     }
     catch(ex){
         console.log("This is the searching multiple error", ex);
-        return [];
+        throw ex;
     }
 }

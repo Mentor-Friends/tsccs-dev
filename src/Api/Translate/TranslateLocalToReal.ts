@@ -1,4 +1,5 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { Concept, ConceptsData, CreateDefaultConcept } from "../../app";
 export async function TranslateLocalToReal(conceptId: number){
@@ -20,6 +21,7 @@ export async function TranslateLocalToReal(conceptId: number){
           }
           else{
             console.log("Error in Getting Translating concept Error", response.status);
+            HandleHttpError(response);
           }
           return result;
 
@@ -31,6 +33,6 @@ export async function TranslateLocalToReal(conceptId: number){
         } else {
           console.log('Error in Getting Translating concept unexpected error: ', error);
         }
-        return result;
+        throw error;
       }
 }

@@ -4,6 +4,7 @@ import { LConnection } from "../../DataStructures/Local/LConnection";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheGhostConnectionApi(connectionData: LConnection[]){
   let result:LConnection[] = [];
     try{
@@ -23,6 +24,7 @@ export async function CreateTheGhostConnectionApi(connectionData: LConnection[])
             }
             else{
               console.log('Create the connection error message: ', response.status);
+              HandleHttpError(response);
             }
 
 
@@ -33,6 +35,6 @@ export async function CreateTheGhostConnectionApi(connectionData: LConnection[])
         } else {
           console.log(' Create the connection unexpected error: ', error);
         }
-        return result;
+        throw error;
       }
 }

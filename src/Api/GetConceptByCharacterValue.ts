@@ -4,6 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../app";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterValue(characterValue: string){
   let result = CreateDefaultConcept();
     try{
@@ -21,6 +22,7 @@ export async function GetConceptByCharacterValue(characterValue: string){
             }
           }
           else{
+            HandleHttpError(response);
             console.log("Error in Getting concept by character value Error", response.status);
           }
           return result;
@@ -33,6 +35,6 @@ export async function GetConceptByCharacterValue(characterValue: string){
         } else {
           console.log('Error in Getting concept by character value unexpected error: ', error);
         }
-        return result;
+        throw error;
       }
 }

@@ -1,5 +1,6 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { TokenStorage } from '../DataStructures/Security/TokenStorage';
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 
 export async function LoginToBackend(email:string, password:string){
     try{
@@ -28,6 +29,8 @@ export async function LoginToBackend(email:string, password:string){
             }
             else{
               console.log('Login tsccs error message: ', response.status);
+              HandleHttpError(response);
+
             }
 
     }
@@ -37,6 +40,6 @@ export async function LoginToBackend(email:string, password:string){
         } else {
           console.log(' Login tsccs  unexpected error: ', error);
         }
-        return {};
+        throw error;
       }
 }

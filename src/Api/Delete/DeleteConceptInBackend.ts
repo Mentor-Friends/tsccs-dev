@@ -1,4 +1,5 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl"
+import { HandleHttpError } from "../../Services/Common/ErrorPosting"
 
 export  async function TrashTheConcept(
     id: number,
@@ -15,15 +16,15 @@ export  async function TrashTheConcept(
         headers: myHeaders,
       })
       if (!response.ok) {
+        HandleHttpError(response);
         throw new Error(`Delete composition Error! status: ${response.status}`)
       }
     } catch (error) {
       if (error instanceof Error) {
         console.log('Delete composition error message: ', error.message)
-        return error.message
       } else {
         console.log('Delete composition unexpected error: ', error)
-        return 'An unexpected error occurred'
       }
+      throw error;
     }
   }

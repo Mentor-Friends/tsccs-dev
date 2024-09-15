@@ -1,4 +1,5 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { GetOnlyTokenHeader, GetRequestHeader, GetRequestHeaderWithAuthorization } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConnection(id:number){
     try{
@@ -13,6 +14,7 @@ export default async function DeleteTheConnection(id:number){
             });
             if(!response.ok){
               console.log('Delete connection error status: ', response.status);
+              HandleHttpError(response);
             }
 
 
@@ -24,5 +26,6 @@ export default async function DeleteTheConnection(id:number){
         } else {
           console.log('Delete connection unexpected error: ', error);
         }
+        throw error;
       }
 }

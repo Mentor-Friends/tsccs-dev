@@ -5,6 +5,7 @@ import { GetCompositionFromConnectionsWithDataId } from "../Services/GetComposit
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { resolveObjectURL } from "buffer";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 
 export  async function RecursiveSearchApi(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
   var concepts:any[] = [];
@@ -31,6 +32,7 @@ try{
     }
     else{
       console.log("recursive search error ", response.status);
+      HandleHttpError(response);
     }
     return concepts;
 
@@ -42,7 +44,7 @@ catch (error) {
     } else {
       console.log('recursive search unexpected error: ', error);
     }
-    return concepts;
+    throw error;
   }
 }
 export  async function RecursiveSearchApiRaw(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
@@ -70,6 +72,7 @@ try{
     }
     else{
       console.log("recursive search error ", response.status);
+      HandleHttpError(response);
     }
     return [];
 }
@@ -80,7 +83,7 @@ catch (error) {
     } else {
       console.log('recursive search unexpected error: ', error);
     }
-    return concepts;
+    throw error;
   }
 }
 
@@ -110,6 +113,7 @@ try{
     }
     else{
       console.log("recursive search error ", response.status);
+      HandleHttpError(response);
     }
     return [];
 }
@@ -120,7 +124,7 @@ catch (error) {
     } else {
       console.log('recursive search unexpected error: ', error);
     }
-    return concepts;
+    throw error;
   }
 }
 
@@ -149,6 +153,7 @@ try{
     }
     else{
       console.log("recursive search error ", response.status);
+      HandleHttpError(response);
     }
     return [];
 }
@@ -159,7 +164,7 @@ catch (error) {
     } else {
       console.log('recursive search unexpected error: ', error);
     }
-    return concepts;
+    throw error;
   }
 }
 

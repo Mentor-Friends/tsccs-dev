@@ -1,5 +1,6 @@
 import { FreeschemaResponse } from "../DataStructures/Responses/StandardResponses";
 import { SignupModel } from "../DataStructures/SignupModel"
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { BaseUrl } from "../app"
 
 export default async function Signup(signupModel: SignupModel){
@@ -39,24 +40,13 @@ async function postData(url = '', data = {}) {
             }
           }
           else{
-            freeschemaRes = {
-                message: 'cannot create',
-                status: false,
-                statusCode: response.status,
-                data: '',
-              }
+            HandleHttpError(response);
           }
           return freeschemaRes
     }
     catch(error){
         console.log('Signup Error: ', error);
-        freeschemaRes = {
-            message: 'error',
-            status: false,
-            statusCode: 500,
-            data: '',
-          }
-          return freeschemaRes
+        throw error;
     }
 
   }

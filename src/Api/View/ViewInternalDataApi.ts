@@ -1,4 +1,5 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { Connection, CreateDefaultConcept, GetConceptBulk } from "../../app";
 export async function ViewInternalDataApi(ids: number[]){
@@ -28,6 +29,7 @@ export async function ViewInternalDataApi(ids: number[]){
           else{
           //  throw new Error(`Error! status: ${response.status}`);
             console.log("View Internal Data error", response.status);
+            HandleHttpError(response);
             }
       return connectionList;
 
@@ -38,6 +40,6 @@ export async function ViewInternalDataApi(ids: number[]){
         } else {
           console.log(' This is the view internal data unexpected error: ', error);
         }
-        return connectionList;
+        throw error;
       }
 }

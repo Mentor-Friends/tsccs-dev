@@ -5,7 +5,8 @@ import { GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefe
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string=""){
   let concepts:any[] = [];
-  let conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
+  try{
+    let conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
     let mainCompositionId = searchQuery[0].composition;
     const result = conceptsConnections;
     let conceptIds = result.compositionIds;
@@ -16,6 +17,12 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
     concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds,connections);
     let out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
     return out;
+  }
+  catch(e){
+    console.log("this is the error in the search link multiple", e);
+    throw e;
+  }
+
 
 }
 
