@@ -1,10 +1,10 @@
 import { LocalBinaryCharacterTree } from "../../DataStructures/Local/LocalBinaryCharacterTree";
 import { LNode } from "../../DataStructures/Local/LNode";
-import { getAllFromLocalDb } from "../../Database/indexdblocal";
+import { getObjectsFromLocalIndexDb } from "../../Database/indexdblocal";
 
 export  async function CreateLocalCharacterBinaryTreeFromData(){
     var startTime = new Date().getTime();
-    var conceptList = await getAllFromLocalDb("localconcept");
+    var conceptList = await getObjectsFromLocalIndexDb("localconcept");
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];

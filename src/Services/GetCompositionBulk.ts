@@ -81,7 +81,7 @@ export async function GetConnectionDataPrefetch(connections:number[]){
     }
     let prefetchConcepts : number [] = [];
     let connectionsAllLocal = await GetConnectionBulk(remainingConnections);
-    connectionsAll = [...connectionsAllLocal];
+    connectionsAll = [...connectionsAll,...connectionsAllLocal];
     for(let j=0 ; j< connectionsAll.length; j++){
         prefetchConcepts.push(connectionsAll[j].ofTheConceptId);
         prefetchConcepts.push(connectionsAll[j].toTheConceptId);

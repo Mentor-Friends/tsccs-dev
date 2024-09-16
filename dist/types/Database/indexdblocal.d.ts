@@ -1,3 +1,6 @@
+/**
+ * This class will help us store the indexdb  reference in memory and not go back to index db.
+ */
 export declare class LocalIndexDb {
     static db: IDBDatabase;
 }
@@ -12,7 +15,7 @@ export declare function openDatabase(databaseName: string): Promise<IDBDatabase>
 * @param databaseName name of the database
 * @returns all the objects that are in the database
 */
-export declare function getFromDatabaseWithTypeOld(databaseName: string): Promise<unknown>;
+export declare function getObjectsFromLocalIndexDb(databaseName: string): Promise<unknown>;
 /**
  *
  * @param databaseName name of the database that you want to store data to.
@@ -28,12 +31,6 @@ export declare function storeToDatabase(databaseName: string, object: any): Prom
  * @returns returns the object if it is updated successfully.
  */
 export declare function UpdateToDatabase(databaseName: string, object: any): Promise<unknown>;
-/**
-*  this function will return all the objects that are in the database
-* @param databaseName name of the database
-* @returns all the objects that are in the database
-*/
-export declare function getAllFromLocalDb(databaseName: string): Promise<unknown>;
 /**
  *
  * @param databaseName name of the database

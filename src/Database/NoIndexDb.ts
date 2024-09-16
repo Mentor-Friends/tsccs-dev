@@ -20,7 +20,7 @@ export function AiUpdateFlag(object:SettingData){
 export async function getFromDatabaseWithType(databaseName:string, type:string, id:number){
 }
 
-export async function getFromDatabaseWithTypeOld(databaseName:string){
+export async function getObjectsFromIndexDb(databaseName:string){
 }
 
 export function removeFromDatabase(databaseName:string, id:number){

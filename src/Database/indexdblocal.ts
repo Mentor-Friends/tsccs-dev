@@ -113,7 +113,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
    * @param databaseName name of the database
    * @returns all the objects that are in the database
    */
-  export async function getFromDatabaseWithTypeOld(databaseName:string){
+  export async function getObjectsFromLocalIndexDb(databaseName:string){
     return new Promise(function(resolve, reject){
     openDatabase(databaseName).then((db)=>{
 
@@ -134,6 +134,14 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         resolve(ConceptList); 
 
       }
+    }).catch((event)=>{
+      let errorObject = {
+        "status": 400,
+        "ok": false,
+        "message":"Cannot get objects from database because you cannot open the Local database",
+        "data": event
+      };
+      reject(errorObject);
     });
 
   });
@@ -159,7 +167,15 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
       request.onerror = (event) => {
         reject(event);
       }
-     });
+     }).catch((event)=>{
+      let errorObject = {
+        "status": 400,
+        "ok": false,
+        "message":"Cannot store to database because you cannot open the Local database",
+        "data": event
+      };
+      reject(errorObject);
+    });
     });
   }
 
@@ -181,38 +197,46 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
        request.onerror = (event) => {
         reject(event);
        }
+    }).catch((event)=>{
+      let errorObject = {
+        "status": 400,
+        "ok": false,
+        "message":"Cannot update to database because you cannot open the Local database",
+        "data": event
+      };
+      reject(errorObject);
     });
     });
  }
 
 
-    /**
-   *  this function will return all the objects that are in the database 
-   * @param databaseName name of the database
-   * @returns all the objects that are in the database
-   */
-  export async function getAllFromLocalDb(databaseName:string){
-    return new Promise(function(resolve, reject){
+  //   /**
+  //  *  this function will return all the objects that are in the database 
+  //  * @param databaseName name of the database
+  //  * @returns all the objects that are in the database
+  //  */
+  // export async function getLConceptsFromLocalDb(databaseName:string){
+  //   return new Promise(function(resolve, reject){
 
 
 
-          var ConceptList:any[] = [];
+  //         var ConceptList:any[] = [];
 
-        openDatabase(databaseName).then(db=>{
-            let transaction = LocalIndexDb.db.transaction(databaseName, "readwrite") as IDBTransaction;
-            let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
-            var allobjects = objectStore.getAll();
-            allobjects.onsuccess = ()=> {
-              const readObjects = allobjects.result;
+  //       openDatabase(databaseName).then(db=>{
+  //           let transaction = LocalIndexDb.db.transaction(databaseName, "readwrite") as IDBTransaction;
+  //           let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
+  //           var allobjects = objectStore.getAll();
+  //           allobjects.onsuccess = ()=> {
+  //             const readObjects = allobjects.result;
 
-              for(var i=0; i<readObjects.length; i++){
-                  ConceptList.push(readObjects[i]);
-              }
-              resolve(ConceptList); 
-          }
-        });
-    });
-  }
+  //             for(var i=0; i<readObjects.length; i++){
+  //                 ConceptList.push(readObjects[i]);
+  //             }
+  //             resolve(ConceptList); 
+  //         }
+  //       });
+  //   });
+  // }
 
   /**
    * 
@@ -232,6 +256,14 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
       getRequest.onerror = function (event:Event){
         reject(event);
       }
+    }).catch((event)=>{
+      let errorObject = {
+        "status": 400,
+        "ok": false,
+        "message":"Cannot remove object from database because you cannot open the Local database",
+        "data": event
+      };
+      reject(errorObject);
     });
   });
 }

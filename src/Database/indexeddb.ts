@@ -132,7 +132,15 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
           reject(event);
         }
       }
-    })
+    }).catch((event)=>{
+      let errorObject = {
+        "status": 400,
+        "ok": false,
+        "message":"Cannot store to the database because you cannot open the database",
+        "data": event
+      };
+      reject(errorObject);
+    });
   });
 
 }
@@ -144,7 +152,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
  * 
  * @returns This returns the last object from the database.
  */
-  export function GetStatsFromDatabase(){
+  export function GetLastSettingsFromDatabase(){
     return new Promise(function(resolve, reject){
       let databaseName:string = "settings";
       openDatabase(databaseName).then((db: IDBDatabase)=>{
@@ -164,6 +172,14 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
           allobjects.onerror = (event) =>{
             reject(event);
           }
+        }).catch((event)=>{
+          let errorObject = {
+            "status": 400,
+            "ok": false,
+            "message":"Cannot get last object from database because you cannot open the database",
+            "data": event
+          };
+            reject(errorObject);
         });
       });
 
@@ -188,7 +204,16 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
         request.onerror = (event) => {
           reject(event);
         }
-        });
+        })
+        .catch((event)=>{
+          let errorObject = {
+            "status": 400,
+            "ok": false,
+            "message":"Cannot update AI flag because you cannot open the database",
+            "data": event
+          };
+          reject(errorObject);
+      });
     });
   }
 
@@ -199,12 +224,11 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    * @param databaseName name of the database
    * @returns all the objects that are in the database
    */
-  export async function getFromDatabaseWithTypeOld(databaseName:string){
+  export async function getObjectsFromIndexDb(databaseName:string){
     return new Promise(function(resolve, reject){
       openDatabase(databaseName).then((db: IDBDatabase)=>{
 
 
-        let concept: Concept|null;
         let ConceptList: Concept[] = [];
       
         let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
@@ -221,7 +245,15 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
 
         }
 
-      });
+      }).catch((event)=>{
+        let errorObject = {
+          "status": 400,
+          "ok": false,
+          "message":"Cannot get objects from the database because you cannot open the database",
+          "data": event
+        };
+        reject(errorObject);
+    });
 
   });
 
@@ -247,6 +279,14 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
           reject(event);
         }
 
-        });
+        }).catch((event)=>{
+          let errorObject = {
+            "status": 400,
+            "ok": false,
+            "message":"Cannot remove from the database because you cannot open the database",
+            "data": event
+          };
+          reject(errorObject);
+      });
     });
   }

@@ -1,4 +1,7 @@
 import { SettingData } from "../DataStructures/SettingData";
+/**
+ * This class will help us store the indexdb  reference in memory and not go back to index db.
+ */
 export declare class IndexDb {
     static db: IDBDatabase;
 }
@@ -20,7 +23,7 @@ export declare function storeToDatabase(databaseName: string, object: any): Prom
  *
  * @returns This returns the last object from the database.
  */
-export declare function GetStatsFromDatabase(): Promise<unknown>;
+export declare function GetLastSettingsFromDatabase(): Promise<unknown>;
 /**
  *
  * @param object SettingData
@@ -33,7 +36,7 @@ export declare function AiUpdateFlag(object: SettingData): Promise<unknown>;
  * @param databaseName name of the database
  * @returns all the objects that are in the database
  */
-export declare function getFromDatabaseWithTypeOld(databaseName: string): Promise<unknown>;
+export declare function getObjectsFromIndexDb(databaseName: string): Promise<unknown>;
 /**
  *
  * @param databaseName name of the database

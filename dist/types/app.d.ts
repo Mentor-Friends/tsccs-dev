@@ -11,7 +11,7 @@ export { CreateConnectionBetweenTwoConcepts, CreateConnectionBetweenTwoConceptsG
 export { default as GetTheConcept } from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept } from './Services/MakeTheInstanceConcept';
 export { MakeTheInstanceConceptLocal } from './Services/Local/MakeTheInstanceConceptLocal';
-export { storeToDatabase, getFromDatabaseWithType, getFromDatabaseWithTypeOld } from './Database/NoIndexDb';
+export { storeToDatabase, getFromDatabaseWithType, getObjectsFromIndexDb } from './Database/NoIndexDb';
 export { createTheConnection as CreateTheConnection } from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink, GetLinkRaw } from './Services/GetLink';
@@ -84,5 +84,20 @@ export { FilterSearch } from './DataStructures/FilterSearch';
 export { SearchStructure } from './DataStructures/Search/SearchStructure';
 export { LocalConceptsData } from './DataStructures/Local/LocalConceptData';
 export { BaseUrl } from './DataStructures/BaseUrl';
+/**
+ * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
+ * Your concepts using this package.
+ * @param accessToken access token got from the sign in process
+ */
 declare function updateAccessToken(accessToken?: string): void;
+/**
+ *
+ * @param url This is the url for the backend c# system or our main data fabric server
+ * @param aiurl This is the AI url that pulls in the data using our AI system . If you do not enter this then also disable the enableAi flag.
+ * @param accessToken This is the JWT token that needs to be passed (But since you have just initilized the system). There is no way we can get access token
+ * So this access token can be empty string. You can set it afterwards with another function UpdateAccessToken();
+ * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
+ * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
+ * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
+ */
 declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string): void;

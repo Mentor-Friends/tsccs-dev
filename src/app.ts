@@ -1,6 +1,6 @@
 export {init, updateAccessToken};
 
-import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
+import CreateConceptBinaryTreeFromIndexDb from './Services/CreateBinaryTreeFromData';
 
 import { IdentifierFlags } from './DataStructures/IdentifierFlags';
 
@@ -16,7 +16,7 @@ export {CreateConnectionBetweenTwoConcepts,CreateConnectionBetweenTwoConceptsGen
 export { default as GetTheConcept} from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
 export { MakeTheInstanceConceptLocal} from './Services/Local/MakeTheInstanceConceptLocal';
-export { storeToDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/NoIndexDb';
+export { storeToDatabase,getFromDatabaseWithType,getObjectsFromIndexDb } from './Database/NoIndexDb';
 export { createTheConnection as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
 export { GetLink,GetLinkRaw } from './Services/GetLink';
@@ -88,62 +88,144 @@ export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
 export {FilterSearch} from './DataStructures/FilterSearch';
 export {SearchStructure} from './DataStructures/Search/SearchStructure';
 export {LocalConceptsData} from './DataStructures/Local/LocalConceptData';
-import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
-import CreateLocalBinaryTreeFromData, { GetLastUpdatedIds } from './Services/Local/CreateLocalBinaryTreeFromData';
+import {GetConnectionsFromIndexDb,GetConnectionsFromIndexDbLocal} from './Services/GetDataFromIndexDb';
+import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalSettingsToMemory } from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {BaseUrl} from './DataStructures/BaseUrl';
+
+/**
+ * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
+ * Your concepts using this package.
+ * @param accessToken access token got from the sign in process
+ */
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
-
+/**
+ * 
+ * @param url This is the url for the backend c# system or our main data fabric server
+ * @param aiurl This is the AI url that pulls in the data using our AI system . If you do not enter this then also disable the enableAi flag.
+ * @param accessToken This is the JWT token that needs to be passed (But since you have just initilized the system). There is no way we can get access token
+ * So this access token can be empty string. You can set it afterwards with another function UpdateAccessToken();
+ * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
+ * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
+ * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
+ */
 function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string=""){
+   /**
+    * This process sets the initlizers in the static class BaseUrl that is used all over the system to access the urls
+    * Here we set the following variables.
+    * randomizer is created so that we can uniquely identify this initlization process but in the case that the BASE_RANDOMIZER has been alreay
+    * set in the indexdb this is replaced by the indexdb value.
+    */
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    BaseUrl.NODE_URL = nodeUrl;
-   console.log("This ist he base url", BaseUrl.BASE_URL);
    BaseUrl.BASE_APPLICATION= applicationName;
    TokenStorage.BearerAccessToken = accessToken;
    let randomizer = Math.floor(Math.random() * 100000000);
    BaseUrl.BASE_RANDOMIZER = randomizer;
+   console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
+
+   /**
+    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
+    * We use some sort of AI algorithm to initilize these concepts with the most used concept.
+    * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
+    * If the developer does not want to use this feature then they can just set enableAi to false.
+    */
    InitializeSystem(enableAi).then(()=>{
       const start = new Date().getTime();
-      CreateBinaryTreeFromData().then(()=>{
+      
+      /**
+       * This  will create a binary tree in the memory from the indexdb.
+       * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
+       * and that the type binary tree has been loaded.
+       * These trees are helpful in caching concepts and connections for the data fabric.
+       */
+      CreateConceptBinaryTreeFromIndexDb().then(()=>{
          IdentifierFlags.isDataLoaded= true;
          IdentifierFlags.isCharacterLoaded= true;
          IdentifierFlags.isTypeLoaded= true;
          let elapsed = new Date().getTime() - start;
          console.log("The time taken to prepare concept  data is  ", elapsed);
+      }).catch((event) => {
+        // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
+         throw event;
       });
 
 
 
-      CreateLocalBinaryTreeFromData().then(()=>{
+      /**
+       * This will create a binary tree of local concepts that is saved from the indexdb.
+       * This process after finishing creating a binary tree of local concepts then set flag to denote that
+       * LocalBinaryTree has been created from the concepts in indexdb
+       * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
+       * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
+       */
+      CreateLocalBinaryTreeFromIndexDb().then(()=>{
          IdentifierFlags.isLocalDataLoaded = true;
          IdentifierFlags.isLocalTypeLoaded = true;
          IdentifierFlags.isLocalCharacterLoaded = true;
          let elapsed = new Date().getTime() - start;
          console.log("The time taken to prepare local concept  ", elapsed);
+      }).catch((event) => {
+        throw event;
       });
       
 
-      
-      GetDataFromIndexDbLocal().then(()=>{
+
+      /**
+       * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
+       * a static class called LocalConnectionData. 
+       * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+       */
+      GetConnectionsFromIndexDbLocal().then(()=>{
          IdentifierFlags.isLocalConnectionLoaded = true;
+      }).catch((event) => {
+         //console.log("This is the error in creating local connections binary tree");
+         throw event;
       });
 
-      GetLastUpdatedIds().then(()=>{
+      /**
+       * We have designed our system to use local concepts and connections with its own local ids(negative ids) that 
+       * is only valid for the browser that creates this. We have a translator in our node server.
+       * This function does this process in initlization.
+       */
+      PopulateTheLocalSettingsToMemory().then(()=>{
+      }).catch((event) => {
+         //console.log("This is the error in populating binary tree");
+        throw event;
       });
-      GetDataFromIndexDb().then(()=>{
+
+
+      /**
+       * This process gets the connections from indexdb and loads it to the connections array which is inside of
+       * a static class called ConnectionData. 
+       * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+       */
+      GetConnectionsFromIndexDb().then(()=>{
          IdentifierFlags.isConnectionLoaded = true;
          IdentifierFlags.isConnectionTypeLoaded = true;
          let elapsed = new Date().getTime() - start;
          console.log("The time taken to prepare connections  ", elapsed);
-      });
+      }).catch((event) => {
+         //console.log("This is the error in creating connections tree");
+         throw event;
+      });;
 
 
 
+   }).catch((event) => {
+      let errorObject = {
+         "message": "This is the error in initlizing system",
+         "ok": false,
+         "status": 400,
+         "data": event
+      };
+      console.error("This is the error in initlizing system", event);
+      throw errorObject;
    });
 }
 

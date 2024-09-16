@@ -6,11 +6,20 @@ import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
-export async function GetConnectionBulk(connectionIds: number[] = []){
-    var connectionList:Connection[] = [];
+
+/**
+ * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched
+ * @param connectionIds array of connection ids that need to fetched by the local system
+ * @returns the list of  connections that have been fetched
+ */
+export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
 
     try{
-        var bulkConnectionFetch = [];
+        let connectionList:Connection[] = [];
+
+        let bulkConnectionFetch = [];
+        // if the connections are already present in the local memory then take it from there 
+        // else put it in a list called bulkConnectionFetch which will be used to call and api.
         for(let i=0; i<connectionIds.length; i++){
             let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
             if(conceptUse.id == 0){
@@ -20,12 +29,15 @@ export async function GetConnectionBulk(connectionIds: number[] = []){
                 connectionList.push(conceptUse);
             }
         }
-        if(bulkConnectionFetch.length == 0){
 
+        // if the case that bulkConnectionFetch does not have any elements then we just return everything we have
+        if(bulkConnectionFetch.length == 0){
             return connectionList;
         }
         else{
-            var header = GetRequestHeader();
+
+            // if the connection could not be found in the local memory then fetch from the api.
+            let header = GetRequestHeader();
             const response = await fetch(BaseUrl.GetConnectionBulkUrl(),{
                 method: 'POST',
                 headers: header,

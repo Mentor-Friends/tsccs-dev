@@ -1,22 +1,29 @@
-import { BinaryCharacterTree } from "../DataStructures/BinaryCharacterTree";
-import { BinaryTree } from "../DataStructures/BinaryTree";
-import { Node } from "../DataStructures/Node";
-import { getFromDatabaseWithTypeOld } from "../Database/indexeddb";
+import { getObjectsFromIndexDb } from "../Database/indexeddb";
 import { ConceptsData } from "../DataStructures/ConceptData";
 
-export default  async function CreateBinaryTreeFromData(){
-    var startTime = new Date().getTime();
-    var conceptList = await getFromDatabaseWithTypeOld("concept");
+/**
+ * This function builds up the binary tree on startup from the indexdb 
+ */
+export default  async function CreateConceptBinaryTreeFromIndexDb(){
+    try{
+        let conceptList = await getObjectsFromIndexDb("concept");
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
                 ConceptsData.AddConceptToMemory(concept);
-                // let node = new Node(concept.id, concept, null, null);
-                // BinaryTree.addNodeToTree(node);
             }
 
         }
-    var endTime = new Date().getTime();
-    var time = endTime - startTime;
+    }
+    catch(error){
+        let errorObject = {
+            "message": "Cannot create Binary Tree Concept",
+            "ok": false,
+            "status": 400,
+            "data": error
+        }
+        throw errorObject;
+    }
+
 
 }

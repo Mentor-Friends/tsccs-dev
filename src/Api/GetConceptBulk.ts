@@ -4,7 +4,15 @@ import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
-export async function GetConceptBulk(conceptIds: number[]){
+
+/**
+ * This function takes in a list of ids and returns a list of concepts . This uses local memory to find concepts
+ * namely in the concept binary tree. If it could not find the concepts in local memory then it fetches those from 
+ * the api. The fetched concepts from api are then stored in the memory for further use in future.
+ * @param conceptIds list of concept ids that need to be fetched 
+ * @returns list of concepts
+ */
+export async function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>{
     let result:Concept[] = [];
     try{
         var bulkConceptFetch = [];

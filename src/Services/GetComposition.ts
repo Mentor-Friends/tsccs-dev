@@ -96,6 +96,7 @@ export async function GetCompositionWithIdFromMemory(id:number){
     }
     var concept = await ConceptsData.GetConcept(id);
     if(concept.id == 0 && id != null && id != undefined){
+        console.log("this concept you cannot find ", id);
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }

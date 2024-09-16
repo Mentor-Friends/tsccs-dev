@@ -1,5 +1,5 @@
-import { storeToDatabase, UpdateToDatabase } from "../../Database/indexdblocal";
-import { GetLastUpdatedIds } from "../../Services/Local/CreateLocalBinaryTreeFromData";
+import { UpdateToDatabase } from "../../Database/indexdblocal";
+import { PopulateTheLocalSettingsToMemory } from "../../Services/Local/CreateLocalBinaryTreeFromData";
 
 export class LocalId{
     static localId: number;
@@ -40,7 +40,7 @@ export class LocalId{
             }
         }
         else{
-            GetLastUpdatedIds();
+            PopulateTheLocalSettingsToMemory();
             return -Math.floor(Math.random() * 100000000);
         }
 
@@ -75,7 +75,7 @@ export class LocalId{
             }
         }
         else{
-            GetLastUpdatedIds();
+            PopulateTheLocalSettingsToMemory();
             return -Math.floor(Math.random() * 100000000);
         }
 
