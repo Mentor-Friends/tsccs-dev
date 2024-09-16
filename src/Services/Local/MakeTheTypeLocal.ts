@@ -1,12 +1,23 @@
 import { LConcept } from "../../DataStructures/Local/LConcept";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
-import GetConceptByCharacterLocal, { GetConceptByCharacterAndCategoryLocal } from "./GetConceptByCharacterLocal";
+import { GetConceptByCharacterAndCategoryLocal } from "./GetConceptByCharacterLocal";
 import { SplitStrings } from "../SplitStrings";
 import MakeTheConceptLocal from "./MakeTheConceptLocal";
-import { LocalSyncData } from "../../app";
 
+/**
+ * There are two types of concepts. One type of concept is a type concept. These concepts have no actual value and do not mean
+ * anything unless they are associated with other values. These are placeholders like first_name, last_name, age etc that are required in the system.
+ * These types need to be created seperately.
+ * 
+ * 
+ * @param typeString type of the concept that needs to be created.
+ * @param sessionId SessionId of the user
+ * @param sessionUserId Not required pass 999
+ * @param userId UserId of the user creating this concept
+ * @returns 
+ */
 export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number,
-    )
+    ): Promise<LConcept>
 {
     var accessId: number = 4;
 

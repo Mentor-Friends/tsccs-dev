@@ -1,8 +1,16 @@
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalGhostIdTree } from "../../DataStructures/Local/LocalGhostIdTree";
-import { Concept, ConceptsData, CreateDefaultLConcept, GetTheConcept, LConcept } from "../../app";
+import { Concept, CreateDefaultLConcept, GetTheConcept, LConcept } from "../../app";
 import { convertFromConceptToLConcept } from "../Conversion/ConvertConcepts";
 
+/**
+ * This function converts any local/ virtual or real concept id to a LConcept. 
+ * In case that the id is virtual then it tries to find it from the local memory. This will return -ve id.
+ * In case that the virtual id has already been synced to the backend then it gets this from the relational binary tree(LocalGhostIdTree). This will return +ve id.
+ * In case that we pass real id then this will return real concept but formatted in LConcept form. This might have undefined ghostId.
+ * @param id the id that you want to find out the concept of. This could be a negative (virtual id ) or a real concept id.
+ * @returns LConcept with either (-ve or +ve id)
+ */
 export async function GetTheConceptLocal(id: number){
     try{
         let lconcept: LConcept = CreateDefaultLConcept();

@@ -1,6 +1,4 @@
 import { LConcept } from "../../app";
-import { removeFromDatabase } from "../../Database/indexdblocal";
-import { LocalBinaryTree } from "../../DataStructures/Local/LocalBinaryTree";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { GetTheConceptLocal } from "./GetTheConceptLocal";
 

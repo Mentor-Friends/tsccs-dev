@@ -3,8 +3,8 @@ import { LNode } from "../../DataStructures/Local/LNode";
 import { getObjectsFromLocalIndexDb } from "../../Database/indexdblocal";
 
 export  async function CreateLocalBinaryTypeTreeFromData(){
-    var startTime = new Date().getTime();
-    var conceptList = await getObjectsFromLocalIndexDb("localconcept");
+    try{
+        let conceptList = await getObjectsFromLocalIndexDb("localconcept");
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
@@ -13,7 +13,16 @@ export  async function CreateLocalBinaryTypeTreeFromData(){
             }
 
         }
-    var endTime = new Date().getTime();
-    var time = endTime - startTime;
+    }
+    catch(error){
+        let errorObject = {
+            "message": "Cannot create local binary type tree from IndexDb",
+            "data": error,
+            "ok": false,
+            "status": 400
+        };
+        throw errorObject;
+    }
+
 
 }

@@ -7,8 +7,13 @@ import { GetConceptByCharacterAndCategory } from "../Services/ConceptFinding/Get
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 
 
-// This function is used to check the type concpet of a passed string
-// if the text is "the_person" then the function finds the related concept
+/**
+ *  This function is used to check the type concpet of a passed string
+ *  if the text is "the_person" then the function finds the related concept
+ * @param type This is the type of the concept that needs to be created.
+ * @param userId This is the userId of the creator.
+ * @returns the concept created.
+ */
 export async function MakeTheTypeConceptApi(type:string, userId:number){
 
   // create  a default concept with all defaulting to zero

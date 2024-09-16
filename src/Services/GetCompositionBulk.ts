@@ -6,74 +6,109 @@ import { CheckForConnectionDeletionWithIds } from "./CheckForConnectionDeletion"
 import { FindConnectionsOfCompositionsBulkInMemory } from "./FindConnectionsOfCompositionBulkInMemory";
 import { GetCompositionFromMemory, GetCompositionWithIdFromMemory } from "./GetComposition";
 
-export async function GetCompositionBulk(ids:number[]=[]){
-    await GetAllConnectionsOfCompositionBulk(ids);
-    var compositions: any[] = [];
-    for(let i=0; i< ids.length;i++){
-       var comp = await GetCompositionFromMemory(ids[i]);
+/**
+ * Function converts the conceptIds to json (compositions)
+ * This function takes in the conceptIds and returns a list of compositions related to those concepts.
+ * @param conceptIds  list of concept ids that are compositions.
+ * @returns compositions 
+ */
+export async function GetCompositionBulk(conceptIds:number[]=[]){
+    await GetAllConnectionsOfCompositionBulk(conceptIds);
+    let compositions: any[] = [];
+    for(let i=0; i< conceptIds.length;i++){
+       let comp = await GetCompositionFromMemory(conceptIds[i]);
         compositions.push(comp);
     }
     return compositions;
 }
 
 
-export async function GetCompositionBulkWithDataId(ids:number[]=[]){
-    await GetAllConnectionsOfCompositionBulk(ids);
-    var compositions: any[] = [];
-    for(let i=0; i< ids.length;i++){
-       var comp = await GetCompositionWithIdFromMemory(ids[i]);
+/**
+ * Function converts the conceptIds to json (compositions)
+ * @param conceptIds this is the list of concept ids that should be converted to compostions in data - id format. 
+ * @returns list of compositions in the data - id format.
+ */
+export async function GetCompositionBulkWithDataId(conceptIds:number[]=[]){
+    await GetAllConnectionsOfCompositionBulk(conceptIds);
+    let compositions: any[] = [];
+    for(let i=0; i< conceptIds.length;i++){
+       let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
         compositions.push(comp);
     }
     return compositions;
 }
 
-export async function GetCompositionFromConnectionsWithDataId(ids:number[]=[], connections:number[] = []){
-    var newConnections = await GetConnectionBulk(connections);
-    var myNewConnections = newConnections as Connection[];
-    var oldConnections = await FindConnectionsOfCompositionsBulkInMemory(ids);
-    CheckForConnectionDeletionWithIds(connections,oldConnections);
-    var compositions: any[] = [];
-    for(let i=0; i< ids.length;i++){
-       var comp = await GetCompositionWithIdFromMemory(ids[i]);
+/**
+ * This function converts the conceptIds and internal connectionIds to compositions in data-Id format.
+ * @param conceptIds This is the list of concept ids that need to be converted to compositions. 
+ * @param connectionIds These are the internal connectionIds that need to be passed to create the compositions.
+ * @returns list of compositions created from the passed conceptIds and connectionIds.
+ */
+export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[]=[], connectionIds:number[] = []){
+    let newConnections = await GetConnectionBulk(connectionIds);
+    let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
+    CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
+    let compositions: any[] = [];
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
         compositions.push(comp);
     }
     return compositions;
 }
 
-export async function GetCompositionFromConnectionsWithDataIdIndex(ids:number[]=[], connections:number[] = []){
-    var newConnections = await GetConnectionBulk(connections);
-    var myNewConnections = newConnections as Connection[];
-    var oldConnections = await FindConnectionsOfCompositionsBulkInMemory(ids);
-    CheckForConnectionDeletionWithIds(connections,oldConnections);
-    var compositions: any = {};
-    for(let i=0; i< ids.length;i++){
-       var comp = await GetCompositionWithIdFromMemory(ids[i]);
-        compositions[ids[i]] = comp;
+
+/**
+ * This function converts the conceptIds and internal connectionIds to compositions in data-Id format with index(conceptId).
+ * @param conceptIds This is the list of concept ids that need to be converted to compositions. 
+ * @param connectionIds These are the internal connectionIds that need to be passed to create the compositions.
+ * @returns dictionary of compositions created from the passed conceptIds and connectionIds with conceptId as its index .
+ */
+export async function GetCompositionFromConnectionsWithDataIdIndex(conceptIds:number[]=[], connectionIds:number[] = []){
+    let newConnections = await GetConnectionBulk(connectionIds);
+    let myNewConnections = newConnections as Connection[];
+    let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
+    CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
+    let compositions: any = {};
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
+        compositions[conceptIds[i]] = comp;
     }
     return compositions;
 }
 
-export async function GetCompositionFromConnectionsWithIndex(ids:number[]=[], connections:number[] = []){
-    var newConnections = await GetConnectionBulk(connections);
-    var myNewConnections = newConnections as Connection[];
-    var oldConnections = await FindConnectionsOfCompositionsBulkInMemory(ids);
-    CheckForConnectionDeletionWithIds(connections,oldConnections);
-    var compositions: any = {};
-    for(let i=0; i< ids.length;i++){
-       var comp = await GetCompositionFromMemory(ids[i]);
-        compositions[ids[i]] = comp;
+
+/**
+ * This function converts the conceptIds and internal connectionIds to compositions format with index(conceptId).
+ * @param conceptIds This is the list of concept ids that need to be converted to compositions. 
+ * @param connectionIds These are the internal connectionIds that need to be passed to create the compositions.
+ * @returns dictionary of compositions created from the passed conceptIds and connectionIds with conceptId as its index .
+ */
+export async function GetCompositionFromConnectionsWithIndex(conceptIds:number[]=[], connectionIds:number[] = []){
+    let newConnections = await GetConnectionBulk(connectionIds);
+    let myNewConnections = newConnections as Connection[];
+    let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
+    CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
+    let compositions: any = {};
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionFromMemory(conceptIds[i]);
+        compositions[conceptIds[i]] = comp;
     }
     return compositions;
 }
 
-export async function GetConnectionDataPrefetch(connections:number[]){
+/**
+ * Used to prefetch all the connections and their related concepts.
+ * @param connectionIds these are the connection ids that are used to fetch all the connections and also their related concepts.
+ * @returns all the connections that are passed as ids.
+ */
+export async function GetConnectionDataPrefetch(connectionIds:number[]){
     let remainingConnections: number[] = [];
     let connectionsAll:Connection[] = [];
-    for(let i=0; i< connections.length; i++){
-        let connection = await ConnectionData.GetConnection(connections[i]);
+    for(let i=0; i< connectionIds.length; i++){
+        let connection = await ConnectionData.GetConnection(connectionIds[i]);
 
         if(connection.id == 0){
-            remainingConnections.push(connections[i]);
+            remainingConnections.push(connectionIds[i]);
         }
         else{
             connectionsAll.push(connection);
@@ -90,8 +125,17 @@ export async function GetConnectionDataPrefetch(connections:number[]){
     return connectionsAll;
 }
 
-export async function GetCompositionFromConnectionsWithDataIdInObject(ids:number[]=[], connections:number[] = []){
+/**
+ * This function converts the conceptIds and internal connections to create compositions.
+ * @param conceptIds these are the concept ids that need to be fetched to create their compositions
+ * @param connections these are the connections that are used to create the structure.
+ * @returns a dictionary / object that has key as their conceptId and the value as their composition object.
+ */
+export async function GetCompositionFromConnectionsWithDataIdInObject(conceptIds:number[]=[], connections:number[] = []){
     let remainingConnections: number[] = [];
+
+    // in the connections list get all the connections from the memory if available else put those which are not available 
+    // into a list / array called remainingConnections.
     for(let i=0; i< connections.length; i++){
         let connection = await ConnectionData.GetConnection(connections[i]);
         if(connection.id == 0){
@@ -99,6 +143,7 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(ids:number
         }
     }
 
+    // get all the connections that are not available in memory from the api.
     let prefetchConcepts : number [] = [];
     let connectionsAll = await GetConnectionBulk(remainingConnections);
     for(let j=0 ; j< connectionsAll.length; j++){
@@ -107,11 +152,11 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(ids:number
     }
     await GetConceptBulk(prefetchConcepts);
 
-    var compositions:any = {};
-    for(let i=0; i< ids.length;i++){
-        //console.log("tHIS IS THE START", ids[i])
-       var comp = await GetCompositionWithIdFromMemory(ids[i]);
-        compositions[ids[i]] = comp;
+    // create a list of compositions from the fetched concepts and connections.
+    let compositions:any = {};
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
+        compositions[conceptIds[i]] = comp;
     }
     return compositions;
 }

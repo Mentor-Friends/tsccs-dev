@@ -1,5 +1,5 @@
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
-import { ConnectionData, LConnection } from "../../app";
+import { LConnection } from "../../app";
 
 export async function GetConnectionOfTheConceptLocal(ofTheConcept: number, typeId: number, userId: number){
     try{

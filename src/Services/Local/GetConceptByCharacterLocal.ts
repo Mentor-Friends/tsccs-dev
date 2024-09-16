@@ -7,6 +7,11 @@ export default async function GetConceptByCharacterLocal(characterValue: string)
     return concept;
 }
 
+/**
+ * 
+ * @param character the character value of the concept we want to find in our local system.
+ * @returns LConcept which will be the associated concept with the character Value.
+ */
 export async function GetConceptByCharacterAndCategoryLocal(character: string){
     let lconcept: LConcept = CreateDefaultLConcept();
     if(character == "the"){
