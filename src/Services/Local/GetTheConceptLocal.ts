@@ -1,6 +1,6 @@
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalGhostIdTree } from "../../DataStructures/Local/LocalGhostIdTree";
-import { Concept, CreateDefaultLConcept, GetTheConcept, LConcept } from "../../app";
+import { Concept, CreateDefaultLConcept, GetTheConcept } from "../../app";
 import { convertFromConceptToLConcept } from "../Conversion/ConvertConcepts";
 
 /**
@@ -13,7 +13,7 @@ import { convertFromConceptToLConcept } from "../Conversion/ConvertConcepts";
  */
 export async function GetTheConceptLocal(id: number){
     try{
-        let lconcept: LConcept = CreateDefaultLConcept();
+        let lconcept: Concept = CreateDefaultLConcept();
         if(id < 0){
             lconcept =  await LocalConceptsData.GetConcept(id);
             if(lconcept.id == 0){
@@ -21,7 +21,7 @@ export async function GetTheConceptLocal(id: number){
                 if(localNode?.value){
                     let returnedConcept = localNode.value;
                     if(returnedConcept){
-                        lconcept = returnedConcept as LConcept;
+                        lconcept = returnedConcept as Concept;
                     }
                 }
             }

@@ -1,13 +1,13 @@
-import { LConcept } from "./LConcept";
+import { Concept } from "./../Concept";
 export declare class LNode {
     key: any;
-    value: LConcept;
+    value: Concept;
     leftNode: LNode | null;
     rightNode: LNode | null;
     currentNode: LNode | null;
     variants: LNode[];
     height: number;
-    constructor(key: any, value: LConcept, leftNode: LNode | null, rightNode: LNode | null);
+    constructor(key: any, value: Concept, leftNode: LNode | null, rightNode: LNode | null);
     addCurrentNode(passedNode: LNode, node: LNode | null): LNode;
     addCurrentNodeType(passedNode: LNode, node: LNode | null): LNode;
     addNode(passedNode: LNode, node: LNode | null, height: number): LNode | null;

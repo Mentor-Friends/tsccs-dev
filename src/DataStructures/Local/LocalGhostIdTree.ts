@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { IdentifierFlags } from "../IdentifierFlags";
 import { LNode } from "./../Local/LNode";
 
@@ -15,7 +15,7 @@ export class LocalGhostIdTree{
         }
     }
 
-    static addConceptToTree(concept:LConcept){
+    static addConceptToTree(concept:Concept){
         var node: LNode = new LNode(concept.ghostId, concept, null, null);
         this.addNodeToTree(node);
     }

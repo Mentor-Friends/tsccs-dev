@@ -1,6 +1,6 @@
 import { CreateTheGhostConceptApi } from "../../Api/Create/CreateTheGhostConceptApi";
 import { CreateTheGhostConnectionApi } from "../../Api/Create/CreateTheGhostConnectionApi";
-import { LConcept } from "./LConcept";
+import { Concept } from "./../Concept";
 import { LConnection } from "./LConnection";
 import { storeToDatabase } from "../../Database/indexdblocal";
 import { ConceptsData } from "../ConceptData";
@@ -12,12 +12,12 @@ import { LocalBinaryTree } from "./LocalBinaryTree";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 export class LocalSyncData{
-    static  conceptsSyncArray:LConcept[] = [];
+    static  conceptsSyncArray:Concept[] = [];
     static  connectionSyncArray: LConnection[] = [];
     static ghostIdMap = new Map();
     
 
-    static  CheckContains(concept: LConcept){
+    static  CheckContains(concept: Concept){
         var contains = false;
         for(var i=0; i<this.conceptsSyncArray.length; i++){
          if(this.conceptsSyncArray[i].id == concept.id){
@@ -50,7 +50,7 @@ export class LocalSyncData{
         return contains;
     }
 
-    static AddConcept(concept: LConcept){
+    static AddConcept(concept: Concept){
         try{
             let contains = false;
             let existingConcept = LocalSyncData.CheckIfTheConceptIdExists(concept.id, this.conceptsSyncArray);
@@ -67,7 +67,7 @@ export class LocalSyncData{
 
      }
 
-     static RemoveConcept(concept: LConcept){
+     static RemoveConcept(concept: Concept){
         for(var i=0; i<this.conceptsSyncArray.length; i++){
          if(this.conceptsSyncArray[i].id == concept.id){
              this.conceptsSyncArray.splice(i, 1);
@@ -155,7 +155,7 @@ export class LocalSyncData{
         }
      }
 
-     static async UpdateConceptListToIncludeRelatedConcepts(connectionArray: LConnection[], conceptsArray: LConcept[]){
+     static async UpdateConceptListToIncludeRelatedConcepts(connectionArray: LConnection[], conceptsArray: Concept[]){
         for(let i= 0 ;i < connectionArray.length; i++){
             let ofTheConceptId = connectionArray[i].ofTheConceptId;
             let toTheConceptId = connectionArray[i].toTheConceptId;
@@ -228,7 +228,7 @@ export class LocalSyncData{
         }
      }
 
-     static AddConceptIfDoesNotExist(concept: LConcept, conceptList: LConcept[] = []){
+     static AddConceptIfDoesNotExist(concept: Concept, conceptList: Concept[] = []){
         let exists : boolean = false;
         for(let i= 0 ; i< conceptList.length; i++ ){
             if(concept.ghostId == conceptList[i].ghostId ){
@@ -240,8 +240,8 @@ export class LocalSyncData{
         }
      }
 
-     static CheckIfTheConceptIdExists(id:number, conceptList:LConcept[] = []){
-        let returnConcept: LConcept = CreateDefaultLConcept();
+     static CheckIfTheConceptIdExists(id:number, conceptList:Concept[] = []){
+        let returnConcept: Concept = CreateDefaultLConcept();
         for(let i= 0 ; i< conceptList.length; i++ ){
             if(id == conceptList[i].ghostId || id == conceptList[i].id){
                 returnConcept = conceptList[i];

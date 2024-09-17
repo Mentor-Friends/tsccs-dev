@@ -1,15 +1,15 @@
-import { LConcept } from "./LConcept";
+import { Concept } from "./../Concept";
 
 export class LNode{
     key:any;
-    value:LConcept;
+    value:Concept;
     leftNode: LNode | null;
     rightNode: LNode | null;
     currentNode: LNode | null;
     variants: LNode [] = [] ;
     height:number = 1;
 
-    constructor(key:any, value:LConcept, leftNode: LNode | null, rightNode:LNode| null){
+    constructor(key:any, value:Concept, leftNode: LNode | null, rightNode:LNode| null){
         this.key = key;
         this.value = value;
         this.leftNode = leftNode;

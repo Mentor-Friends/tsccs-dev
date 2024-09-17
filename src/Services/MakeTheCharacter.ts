@@ -1,4 +1,3 @@
-import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndType";
 import { Concept } from "../DataStructures/Concept";
 import { Returner } from "../DataStructures/Returner";
 import MakeTheCharacterData from "./MakeTheCharacterData";
@@ -22,24 +21,20 @@ export default async function MakeTheCharacter(the_character_data:string, userId
             var typeIdForCharacter:number = 49;
             var characterDataString = await MakeTheCharacterData(the_character_data, userId, securityId,accessId, sessionId);
 
-            concept = MakeTheConcept(the_character_data, userId, categoryId, categoryUserId,
-                referentId, referentUserId, typeIdForCharacter, typeUserId,
-                securityId, securityUserId, accessId, accessUserId,
-                sessionId, sessionUserId);
+            concept = MakeTheConcept(the_character_data, userId, categoryId, typeIdForCharacter,
+                referentId, accessId, "the_character" );
         }
         else{
             var characterDataString = await MakeTheCharacterData(the_character_data, userId, securityId,accessId, sessionId);
             var characterData = characterDataString as Returner;
             if(characterData.isNew){
-               var conceptString = await MakeTheConcept(the_character_data, userId, categoryId, categoryUserId, typeId, typeUserId, characterData.id, characterData.userId,
-                    securityId, securityUserId, accessId, accessUserId, sessionId, sessionUserId);
+               var conceptString = await MakeTheConcept(the_character_data, userId, categoryId, typeId, characterData.id, accessId, "the_characters");
 
                     concept = conceptString as Concept;
 
             }
             else{
-                var conceptString = await MakeTheConcept(the_character_data, userId, categoryId, categoryUserId, typeId, typeUserId, characterData.id, characterData.userId,
-                    securityId, securityUserId, accessId, accessUserId, sessionId, sessionUserId);
+                var conceptString = await MakeTheConcept(the_character_data, userId, categoryId, typeId, characterData.id, accessId, "the_characters");
 
                     concept = conceptString as Concept;
 

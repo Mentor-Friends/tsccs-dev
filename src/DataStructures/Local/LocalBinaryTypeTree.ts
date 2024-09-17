@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { IdentifierFlags } from "./../IdentifierFlags";
 import { LNode } from "./LNode";
 
@@ -16,7 +16,7 @@ export class LocalBinaryTypeTree{
         return this.LocalTypeRoot;
     }
 
-    static addConceptToTree(concept:LConcept){
+    static addConceptToTree(concept:Concept){
         if(concept.typeId != 0){
             var node: LNode = new LNode(concept.typeId, concept, null, null);
             this.addNodeToTree(node);
@@ -43,7 +43,7 @@ export class LocalBinaryTypeTree{
 
 
             var Node = this.getNodeFromTree(typeId);
-            var concepts : LConcept[] = [];
+            var concepts : Concept[] = [];
     
             if(Node){
                 concepts.push(Node?.value);
@@ -78,7 +78,7 @@ export class LocalBinaryTypeTree{
 
 
     static async getTypeVariantsFromTreeWithUserId(typeId:number, userId:number){
-        var concepts : LConcept[] = [];
+        var concepts : Concept[] = [];
         try{
             var data = await this.waitForDataToLoad();
         }

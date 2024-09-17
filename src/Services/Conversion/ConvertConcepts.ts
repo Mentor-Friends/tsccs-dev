@@ -1,13 +1,12 @@
 import { Concept } from "../../DataStructures/Concept";
 import { Connection } from "../../DataStructures/Connection";
-import { LConcept } from "../../DataStructures/Local/LConcept";
 import { LConnection } from "../../DataStructures/Local/LConnection";
 import { CreateDefaultConcept } from "../CreateDefaultConcept";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
 
   
   export function convertFromConceptToLConcept(concept: Concept) {
-    const LConcept: LConcept = CreateDefaultLConcept()
+    const LConcept: Concept = CreateDefaultLConcept()
     LConcept.id = concept.id
     LConcept.ghostId = concept.ghostId
     LConcept.userId = concept.userId
@@ -23,7 +22,7 @@ import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
   }
 
 
-  export function convertFromLConceptToConcept(lconcept: LConcept){
+  export function convertFromLConceptToConcept(lconcept: Concept){
     const concept: Concept = CreateDefaultConcept();
     concept. id = lconcept.id
     concept.ghostId = lconcept.ghostId;

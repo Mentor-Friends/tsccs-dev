@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 
@@ -32,11 +32,11 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
         let created_on:Date = new Date();
         let updated_on:Date = new Date();
         if(referent == "the"){
-            let concept = new LConcept(1,999,5,5,accessId, referent,typecharacter, isNew,created_on,updated_on,referentId);
+            let concept = new Concept(1,999,5,5, referentId, referent, accessId, isNew,created_on,updated_on,typecharacter);
             return concept;
         }
 
-        var concept = new LConcept(id,userId,typeId,categoryId,accessId, referent,typecharacter, isNew,created_on,updated_on, referentId);
+        var concept = new Concept(id,userId,typeId,categoryId,referentId, referent, accessId, isNew,created_on,updated_on,typecharacter );
         concept.isTemp = true;
         concept.isComposition = isComposition;
         LocalConceptsData.AddConcept(concept);

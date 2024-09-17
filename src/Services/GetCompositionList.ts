@@ -2,7 +2,7 @@ import { GetAllConceptsByType } from "../Api/GetAllConceptsByType";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { LocalConceptsData } from "../DataStructures/Local/LocalConceptData";
-import { Concept, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionLocalWithId, LConcept } from "../app";
+import { Concept, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionLocalWithId } from "../app";
 import { GetComposition, GetCompositionFromMemory, GetCompositionWithId, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetConceptByCharacter from "./GetConceptByCharacter";
 import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
@@ -90,8 +90,8 @@ export async function GetCompositionListAllWithId(compositionName: string,userId
    var conceptOnline = await GetConceptByCharacter(compositionName);
    var CompositionList :any = [];
    let conceptList: any[] = [];
-   let conceptListLocal: LConcept[] = [];
-   let finalLocal : LConcept[] = [];
+   let conceptListLocal: Concept[] = [];
+   let finalLocal : Concept[] = [];
    let conceptListOnline : Concept[] = [];
    if(conceptLocal.id != 0){
        conceptListLocal = await LocalConceptsData.GetConceptsByTypeIdAndUser(conceptLocal.id,userId);
@@ -148,7 +148,7 @@ export  async function GetCompositionListWithId(compositionName: string, userId:
     return CompositionList;
 }
 
-export async function FormatTheConcepts(conceptList: Concept[], localConceptList: LConcept[] , inpage:number = 10, page:number =1){
+export async function FormatTheConcepts(conceptList: Concept[], localConceptList: Concept[] , inpage:number = 10, page:number =1){
    let CompositionList: any[] = [];
    var startPage = inpage * (page - 1);
    var prefetchComposition:number[] = [];

@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 /**
  * This function converts a json data to concept connection and also preserves its relation.
  * @param json The json data that needs to be converted to the concept connection system
@@ -11,4 +11,4 @@ import { LConcept } from "../../DataStructures/Local/LConcept";
  * @param automaticSync for future use.
  * @returns the main concept of this composition.
  */
-export declare function CreateTheCompositionLocal(json: any, ofTheConceptId?: number | null, ofTheConceptUserId?: number | null, mainKey?: number | null, userId?: number | null, accessId?: number | null, sessionInformationId?: number | null, automaticSync?: boolean): Promise<LConcept>;
+export declare function CreateTheCompositionLocal(json: any, ofTheConceptId?: number | null, ofTheConceptUserId?: number | null, mainKey?: number | null, userId?: number | null, accessId?: number | null, sessionInformationId?: number | null, automaticSync?: boolean): Promise<Concept>;

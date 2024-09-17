@@ -1,2 +1,2 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
-export declare function GetLocalConceptByCharacterValue(characterValue: string): Promise<LConcept>;
+import { Concept } from "../../DataStructures/Concept";
+export declare function GetLocalConceptByCharacterValue(characterValue: string): Promise<Concept>;

@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
@@ -33,7 +33,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     
             let  stringLength:number = referent.length;
             let typeConcept;
-            let concept: LConcept;
+            let concept: Concept;
             let startsWithThe = type.startsWith("the_");
     
             if(startsWithThe){
@@ -45,32 +45,32 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     
             if(composition){
                 let   typeConceptString = await MakeTheTypeConceptLocal(type, sessionInformationId, userId, userId );
-               typeConcept = typeConceptString as LConcept;
+               typeConcept = typeConceptString as Concept;
                 
                let conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId,true, referentId );
     
-                concept = conceptString as LConcept;
+                concept = conceptString as Concept;
             }
             else if(stringLength > 255){
     
                 let typeConceptString = await MakeTheTypeConceptLocal(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
-                typeConcept = typeConceptString  as LConcept;
+                typeConcept = typeConceptString  as Concept;
                 let conceptString = await CreateTheConceptLocal(referent,stringToCheck,userId, categoryId, typeConcept.id,accessId );
     
-                concept = conceptString as LConcept;
+                concept = conceptString as Concept;
     
     
     
             }
             else{
                 let typeConceptString = await MakeTheTypeConceptLocal(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
-                typeConcept = typeConceptString  as LConcept;
+                typeConcept = typeConceptString  as Concept;
                 let conceptByCharTypeString = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent,typeConcept.id);
-                let conceptTypeCharacter = conceptByCharTypeString as LConcept;
+                let conceptTypeCharacter = conceptByCharTypeString as Concept;
                 concept = conceptTypeCharacter;
                 if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
                     let conceptString = await CreateTheConceptLocal(referent, stringToCheck, userId, categoryId, typeConcept.id,accessId );
-                    concept = conceptString as LConcept;
+                    concept = conceptString as Concept;
                 }
             }
     

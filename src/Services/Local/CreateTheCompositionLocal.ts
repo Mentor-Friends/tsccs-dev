@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept";
 import {CreateTheConnectionLocal} from "./CreateTheConnectionLocal";
 import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
@@ -28,7 +28,7 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
 
                 var localMainKey = MainKeyLocal;
                 let conceptString = await MakeTheInstanceConceptLocal(key, "", true, localUserId, localAccessId, localSessionId);
-                var concept = conceptString as LConcept;
+                var concept = conceptString as Concept;
                 MainConcept = concept;
                 localMainKey = concept.id;
                 MainKeyLocal = concept.id;
@@ -40,7 +40,7 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
                 var ofTheUser:number = ofTheConceptUserId ?? 999;
                 var localMainKey = MainKeyLocal;
                 var conceptString = await MakeTheInstanceConceptLocal(key, "", true, localUserId, localAccessId, localSessionId  );
-                var concept = conceptString as LConcept;
+                var concept = conceptString as Concept;
                 await CreateTheConnectionLocal(ofThe, concept.id, localMainKey);
                 await CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
             }
@@ -50,7 +50,7 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
             var ofTheUser:number = ofTheConceptUserId ?? 999;
             var localMainKey = MainKeyLocal;
             var conceptString = await MakeTheInstanceConceptLocal(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
-            var concept = conceptString as LConcept;
+            var concept = conceptString as Concept;
             await CreateTheConnectionLocal(ofThe, concept.id, localMainKey);
 
         }

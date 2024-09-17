@@ -30,8 +30,8 @@ export async function MakeTheTimestamp(type:string, referent:string, userId: num
         }
     var typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
     typeConcept = typeConceptString  as Concept;
-    var conceptString = await MakeTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-        referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+    var conceptString = await MakeTheConcept(referent,userId, categoryId, typeConcept.id, 
+        referentId, accessId, stringToCheck);
 
     concept = conceptString as Concept;
     return concept;

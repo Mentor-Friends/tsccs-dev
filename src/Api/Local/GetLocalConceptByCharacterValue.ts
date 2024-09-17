@@ -1,6 +1,6 @@
 import { LocalConceptsData } from "./../../DataStructures/Local/LocalConceptData";
 import { GetConceptByCharacterValueUrl } from './../../Constants/ApiConstants';
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultLConcept } from "../../app";
@@ -16,7 +16,7 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
               body: `character_value=${characterValue}`
           });
           if(response.ok){
-            result = await response.json() as LConcept;
+            result = await response.json() as Concept;
             if(result.id > 0){
                 LocalConceptsData.AddConcept(result);
             }

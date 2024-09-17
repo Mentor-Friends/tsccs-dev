@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import { GetConceptByCharacterAndCategoryLocal } from "./GetConceptByCharacterLocal";
 import { SplitStrings } from "../SplitStrings";
@@ -17,7 +17,7 @@ import MakeTheConceptLocal from "./MakeTheConceptLocal";
  * @returns 
  */
 export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number,
-    ): Promise<LConcept>
+    ): Promise<Concept>
 {
     var accessId: number = 4;
 
@@ -27,7 +27,7 @@ export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: n
             var splittedStringArray = SplitStrings(typeString);
             if(splittedStringArray[0] == typeString){
                 var concept = await MakeTheConceptLocal(typeString, "the", userId,  1, 51);
-                existingConcept = concept as LConcept;
+                existingConcept = concept as Concept;
             }   
             else{
                 // var categoryConcept = await MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
@@ -37,7 +37,7 @@ export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: n
                     let categoryConcept = await MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
                     let typeConcept = await MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId );
                     var concept = await CreateTheConceptLocal(typeString,splittedStringArray[1],  userId, categoryConcept.id, typeConcept.id, accessId );
-                    existingConcept = concept as LConcept;
+                    existingConcept = concept as Concept;
 
              //   }
 

@@ -1,7 +1,7 @@
 import { Concept } from "../DataStructures/Concept"
 import { Connection } from "../DataStructures/Connection"
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept"
-import { LConcept, LConnection } from "../app"
+import { LConnection } from "../app"
 
 
 
@@ -69,10 +69,10 @@ export function CheckIfTypeConceptsExistsInArray(
 
 
 export function CheckIfTypeLConceptsExistsInArray(
-  conceptList: LConcept[] = [],
-  concept: LConcept,
+  conceptList: Concept[] = [],
+  concept: Concept,
 ) {
-  let foundConcepts: LConcept[] = [];
+  let foundConcepts: Concept[] = [];
   let newConceptType = concept.typeCharacter;
   if(!newConceptType?.startsWith("the_")){
     newConceptType = "the_" + newConceptType;

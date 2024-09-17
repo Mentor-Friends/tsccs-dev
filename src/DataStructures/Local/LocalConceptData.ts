@@ -1,4 +1,4 @@
-import { LConcept } from "./../Local/LConcept";
+import { Concept } from "./../Concept";
 import {  removeFromDatabase, storeToDatabase } from "../../Database/indexdblocal";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { LocalBinaryCharacterTree } from "./LocalBinaryCharacterTree";
@@ -13,11 +13,11 @@ export class LocalConceptsData{
     constructor(){
         this.name = "conceptsArray";
     }
-    static  localconceptsArray:LConcept[] = [];
+    static  localconceptsArray:Concept[] = [];
 
 
 
-    static AddConcept(concept: LConcept){
+    static AddConcept(concept: Concept){
         if(concept.id != 0){
              storeToDatabase("localconcept",concept);
             LocalBinaryTree.addConceptToTree(concept);
@@ -28,7 +28,7 @@ export class LocalConceptsData{
 
     }
 
-    static AddPermanentConcept(concept: LConcept){
+    static AddPermanentConcept(concept: Concept){
         if(concept.id != 0){
             LocalBinaryTree.removeNodeFromTree(concept.ghostId);
             LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
@@ -36,11 +36,11 @@ export class LocalConceptsData{
             LocalGhostIdTree.addConceptToTree(concept);
             let removeData = removeFromDatabase("localconcept", concept.ghostId);
             console.log("this is the remove data", removeData);
-            ConceptsData.AddConcept(ConvertFromLConceptToConcept(concept));
+            ConceptsData.AddConcept(concept);
         }
     }
 
-    static async RemoveConcept(concept: LConcept){
+    static async RemoveConcept(concept: Concept){
         try{
             if(concept.id != 0){
                 LocalBinaryTree.removeNodeFromTree(concept.ghostId);
@@ -55,7 +55,7 @@ export class LocalConceptsData{
 
     }
 
-    static AddConceptToMemory(concept: LConcept){
+    static AddConceptToMemory(concept: Concept){
         if(concept.id != 0){
             LocalBinaryTree.addConceptToTree(concept);
             LocalBinaryCharacterTree.addConceptToTree(concept);
@@ -69,12 +69,12 @@ export class LocalConceptsData{
 
 
     static async GetConcept(id: number){
-       var  myConcept: LConcept = CreateDefaultLConcept();
+       var  myConcept: Concept = CreateDefaultLConcept();
        var node = await LocalBinaryTree.getNodeFromTree(id);
        if(node?.value){
            var returnedConcept = node.value;
            if(returnedConcept){
-               myConcept = returnedConcept as LConcept;
+               myConcept = returnedConcept as Concept;
            }
        }
 
@@ -86,12 +86,12 @@ export class LocalConceptsData{
      }
 
     static async GetConceptByGhostId(id: number){
-        var  myConcept: LConcept = CreateDefaultLConcept();
+        var  myConcept: Concept = CreateDefaultLConcept();
         var node = await LocalGhostIdTree.getNodeFromTree(id);
         if(node?.value){
             var returnedConcept = node.value;
             if(returnedConcept){
-                myConcept = returnedConcept as LConcept;
+                myConcept = returnedConcept as Concept;
             }
         }
  
@@ -99,7 +99,7 @@ export class LocalConceptsData{
      }
 
     static async GetConceptByCharacter(characterValue: string){
-        var concept: LConcept = CreateDefaultLConcept();
+        var concept: Concept = CreateDefaultLConcept();
         //  for(var i=0; i<this.conceptsArray.length; i++){
         //      if(this.conceptsArray[i].characterValue == characterValue){
         //         concept = this.conceptsArray[i];
@@ -114,7 +114,7 @@ export class LocalConceptsData{
      }
 
      static async GetConceptByCharacterAndTypeLocal(character_value:string, typeId: number){
-        var concept: LConcept = CreateDefaultLConcept();
+        var concept: Concept = CreateDefaultLConcept();
         // let conceptList:Concept[] = await this.GetConceptsByTypeId(typeId);
         // for(var i=0;i<conceptList.length; i++){
 
@@ -133,7 +133,7 @@ export class LocalConceptsData{
      }
 
      static async GetConceptByCharacterAndCategoryLocal(character_value:string, categoryId: number){
-        var concept: LConcept = CreateDefaultLConcept();
+        var concept: Concept = CreateDefaultLConcept();
 
         var Node = await LocalBinaryCharacterTree.getCharacterAndCategoryFromTree(character_value,categoryId);
         if(Node){
@@ -145,8 +145,8 @@ export class LocalConceptsData{
      }
 
      static  GetConceptsByTypeId(typeId: number){
-        var  myConcept: LConcept|null;
-        let ConceptList: LConcept[] = [];
+        var  myConcept: Concept|null;
+        let ConceptList: Concept[] = [];
         myConcept = null;
          for(var i=0; i<this.localconceptsArray.length; i++){
              if(this.localconceptsArray[i].typeId == typeId){
@@ -157,8 +157,8 @@ export class LocalConceptsData{
      }
 
      static async  GetConceptsByTypeIdAndUser(typeId: number, userId: number){
-        var  myConcept: LConcept|null;
-        let ConceptList: LConcept[] = [];
+        var  myConcept: Concept|null;
+        let ConceptList: Concept[] = [];
         // myConcept = null;
         //  for(var i=0; i<this.conceptsArray.length; i++){
         //      if(this.conceptsArray[i].typeId == typeId && this.conceptsArray[i].userId == userId){

@@ -1,6 +1,6 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { LConnection } from "../../app";
-export declare function CreateTheGhostConceptApi(conceptData: LConcept[], connectionData: LConnection[]): Promise<{
+export declare function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: LConnection[]): Promise<{
     concepts: never[];
     connections: never[];
 }>;

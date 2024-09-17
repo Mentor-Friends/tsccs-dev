@@ -25,7 +25,7 @@ import { CompositionBinaryTree } from '../../DataStructures/Composition/Composit
 import { Composition } from '../../DataStructures/Composition/Composition';
 import { CreateTheCompositionLocal } from './CreateTheCompositionLocal';
 import { MakeTheInstanceConceptLocal } from './MakeTheInstanceConceptLocal';
-import { CreateDefaultLConcept, CreateTheConnectionLocal, LConcept, LConnection, LocalSyncData } from '../../app';
+import { CreateDefaultLConcept, CreateTheConnectionLocal, LConnection, LocalSyncData } from '../../app';
 import { convertFromConceptToLConcept, convertFromConnectionToLConnection } from '../Conversion/ConvertConcepts';
 
 // function to update the cache composition
@@ -37,10 +37,10 @@ const userId = patcherStructure.userId
 const sessionId = patcherStructure.sessionId
 const accessId = patcherStructure.accessId
 let connectionList: LConnection[] = []
-const conceptList: LConcept[] = []
-let composition: LConcept = CreateDefaultLConcept()
-let parentConcept: LConcept = CreateDefaultLConcept()
-const toDeleteConcepts: LConcept[] = []
+const conceptList: Concept[] = []
+let composition: Concept = CreateDefaultLConcept()
+let parentConcept: Concept = CreateDefaultLConcept()
+const toDeleteConcepts: Concept[] = []
 // the main composition Id that has the data that needs to be patched
 const compositionId = patcherStructure.compositionId
 
@@ -84,7 +84,7 @@ for (let i = 0; i < conceptIdList.length; i++) {
 // now trying to patch the new object into the composition
 const object = patcherStructure.patchObject
 for (const key in object) {
-  let insertingConcept: LConcept = CreateDefaultLConcept();
+  let insertingConcept: Concept = CreateDefaultLConcept();
   const value = object[key]
   let localConcept = composition
 
@@ -111,7 +111,7 @@ for (const key in object) {
 
 
     // check if the concept exists in the concept list because if it exists then we have to delete old connection
-    const ExistingConcepts: LConcept[] = CheckIfTypeLConceptsExistsInArray(
+    const ExistingConcepts: Concept[] = CheckIfTypeLConceptsExistsInArray(
       conceptList,
       insertingConcept,
     )

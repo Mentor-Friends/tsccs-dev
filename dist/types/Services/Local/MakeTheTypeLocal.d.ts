@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 /**
  * There are two types of concepts. One type of concept is a type concept. These concepts have no actual value and do not mean
  * anything unless they are associated with other values. These are placeholders like first_name, last_name, age etc that are required in the system.
@@ -11,4 +11,4 @@ import { LConcept } from "../../DataStructures/Local/LConcept";
  * @param userId UserId of the user creating this concept
  * @returns
  */
-export declare function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number): Promise<LConcept>;
+export declare function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number): Promise<Concept>;

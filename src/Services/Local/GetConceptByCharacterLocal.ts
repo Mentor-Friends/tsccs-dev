@@ -1,6 +1,6 @@
 import { GetLocalConceptByCharacterValue } from "../../Api/Local/GetLocalConceptByCharacterValue";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
-import { CreateDefaultLConcept, LConcept, LocalSyncData, SplitStrings } from "../../app";
+import { Concept, CreateDefaultLConcept, LocalSyncData, SplitStrings } from "../../app";
 
 export default async function GetConceptByCharacterLocal(characterValue: string){
     var concept = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
@@ -13,7 +13,7 @@ export default async function GetConceptByCharacterLocal(characterValue: string)
  * @returns LConcept which will be the associated concept with the character Value.
  */
 export async function GetConceptByCharacterAndCategoryLocal(character: string){
-    let lconcept: LConcept = CreateDefaultLConcept();
+    let lconcept: Concept = CreateDefaultLConcept();
     if(character == "the"){
         lconcept.id = 1;
         lconcept.typeId = 5;

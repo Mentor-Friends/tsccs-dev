@@ -1,19 +1,19 @@
-import { LConcept } from "./../Local/LConcept";
+import { Concept } from "./../Concept";
 export declare class LocalConceptsData {
     name: string;
     constructor();
-    static localconceptsArray: LConcept[];
-    static AddConcept(concept: LConcept): void;
-    static AddPermanentConcept(concept: LConcept): void;
-    static RemoveConcept(concept: LConcept): Promise<void>;
-    static AddConceptToMemory(concept: LConcept): void;
-    static GetConcept(id: number): Promise<LConcept>;
+    static localconceptsArray: Concept[];
+    static AddConcept(concept: Concept): void;
+    static AddPermanentConcept(concept: Concept): void;
+    static RemoveConcept(concept: Concept): Promise<void>;
+    static AddConceptToMemory(concept: Concept): void;
+    static GetConcept(id: number): Promise<Concept>;
     static UpdateConceptSyncStatus(id: number): Promise<void>;
-    static GetConceptByGhostId(id: number): Promise<LConcept>;
-    static GetConceptByCharacter(characterValue: string): Promise<LConcept>;
-    static GetConceptByCharacterAndTypeLocal(character_value: string, typeId: number): Promise<LConcept>;
-    static GetConceptByCharacterAndCategoryLocal(character_value: string, categoryId: number): Promise<LConcept>;
-    static GetConceptsByTypeId(typeId: number): LConcept[];
-    static GetConceptsByTypeIdAndUser(typeId: number, userId: number): Promise<LConcept[]>;
+    static GetConceptByGhostId(id: number): Promise<Concept>;
+    static GetConceptByCharacter(characterValue: string): Promise<Concept>;
+    static GetConceptByCharacterAndTypeLocal(character_value: string, typeId: number): Promise<Concept>;
+    static GetConceptByCharacterAndCategoryLocal(character_value: string, categoryId: number): Promise<Concept>;
+    static GetConceptsByTypeId(typeId: number): Concept[];
+    static GetConceptsByTypeIdAndUser(typeId: number, userId: number): Promise<Concept[]>;
     getName(): string;
 }

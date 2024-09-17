@@ -1,4 +1,4 @@
-import { LConcept } from "./LConcept";
+import { Concept } from "../Concept";
 export declare class LConnection {
     id: number;
     ghostId: number;
@@ -13,6 +13,6 @@ export declare class LConnection {
     localSyncTime: Date;
     isTemp: boolean;
     applicationId: number;
-    type: LConcept;
+    type: Concept;
     constructor(id: number, ofTheConceptId: number, toTheConceptId: number, typeId: number, orderId: number, accessId: number);
 }

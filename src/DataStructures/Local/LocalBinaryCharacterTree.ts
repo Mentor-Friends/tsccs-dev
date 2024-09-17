@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { IdentifierFlags } from "./../IdentifierFlags";
 import { LNode } from "./../Local/LNode";
 
@@ -35,7 +35,7 @@ export class LocalBinaryCharacterTree{
         return this.LocalCharacterRoot;
     }
 
-    static addConceptToTree(concept:LConcept){
+    static addConceptToTree(concept:Concept){
         if(concept.characterValue != ""){
             var node: LNode = new LNode(concept.characterValue, concept, null, null);
             this.addNodeToTree(node);

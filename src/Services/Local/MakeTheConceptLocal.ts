@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
 
@@ -6,7 +6,7 @@ export default async function MakeTheConceptLocal(referent:string, typeCharacter
 typeId:number){
 
     var conceptString = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent,typeId);
-    var concept = conceptString as LConcept;
+    var concept = conceptString as Concept;
     let accessId = 4;
     if(typeCharacter == "the"){
         categoryId = 1;
@@ -14,7 +14,7 @@ typeId:number){
     if(concept.id == 0){
 
        conceptString = await  CreateTheConceptLocal(referent,typeCharacter,userId,categoryId,typeId,accessId );
-        concept = conceptString as LConcept;
+        concept = conceptString as Concept;
     }
 
     return concept;

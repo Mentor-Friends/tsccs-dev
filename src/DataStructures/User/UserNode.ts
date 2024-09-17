@@ -1,13 +1,13 @@
-import { LConcept } from "../Local/LConcept";
+import { Concept } from "../Concept";
 
 export class UserNode{
     key:any;
-    value: LConcept [] = [];
+    value: Concept [] = [];
     leftNode: UserNode | null;
     rightNode: UserNode | null;
     height:number = 1;
 
-    constructor(key:any, value:LConcept, leftNode: UserNode | null, rightNode:UserNode| null){
+    constructor(key:any, value:Concept, leftNode: UserNode | null, rightNode:UserNode| null){
         this.key = key;
         this.value.push(value);
         this.leftNode = leftNode;

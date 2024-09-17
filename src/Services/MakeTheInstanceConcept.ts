@@ -50,16 +50,16 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             if(composition){
                let   typeConceptString = await MakeTheTypeConceptApi(type, userId);
                typeConcept = typeConceptString as Concept;
-               let conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+               let conceptString = await CreateTheConcept(referent,userId, categoryId, typeConcept.id,
+                referentId, accessId, type);
                 concept = conceptString as Concept;
             }
             else if(stringLength > 255){
 
                 let typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
                 typeConcept = typeConceptString  as Concept;
-                let conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                    referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+                let conceptString = await CreateTheConcept(referent,userId, categoryId, typeConcept.id,
+                    referentId,accessId , stringToCheck );
     
                 concept = conceptString as Concept;
 
@@ -79,8 +79,8 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                     // let makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
                     // let makeTheNameConcept = makeTheNameString as Concept;
                     // concept = conceptTypeCharacter;
-                    let conceptString = await CreateTheConceptImmediate(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                        12, 12, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+                    let conceptString = await CreateTheConceptImmediate(referent,userId, categoryId, typeConcept.id, 
+                        12, accessId, stringToCheck  );
                     concept = conceptString as Concept;
                     MakeTheNameInBackend(concept.id, `${referent}`, typeConcept.id, userId);
 

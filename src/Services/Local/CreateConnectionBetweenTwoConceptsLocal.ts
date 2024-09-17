@@ -1,6 +1,6 @@
-import { CreateTheConnectionLocal, LConcept, MakeTheInstanceConceptLocal } from "../../app";
+import { Concept, CreateTheConnectionLocal, MakeTheInstanceConceptLocal } from "../../app";
 
-export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: LConcept, toTheConcept: LConcept, linker:string, both:boolean = false){
+export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false){
 
     try{
         var userId:number = ofTheConcept.userId;

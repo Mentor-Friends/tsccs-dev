@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 import { UserNode } from "./UserNode";
 import { IdentifierFlags } from "./../IdentifierFlags";
 
@@ -40,7 +40,7 @@ export class UserBinaryTree{
         }
       };
 
-    static addConceptToTree(concept:LConcept, userId:number, sessionId: number = 999){
+    static addConceptToTree(concept:Concept, userId:number, sessionId: number = 999){
         let key = this.compositeKey(userId, sessionId);
         var node: UserNode = new UserNode(key, concept, null, null);
         this.addNodeToTree(node);

@@ -1,4 +1,4 @@
-import { LConcept } from "../../DataStructures/Local/LConcept";
+import { Concept } from "../../DataStructures/Concept";
 /**
  * This function creates the concept in the local system (Local memory and IndexDb) but not in the backend database
  * To create this concept in the backend database you need to sync the local data to the backend by LocalSyncData class.
@@ -19,4 +19,4 @@ import { LConcept } from "../../DataStructures/Local/LConcept";
  * @param referentId if this concept refers to any other concept then this needs to be passed.
  * @returns
  */
-export default function CreateTheConceptLocal(referent: string, typecharacter: string, userId: number, categoryId: number, typeId: number, accessId: number, isComposition?: boolean, referentId?: number): Promise<LConcept>;
+export default function CreateTheConceptLocal(referent: string, typecharacter: string, userId: number, categoryId: number, typeId: number, accessId: number, isComposition?: boolean, referentId?: number): Promise<Concept>;
