@@ -89,7 +89,7 @@ export {FilterSearch} from './DataStructures/FilterSearch';
 export {SearchStructure} from './DataStructures/Search/SearchStructure';
 export {LocalConceptsData} from './DataStructures/Local/LocalConceptData';
 import {GetConnectionsFromIndexDb,GetConnectionsFromIndexDbLocal} from './Services/GetDataFromIndexDb';
-import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalSettingsToMemory } from './Services/Local/CreateLocalBinaryTreeFromData';
+import CreateLocalBinaryTreeFromIndexDb from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
@@ -193,11 +193,11 @@ function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl
        * is only valid for the browser that creates this. We have a translator in our node server.
        * This function does this process in initlization.
        */
-      PopulateTheLocalSettingsToMemory().then(()=>{
-      }).catch((event) => {
-         //console.log("This is the error in populating binary tree");
-        throw event;
-      });
+      // PopulateTheLocalSettingsToMemory().then(()=>{
+      // }).catch((event) => {
+      //    //console.log("This is the error in populating binary tree");
+      //   throw event;
+      // });
 
 
       /**
