@@ -31,6 +31,7 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
 }
 
 
+
 /**
  * We have designed our system to use local concepts and connections with its own local ids(negative ids) that 
  * is only valid for the browser that creates this. We have a translator in our node server.
@@ -40,7 +41,7 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
  * 
  * 
  */
-export async function PopulateTheLocalSettingsToMemory(){
+export async function PopulateTheLocalConceptsToMemory(){
     try{
         let idList = await getObjectsFromLocalIndexDb("localid");
         if(Array.isArray(idList)){
@@ -49,6 +50,39 @@ export async function PopulateTheLocalSettingsToMemory(){
                 LocalId.AddConceptId(idList[0]);
     
             }
+            if(idList[2]){
+                BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                console.log("This is the new randomizer", BaseUrl.BASE_RANDOMIZER);
+            }
+        }
+    }
+    catch(error){
+        let errorObject = {
+            "message": "Cannot populate Local Ids from the Index Db",
+            "data": error,
+            "ok": false,
+            "status": 400
+        };
+        throw errorObject;
+    }
+
+
+ }
+
+ /**
+ * We have designed our system to use local concepts and connections with its own local ids(negative ids) that 
+ * is only valid for the browser that creates this. We have a translator in our node server.
+ * We cannot keep on using the indexdb to get the new data so we populate the data from indexdb to our memory 
+ * then we use these ids from memory and update the indexdb with the latest id frequently.
+ * This function does this process in initlization from indexdb to memory.
+ * 
+ * 
+ */
+ export async function PopulateTheLocalConnectionToMemory(){
+    try{
+        let idList = await getObjectsFromLocalIndexDb("localid");
+        if(Array.isArray(idList)){
+            
             if(idList[1]){
                 LocalId.AddConnectionId(idList[1]);
     
@@ -57,10 +91,6 @@ export async function PopulateTheLocalSettingsToMemory(){
                 BaseUrl.BASE_RANDOMIZER = idList[2].value;
                 console.log("This is the new randomizer", BaseUrl.BASE_RANDOMIZER);
             }
-        }
-        else{
-            LocalId.AddConceptId(-100);
-            LocalId.AddConnectionId(-200);
         }
     }
     catch(error){
