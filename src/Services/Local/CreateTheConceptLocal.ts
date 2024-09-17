@@ -1,7 +1,6 @@
 import { LConcept } from "../../DataStructures/Local/LConcept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
-import { storeToDatabase } from "../../Database/indexdblocal";
 
 /**
  * This function creates the concept in the local system (Local memory and IndexDb) but not in the backend database
@@ -41,7 +40,7 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
         concept.isTemp = true;
         concept.isComposition = isComposition;
         LocalConceptsData.AddConcept(concept);
-        storeToDatabase("localconcept",concept);
+        //storeToDatabase("localconcept",concept);
         return concept;
     }
     catch(error){

@@ -37,6 +37,14 @@ export class LocalConnectionData{
         this.connectionArray.push(connection);
     }
 
+    static AddConnectionToMemory(connection: LConnection){
+        var contains = this.CheckContains(connection);
+         if(contains){
+             this.RemoveConnection(connection);
+         }
+         this.connectionArray.push(connection);
+     }
+
     static AddToDictionary(connection: LConnection){
         this.connectionDictionary[connection.id] = connection;
     }

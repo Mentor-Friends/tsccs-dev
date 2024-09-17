@@ -129,7 +129,14 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
           resolve(object);
         }
         request.onerror = (event) => {
-          reject(event);
+          let errorObject = {
+            "status": 400,
+            "ok": false,
+            "message":"Cannot store to the database" + databaseName,
+            "data": event,
+            "body": object
+          };
+          reject(errorObject);
         }
       }
     }).catch((event)=>{
@@ -202,7 +209,14 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
           resolve(object);
         }
         request.onerror = (event) => {
-          reject(event);
+          let errorObject = {
+            "status": 400,
+            "ok": false,
+            "message":"Cannot update AI flag",
+            "data": event,
+            "body": object
+          };
+          reject(errorObject);
         }
         })
         .catch((event)=>{
@@ -276,7 +290,13 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             resolve(id);
           };
         request.onerror = (event) => {
-          reject(event);
+          let errorObject = {
+            "status": 400,
+            "ok": false,
+            "message":"Cannot remove from the database" + databaseName,
+            "data": event
+          };
+          reject(errorObject);
         }
 
         }).catch((event)=>{
@@ -284,7 +304,9 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "status": 400,
             "ok": false,
             "message":"Cannot remove from the database because you cannot open the database",
-            "data": event
+            "data": event,
+            "body": id
+
           };
           reject(errorObject);
       });

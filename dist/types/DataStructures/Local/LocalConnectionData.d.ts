@@ -6,6 +6,7 @@ export declare class LocalConnectionData {
     static connectionDictionary: LConnection[];
     static CheckContains(connection: LConnection): boolean;
     static AddConnection(connection: LConnection): void;
+    static AddConnectionToMemory(connection: LConnection): void;
     static AddToDictionary(connection: LConnection): void;
     static RemoveConnection(connection: LConnection): void;
     static AddPermanentConnection(connection: LConnection): void;

@@ -38,7 +38,7 @@ import { getObjectsFromIndexDb } from "../Database/indexeddb";
 
         if(Array.isArray(connectionList)){
             for(var i=0 ;i < connectionList.length ;i++){
-                LocalConnectionData.AddConnection(connectionList[i]);
+                LocalConnectionData.AddConnectionToMemory(connectionList[i]);
             }
         }
     }

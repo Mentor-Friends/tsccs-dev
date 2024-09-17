@@ -165,7 +165,14 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
 
       }
       request.onerror = (event) => {
-        reject(event);
+        let errorObject = {
+          "status": 400,
+          "ok": false,
+          "message":"Cannot store to the Local database " + databaseName,
+          "data": event,
+          "body": object
+        };
+        reject(errorObject);
       }
      }).catch((event)=>{
       let errorObject = {
@@ -195,7 +202,14 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         resolve(object);
        }
        request.onerror = (event) => {
-        reject(event);
+        let errorObject = {
+          "status": 400,
+          "ok": false,
+          "message":"Cannot Update to the Local database" + databaseName,
+          "data": event,
+          "body": object
+        };
+        reject(errorObject);
        }
     }).catch((event)=>{
       let errorObject = {
@@ -254,7 +268,14 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         resolve(id);
       };
       getRequest.onerror = function (event:Event){
-        reject(event);
+        let errorObject = {
+          "status": 400,
+          "ok": false,
+          "message":"Cannot Update to the Local database" + databaseName,
+          "data": event,
+          "body": id
+        };
+        reject(errorObject);
       }
     }).catch((event)=>{
       let errorObject = {

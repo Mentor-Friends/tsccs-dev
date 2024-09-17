@@ -37,7 +37,7 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
                  connection.typeCharacter = typeString;
                  await LocalSyncData.AddConnection(connection);
                  LocalConnectionData.AddConnection(connection);
-                 storeToDatabase("localconnection", connection);
+                 //storeToDatabase("localconnection", connection);
              }
              return connection;
         }
