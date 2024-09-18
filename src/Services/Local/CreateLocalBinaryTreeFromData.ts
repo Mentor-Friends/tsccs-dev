@@ -48,11 +48,11 @@ export async function PopulateTheLocalConceptsToMemory(){
             
             if(idList[0]){
                 LocalId.AddConceptId(idList[0]);
+                console.log("this is the new concept", idList[0]);
     
             }
             if(idList[2]){
                 BaseUrl.BASE_RANDOMIZER = idList[2].value;
-                console.log("This is the new randomizer", BaseUrl.BASE_RANDOMIZER);
             }
         }
     }
@@ -85,11 +85,11 @@ export async function PopulateTheLocalConceptsToMemory(){
             
             if(idList[1]){
                 LocalId.AddConnectionId(idList[1]);
-    
+                console.log("this is the new connection", idList[1]);
             }
             if(idList[2]){
                 BaseUrl.BASE_RANDOMIZER = idList[2].value;
-                console.log("This is the new randomizer", BaseUrl.BASE_RANDOMIZER);
+
             }
         }
     }

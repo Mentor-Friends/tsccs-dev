@@ -152,6 +152,43 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
 
 }
 
+ /**
+   * 
+   * @param databaseName name of the database
+   * @param object this is the object that you want to update
+   * @returns returns the object if it is updated successfully.
+   */
+ export function UpdateToDatabase(databaseName:string, object:any){
+  return new Promise(function(resolve, reject){
+  openDatabase(databaseName).then((db)=>{
+    let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
+    let objStore = transaction.objectStore(databaseName);
+     const request = objStore.put(object);
+     request.onsuccess = (event) =>{
+      resolve(object);
+     }
+     request.onerror = (event) => {
+      let errorObject = {
+        "status": 400,
+        "ok": false,
+        "message":"Cannot Update to the database" + databaseName,
+        "data": event,
+        "body": object
+      };
+      reject(errorObject);
+     }
+  }).catch((event)=>{
+    let errorObject = {
+      "status": 400,
+      "ok": false,
+      "message":"Cannot update to database because you cannot open the database",
+      "data": event
+    };
+    reject(errorObject);
+  });
+  });
+}
+
 
 
 
