@@ -1,5 +1,5 @@
 import { Concept } from "./Concept";
-import { removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import { removeFromDatabase, storeToDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { BinaryTree } from "./BinaryTree";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
@@ -57,7 +57,7 @@ export class ConceptsData{
         //    if(contains){
           //   this.RemoveConcept(concept);
           //  }
-             storeToDatabase("concept",concept);
+             UpdateToDatabase("concept",concept);
              BinaryTree.addConceptToTree(concept);
               BinaryTypeTree.addConceptToTree(concept);
               BinaryCharacterTree.addConceptToTree(concept);

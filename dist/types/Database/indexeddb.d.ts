@@ -20,6 +20,13 @@ export declare function openDatabase(databaseName: string): Promise<IDBDatabase>
  */
 export declare function storeToDatabase(databaseName: string, object: any): Promise<any>;
 /**
+  *
+  * @param databaseName name of the database
+  * @param object this is the object that you want to update
+  * @returns returns the object if it is updated successfully.
+  */
+export declare function UpdateToDatabase(databaseName: string, object: any): Promise<unknown>;
+/**
  *
  * @returns This returns the last object from the database.
  */

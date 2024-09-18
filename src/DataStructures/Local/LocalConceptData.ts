@@ -35,7 +35,6 @@ export class LocalConceptsData{
             LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
             LocalGhostIdTree.addConceptToTree(concept);
             let removeData = removeFromDatabase("localconcept", concept.ghostId);
-            console.log("this is the remove data", removeData);
             ConceptsData.AddConcept(concept);
         }
     }
