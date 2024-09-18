@@ -13,11 +13,10 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:nu
         formdata.append("ofConceptId", ofConceptId.toString());
         formdata.append("mainKey", mainKey.toString());
         formdata.append("toConceptId", toConcept.toString());
-        var header = GetRequestHeader();
         const response = await fetch(BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl(),{
           method: 'POST',
-          headers: header,
-          body: formdata
+          body: formdata,
+          redirect: "follow"
         });
         if(response.ok){
           const result = await response.json();
