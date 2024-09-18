@@ -19,14 +19,14 @@ import MakeTheConceptLocal from "./MakeTheConceptLocal";
 export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number,
     ): Promise<Concept>
 {
-    var accessId: number = 4;
+    let accessId: number = 4;
 
-    var existingConcept = await GetConceptByCharacterAndCategoryLocal(typeString);
+    let existingConcept = await GetConceptByCharacterAndCategoryLocal(typeString);
     if(existingConcept){
         if(existingConcept.id == 0 || existingConcept.userId == 0){
-            var splittedStringArray = SplitStrings(typeString);
+            let splittedStringArray = SplitStrings(typeString);
             if(splittedStringArray[0] == typeString){
-                var concept = await MakeTheConceptLocal(typeString, "the", userId,  1, 51);
+                let concept = await MakeTheConceptLocal(typeString, "the", userId,  1, 51);
                 existingConcept = concept as Concept;
             }   
             else{
@@ -36,7 +36,7 @@ export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: n
                 // if(typeConcept){
                     let categoryConcept = await MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
                     let typeConcept = await MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId );
-                    var concept = await CreateTheConceptLocal(typeString,splittedStringArray[1],  userId, categoryConcept.id, typeConcept.id, accessId );
+                    let concept = await CreateTheConceptLocal(typeString,splittedStringArray[1],  userId, categoryConcept.id, typeConcept.id, accessId );
                     existingConcept = concept as Concept;
 
              //   }

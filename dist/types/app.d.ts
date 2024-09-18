@@ -61,6 +61,7 @@ export { convertFromLConceptToConcept, convertFromConceptToLConcept } from './Se
 export { SearchLinkInternal } from './Services/Search/SearchLinkInternal';
 export { CreateConnectionBetweenTwoConceptsLocal } from './Services/Local/CreateConnectionBetweenTwoConceptsLocal';
 export { DeleteConceptLocal } from './Services/Local/DeleteConceptLocal';
+export { GetCompositionConnectionsBetweenTwoConcepts } from './Api/GetCompositionConnectionsBetweenTwoConcepts';
 export { GetConnectionBetweenTwoConceptsLinker } from './Services/GetConnectionBetweenTwoConceptsLinker';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';

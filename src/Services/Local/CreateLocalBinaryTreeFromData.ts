@@ -44,6 +44,7 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
 export async function PopulateTheLocalConceptsToMemory(){
     try{
         let idList = await getObjectsFromLocalIndexDb("localid");
+        console.log("this is the id list from the db", idList);
         if(Array.isArray(idList)){
             
             if(idList[0]){

@@ -28,6 +28,8 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
     try{
         //var id = -Math.floor(Math.random() * 100000000);
         var id = await LocalId.getConceptId();
+        console.log("this is the getting id type connection", id);
+
         var isNew: boolean = true;
         let created_on:Date = new Date();
         let updated_on:Date = new Date();

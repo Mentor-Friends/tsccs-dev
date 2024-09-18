@@ -19,9 +19,8 @@ export class LocalId{
     static async  getConceptId(): Promise<number>{
         try{
             if(this.localId){
-
                 if(this.ReservedLocalId.length < 5){
-                    PopulateTheLocalConceptsToMemory().then(() => {
+                    await PopulateTheLocalConceptsToMemory().then(() => {
                     let finalLocalId = this.localId;
                     for(let j =1 ; j< 10; j++){
                         let localId = this.localId - j;
@@ -77,7 +76,7 @@ export class LocalId{
         try{
             if(this.localConnectionId){
                 if(this.ReservedConnectionId.length < 5){
-                    PopulateTheLocalConnectionToMemory().then(()=> {
+                    await PopulateTheLocalConnectionToMemory().then(()=> {
                         let finalLocalId = this.localConnectionId;
                         for(let j =1 ; j< 10; j++){
                             let localConId = this.localConnectionId - j;
