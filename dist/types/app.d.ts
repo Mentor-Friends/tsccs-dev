@@ -62,6 +62,7 @@ export { SearchLinkInternal } from './Services/Search/SearchLinkInternal';
 export { CreateConnectionBetweenTwoConceptsLocal } from './Services/Local/CreateConnectionBetweenTwoConceptsLocal';
 export { DeleteConceptLocal } from './Services/Local/DeleteConceptLocal';
 export { GetConnectionBetweenTwoConceptsLinker } from './Services/GetConnectionBetweenTwoConceptsLinker';
+export { DelayFunctionExecution } from './Services/Common/DelayFunction';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';
@@ -101,4 +102,4 @@ declare function updateAccessToken(accessToken?: string): void;
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
  */
-declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string): void;
+declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string): Promise<void>;

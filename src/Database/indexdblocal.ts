@@ -107,6 +107,33 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
   
   }
 
+  export async function LockTheDatabase(databaseName:string){
+    console.log("lock : locked db");
+      await UpdateToDatabase(databaseName, {"id": 4, "value": true});
+  }
+
+  export async function UnlockDatabase(databaseName:string){
+    await UpdateToDatabase(databaseName, {"id": 4, "value": false});
+    console.log("lock :locked opened");
+  }
+
+  export async function GetLockStatus(databaseName:string){
+    try{
+      let list = await getObjectsFromLocalIndexDb(databaseName);
+      console.log("lock :for lock locked", list);
+      if(Array.isArray(list)){
+       console.log("lock : This is the list vallue", list[4].value);
+       return list[4].value;
+      }
+      console.log("lock : This is not a list", Array.isArray(list) );
+      return false;
+    }
+    catch(error){
+      console.log("lock : this is the error", error);
+    }
+
+  }
+
 
     /**
    *  this function will return all the objects that are in the database 
