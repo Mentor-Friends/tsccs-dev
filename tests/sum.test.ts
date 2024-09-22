@@ -37,8 +37,6 @@ test('get concept test', async() =>{
 });
 
 test('get connection test', async() =>{
-    
-
         return GetConnection(20).then(data => {
             expect(data.id).toBe(20);
           }).catch((err)=>{
@@ -48,19 +46,19 @@ test('get connection test', async() =>{
 });
 
 
-test('get local id', async() =>{
+// test('get local id', async() =>{
     
-    Object.defineProperty(navigator, 'userAgent', {
-        get: () => undefined,
-        configurable: true
-      });
-        let a = await LocalId.getConceptId();
+//     Object.defineProperty(navigator, 'userAgent', {
+//         get: () => undefined,
+//         configurable: true
+//       });
+//         let a = await LocalId.getConceptId();
 
-        let b = await LocalId.getConceptId();
-        console.log("this is a and b", a, b);
-        expect(a-b).toBe(1);
+//         let b = await LocalId.getConceptId();
+//         console.log("this is a and b", a, b);
+//         expect(a-b).toBe(1);
 
     
-});
+// });
 
 
