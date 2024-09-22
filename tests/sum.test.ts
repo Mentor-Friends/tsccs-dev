@@ -1,11 +1,16 @@
 import { expect, test} from '@jest/globals';
 import {GetConcept} from '../src/Api/GetConcept';
-import { BaseUrl, init } from '../src/app';
+import { BaseUrl, BinaryTree, CreateDefaultConcept, init } from '../src/app';
 import { IdentifierFlags } from '../src/DataStructures/IdentifierFlags';
 import { TokenStorage } from '../src/DataStructures/Security/TokenStorage';
 import { GetConnection } from '../src/Api/GetConnection';
 import { LocalId } from '../src/DataStructures/Local/LocalId';
+import exp from 'constants';
+import { mock } from 'node:test';
+import { BinaryCharacterTree } from '../src/DataStructures/BinaryCharacterTree';
 require("fake-indexeddb/auto");
+
+
 let url = "http://192.168.10.2:7000";
 let aiurl = "";
 let nodeUrl = "https://theta.boomconcole.com";
@@ -44,6 +49,51 @@ test('get connection test', async() =>{
           });
 
 });
+
+/**
+ * This test is used to add concept to binary tree by fetching it and then checking if it can be fetched by memory
+ */
+test('add concept to binary tree and get it from binary tree', async() => {
+  try{
+    let mockId = 555;
+    let mockCharacter = "SAMJHO";
+    let concept = CreateDefaultConcept();
+    concept.id = mockId;
+    concept.characterValue = "SAMJHO";
+    concept.typeId = 111;
+    concept.categoryId = 4;
+    BinaryTree.addConceptToTree(concept);
+    let binaryConcept = await BinaryTree.getNodeFromTree(mockId);
+    let characterConcept = await BinaryCharacterTree.getNodeFromTree("SAMJHO");
+    expect(binaryConcept?.value.id).toBe(mockId);
+    expect(characterConcept?.value.characterValue).toBe(mockCharacter);
+  }
+  catch(error){
+    throw error;
+  }
+
+});
+
+test('add concecpt to binary character tree and get it from binary character tree', async() => {
+  try{
+    let mockId = 555;
+    let mockCharacter = "CHARTREE";
+    let concept = CreateDefaultConcept();
+    concept.id = mockId;
+    concept.characterValue = mockCharacter;
+    concept.typeId = 111;
+    concept.categoryId = 4;
+    BinaryCharacterTree.addConceptToTree(concept);
+    let characterConcept = await BinaryCharacterTree.getNodeFromTree(mockCharacter);
+    expect(characterConcept?.value.characterValue).toBe(mockCharacter);
+  }
+  catch(error){
+    throw error;
+  }
+});
+
+
+
 
 
 // test('get local id', async() =>{
