@@ -1,3 +1,4 @@
+export {init, updateAccessToken};
 
 import CreateConceptBinaryTreeFromIndexDb from './Services/CreateBinaryTreeFromData';
 
@@ -65,7 +66,6 @@ export {convertFromLConceptToConcept, convertFromConceptToLConcept} from './Serv
 export {SearchLinkInternal} from './Services/Search/SearchLinkInternal';
 export {CreateConnectionBetweenTwoConceptsLocal} from './Services/Local/CreateConnectionBetweenTwoConceptsLocal';
 export {DeleteConceptLocal} from './Services/Local/DeleteConceptLocal';
-export { GetCompositionConnectionsBetweenTwoConcepts} from './Api/GetCompositionConnectionsBetweenTwoConcepts';
 export {GetConnectionBetweenTwoConceptsLinker} from './Services/GetConnectionBetweenTwoConceptsLinker';
 export {DelayFunctionExecution} from './Services/Common/DelayFunction';
 export {SyncData} from './DataStructures/SyncData';
@@ -102,7 +102,7 @@ export {BaseUrl} from './DataStructures/BaseUrl';
  * Your concepts using this package.
  * @param accessToken access token got from the sign in process
  */
-export function updateAccessToken(accessToken:string = ""){
+function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
 /**
@@ -115,33 +115,33 @@ export function updateAccessToken(accessToken:string = ""){
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
  */
-export async function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string="", isTest: boolean = false){
+async function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string="", isTest: boolean = false){
    /**
     * This process sets the initlizers in the static class BaseUrl that is used all over the system to access the urls
     * Here we set the following variables.
     * randomizer is created so that we can uniquely identify this initlization process but in the case that the BASE_RANDOMIZER has been alreay
     * set in the indexdb this is replaced by the indexdb value.
     */
-    try{
-    BaseUrl.BASE_URL = url;
-    BaseUrl.AI_URL = aiurl;
-    BaseUrl.NODE_URL = nodeUrl;
-    BaseUrl.BASE_APPLICATION= applicationName;
-    TokenStorage.BearerAccessToken = accessToken;
-    let randomizer = Math.floor(Math.random() * 100000000);
-    BaseUrl.BASE_RANDOMIZER = randomizer;
-   // if(isTest){
-   //       IdentifierFlags.isDataLoaded= true;
-   // IdentifierFlags.isCharacterLoaded= true;
-   // IdentifierFlags.isTypeLoaded= true;
-   //    IdentifierFlags.isLocalDataLoaded = true;
-   // IdentifierFlags.isLocalTypeLoaded = true;
-   // IdentifierFlags.isLocalCharacterLoaded = true;
-   // IdentifierFlags.isConnectionLoaded = true;
-   // IdentifierFlags.isConnectionTypeLoaded = true;
-   // IdentifierFlags.isLocalConnectionLoaded = true;
-   //    return true;
-   // }
+   try{
+   BaseUrl.BASE_URL = url;
+   BaseUrl.AI_URL = aiurl;
+   BaseUrl.NODE_URL = nodeUrl;
+   BaseUrl.BASE_APPLICATION= applicationName;
+   TokenStorage.BearerAccessToken = accessToken;
+   let randomizer = Math.floor(Math.random() * 100000000);
+   BaseUrl.BASE_RANDOMIZER = randomizer;
+   if(isTest){
+         IdentifierFlags.isDataLoaded= true;
+   IdentifierFlags.isCharacterLoaded= true;
+   IdentifierFlags.isTypeLoaded= true;
+      IdentifierFlags.isLocalDataLoaded = true;
+   IdentifierFlags.isLocalTypeLoaded = true;
+   IdentifierFlags.isLocalCharacterLoaded = true;
+   IdentifierFlags.isConnectionLoaded = true;
+   IdentifierFlags.isConnectionTypeLoaded = true;
+   IdentifierFlags.isLocalConnectionLoaded = true;
+      return true;
+   }
    console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
 
 /**
@@ -230,7 +230,7 @@ await GetConnectionsFromIndexDb().then(()=>{
    throw event;
 });
 
-// return true;
+return true;
 }
 catch(error){
    console.log("cannot initialize the system", error);
