@@ -10,12 +10,17 @@ export class LocalId{
 
     static  AddConceptId(id:any){
         this.localId = id.value;
-        UpdateToDatabase("localid", id);
+        //UpdateToDatabase("localid", id);
     }
 
 
 
 
+    /**
+     * 
+     * This function will get the local concept id from the indexdb 
+     * @returns the local concept id 
+     */
     static async  getConceptId(): Promise<number>{
         try{
             if(this.localId){
@@ -27,10 +32,10 @@ export class LocalId{
                         this.ReservedLocalId.push(localId);
                         finalLocalId = localId;
                     }
-                    this.AddConceptId({"id":0, "value": finalLocalId})
+                   // this.AddConceptId({"id":0, "value": finalLocalId})
     
                    }).catch((event)=> {
-                        console.log("cannot get the id from indexdb");
+                        console.log(" getid: cannot get the id from indexdb");
                         return -Math.floor(Math.random() * 100000000);
                    });
                    let id = this.ReservedLocalId[0];
@@ -54,7 +59,7 @@ export class LocalId{
                         this.ReservedLocalId.push(localId);
                         finalLocalId = localId;
                     }
-                    this.AddConceptId({"id":0, "value": finalLocalId});
+                    //this.AddConceptId({"id":0, "value": finalLocalId});
     
                    });
                    return this.getConceptId();
@@ -62,14 +67,19 @@ export class LocalId{
     
         }
         catch(error){
+            console.log(" getid: this is the eror in concept",error);
             return -Math.floor(Math.random() * 100000000);
         }
         
     }
 
-    static AddConnectionId(id: any){
-        this.localConnectionId  = id.value;
-        UpdateToDatabase("localid", id);
+    /**
+     * 
+     * @param object This is the object that needs to be updated
+     */
+    static AddConnectionId(object: any){
+        this.localConnectionId  = object.value;
+        //UpdateToDatabase("localid", id);
     }
 
     static async getConnectionId(): Promise<number>{
@@ -84,8 +94,8 @@ export class LocalId{
                             this.ReservedConnectionId.push(localConId);
                             finalLocalId = localConId;
                         }
-                        this.AddConnectionId({"id":1, "value": finalLocalId})
                     }).catch((event)=> {
+                        console.log("this is the new event", event);
                         return -Math.floor(Math.random() * 100000000);
                     });
     
@@ -97,7 +107,6 @@ export class LocalId{
                 else{
                     let id = this.ReservedConnectionId[0];
                     this.ReservedConnectionId.shift();
-    
                     return id;
                 }
             }
@@ -110,7 +119,7 @@ export class LocalId{
                         this.ReservedConnectionId.push(localConId);
                         finalLocalId = localConId;
                     }
-                    this.AddConnectionId({"id":1, "value": finalLocalId})
+                    //this.AddConnectionId({"id":1, "value": finalLocalId})
                 });
                 return this.getConnectionId();
             }

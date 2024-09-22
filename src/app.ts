@@ -68,6 +68,7 @@ export {CreateConnectionBetweenTwoConceptsLocal} from './Services/Local/CreateCo
 export {DeleteConceptLocal} from './Services/Local/DeleteConceptLocal';
 export { GetCompositionConnectionsBetweenTwoConcepts} from './Api/GetCompositionConnectionsBetweenTwoConcepts';
 export {GetConnectionBetweenTwoConceptsLinker} from './Services/GetConnectionBetweenTwoConceptsLinker';
+export {DelayFunctionExecution} from './Services/Common/DelayFunction';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -115,13 +116,14 @@ function updateAccessToken(accessToken:string = ""){
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
  */
-function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string=""){
+async function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string="", isTest: boolean = false){
    /**
     * This process sets the initlizers in the static class BaseUrl that is used all over the system to access the urls
     * Here we set the following variables.
     * randomizer is created so that we can uniquely identify this initlization process but in the case that the BASE_RANDOMIZER has been alreay
     * set in the indexdb this is replaced by the indexdb value.
     */
+   try{
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    BaseUrl.NODE_URL = nodeUrl;
@@ -129,106 +131,113 @@ function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl
    TokenStorage.BearerAccessToken = accessToken;
    let randomizer = Math.floor(Math.random() * 100000000);
    BaseUrl.BASE_RANDOMIZER = randomizer;
+   if(isTest){
+         IdentifierFlags.isDataLoaded= true;
+   IdentifierFlags.isCharacterLoaded= true;
+   IdentifierFlags.isTypeLoaded= true;
+      IdentifierFlags.isLocalDataLoaded = true;
+   IdentifierFlags.isLocalTypeLoaded = true;
+   IdentifierFlags.isLocalCharacterLoaded = true;
+   IdentifierFlags.isConnectionLoaded = true;
+   IdentifierFlags.isConnectionTypeLoaded = true;
+   IdentifierFlags.isLocalConnectionLoaded = true;
+      return true;
+   }
    console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
 
-   /**
+/**
     * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
     * We use some sort of AI algorithm to initilize these concepts with the most used concept.
     * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
     * If the developer does not want to use this feature then they can just set enableAi to false.
     */
-   InitializeSystem(enableAi).then(()=>{
-      const start = new Date().getTime();
-      
-      /**
-       * This  will create a binary tree in the memory from the indexdb.
-       * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
-       * and that the type binary tree has been loaded.
-       * These trees are helpful in caching concepts and connections for the data fabric.
-       */
-      CreateConceptBinaryTreeFromIndexDb().then(()=>{
-         IdentifierFlags.isDataLoaded= true;
-         IdentifierFlags.isCharacterLoaded= true;
-         IdentifierFlags.isTypeLoaded= true;
-         let elapsed = new Date().getTime() - start;
-         console.log("The time taken to prepare concept  data is  ", elapsed);
-      }).catch((event) => {
-        // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
-         throw event;
-      });
+await InitializeSystem(enableAi);
+const start = new Date().getTime();
+
+/**
+ * This  will create a binary tree in the memory from the indexdb.
+ * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
+ * and that the type binary tree has been loaded.
+ * These trees are helpful in caching concepts and connections for the data fabric.
+ */
+await   CreateConceptBinaryTreeFromIndexDb().then(()=>{
+   // IdentifierFlags.isDataLoaded= true;
+   // IdentifierFlags.isCharacterLoaded= true;
+   // IdentifierFlags.isTypeLoaded= true;
+   let elapsed = new Date().getTime() - start;
+   console.log("The time taken to prepare concept  data is  ", elapsed);
+}).catch((event) => {
+  // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
+   throw event;
+});
 
 
 
-      /**
-       * This will create a binary tree of local concepts that is saved from the indexdb.
-       * This process after finishing creating a binary tree of local concepts then set flag to denote that
-       * LocalBinaryTree has been created from the concepts in indexdb
-       * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
-       * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
-       */
-      CreateLocalBinaryTreeFromIndexDb().then(()=>{
-         IdentifierFlags.isLocalDataLoaded = true;
-         IdentifierFlags.isLocalTypeLoaded = true;
-         IdentifierFlags.isLocalCharacterLoaded = true;
-         let elapsed = new Date().getTime() - start;
-         console.log("The time taken to prepare local concept  ", elapsed);
-      }).catch((event) => {
-        throw event;
-      });
-      
-
-
-      /**
-       * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
-       * a static class called LocalConnectionData. 
-       * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
-       */
-      GetConnectionsFromIndexDbLocal().then(()=>{
-         IdentifierFlags.isLocalConnectionLoaded = true;
-      }).catch((event) => {
-         //console.log("This is the error in creating local connections binary tree");
-         throw event;
-      });
-
-      /**
-       * We have designed our system to use local concepts and connections with its own local ids(negative ids) that 
-       * is only valid for the browser that creates this. We have a translator in our node server.
-       * This function does this process in initlization.
-       */
-      // PopulateTheLocalSettingsToMemory().then(()=>{
-      // }).catch((event) => {
-      //    //console.log("This is the error in populating binary tree");
-      //   throw event;
-      // });
-
-
-      /**
-       * This process gets the connections from indexdb and loads it to the connections array which is inside of
-       * a static class called ConnectionData. 
-       * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
-       */
-      GetConnectionsFromIndexDb().then(()=>{
-         IdentifierFlags.isConnectionLoaded = true;
-         IdentifierFlags.isConnectionTypeLoaded = true;
-         let elapsed = new Date().getTime() - start;
-         console.log("The time taken to prepare connections  ", elapsed);
-      }).catch((event) => {
-         //console.log("This is the error in creating connections tree");
-         throw event;
-      });;
+/**
+ * This will create a binary tree of local concepts that is saved from the indexdb.
+ * This process after finishing creating a binary tree of local concepts then set flag to denote that
+ * LocalBinaryTree has been created from the concepts in indexdb
+ * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
+ * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
+ */
+await CreateLocalBinaryTreeFromIndexDb().then(()=>{
+   // IdentifierFlags.isLocalDataLoaded = true;
+   // IdentifierFlags.isLocalTypeLoaded = true;
+   // IdentifierFlags.isLocalCharacterLoaded = true;
+   let elapsed = new Date().getTime() - start;
+   console.log("The time taken to prepare local concept  ", elapsed);
+}).catch((event) => {
+  throw event;
+});
 
 
 
-   }).catch((event) => {
-      let errorObject = {
-         "message": "This is the error in initlizing system",
-         "ok": false,
-         "status": 400,
-         "data": event
-      };
-      console.error("This is the error in initlizing system", event);
-      throw errorObject;
-   });
+/**
+ * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
+ * a static class called LocalConnectionData. 
+ * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+ */
+await GetConnectionsFromIndexDbLocal().then(()=>{
+   IdentifierFlags.isLocalConnectionLoaded = true;
+}).catch((event) => {
+   //console.log("This is the error in creating local connections binary tree");
+   throw event;
+});
+
+/**
+ * We have designed our system to use local concepts and connections with its own local ids(negative ids) that 
+ * is only valid for the browser that creates this. We have a translator in our node server.
+ * This function does this process in initlization.
+ */
+// PopulateTheLocalSettingsToMemory().then(()=>{
+// }).catch((event) => {
+//    //console.log("This is the error in populating binary tree");
+//   throw event;
+// });
+
+
+/**
+ * This process gets the connections from indexdb and loads it to the connections array which is inside of
+ * a static class called ConnectionData. 
+ * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+ */
+await GetConnectionsFromIndexDb().then(()=>{
+   IdentifierFlags.isConnectionLoaded = true;
+   IdentifierFlags.isConnectionTypeLoaded = true;
+   let elapsed = new Date().getTime() - start;
+   console.log("The time taken to prepare connections  ", elapsed);
+}).catch((event) => {
+   //console.log("This is the error in creating connections tree");
+   throw event;
+});
+
+return true;
+}
+catch(error){
+   console.log("cannot initialize the system", error);
+}
+   
+
 }
 
 

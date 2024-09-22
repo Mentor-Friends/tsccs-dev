@@ -73,7 +73,7 @@ request.onupgradeneeded = (event) => {
     let settings = "settings"
     console.log("this is the version update for index", version);
     if (db.objectStoreNames.contains(conceptDb)){
-      db.deleteObjectStore(conceptDb);
+       db.deleteObjectStore(conceptDb);
 
     }
     if (db.objectStoreNames.contains(connectionDb)){

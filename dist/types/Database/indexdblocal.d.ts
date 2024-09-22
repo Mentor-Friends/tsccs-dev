@@ -10,6 +10,9 @@ export declare class LocalIndexDb {
  * @returns a promise that either resolves or rejects opening the database.
  */
 export declare function openDatabase(databaseName: string): Promise<IDBDatabase>;
+export declare function LockTheDatabase(databaseName: string): Promise<void>;
+export declare function UnlockDatabase(databaseName: string): Promise<void>;
+export declare function GetLockStatus(databaseName: string): Promise<any>;
 /**
 *  this function will return all the objects that are in the database
 * @param databaseName name of the database

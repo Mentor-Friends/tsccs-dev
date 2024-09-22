@@ -13,7 +13,7 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
             //    await CountRelationship(linkerAdd1, toTheConcept, userId);
             //   }
             var connectionConceptReverse = await MakeTheInstanceConceptLocal("connection",backwardLinker,false,999,999,999);
-            let pewCon = CreateTheConnectionLocal(toTheConcept.id, ofTheConcept.id, connectionConceptReverse.id, 1000)
+            let pewCon = await CreateTheConnectionLocal(toTheConcept.id, ofTheConcept.id, connectionConceptReverse.id, 1000)
         }
         let prefix: string = ofTheConcept.type?.characterValue + "_s";
         let linkerAdd = linker + "_s";
@@ -22,7 +22,7 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
         // // await CountRelationship(linkerAdd, ofTheConcept, userId);
         // }
         var connectionConcept = await MakeTheInstanceConceptLocal("connection",forwardLinker,false,999,999,999);
-        let newConnection = CreateTheConnectionLocal(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000)
+        let newConnection = await CreateTheConnectionLocal(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000)
         return newConnection;
     }
     catch(ex){
