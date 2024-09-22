@@ -56,7 +56,6 @@ export async function PopulateTheLocalConceptsToMemory(){
 
             // get the last local concept id(-ve) from the indexdb
             let idList = await getObjectsFromLocalIndexDb("localid");
-
             // if the list is valid then.
             if(Array.isArray(idList)){
                 

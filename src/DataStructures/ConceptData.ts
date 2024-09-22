@@ -50,6 +50,7 @@ export class ConceptsData{
     }
 
     static AddConcept(concept: Concept){
+
         if(concept.id > 0){
             //var contains = this.CheckContains(concept);
            // this.conceptDictionary[concept.id] = concept;

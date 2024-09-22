@@ -67,7 +67,7 @@ export class LocalId{
     
         }
         catch(error){
-            console.log(" getid: this is the eror in concept");
+            console.log(" getid: this is the eror in concept",error);
             return -Math.floor(Math.random() * 100000000);
         }
         

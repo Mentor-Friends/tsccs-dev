@@ -6,8 +6,9 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../app";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConcept(id: number){
-    let result = CreateDefaultConcept();
     try{
+    let result = CreateDefaultConcept();
+
         var conceptUse :Concept= await ConceptsData.GetConcept(id);
         let isNpc = ConceptsData.GetNpc(id);
         if(conceptUse.id != 0 || isNpc){
@@ -16,6 +17,7 @@ export async function GetConcept(id: number){
         }
         else{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
+            console.log("this is the url", BaseUrl.GetConceptUrl());
             const response = await fetch(BaseUrl.GetConceptUrl(),{
                 method: 'POST',
                 headers:header,
@@ -34,6 +36,7 @@ export async function GetConcept(id: number){
                 console.log("Get the concept error", response.status);
                 HandleHttpError(response);
             }
+            
             return result;
 
         }

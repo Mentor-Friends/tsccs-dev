@@ -115,13 +115,14 @@ function updateAccessToken(accessToken:string = ""){
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
  */
-async function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string=""){
+async function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string="", isTest: boolean = false){
    /**
     * This process sets the initlizers in the static class BaseUrl that is used all over the system to access the urls
     * Here we set the following variables.
     * randomizer is created so that we can uniquely identify this initlization process but in the case that the BASE_RANDOMIZER has been alreay
     * set in the indexdb this is replaced by the indexdb value.
     */
+   try{
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    BaseUrl.NODE_URL = nodeUrl;
@@ -129,8 +130,20 @@ async function init(url:string = "", aiurl:string="", accessToken:string = "", n
    TokenStorage.BearerAccessToken = accessToken;
    let randomizer = Math.floor(Math.random() * 100000000);
    BaseUrl.BASE_RANDOMIZER = randomizer;
+   if(isTest){
+         IdentifierFlags.isDataLoaded= true;
+   IdentifierFlags.isCharacterLoaded= true;
+   IdentifierFlags.isTypeLoaded= true;
+      IdentifierFlags.isLocalDataLoaded = true;
+   IdentifierFlags.isLocalTypeLoaded = true;
+   IdentifierFlags.isLocalCharacterLoaded = true;
+   IdentifierFlags.isConnectionLoaded = true;
+   IdentifierFlags.isConnectionTypeLoaded = true;
+   IdentifierFlags.isLocalConnectionLoaded = true;
+      return true;
+   }
    console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
-try{
+
 /**
     * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
     * We use some sort of AI algorithm to initilize these concepts with the most used concept.
@@ -216,6 +229,8 @@ await GetConnectionsFromIndexDb().then(()=>{
    //console.log("This is the error in creating connections tree");
    throw event;
 });
+
+return true;
 }
 catch(error){
    console.log("cannot initialize the system", error);
