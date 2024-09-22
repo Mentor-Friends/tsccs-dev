@@ -1,11 +1,10 @@
 {
   "name": "mftsccs-browser",
-  "version": "100.0.66",
+  "version": "100.0.72",
   "environment": "production",
   "description": "Full Pack of concept and connection system",
   "main": "dist/bundle.js",
   "types": "dist/types/app.d.ts",
-  "type": "module",
   "files": [
     "dist",
     "LICENSE",
