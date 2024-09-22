@@ -102,4 +102,4 @@ declare function updateAccessToken(accessToken?: string): void;
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
  */
-declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string): Promise<void>;
+declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string, isTest?: boolean): Promise<true | undefined>;
