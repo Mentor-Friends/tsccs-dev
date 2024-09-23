@@ -70,10 +70,8 @@ export  async function CreateTheCompositionWithCache(
           ofThe,
           ofTheUser,
           concept.id,
-          concept.userId,
-          localMainKey,
-          localSessionId,
-          concept.userId,
+          localMainKey
+
         )
         const connection = connectionString as Connection
         composition.connections.push(connection)
@@ -110,10 +108,7 @@ export  async function CreateTheCompositionWithCache(
         ofThe,
         ofTheUser,
         concept.id,
-        concept.userId,
-        localMainKey,
-        localSessionId,
-        concept.userId,
+        localMainKey
       )
       const connection = connectionString as Connection
       composition.connections.push(connection)

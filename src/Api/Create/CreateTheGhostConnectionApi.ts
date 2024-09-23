@@ -1,12 +1,12 @@
 import { CreateTheConnectionUrl } from "../../Constants/ApiConstants";
 import { Concept } from "../../DataStructures/Concept";
-import { LConnection } from "../../DataStructures/Local/LConnection";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
-export async function CreateTheGhostConnectionApi(connectionData: LConnection[]){
-  let result:LConnection[] = [];
+import { Connection } from "../../app";
+export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
+  let result:Connection[] = [];
     try{
 
 

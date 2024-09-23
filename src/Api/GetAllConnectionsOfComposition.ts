@@ -6,7 +6,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionBinaryTree } from '../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
-import { HandleHttpError } from '../Services/Common/ErrorPosting';
+import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
@@ -55,6 +55,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
       } else {
         console.log('Get all connection of composition error : ', error);
       }
-      throw error;
+      HandleInternalError(error, BaseUrl.GetAllConnectionsOfCompositionUrl());
     }
 }

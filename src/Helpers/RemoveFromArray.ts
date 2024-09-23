@@ -31,8 +31,8 @@ export function RemoveConnectionFromList(
 }
 
 export function RemoveLConnectionFromList(
-  connectionList: LConnection[] = [],
-  connection: LConnection,
+  connectionList: Connection[] = [],
+  connection: Connection,
 ) {
   if (Array.isArray(connectionList)) {
     connectionList.splice(

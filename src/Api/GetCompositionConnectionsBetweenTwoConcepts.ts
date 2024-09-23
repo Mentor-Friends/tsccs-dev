@@ -2,7 +2,7 @@ import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 
 export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:number, toConcept:number, mainKey:number){
   var connectionList: Connection[] = [];
@@ -31,7 +31,6 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:nu
         }
 
   
-        return connectionList;
       }
       catch (error) {
         if (error instanceof Error) {
@@ -39,6 +38,8 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:nu
         } else {
           console.log('Get composition connection between two concepts unexpected error: ', error);
         }
-        throw error;
+        HandleInternalError(error, BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl());
       }
+      return connectionList;
+
   }

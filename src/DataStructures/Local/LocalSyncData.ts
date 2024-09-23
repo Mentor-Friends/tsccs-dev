@@ -1,7 +1,6 @@
 import { CreateTheGhostConceptApi } from "../../Api/Create/CreateTheGhostConceptApi";
 import { CreateTheGhostConnectionApi } from "../../Api/Create/CreateTheGhostConnectionApi";
 import { Concept } from "./../Concept";
-import { LConnection } from "./LConnection";
 import { storeToDatabase } from "../../Database/indexdblocal";
 import { ConceptsData } from "../ConceptData";
 import { LocalConceptsData } from "./LocalConceptData";
@@ -13,7 +12,7 @@ import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 export class LocalSyncData{
     static  conceptsSyncArray:Concept[] = [];
-    static  connectionSyncArray: LConnection[] = [];
+    static  connectionSyncArray: Connection[] = [];
     static ghostIdMap = new Map();
     
 
@@ -40,7 +39,7 @@ export class LocalSyncData{
         }
     }
 
-    static  CheckContainsConnection(connection: LConnection){
+    static  CheckContainsConnection(connection: Connection){
         var contains = false;
         for(var i=0; i<this.connectionSyncArray.length; i++){
          if(this.connectionSyncArray[i].id == connection.id){
@@ -140,7 +139,7 @@ export class LocalSyncData{
 
     //  }
 
-    static ConvertGhostIdsInConnections(connectionArray: LConnection[]){
+    static ConvertGhostIdsInConnections(connectionArray: Connection[]){
         for(let i= 0 ;i < connectionArray.length; i++){
             let ofTheConceptId = connectionArray[i].ofTheConceptId;
             let toTheConceptId = connectionArray[i].toTheConceptId;
@@ -155,7 +154,7 @@ export class LocalSyncData{
         }
      }
 
-     static async UpdateConceptListToIncludeRelatedConcepts(connectionArray: LConnection[], conceptsArray: Concept[]){
+     static async UpdateConceptListToIncludeRelatedConcepts(connectionArray: Connection[], conceptsArray: Concept[]){
         for(let i= 0 ;i < connectionArray.length; i++){
             let ofTheConceptId = connectionArray[i].ofTheConceptId;
             let toTheConceptId = connectionArray[i].toTheConceptId;
@@ -252,12 +251,12 @@ export class LocalSyncData{
 
 
 
-     static AddConnection(connection: LConnection){
+     static AddConnection(connection: Connection){
          this.connectionSyncArray.push(connection);
 
      }
 
-     static RemoveConnection(connection: LConnection){
+     static RemoveConnection(connection: Connection){
         for(var i=0; i<this.connectionSyncArray.length; i++){
          if(this.connectionSyncArray[i].id == connection.id){
              this.connectionSyncArray.splice(i, 1);

@@ -4,7 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { ConceptsData, GetConceptByCharacter } from "../app";
 import { GetConceptByCharacterAndCategory } from "../Services/ConceptFinding/GetConceptByCharacterAndCategory";
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 
 
 /**
@@ -17,7 +17,7 @@ import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function MakeTheTypeConceptApi(type:string, userId:number){
 
   // create  a default concept with all defaulting to zero
-    let concept = CreateDefaultConcept();
+    let concept:Concept = CreateDefaultConcept();
     try{
 
        // get the concept by character and category from the api
@@ -37,7 +37,6 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
             concept = result as Concept;
       
         }
-        return concept;
 
 
 
@@ -49,6 +48,9 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
         } else {
           console.log('Make The Type Concept Api error : ', error);
         }
-        throw error;
+        HandleInternalError(error, BaseUrl.MakeTheTypeConceptUrl());
       }
+
+      return concept;
+
 }

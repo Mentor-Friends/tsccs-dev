@@ -12,8 +12,8 @@ export async  function CreateTheConnectionGeneral(ofTheConceptId:number, ofTheCo
         var securityUserId: number = ofTheConceptUserId;
         var accessUserId: number = ofTheConceptUserId;
         var id = await ReservedConnectionIds.getId();
-        var connection = new Connection(id,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
-            typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
+        var connection = new Connection(id,ofTheConceptId,toTheConceptId,userId,typeId,
+             orderId,  accessId);
         if(ofTheConceptId == toTheConceptId){
             connection.ofTheConceptId = 0;
             connection.toTheConceptId = 1;

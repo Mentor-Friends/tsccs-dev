@@ -106,16 +106,7 @@ export function CheckIfConnectionExistsInArray(
     0,
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    0
   )
   if (Array.isArray(connectionList)) {
     const check = connectionList.find(c => c.id === connection.id)
@@ -139,16 +130,7 @@ export function CheckIfToTheConceptExistsInConnectionArray(
     0,
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    0
   )
   if (Array.isArray(connectionList)) {
     const check = connectionList.find(c => c.toTheConceptId === conceptId)
@@ -184,7 +166,7 @@ export function CheckAllConnectionsConnectedInConnectionArray(
 
 
 export function CheckAllConnectionsConnectedInLConnectionArray(
-  connectionList: LConnection[] = [],
+  connectionList: Connection[] = [],
   conceptId: number,
 ){
   let foundConnections = [];

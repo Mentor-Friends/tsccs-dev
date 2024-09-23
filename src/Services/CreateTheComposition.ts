@@ -32,7 +32,7 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
                 var conceptString = await MakeTheInstanceConcept(key, "", true, localUserId, localAccessId, localSessionId  );
                 var concept = conceptString as Concept;
                 MainConcept = concept;
-                await createTheConnection(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
+                await createTheConnection(ofThe, ofTheUser, concept.id, localMainKey);
                 await CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
             }
         }
@@ -42,7 +42,7 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
             var localMainKey = MainKeyLocal;
             var conceptString = await MakeTheInstanceConcept(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
             var concept = conceptString as Concept;
-            await createTheConnection(ofThe, ofTheUser, concept.id, concept.userId, localMainKey, localSessionId, concept.userId);
+            await createTheConnection(ofThe, ofTheUser, concept.id,  localMainKey);
 
         }
 

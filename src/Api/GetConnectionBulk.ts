@@ -5,7 +5,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 
 /**
  * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched
@@ -13,9 +13,9 @@ import { HandleHttpError } from "../Services/Common/ErrorPosting";
  * @returns the list of  connections that have been fetched
  */
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
+    let connectionList:Connection[] = [];
 
     try{
-        let connectionList:Connection[] = [];
 
         let bulkConnectionFetch = [];
         // if the connections are already present in the local memory then take it from there 
@@ -61,7 +61,6 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
 
 
 
-            return connectionList;
 
         }
     }
@@ -71,6 +70,9 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
         } else {
           console.log('Get Connection Bulk unexpected error: ', error);
         }
-        throw error;
+        HandleInternalError(error, BaseUrl.GetConnectionBulkUrl());
       }
+
+      return connectionList;
+
 }

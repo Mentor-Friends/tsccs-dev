@@ -1,6 +1,6 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Concept } from "../DataStructures/Concept";
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { GetOnlyTokenHeader, GetRequestHeader, GetRequestHeaderWithAuthorization } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConcept(id:number){
     try{
@@ -28,6 +28,6 @@ export default async function DeleteTheConcept(id:number){
         } else {
           console.log('Delete concept unexpected error: ', error);
         }
-        throw error;
+        HandleInternalError(error, BaseUrl.DeleteConceptUrl());
       }
 }

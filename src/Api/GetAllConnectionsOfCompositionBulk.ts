@@ -5,7 +5,7 @@ import { FindConceptsFromConnections } from '../Services/FindConeceptsFromConnec
 import { FindConnectionsOfCompositionsBulkInMemory } from '../Services/FindConnectionsOfCompositionBulkInMemory';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
-import { HandleHttpError } from '../Services/Common/ErrorPosting';
+import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
       
         var connectionList: Connection[] = [];
@@ -53,6 +53,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_ids: numb
       } else {
         console.log('Get all connections of composition bulk unexpected error: ', error);
       }
-      throw error;
+      HandleInternalError(error,BaseUrl.GetAllConnectionsOfCompositionBulkUrl() );
     }
 }

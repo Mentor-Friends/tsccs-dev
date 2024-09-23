@@ -1,2 +1,2 @@
-import { LConnection } from "../../DataStructures/Local/LConnection";
-export declare function CreateTheGhostConnectionApi(connectionData: LConnection[]): Promise<LConnection[] | undefined>;
+import { Connection } from "../../app";
+export declare function CreateTheGhostConnectionApi(connectionData: Connection[]): Promise<Connection[] | undefined>;

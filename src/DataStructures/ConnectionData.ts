@@ -88,7 +88,7 @@ export class ConnectionData{
     //     }
     //     return myConcept;
 
-    var  myConnection: Connection = new Connection(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+    var  myConnection: Connection = new Connection(0,0,0,0,0,0,0);
     var node = await ConnectionBinaryTree.getNodeFromTree(id);
     if(node?.value){
         var returnedConcept = node.value;

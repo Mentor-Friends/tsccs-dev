@@ -1,19 +1,19 @@
 import {storeToDatabase } from "../../Database/indexdblocal";
 import { removeFromDatabase } from "../../Database/indexdblocal";
 import { ConvertFromLConnectionToConnection } from "../../Services/Local/ConvertFromLConnectionToConnection";
+import { Connection } from "../Connection";
 import { ConnectionData } from "../ConnectionData";
 import { IdentifierFlags } from "../IdentifierFlags";
-import { LConnection } from "./LConnection";
 export class LocalConnectionData{
     
     name: string;
     constructor(){
         this.name = "Connection Array";
     }
-    static  connectionArray:LConnection[] = [];
+    static  connectionArray:Connection[] = [];
 
-    static connectionDictionary:LConnection[] = [];
-    static  CheckContains(connection: LConnection){
+    static connectionDictionary:Connection[] = [];
+    static  CheckContains(connection: Connection){
         var contains = false;
         for(var i=0; i<this.connectionArray.length; i++){
          if(this.connectionArray[i].id == connection.id){
@@ -25,7 +25,7 @@ export class LocalConnectionData{
     }
 
 
-    static AddConnection(connection: LConnection){
+    static AddConnection(connection: Connection){
        var contains = this.CheckContains(connection);
         if(contains){
             this.RemoveConnection(connection);
@@ -37,7 +37,7 @@ export class LocalConnectionData{
         this.connectionArray.push(connection);
     }
 
-    static AddConnectionToMemory(connection: LConnection){
+    static AddConnectionToMemory(connection: Connection){
         var contains = this.CheckContains(connection);
          if(contains){
              this.RemoveConnection(connection);
@@ -45,11 +45,11 @@ export class LocalConnectionData{
          this.connectionArray.push(connection);
      }
 
-    static AddToDictionary(connection: LConnection){
+    static AddToDictionary(connection: Connection){
         this.connectionDictionary[connection.id] = connection;
     }
 
-    static RemoveConnection(connection: LConnection){
+    static RemoveConnection(connection: Connection){
         console.log("this is removing", connection);
        for(var i=0; i<this.connectionArray.length; i++){
         if(this.connectionArray[i].id == connection.id){
@@ -62,7 +62,7 @@ export class LocalConnectionData{
        }
     }
 
-    static AddPermanentConnection(connection: LConnection){
+    static AddPermanentConnection(connection: Connection){
         if(connection.id > 0){
 
             removeFromDatabase("localconnection", connection.ghostId);
@@ -71,7 +71,7 @@ export class LocalConnectionData{
     }
 
     static GetConnection(id: number){
-       var  myConcept: LConnection|null;
+       var  myConcept: Connection|null;
        myConcept = null;
         for(var i=0; i<this.connectionArray.length; i++){
             if(this.connectionArray[i].id == id){
@@ -102,7 +102,7 @@ export class LocalConnectionData{
       };
 
     static async GetConnectionsOfCompositionLocal(id: number){
-        var connectionList:LConnection[] = [];
+        var connectionList:Connection[] = [];
 
         try{
             var data = await this.waitForDataToLoad();
@@ -120,7 +120,7 @@ export class LocalConnectionData{
     }
 
     static async GetConnectionOfCompositionAndTypeLocal(typeId: number, ofTheConceptId: number){
-        var connectionList:LConnection[] = [];
+        var connectionList:Connection[] = [];
 
         try{
             var data = await this.waitForDataToLoad();

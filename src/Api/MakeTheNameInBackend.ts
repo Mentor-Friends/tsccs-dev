@@ -1,5 +1,5 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function MakeTheNameInBackend(newConceptId:number, referent:string, typeId: number, typeUserId:number){
     try{
@@ -28,6 +28,6 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
         } else {
           console.log('make the name in backend unexpected error: ', error);
         }
-        throw error;
+        HandleInternalError(error, BaseUrl.MakeTheNameInBackendUrl());
       }
 }

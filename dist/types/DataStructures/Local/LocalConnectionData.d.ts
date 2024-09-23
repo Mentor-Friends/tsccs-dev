@@ -1,19 +1,19 @@
-import { LConnection } from "./LConnection";
+import { Connection } from "../Connection";
 export declare class LocalConnectionData {
     name: string;
     constructor();
-    static connectionArray: LConnection[];
-    static connectionDictionary: LConnection[];
-    static CheckContains(connection: LConnection): boolean;
-    static AddConnection(connection: LConnection): void;
-    static AddConnectionToMemory(connection: LConnection): void;
-    static AddToDictionary(connection: LConnection): void;
-    static RemoveConnection(connection: LConnection): void;
-    static AddPermanentConnection(connection: LConnection): void;
-    static GetConnection(id: number): LConnection | null;
+    static connectionArray: Connection[];
+    static connectionDictionary: Connection[];
+    static CheckContains(connection: Connection): boolean;
+    static AddConnection(connection: Connection): void;
+    static AddConnectionToMemory(connection: Connection): void;
+    static AddToDictionary(connection: Connection): void;
+    static RemoveConnection(connection: Connection): void;
+    static AddPermanentConnection(connection: Connection): void;
+    static GetConnection(id: number): Connection | null;
     static waitForDataToLoad(): Promise<unknown>;
     static checkFlag(resolve: any): any;
-    static GetConnectionsOfCompositionLocal(id: number): Promise<LConnection[]>;
-    static GetConnectionOfCompositionAndTypeLocal(typeId: number, ofTheConceptId: number): Promise<LConnection[]>;
+    static GetConnectionsOfCompositionLocal(id: number): Promise<Connection[]>;
+    static GetConnectionOfCompositionAndTypeLocal(typeId: number, ofTheConceptId: number): Promise<Connection[]>;
     getName(): string;
 }

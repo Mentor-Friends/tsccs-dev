@@ -1,4 +1,5 @@
 import { Concept, CreateTheConnectionLocal, MakeTheInstanceConceptLocal } from "../../app";
+import { HandleInternalError } from "../Common/ErrorPosting";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false){
 

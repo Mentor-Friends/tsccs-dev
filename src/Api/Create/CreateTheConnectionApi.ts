@@ -5,7 +5,7 @@ import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 
 export async function CreateTheConnectionApi(connectionData: Connection[]){
-  let result = new Connection(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+  let result = new Connection(0,0,0,0,0,0,0);
     try{
 
 

@@ -1,6 +1,6 @@
 import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
-import { HandleHttpError } from '../Services/Common/ErrorPosting';
+import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { ConnectionData } from '../app';
@@ -34,6 +34,6 @@ catch (error) {
     } else {
       console.log('Get all prefetch connections unexpected error: ', error);
     }
-    throw error;
+    HandleInternalError(error, BaseUrl.GetAllPrefetchConnectionsUrl());
   }
 }

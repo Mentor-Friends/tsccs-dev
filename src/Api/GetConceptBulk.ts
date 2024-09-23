@@ -3,7 +3,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 
 /**
  * This function takes in a list of ids and returns a list of concepts . This uses local memory to find concepts
@@ -48,7 +48,6 @@ export async function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>{
                 HandleHttpError(response);
             }
 
-            return result;
 
         }
     }
@@ -58,8 +57,10 @@ export async function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>{
         } else {
           console.log('Get Concept Bulk  unexpected error: ', error);
         }
-        throw result;
+       HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
       }
+      return result;
+    
 }
 
 export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
@@ -94,7 +95,7 @@ export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
         } else {
           console.log('bulk concept getter api error: ', error)
         }
-        throw error;
+        HandleInternalError(error, BaseUrl.GetConceptBulkUrl());
       }
     }
   

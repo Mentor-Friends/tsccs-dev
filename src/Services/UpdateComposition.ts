@@ -165,10 +165,7 @@ import {CreateTheCompositionWithCache} from './Composition/CreateCompositionCach
             localConcept.id,
             localConcept.userId,
             insertingConcept.id,
-            insertingConcept.userId,
-            composition.id,
-            sessionId,
-            userId,
+            composition.id
           )
           const connection = connectionString as Connection
           conceptList.push(insertingConcept)

@@ -4,7 +4,7 @@ import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../../app";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterAndCategoryApi(characterValue: string){
     let concept = CreateDefaultConcept();
 
@@ -35,6 +35,6 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
         } else {
           console.log(' This is the concept by category and character unexpected error: ', error);
         }
-        throw error;
+        HandleInternalError(error, BaseUrl.GetConceptByCharacterAndCategoryUrl());
       }
 }

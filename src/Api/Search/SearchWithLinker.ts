@@ -1,6 +1,6 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import {SearchQuery} from '../../DataStructures/SearchQuery';
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
 export async function SearchWithLinker(searchQuery: SearchQuery[], token: string=""){
@@ -27,6 +27,6 @@ export async function SearchWithLinker(searchQuery: SearchQuery[], token: string
     }
     catch(ex){
         console.log("This is the searching error", ex);
-        throw ex;
+        HandleInternalError(ex, queryUrl);
     }
 }

@@ -1,6 +1,5 @@
 import { Concept } from "../../DataStructures/Concept";
 import { Connection } from "../../DataStructures/Connection";
-import { LConnection } from "../../DataStructures/Local/LConnection";
 import { CreateDefaultConcept } from "../CreateDefaultConcept";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
 
@@ -35,7 +34,7 @@ import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
   }
   
   export function convertFromConnectionToLConnection(connection: Connection) {
-    const Lconnection: LConnection = new LConnection(0, 0, 0, 0, 0, 0)
+    const Lconnection: Connection = new Connection(0, 0, 0, 0, 0, 0,0)
     Lconnection.id = connection.id
     Lconnection.ghostId = connection.ghostId
     Lconnection.accessId = connection.accessId

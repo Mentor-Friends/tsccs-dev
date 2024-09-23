@@ -4,7 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { ReservedConnectionIds, ReservedIds } from "../DataStructures/ReservedIds";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 export async function GetReservedConnectionIds(){
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
@@ -27,6 +27,6 @@ export async function GetReservedConnectionIds(){
         } else {
           console.log('get reserved connection ids  unexpected error: ', error);
         }
-        throw error;
+        HandleInternalError(error,BaseUrl.GetReservedConnectionIdUrl() );
       }
 }

@@ -1,5 +1,5 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 
 export async function CreateSessionVisit(sessionId: number, url: string){
@@ -25,6 +25,6 @@ export async function CreateSessionVisit(sessionId: number, url: string){
     }
     catch(ex){
         console.log("Creating session url failed", ex);
-        throw ex;
+        HandleInternalError(ex, BaseUrl.CreateSessionVisitUrl());
     }
 }

@@ -1,5 +1,5 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl"
-import { HandleHttpError } from "../../Services/Common/ErrorPosting"
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting"
 
 export  async function TrashTheConcept(
     id: number,
@@ -25,6 +25,6 @@ export  async function TrashTheConcept(
       } else {
         console.log('Delete composition unexpected error: ', error)
       }
-      throw error;
+      HandleInternalError(error, BaseUrl.DeleteConceptUrl());
     }
   }

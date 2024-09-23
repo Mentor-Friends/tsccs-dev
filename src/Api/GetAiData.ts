@@ -1,6 +1,6 @@
 import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
-import { HandleHttpError } from '../Services/Common/ErrorPosting';
+import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
 import { GetRequestHeader, GetRequestHeaderWithAuthorization } from '../Services/Security/GetRequestHeader';
 import { BinaryTree } from '../app';
@@ -34,6 +34,6 @@ catch (error) {
     } else {
       console.log('Ai Error Message: ', error);
     }
-    throw error;
+    HandleInternalError(error, BaseUrl.GetAllAiData());
   }
 }

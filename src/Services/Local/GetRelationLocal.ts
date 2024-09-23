@@ -1,10 +1,10 @@
-import { Concept, GetCompositionLocal, GetConceptByCharacterAndCategoryLocal,  LConnection, MakeTheTypeConceptApi, MakeTheTypeConceptLocal } from "../../app";
+import { Concept, GetCompositionLocal, GetConceptByCharacterAndCategoryLocal,  Connection, MakeTheTypeConceptApi, MakeTheTypeConceptLocal } from "../../app";
 import { GetConnectionOfTheConceptLocal } from "./GetConnectionOfTheConceptLocal";
 
 export async function GetRelationLocal(id: number, relation:string, userId: number){
     try{
         let typeConcept:Concept =  await GetConceptByCharacterAndCategoryLocal(relation);
-        let localConnections: LConnection[] = []
+        let localConnections: Connection[] = []
         if(typeConcept.id != 0){
             localConnections = await GetConnectionOfTheConceptLocal(id, typeConcept.id, userId);
         }

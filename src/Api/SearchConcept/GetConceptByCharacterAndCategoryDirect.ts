@@ -4,11 +4,12 @@ import { Concept } from "./../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../../app";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
-export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: string, category_id: number){
-    let concept = CreateDefaultConcept();
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
+export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: string, category_id: number): Promise<Concept>{
+  let concept:Concept = CreateDefaultConcept();
 
     try{
+
         var header = GetRequestHeader('application/x-www-form-urlencoded');
           const response = await fetch(BaseUrl.GetConceptByCharacterAndCategoryDirectUrl(),{
               method: 'POST',
@@ -25,7 +26,6 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
             console.log("This is the concept by category and character error", response.status);
             HandleHttpError(response);
             }
-      return concept;
 
     }
     catch (error) {
@@ -34,6 +34,8 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
         } else {
           console.log(' This is the concept by category and character unexpected error: ', error);
         }
-        throw error;
-      }
+        HandleInternalError(error, BaseUrl.GetConceptByCharacterAndCategoryDirectUrl());
+    }
+    return concept;
+
 }

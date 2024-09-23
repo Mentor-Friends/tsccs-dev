@@ -1,6 +1,6 @@
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 
 export async function SearchAllConcepts(type:string, search:string, composition:string, token:string, inpage: number = 10, page:number =1){
     var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded', token);
@@ -29,7 +29,7 @@ export async function SearchAllConcepts(type:string, search:string, composition:
     }
     catch(ex){
         console.log("This is the searching error", ex);
-        throw ex;
+        HandleInternalError(ex, queryUrl);
     }
 
 

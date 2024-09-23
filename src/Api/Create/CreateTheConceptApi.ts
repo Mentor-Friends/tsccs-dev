@@ -5,7 +5,7 @@ import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../../app";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheConceptApi(conceptData: any){
   let result = CreateDefaultConcept();
     try{
@@ -30,6 +30,6 @@ export async function CreateTheConceptApi(conceptData: any){
         } else {
           console.log('Create the concept api unexpected error: ', error);
         }
-        return error;
+        HandleInternalError(error, BaseUrl.CreateTheConceptUrl());
       }
 }

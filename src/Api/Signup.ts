@@ -1,6 +1,6 @@
 import { FreeschemaResponse } from "../DataStructures/Responses/StandardResponses";
 import { SignupModel } from "../DataStructures/SignupModel"
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { BaseUrl } from "../app"
 
 export default async function Signup(signupModel: SignupModel){
@@ -46,7 +46,7 @@ async function postData(url = '', data = {}) {
     }
     catch(error){
         console.log('Signup Error: ', error);
-        throw error;
+        HandleInternalError(error,url );
     }
 
   }

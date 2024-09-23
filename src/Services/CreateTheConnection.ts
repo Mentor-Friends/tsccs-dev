@@ -1,20 +1,22 @@
 import { Connection } from "../DataStructures/Connection";
 import { SyncData } from "../DataStructures/SyncData";
-import { genHexString } from "./GenerateHexNumber";
 
-export  function createTheConnection(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,
-     typeId: number, sessionInformationId: number, sessionInformationUserId: number
+
+/**
+ * This function is used to create a connection that is internal(inside of a composition)
+ * @param ofTheConceptId Start of the connection
+ * @param userId user id fo the user creating the connection
+ * @param toTheConceptId the end of the connection
+ * @param typeId this is the type of the connection
+ * @returns 
+ */
+export  function createTheConnection(ofTheConceptId:number, userId:number, toTheConceptId:number,
+     typeId: number
     ):Connection{  
         var orderId: number = 1;
-        var orderUserId: number = ofTheConceptUserId;
-        var typeUserId: number = ofTheConceptUserId;
-        var userId : number = ofTheConceptUserId;
-        var securityId: number = 0;
-        var securityUserId: number = ofTheConceptUserId;
+        var localUserId : number = userId;
         var accessId : number = 4;
-        var accessUserId: number = ofTheConceptUserId;
-        var connection = new Connection(0,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
-            typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
+        var connection = new Connection(0,ofTheConceptId,toTheConceptId,localUserId,typeId, orderId, accessId);
         if(ofTheConceptId == toTheConceptId){
             connection.ofTheConceptId = 0;
             connection.toTheConceptId = 1;

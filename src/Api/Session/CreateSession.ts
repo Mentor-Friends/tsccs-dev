@@ -1,7 +1,7 @@
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { SessionData } from "../../app";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 
 export async function CreateSession(sessionData: SessionData){
     try{
@@ -24,6 +24,6 @@ export async function CreateSession(sessionData: SessionData){
     }
     catch(ex){
         console.log("Creating session failed", ex);
-        throw ex;
+        HandleInternalError(ex, BaseUrl.CreateSessionId());
     }
 }

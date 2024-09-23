@@ -1,6 +1,6 @@
 import { FreeschemaResponse } from "../DataStructures/Responses/StandardResponses"
 import { SigninModel } from "../DataStructures/SigninModel"
-import { HandleHttpError } from "../Services/Common/ErrorPosting"
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting"
 import { BaseUrl } from "../app"
 
 
@@ -40,6 +40,6 @@ export default async function Signin(signinInfo: SigninModel) {
     return freeschemaRes
   } catch (error) {
     console.log('Sign in api error', error)
-    throw error;
+    HandleInternalError(error,url );
   }
 }

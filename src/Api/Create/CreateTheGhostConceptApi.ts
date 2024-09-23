@@ -5,9 +5,9 @@ import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
-import { LConnection } from "../../app";
+import { Connection } from "../../app";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
-export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: LConnection[]){
+export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[]){
   let result = {
     "concepts": [],
     "connections": []

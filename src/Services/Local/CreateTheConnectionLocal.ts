@@ -1,7 +1,6 @@
-import { LConnection } from "../../DataStructures/Local/LConnection";
+import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
-import { storeToDatabase } from "../../Database/indexdblocal";
 import { LocalSyncData } from "../../app";
 
 /**
@@ -18,7 +17,7 @@ import { LocalSyncData } from "../../app";
  * @returns a connection that is created and stored in the local system.
  */
 export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, 
-     typeId: number,orderId:number = 1, typeString: string = ""
+     typeId: number,orderId:number = 1, typeString: string = "", userId: number = 999
     ){  
         try{
             var accessId : number = 4;
@@ -30,9 +29,9 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
              realOfTheConceptId = ofTheConceptId;
              realToTheConceptId = toTheConceptId;
              realTypeId = typeId;
-             let connection = new LConnection(0,0,0,0,0,0);
+             let connection = new Connection(0,0,0,0,0,0,0);
              if(ofTheConceptId != toTheConceptId){
-                  connection = new LConnection(randomid, realOfTheConceptId, realToTheConceptId, typeId, orderId, accessId);
+                  connection = new Connection(randomid, realOfTheConceptId, realToTheConceptId, userId, typeId, orderId, accessId);
                  connection.isTemp = true;
                  connection.typeCharacter = typeString;
                  await LocalSyncData.AddConnection(connection);

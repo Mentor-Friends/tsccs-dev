@@ -1,9 +1,9 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { Concept, ConceptsData, CreateDefaultConcept } from "../../app";
 export async function TranslateLocalToReal(conceptId: number){
-  let result = CreateDefaultConcept();
+  let result:Concept = CreateDefaultConcept();
     try{
             var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
 
@@ -23,7 +23,6 @@ export async function TranslateLocalToReal(conceptId: number){
             console.log("Error in Getting Translating concept Error", response.status);
             HandleHttpError(response);
           }
-          return result;
 
 
     }
@@ -33,6 +32,9 @@ export async function TranslateLocalToReal(conceptId: number){
         } else {
           console.log('Error in Getting Translating concept unexpected error: ', error);
         }
-        throw error;
+        HandleInternalError(error,BaseUrl.GetRealConceptById() );
       }
+
+      return result;
+
 }

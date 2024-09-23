@@ -4,7 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { TheCharacter } from "../DataStructures/TheCharacter";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 export async function GetCharacterByCharacter(characterValue: string){
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
@@ -26,6 +26,6 @@ export async function GetCharacterByCharacter(characterValue: string){
         } else {
           console.log('unexpected error: ', error);
         }
-        throw error;
+        HandleInternalError(error, BaseUrl.GetCharacterByCharacterUrl());
       }
 }

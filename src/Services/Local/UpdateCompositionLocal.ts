@@ -36,7 +36,7 @@ export  async function UpdateCompositionLocal(
 const userId = patcherStructure.userId
 const sessionId = patcherStructure.sessionId
 const accessId = patcherStructure.accessId
-let connectionList: LConnection[] = []
+let connectionList: Connection[] = []
 const conceptList: Concept[] = []
 let composition: Concept = CreateDefaultLConcept()
 let parentConcept: Concept = CreateDefaultLConcept()
@@ -46,7 +46,7 @@ const compositionId = patcherStructure.compositionId
 
 // if you want to edit the subcompositions of the composition then you have to pass to this
 const ofTheConceptId = patcherStructure.ofTheCompositionId
-let toDeleteConnections: LConnection[] = []
+let toDeleteConnections: Connection[] = []
 
 // get all connections from the backend because it needs latest data
 const connectionListString = await GetAllConnectionsOfComposition(compositionId)
@@ -118,7 +118,7 @@ for (const key in object) {
     // if the existing concept then start the process for deleting the concept in the list
     for(let i=0 ; i< ExistingConcepts.length; i++){
       if (ExistingConcepts[i].id > 0) {
-        const deletingConnections: LConnection[] =
+        const deletingConnections: Connection[] =
           CheckAllConnectionsConnectedInLConnectionArray(
             connectionList,
             ExistingConcepts[i].id,
