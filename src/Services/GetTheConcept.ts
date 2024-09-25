@@ -4,6 +4,12 @@ import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 
+/**
+ * 
+ * @param id this is the id that can be used to get the concept.
+ * @param userId This is the user that calls the concept
+ * @returns Concept if it exists
+ */
 export default async function GetTheConcept(id: number, userId: number = 999){
     try{
         var concept = CreateDefaultConcept();

@@ -3,26 +3,15 @@ import { Connection } from '../../DataStructures/Connection';
 import { Concept } from '../../DataStructures/Concept';
 import InsertUniqueNumber from '../../Helpers/UniqueInsert'
 import {
-  CheckAllConnectionsConnectedInConnectionArray,
   CheckAllConnectionsConnectedInLConnectionArray,
-  CheckIfTypeConceptsExistsInArray,
   CheckIfTypeLConceptsExistsInArray,
 } from '../../Helpers/CheckIfExists'
 
-import {
-  RemoveConceptFromList,
-  RemoveConnectionFromList,
-} from '../../Helpers/RemoveFromArray'
+
 import { PatcherStructure } from '../../DataStructures/PatcherStructure'
-import { CreateDefaultConcept } from './../CreateDefaultConcept';
 import { GetAllConnectionsOfComposition } from '../../Api/GetAllConnectionsOfComposition';
 import GetTheConcept from './../GetTheConcept';
-import MakeTheInstanceConcept from './../MakeTheInstanceConcept';
-import { createTheConnection }  from './../CreateTheConnection';
 import { DeleteConnectionById } from './../DeleteConnection';
-import { SyncData } from '../../DataStructures/SyncData';
-import { CompositionBinaryTree } from '../../DataStructures/Composition/CompositionBinaryTree';
-import { Composition } from '../../DataStructures/Composition/Composition';
 import { CreateTheCompositionLocal } from './CreateTheCompositionLocal';
 import { MakeTheInstanceConceptLocal } from './MakeTheInstanceConceptLocal';
 import { CreateDefaultLConcept, CreateTheConnectionLocal, LConnection, LocalSyncData } from '../../app';

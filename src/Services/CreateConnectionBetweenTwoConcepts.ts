@@ -1,7 +1,5 @@
-import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConnectionOfTheConcept } from "../Api/GetConnectionOfTheConcept";
 import { Concept } from "../DataStructures/Concept";
-import { ConceptsData } from "../DataStructures/ConceptData";
 import { Connection } from "../DataStructures/Connection";
 import { SyncData } from "../DataStructures/SyncData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
@@ -88,7 +86,6 @@ export async function CreateConnectionBetweenTwoConceptsGeneral(ofTheConcept: Co
 
    var userId:number = ofTheConcept.userId;
    var accessId: number = 4;
-   var sessionInformationId = 999;
    if(both){
        let prefix1: string = toTheConcept.type?.characterValue + "_s";
        let linkerAdd1 = linker + "_by";
@@ -108,7 +105,7 @@ export async function CreateConnectionBetweenTwoConceptsGeneral(ofTheConcept: Co
     await CountRelationship(linkerAdd, ofTheConcept, userId);
    }
    var connectionConcept = await MakeTheInstanceConcept("connection",forwardLinker,false,999,999,999);
-   let newConnection = await CreateTheConnectionGeneral(ofTheConcept.id,ofTheConcept.userId, toTheConcept.id, toTheConcept.userId, 
-      connectionConcept.id, sessionInformationId,sessionInformationId, 1000,  accessId);
+   let newConnection = await CreateTheConnectionGeneral(ofTheConcept.id,ofTheConcept.userId, toTheConcept.id,
+      connectionConcept.id, 1000,  accessId);
    return newConnection;
    }

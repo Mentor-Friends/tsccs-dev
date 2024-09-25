@@ -1,5 +1,6 @@
 import { Connection } from "../DataStructures/Connection";
 import { SyncData } from "../DataStructures/SyncData";
+import { HandleInternalError } from "./Common/ErrorPosting";
 
 
 /**
@@ -13,19 +14,26 @@ import { SyncData } from "../DataStructures/SyncData";
 export  function createTheConnection(ofTheConceptId:number, userId:number, toTheConceptId:number,
      typeId: number
     ):Connection{  
-        var orderId: number = 1;
-        var localUserId : number = userId;
-        var accessId : number = 4;
-        var connection = new Connection(0,ofTheConceptId,toTheConceptId,localUserId,typeId, orderId, accessId);
-        if(ofTheConceptId == toTheConceptId){
-            connection.ofTheConceptId = 0;
-            connection.toTheConceptId = 1;
-            return connection;
+            var orderId: number = 1;
+            var localUserId : number = userId;
+            var accessId : number = 4;
+            var connection = new Connection(0,ofTheConceptId,toTheConceptId,localUserId,typeId, orderId, accessId);
+            if(ofTheConceptId == toTheConceptId){
+                connection.ofTheConceptId = 0;
+                connection.toTheConceptId = 1;
+                return connection;
+            }
+        try{
+
+            connection.isTemp = true;
+            connection.id = Math.floor(Math.random() * 100000000);
+            SyncData.AddConnection(connection);
         }
-        connection.isTemp = true;
-        connection.id = Math.floor(Math.random() * 100000000);
-        SyncData.AddConnection(connection);
+        catch(error){
+            HandleInternalError(error);
+        }
         return connection;
+
         
       
 }

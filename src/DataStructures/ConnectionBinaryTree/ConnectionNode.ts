@@ -17,6 +17,8 @@ export class ConnectionNode{
         this.currentNode = null;
     }
 
+
+
     public addCurrentNode(passedNode:ConnectionNode, node:ConnectionNode|null){
         if(node == null){
             node = passedNode;

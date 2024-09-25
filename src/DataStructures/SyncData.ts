@@ -6,6 +6,7 @@ import { ConceptsData } from "./ConceptData";
 import { Connection } from "./Connection";
 import { ConnectionData } from "./ConnectionData";
 import { ReservedIds } from "./ReservedIds";
+import { LocalSyncData } from "../app";
 
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
@@ -45,61 +46,53 @@ export class SyncData{
     }
 
     static AddConcept(concept: Concept){
-        var contains = false;
-       // ConceptsData.AddConceptTemporary(concept);
-        if(!contains){
-         this.conceptsSyncArray.push(concept);
-        }
+        LocalSyncData.AddConcept(concept);
      }
 
 
 
      static RemoveConcept(concept: Concept){
-        for(var i=0; i<this.conceptsSyncArray.length; i++){
-         if(this.conceptsSyncArray[i].id == concept.id){
-             this.conceptsSyncArray.splice(i, 1);
-         }
-        }
+        LocalSyncData.RemoveConcept(concept);
      }
 
      static AddConnection(connection: Connection){
-         this.connectionSyncArray.push(connection);
+         LocalSyncData.AddConnection(connection);
      }
 
      static RemoveConnection(connection: Connection){
-        for(var i=0; i<this.connectionSyncArray.length; i++){
-         if(this.connectionSyncArray[i].id == connection.id){
-             this.connectionSyncArray.splice(i, 1);
-         }
-        }
+        LocalSyncData.RemoveConnection(connection);
      }
 
-     static async  SyncDataOnline(){
-        for(let i=0;i<this.conceptsSyncArray.length;i++){
-            ConceptsData.AddConcept(this.conceptsSyncArray[i]);
-        }
+    //  static async  SyncDataOnline(){
+    //     for(let i=0;i<this.conceptsSyncArray.length;i++){
+    //         ConceptsData.AddConcept(this.conceptsSyncArray[i]);
+    //     }
 
-        for(let i=0;i<this.connectionSyncArray.length;i++){
-            ConnectionData.AddConnection(this.connectionSyncArray[i]);
-        }
+    //     for(let i=0;i<this.connectionSyncArray.length;i++){
+    //         ConnectionData.AddConnection(this.connectionSyncArray[i]);
+    //     }
         
-        if(this.conceptsSyncArray.length > 0){
-            let conceptsArray = this.conceptsSyncArray.slice();
-            this.conceptsSyncArray = [];
-            CreateTheConceptApi(conceptsArray);
-        }
-         if(this.connectionSyncArray.length > 0){
+    //     if(this.conceptsSyncArray.length > 0){
+    //         let conceptsArray = this.conceptsSyncArray.slice();
+    //         this.conceptsSyncArray = [];
+    //         CreateTheConceptApi(conceptsArray);
+    //     }
+    //      if(this.connectionSyncArray.length > 0){
 
-            // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
-            //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
-            // }
-            let connectionsArray = this.connectionSyncArray.slice();
-            this.connectionSyncArray = [];
-            await CreateTheConnectionApi(connectionsArray);
-        }
-        return "done";
+    //         // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
+    //         //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
+    //         // }
+    //         let connectionsArray = this.connectionSyncArray.slice();
+    //         this.connectionSyncArray = [];
+    //         await CreateTheConnectionApi(connectionsArray);
+    //     }
+    //     return "done";
 
-     }
+    //  }
+
+    static async SyncDataOnline(){
+        LocalSyncData.SyncDataOnline();
+    }
 
      static async syncDataLocalDb(){
         if(this.conceptsSyncArray.length > 0){

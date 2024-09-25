@@ -2,6 +2,7 @@ import { removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Connection } from "./Connection";
 import { ConnectionBinaryTree } from "./ConnectionBinaryTree/ConnectionBinaryTree";
+import { ConnectionOfTheTree } from "./ConnectionBinaryTree/ConnectionOfTheTree";
 import { ConnectionTypeTree } from "./ConnectionBinaryTree/ConnectionTypeTree";
 export class ConnectionData{
     
@@ -42,6 +43,7 @@ export class ConnectionData{
         storeToDatabase("connection", connection);
         ConnectionBinaryTree.addConnectionToTree(connection);
         ConnectionTypeTree.addConnectionToTree(connection);
+        ConnectionOfTheTree.addConnection(connection);
     }
 
     }
@@ -50,6 +52,7 @@ export class ConnectionData{
         if(!connection.isTemp){
         ConnectionBinaryTree.addConnectionToTree(connection);
         ConnectionTypeTree.addConnectionToTree(connection);
+        ConnectionOfTheTree.addConnection(connection);
         }
     }
 
@@ -67,7 +70,16 @@ export class ConnectionData{
          removeFromDatabase("connection",connection.id);
          ConnectionBinaryTree.removeNodeFromTree(connection.id);
          ConnectionTypeTree.removeTypeConcept(connection.typeId, connection.id);
+         ConnectionOfTheTree.removeNodeFromTree(connection.id);
        }
+    }
+
+    static GetConnectionTypeOfTree(){
+        ConnectionOfTheTree.node;
+    }
+
+    static GetConnectionByOfTheConceptAndType(ofTheConceptId: number, typeId: number ){
+        return ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
     }
 
     static GetConnectionTree(){

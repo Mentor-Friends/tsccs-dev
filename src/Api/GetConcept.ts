@@ -5,6 +5,11 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../app";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+/**
+ * This function helps you get concept from the id. This can only be positive.
+ * @param id The id that you want to get the concept of
+ * @returns 
+ */
 export async function GetConcept(id: number){
     try{
     let result = CreateDefaultConcept();
