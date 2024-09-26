@@ -49,12 +49,6 @@ export class ConnectionBinaryTree{
 
 
     static async getNodeFromTree(id:number){
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
         if(this.connectionroot){
             var Node = this.connectionroot.getFromNode(id, this.connectionroot);
             return Node;

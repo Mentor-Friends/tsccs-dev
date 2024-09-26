@@ -59,6 +59,12 @@ export async function GetCompositionWithAllIds(id:number){
     return returnOutput;
 }
 
+/**
+ * This is a function that takes on all the concepts and connections of the concept (as a composition ) and builds
+ * it into a json data.
+ * @param id this id is just used to get all the composition data from the concepts and connections in memory
+ * @returns 
+ */
 export async function GetCompositionFromMemory(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};

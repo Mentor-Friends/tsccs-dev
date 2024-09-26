@@ -1,5 +1,5 @@
 import { Concept } from "./Concept";
-import { removeFromDatabase, storeToDatabase, UpdateToDatabase } from "../Database/indexeddb";
+import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { BinaryTree } from "./BinaryTree";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
@@ -45,7 +45,7 @@ export class ConceptsData{
 
     static AddConceptToStorage(concept: Concept){
         if(concept.id > 0){
-        storeToDatabase("concept",concept);
+            UpdateToDatabase("concept",concept);
         }
     }
 
@@ -58,7 +58,7 @@ export class ConceptsData{
         //    if(contains){
           //   this.RemoveConcept(concept);
           //  }
-             UpdateToDatabase("concept",concept);
+             //UpdateToDatabase("concept",concept);
              BinaryTree.addConceptToTree(concept);
               BinaryTypeTree.addConceptToTree(concept);
               BinaryCharacterTree.addConceptToTree(concept);
@@ -110,13 +110,6 @@ export class ConceptsData{
                 myConcept = returnedConcept as Concept;
             }
         }
-        // if(myConcept.id == 0 || myConcept == null){
-        //     for(var i=0; i<this.conceptsArray.length; i++){
-        //         if(this.conceptsArray[i].id == id){
-        //             myConcept = this.conceptsArray[i];
-        //         }
-        //     }
-        // }
         return myConcept;
     }
 

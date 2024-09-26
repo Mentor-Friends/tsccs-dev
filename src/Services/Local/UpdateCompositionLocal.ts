@@ -150,9 +150,9 @@ for (const key in object) {
   for (let j = 0; j < toDeleteConnections.length; j++) {
     // remove from the cache list
     // delete the connection in the backend
-    DeleteConnectionById(toDeleteConnections[j].id)
+    await DeleteConnectionById(toDeleteConnections[j].id)
   }
 
 
-LocalSyncData.SyncDataOnline()
+await LocalSyncData.SyncDataOnline()
 }

@@ -1,5 +1,5 @@
 import { Concept } from "./../Concept";
-import {  removeFromDatabase, storeToDatabase } from "../../Database/indexdblocal";
+import {  removeFromDatabase,UpdateToDatabase } from "../../Database/indexdblocal";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { LocalBinaryCharacterTree } from "./LocalBinaryCharacterTree";
 import { LocalBinaryTypeTree } from "./LocalBinaryTypeTree";
@@ -19,7 +19,7 @@ export class LocalConceptsData{
 
     static AddConcept(concept: Concept){
         if(concept.id != 0){
-             storeToDatabase("localconcept",concept);
+            UpdateToDatabase("localconcept",concept);
             LocalBinaryTree.addConceptToTree(concept);
             LocalBinaryCharacterTree.addConceptToTree(concept);
             LocalBinaryTypeTree.addConceptToTree(concept);

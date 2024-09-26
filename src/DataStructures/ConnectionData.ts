@@ -1,4 +1,4 @@
-import { removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Connection } from "./Connection";
 import { ConnectionBinaryTree } from "./ConnectionBinaryTree/ConnectionBinaryTree";
@@ -24,7 +24,7 @@ export class ConnectionData{
     }
 
     static AddConnectionToStorage(connection:Connection){
-        storeToDatabase("connection", connection);
+        UpdateToDatabase("connection", connection);
     }
 
 
@@ -39,7 +39,7 @@ export class ConnectionData{
     //     }
     //     this.connectionArray.push(connection);
     if(!connection.isTemp){
-        storeToDatabase("connection", connection);
+        //UpdateToDatabase("connection", connection);
         ConnectionBinaryTree.addConnectionToTree(connection);
         ConnectionTypeTree.addConnectionToTree(connection);
     }
@@ -87,7 +87,7 @@ export class ConnectionData{
     //         }
     //     }
     //     return myConcept;
-
+    
     var  myConnection: Connection = new Connection(0,0,0,0,0,0,0);
     var node = await ConnectionBinaryTree.getNodeFromTree(id);
     if(node?.value){

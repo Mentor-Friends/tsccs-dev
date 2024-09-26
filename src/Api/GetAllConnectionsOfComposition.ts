@@ -30,11 +30,14 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
   var connectionList: Connection[] = [];
 
   try{
-      var header = GetRequestHeader('application/x-www-form-urlencoded');
+      var header = GetRequestHeader('application/json');
+      const myHeaders = new Headers();
+      const formdata = new FormData();
+      formdata.append("composition_id", composition_id.toString());
       const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
-        headers: header,
-        body: `composition_id=${composition_id}`
+        headers: myHeaders,
+        body: formdata
       });
       console.log("this is getting connection from online", BaseUrl.GetAllConnectionsOfCompositionUrl(), composition_id);
       if(!response.ok){

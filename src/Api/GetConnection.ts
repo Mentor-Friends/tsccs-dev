@@ -14,10 +14,12 @@ export async function GetConnection(id: number){
         }
         else{
             var header = GetRequestHeader('application/x-www-form-urlencoded')
+            const formdata = new FormData();
+            formdata.append("id", id.toString());
             const response = await fetch(BaseUrl.GetConnectionUrl(),{
                 method: 'POST',
                 headers: header,
-                body: `id=${id}`
+                body: formdata
             });
             if(response.ok){
                 result = await response.json() as Connection;

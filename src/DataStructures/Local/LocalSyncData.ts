@@ -1,7 +1,7 @@
 import { CreateTheGhostConceptApi } from "../../Api/Create/CreateTheGhostConceptApi";
 import { CreateTheGhostConnectionApi } from "../../Api/Create/CreateTheGhostConnectionApi";
 import { Concept } from "./../Concept";
-import { storeToDatabase } from "../../Database/indexdblocal";
+import { UpdateToDatabase } from "../../Database/indexdblocal";
 import { ConceptsData } from "../ConceptData";
 import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "../Connection";
@@ -268,13 +268,13 @@ export class LocalSyncData{
      static async syncDataLocalDb(){
         if(this.conceptsSyncArray.length > 0){
             for(let i=0; i< this.conceptsSyncArray.length;i++){
-                storeToDatabase("localconcept",this.conceptsSyncArray[i]);
+                UpdateToDatabase("localconcept",this.conceptsSyncArray[i]);
             }
             this.conceptsSyncArray = [];
         }
          if(this.connectionSyncArray.length > 0){
             for(let i=0; i< this.connectionSyncArray.length;i++){
-                storeToDatabase("localconnection",this.connectionSyncArray[i]);
+                UpdateToDatabase("localconnection",this.connectionSyncArray[i]);
             }
          this.connectionSyncArray = [];
         }

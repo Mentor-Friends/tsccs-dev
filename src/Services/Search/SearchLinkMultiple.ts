@@ -6,6 +6,8 @@ import { GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefe
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string=""){
   let concepts:any[] = [];
   try{
+    let startTime = new Date().getTime();
+
     let conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
     let mainCompositionId = searchQuery[0].composition;
     const result = conceptsConnections;
@@ -13,9 +15,12 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
     let connections = result.internalConnections;
     let linkers = result.linkers;
     let reverse = result.reverse;
-    await GetConnectionDataPrefetch(linkers);
-    concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds,connections);
+    const [prefetchConnections, concepts] = await Promise.all([
+      GetConnectionDataPrefetch(linkers),
+      GetCompositionFromConnectionsWithDataIdInObject(conceptIds,connections)
+  ]);
     let out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
+    console.log("this is the end time for searching data", new Date().getTime() - startTime);
     return out;
   }
   catch(e){
