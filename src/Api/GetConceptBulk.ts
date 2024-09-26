@@ -15,13 +15,29 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
 export async function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>{
     let result:Concept[] = [];
     try{
-        var bulkConceptFetch = [];
-        for(let i=0; i<conceptIds.length; i++){
-            let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
-            if(conceptUse.id == 0){
-                bulkConceptFetch.push(conceptIds[i]);
+      if(conceptIds.length > 0){
+        var bulkConceptFetch: number[] = [];
+        // for(let i=0; i<conceptIds.length; i++){
+        //     let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
+        //     if(conceptUse.id == 0){
+        //         bulkConceptFetch.push(conceptIds[i]);
+        //     }
+        // }
+        let newAlgoTime = new Date().getTime();
+        let connectionArray: Concept[] = [];
+        let remainingIds:any = {};
+        for(let i=0; i< conceptIds.length; i++){
+            remainingIds[conceptIds[i]] = false;
+        }
+        await ConceptsData.GetConceptBulkData(conceptIds, connectionArray, remainingIds );
+        for(let key in remainingIds){
+            if(remainingIds[key] == false){
+              bulkConceptFetch.push(Number(key));
             }
         }
+        console.log("this is the concept array from bulk", connectionArray, bulkConceptFetch, new Date().getTime() - newAlgoTime);
+    
+
         if(bulkConceptFetch.length == 0){
 
             return result;
@@ -50,6 +66,8 @@ export async function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>{
 
 
         }
+      }
+       
     }
     catch (error) {
         if (error instanceof Error) {

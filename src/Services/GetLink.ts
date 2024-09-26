@@ -30,6 +30,7 @@ export async function GetLink(id:number, linker:string, inpage:number=10, page:n
     return  output;
 }
 
+
 export async function GetLinkRaw(id:number, linker:string, inpage:number=10, page:number=1){
   var output: Concept[] = [];
   var  concept:Concept = await GetTheConcept(id);

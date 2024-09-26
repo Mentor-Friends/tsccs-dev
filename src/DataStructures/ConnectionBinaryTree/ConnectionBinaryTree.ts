@@ -56,6 +56,12 @@ export class ConnectionBinaryTree{
         return this.connectionroot;
     }
 
+    static async getConnectionListFromIds(ids: number[], connectionArray: Connection [], remainingIds: any){
+        if(this.connectionroot){
+            this.connectionroot.checkIfIdsInNode(this.connectionroot, ids, connectionArray, remainingIds);
+        }
+    }
+
 
 
 }

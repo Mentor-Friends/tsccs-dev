@@ -101,6 +101,25 @@ export class Node{
         
     }
 
+
+    
+    public checkIfIdsInNode(node: Node | null, ids: number[], connectionArray: Concept[], remainingIds: any){
+        if(node){
+            if(ids.includes(node.key)){
+                connectionArray.push(node.value);
+                remainingIds[node.key] = true;
+            }
+            if(node.leftNode){
+                this.checkIfIdsInNode(node.leftNode, ids, connectionArray, remainingIds);
+
+            }
+            if(node.rightNode){
+                this.checkIfIdsInNode(node.rightNode, ids, connectionArray, remainingIds);
+
+            }
+        }
+    }
+
     public addCharacterNode(passedNode:Node, node:Node|null, height:number){
         var debugFlag = false;
         if(passedNode.value.characterValue != ""){

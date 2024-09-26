@@ -49,6 +49,10 @@ export class ConceptsData{
         }
     }
 
+    static async GetConceptBulkData(ids: number[], connectionArray: Concept[], remainingIds: any){
+        await BinaryTree.getConceptListFromIds(ids, connectionArray, remainingIds);
+    }
+
     static AddConcept(concept: Concept){
 
         if(concept.id > 0){

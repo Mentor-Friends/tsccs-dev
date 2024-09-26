@@ -104,23 +104,36 @@ export async function GetCompositionFromConnectionsWithIndex(conceptIds:number[]
 export async function GetConnectionDataPrefetch(connectionIds:number[]){
     let remainingConnections: number[] = [];
     let connectionsAll:Connection[] = [];
-    for(let i=0; i< connectionIds.length; i++){
-        let connection = await ConnectionData.GetConnection(connectionIds[i]);
+    let remainingIds: any = {};
+    // for(let i=0; i< connectionIds.length; i++){
+    //     let connection = await ConnectionData.GetConnection(connectionIds[i]);
 
-        if(connection.id == 0){
-            remainingConnections.push(connectionIds[i]);
-        }
-        else{
-            connectionsAll.push(connection);
+    //     if(connection.id == 0){
+    //         remainingConnections.push(connectionIds[i]);
+    //     }
+    //     else{
+    //         connectionsAll.push(connection);
+    //     }
+    // }
+    for(let i=0; i< connectionIds.length; i++){
+        remainingIds[connectionIds[i]] = false;
+    }
+    await ConnectionData.GetConnectionBulkData(connectionIds, connectionsAll, remainingIds);
+    for(let key in remainingIds){
+        if(remainingIds[key] == false){
+            remainingConnections.push(Number(key));
         }
     }
+    console.log("This is the remaining connections", remainingConnections);
     let prefetchConcepts : number [] = [];
     let connectionsAllLocal = await GetConnectionBulk(remainingConnections);
     connectionsAll = [...connectionsAll,...connectionsAllLocal];
+    console.log("these are all the connections", connectionsAll);
     for(let j=0 ; j< connectionsAll.length; j++){
         prefetchConcepts.push(connectionsAll[j].ofTheConceptId);
         prefetchConcepts.push(connectionsAll[j].toTheConceptId);
     }
+    console.log("this is the prefetch concepts", prefetchConcepts);
     await GetConceptBulk(prefetchConcepts);
     return connectionsAll;
 }
@@ -136,19 +149,37 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(conceptIds
 
     // in the connections list get all the connections from the memory if available else put those which are not available 
     // into a list / array called remainingConnections.
+
+    let connectionArray: Connection[] = [];
+    let remainingIds:any = {};
     for(let i=0; i< connections.length; i++){
-        let connection = await ConnectionData.GetConnection(connections[i]);
-        if(connection.id == 0){
-            remainingConnections.push(connections[i]);
+        remainingIds[connections[i]] = false;
+    }
+    await ConnectionData.GetConnectionBulkData(connections, connectionArray, remainingIds );
+    for(let key in remainingIds){
+        if(remainingIds[key] == false){
+            remainingConnections.push(Number(key));
         }
     }
+
+    //console.log("this is the remaining connections", remainingConnections);
+    // let oldAlgoTime = new Date().getTime();
+    // for(let i=0; i< connections.length; i++){
+    //     let connection = await ConnectionData.GetConnection(connections[i]);
+    //     if(connection.id == 0){
+    //         remainingConnections.push(connections[i]);
+    //     }
+    // }
+    // console.log("this is the connection array from bulk old algo", connectionArray, new Date().getTime() - oldAlgoTime);
+
 
     // get all the connections that are not available in memory from the api.
     let prefetchConcepts : number [] = [];
     let connectionsAll = await GetConnectionBulk(remainingConnections);
-    for(let j=0 ; j< connectionsAll.length; j++){
-        prefetchConcepts.push(connectionsAll[j].ofTheConceptId);
-        prefetchConcepts.push(connectionsAll[j].toTheConceptId);
+    let getConceptsOfTheseConnections = [...connectionsAll, ...connectionArray]
+    for(let j=0 ; j< getConceptsOfTheseConnections.length; j++){
+        prefetchConcepts.push(getConceptsOfTheseConnections[j].ofTheConceptId);
+        prefetchConcepts.push(getConceptsOfTheseConnections[j].toTheConceptId);
     }
     await GetConceptBulk(prefetchConcepts);
 

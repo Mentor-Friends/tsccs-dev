@@ -106,7 +106,7 @@ export async function GetCompositionWithIdFromMemory(id:number){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
-    var output = await recursiveFetch(id, connectionList, compositionList);
+    let output = await recursiveFetch(id, connectionList, compositionList);
     var mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     var FinalReturn: any = {};

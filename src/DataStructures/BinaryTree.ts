@@ -58,6 +58,12 @@ export class BinaryTree{
     }
 
 
+    static async getConceptListFromIds(ids: number[], connectionArray: Concept [], remainingIds: any){
+        if(this.root){
+            this.root.checkIfIdsInNode(this.root, ids, connectionArray, remainingIds);
+        }
+    }
+
 
 
     static countNumberOfNodes(){

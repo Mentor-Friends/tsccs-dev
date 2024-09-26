@@ -301,6 +301,23 @@ export class ConnectionNode{
 
     }
 
+    public checkIfIdsInNode(node: ConnectionNode | null, ids: number[], connectionArray: Connection[], remainingIds: any){
+        if(node){
+            if(ids.includes(node.key)){
+                connectionArray.push(node.value);
+                remainingIds[node.key] = true;
+            }
+            if(node.leftNode){
+                this.checkIfIdsInNode(node.leftNode, ids, connectionArray, remainingIds);
+
+            }
+            if(node.rightNode){
+                this.checkIfIdsInNode(node.rightNode, ids, connectionArray, remainingIds);
+
+            }
+        }
+    }
+
 
     public removeNode(passedNode:ConnectionNode|null,id:number){
         if(passedNode == null){

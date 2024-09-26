@@ -38,11 +38,11 @@ export class ConnectionData{
     //         storeToDatabase("connection",connection);
     //     }
     //     this.connectionArray.push(connection);
-    if(!connection.isTemp){
+   // if(!connection.isTemp){
         //UpdateToDatabase("connection", connection);
         ConnectionBinaryTree.addConnectionToTree(connection);
         ConnectionTypeTree.addConnectionToTree(connection);
-    }
+    //}
 
     }
 
@@ -76,6 +76,10 @@ export class ConnectionData{
 
     static GetConnectionTypeTree(){
         return ConnectionTypeTree.connectionTypeRoot;
+    }
+
+    static async GetConnectionBulkData(ids: number[], connectionArray: Connection[], remainingIds: any){
+        await ConnectionBinaryTree.getConnectionListFromIds(ids, connectionArray, remainingIds);
     }
 
     static async GetConnection(id: number){
