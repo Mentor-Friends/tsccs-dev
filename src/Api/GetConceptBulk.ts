@@ -12,30 +12,36 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  * @param conceptIds list of concept ids that need to be fetched 
  * @returns list of concepts
  */
-export async function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>{
+export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[]>{
     let result:Concept[] = [];
+    let setTime = new Date().getTime();
+    // let conceptIds = passedConcepts.filter((value, index, self) => {
+    //   return self.indexOf(value) === index;
+    // });
+    let conceptIds = Array.from(new Set(passedConcepts));
+
+
     try{
       if(conceptIds.length > 0){
         var bulkConceptFetch: number[] = [];
-        // for(let i=0; i<conceptIds.length; i++){
-        //     let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
-        //     if(conceptUse.id == 0){
-        //         bulkConceptFetch.push(conceptIds[i]);
-        //     }
-        // }
-        let newAlgoTime = new Date().getTime();
-        let connectionArray: Concept[] = [];
-        let remainingIds:any = {};
-        for(let i=0; i< conceptIds.length; i++){
-            remainingIds[conceptIds[i]] = false;
-        }
-        await ConceptsData.GetConceptBulkData(conceptIds, connectionArray, remainingIds );
-        for(let key in remainingIds){
-            if(remainingIds[key] == false){
-              bulkConceptFetch.push(Number(key));
+        for(let i=0; i<conceptIds.length; i++){
+            let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
+            if(conceptUse.id == 0){
+                bulkConceptFetch.push(conceptIds[i]);
             }
         }
-        console.log("this is the concept array from bulk", connectionArray, bulkConceptFetch, new Date().getTime() - newAlgoTime);
+       // let newAlgoTime = new Date().getTime();
+        //let remainingIds:any = {};
+        // for(let i=0; i< conceptIds.length; i++){
+        //     remainingIds[conceptIds[i]] = false;
+        // }
+       //await ConceptsData.GetConceptBulkData(conceptIds, result, remainingIds );
+        // for(let key in remainingIds){
+        //     if(remainingIds[key] == false){
+        //       bulkConceptFetch.push(Number(key));
+        //     }
+        // }
+        //bulkConceptFetch = conceptIds;
     
 
         if(bulkConceptFetch.length == 0){
@@ -66,7 +72,9 @@ export async function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>{
 
 
         }
+
       }
+      
        
     }
     catch (error) {
@@ -77,6 +85,7 @@ export async function GetConceptBulk(conceptIds: number[]): Promise<Concept[]>{
         }
        HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
       }
+
       return result;
     
 }

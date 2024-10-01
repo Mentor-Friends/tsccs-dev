@@ -4,6 +4,7 @@ import { ConceptsData } from "./ConceptData";
 export  class Concept{
     id: number;
     ghostId: number;
+    count: number = 0;
     userId: number;
     typeId: number;
     categoryId: number;

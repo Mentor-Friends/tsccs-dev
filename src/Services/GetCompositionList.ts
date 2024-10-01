@@ -4,7 +4,7 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 import { LocalConceptsData } from "../DataStructures/Local/LocalConceptData";
 import { Concept, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionLocalWithId } from "../app";
 import { GetComposition, GetCompositionFromMemory, GetCompositionWithId, GetCompositionWithIdFromMemory } from "./GetComposition";
-import GetConceptByCharacter from "./GetConceptByCharacter";
+import GetConceptByCharacter, { GetConceptByCharacterUpdated } from "./GetConceptByCharacter";
 import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
 
 // get the list of compositions from the type 
@@ -125,6 +125,32 @@ export async function GetCompositionListAllWithId(compositionName: string,userId
 
 export  async function GetCompositionListWithId(compositionName: string, userId: number,  inpage:number = 10, page:number =1){
    var concept = await GetConceptByCharacter(compositionName);
+   var CompositionList :any = [];
+   if(concept){
+    await GetAllConceptsByType(compositionName, userId);
+    var conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
+    var startPage = inpage * (page - 1);
+    var prefetchComposition:number[] = [];
+    for(var i=startPage; i< startPage + inpage; i++){
+      if(conceptList[i]){
+         
+         prefetchComposition.push(conceptList[i].id);
+      }
+    }
+    await GetAllConnectionsOfCompositionBulk(prefetchComposition);
+    for(var i=startPage; i< startPage + inpage; i++){
+      if(conceptList[i]){
+         var compositionJson= await GetCompositionWithIdFromMemory(conceptList[i].id);
+            CompositionList.push(compositionJson);
+      }
+    }
+   }
+    return CompositionList;
+}
+
+
+export  async function GetCompositionListWithIdUpdated(compositionName: string, userId: number,  inpage:number = 10, page:number =1){
+   var concept = await GetConceptByCharacterUpdated(compositionName);
    var CompositionList :any = [];
    if(concept){
     await GetAllConceptsByType(compositionName, userId);

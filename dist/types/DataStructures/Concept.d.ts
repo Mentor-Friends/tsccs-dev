@@ -1,6 +1,7 @@
 export declare class Concept {
     id: number;
     ghostId: number;
+    count: number;
     userId: number;
     typeId: number;
     categoryId: number;

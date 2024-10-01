@@ -1,9 +1,10 @@
 import { Concept } from "./Concept";
-import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
+import { IndexDb, removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { BinaryTree } from "./BinaryTree";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
+import { IndexDbUpdate } from "../Database/IndexUpdate";
 export class ConceptsData{
 
     name: string;
@@ -63,6 +64,7 @@ export class ConceptsData{
           //   this.RemoveConcept(concept);
           //  }
              //UpdateToDatabase("concept",concept);
+             //IndexDbUpdate.UpdateConceptIndexDb(concept);
              BinaryTree.addConceptToTree(concept);
               BinaryTypeTree.addConceptToTree(concept);
               BinaryCharacterTree.addConceptToTree(concept);
@@ -113,6 +115,9 @@ export class ConceptsData{
             if(returnedConcept){
                 myConcept = returnedConcept as Concept;
             }
+        }
+        if(myConcept.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
+            IndexDbUpdate.UpdateConceptIndexDb(myConcept);
         }
         return myConcept;
     }

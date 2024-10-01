@@ -94,6 +94,7 @@ export async function GetCompositionWithIdFromMemory(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+
     var compositionList:number[] = [];
     for(var i=0; i<connectionList.length; i++){
         if(!compositionList.includes(connectionList[i].ofTheConceptId)){
@@ -106,14 +107,13 @@ export async function GetCompositionWithIdFromMemory(id:number){
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
-    let output = await recursiveFetch(id, connectionList, compositionList);
+    let output = await recursiveFetchConcept(concept, connectionList, compositionList);
     var mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     var FinalReturn: any = {};
     FinalReturn['created_at'] = concept.entryTimeStamp;
     FinalReturn['data'] = returnOutput;
     FinalReturn['id'] = id;
-
     return FinalReturn;
 }
 
@@ -203,6 +203,99 @@ export async function GetCompositionWithId(id:number){
     return FinalReturn;
 }
 
+/**
+ * This function takes concepts and connections and then builds a json.
+ * @param concept The concept that needs to get other concepts that are inside of it.
+ * @param connectionList List of connections that are available in the composition. We have to loop over it.
+ * @param compositionList Composition list is the list of concepts that have connections inside of them.
+ * @param visitedConcepts This is a checking mechanism to not go in loops. So preferably pass an empty array.
+ * @returns 
+ */
+export async function recursiveFetchConcept(concept:Concept, connectionList:Connection[], compositionList:number[], visitedConcepts: number[] = []){
+
+    var output : any= {};
+    var arroutput: any = [];
+    let id = concept.id;
+    var mainString = concept?.type?.characterValue ?? "";
+    if(!compositionList.includes(id)){
+
+        return concept?.characterValue;
+    }
+    else{
+        if(visitedConcepts.includes(id)){
+            return "";
+          }
+          else{
+            visitedConcepts.push(id);
+          }
+        for(var i=0; i<connectionList.length; i++){
+            if(connectionList[i].ofTheConceptId == id){
+
+                if(id != connectionList[i].toTheConceptId){
+                    var toConceptId = connectionList[i].toTheConceptId;
+            
+                    var toConcept = await ConceptsData.GetConcept(toConceptId);
+                    if((toConcept == null || toConcept.id == 0) && toConceptId != null && toConceptId != undefined){
+                    var conceptString = await  GetConcept(toConceptId);
+                    toConcept = conceptString as Concept;
+                    }
+
+
+                    if(toConcept.id != 0){
+                        if(toConcept?.type == null ){
+
+                            var toConceptTypeId: number  = toConcept.typeId;
+                            var toConceptType = await ConceptsData.GetConcept(toConceptTypeId);
+
+                            toConcept.type = toConceptType;
+                            if(toConceptType == null && toConceptTypeId != null && toConceptTypeId != undefined){
+                                var conceptString = await  GetConcept(toConceptTypeId);
+                                toConceptType = conceptString as Concept;
+                                toConcept.type = toConceptType;
+                            }
+                        }
+                    }
+
+                    var regex = "the_";
+
+
+                    var localmainString = toConcept?.type?.characterValue ?? "";
+
+                    var localKey = localmainString.replace(regex, "");
+                    if(isNaN(Number(localKey)) ){
+
+                        if(localKey){
+                            const result = await recursiveFetchConcept(toConcept, connectionList, compositionList,visitedConcepts);
+                            output[localKey] = result;
+                        }
+
+                    }
+                    else{
+
+                        const result = await recursiveFetchConcept(toConcept, connectionList, compositionList,visitedConcepts);
+                        arroutput[localKey] = result;
+                        output = arroutput;
+
+                    }
+
+
+
+                } 
+                else{
+                    console.log("this is the faulty connection ", connectionList[i]);
+                }
+            }
+
+
+        }
+
+    }
+
+
+     return output;
+
+ }
+
 
 export async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[], visitedConcepts: number[] = []){
 
@@ -217,7 +310,6 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
      var conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
-
     if(concept.id != 0){
         if(concept.type == null){
 
@@ -248,6 +340,7 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
 
         for(var i=0; i<connectionList.length; i++){
 
+            let insideTime = new Date().getTime();
             if(connectionList[i].ofTheConceptId == id){
                 if(id != connectionList[i].toTheConceptId){
                     var toConceptId = connectionList[i].toTheConceptId;
@@ -280,7 +373,6 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
                     var localmainString = toConcept?.type?.characterValue ?? "";
 
                     var localKey = localmainString.replace(regex, "");
-
                     if(isNaN(Number(localKey)) ){
 
                         if(localKey){
@@ -307,6 +399,7 @@ export async function recursiveFetch(id:number, connectionList:Connection[], com
 
 
         }
+
     }
 
 

@@ -6,7 +6,6 @@ import { GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefe
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string=""){
   let concepts:any[] = [];
   try{
-    let startTime = new Date().getTime();
 
     let conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
     let mainCompositionId = searchQuery[0].composition;
@@ -15,14 +14,15 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
     let connections = result.internalConnections;
     let linkers = result.linkers;
     let reverse = result.reverse;
-    let startTimeLocal = new Date().getTime();
-    const [prefetchConnections, concepts] = await Promise.all([
-      GetConnectionDataPrefetch(linkers),
-      GetCompositionFromConnectionsWithDataIdInObject(conceptIds,connections)
-  ]);
+      
+    // const [prefetchConnections, concepts] = await Promise.all([
+    //   GetConnectionDataPrefetch(linkers),
+    //   GetCompositionFromConnectionsWithDataIdInObject(conceptIds,connections)
+    // ]); 
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds, connections);
+
     let out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
-    console.log("this is the end time for local", new Date().getTime() - startTimeLocal);
-    console.log("this is the end time for searching data", new Date().getTime() - startTime);
     return out;
   }
   catch(e){
@@ -33,7 +33,9 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
 
 }
 
+
 export async function FormatFromConnectionsAltered(connections:Connection[], compositionData: any[], mainComposition: number, reverse: number [] = []){
+  let startTime = new Date().getTime();
   let mainData: any = {};
   let myConcepts: number[] = [];
   for(let i=0 ; i< connections.length; i++){

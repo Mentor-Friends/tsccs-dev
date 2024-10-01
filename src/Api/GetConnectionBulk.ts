@@ -18,30 +18,23 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
     try{
         if(connectionIds.length > 0){
             let bulkConnectionFetch:number[] = [];
-            // if the connections are already present in the local memory then take it from there 
-            // else put it in a list called bulkConnectionFetch which will be used to call and api.
-            // for(let i=0; i<connectionIds.length; i++){
-            //     let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
-            //     if(conceptUse.id == 0){
-            //         bulkConnectionFetch.push(connectionIds[i]);
-            //     }
-            //     else{
-            //         connectionList.push(conceptUse);
-            //     }
-            // }
-    
-            let remainingIds:any = {};
-            for(let i=0; i< connectionIds.length; i++){
-                remainingIds[connectionIds[i]] = false;
-            }
-            await ConnectionData.GetConnectionBulkData(connectionIds, connectionList, remainingIds );
-            for(let key in remainingIds){
-                if(remainingIds[key] == false){
-                    bulkConnectionFetch.push(Number(key));
+           // if the connections are already present in the local memory then take it from there 
+            //else put it in a list called bulkConnectionFetch which will be used to call and api.
+            for(let i=0; i<connectionIds.length; i++){
+                let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
+                if(conceptUse.id == 0){
+                    bulkConnectionFetch.push(connectionIds[i]);
+                }
+                else{
+                    connectionList.push(conceptUse);
                 }
             }
-        
     
+            // let remainingIds:any = {};
+            // await ConnectionData.GetConnectionBulkData(connectionIds, connectionList, remainingIds );
+
+        
+            //bulkConnectionFetch = connectionIds;
             // if the case that bulkConnectionFetch does not have any elements then we just return everything we have
             if(bulkConnectionFetch.length == 0){
                 return connectionList;
@@ -63,7 +56,6 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
                             connectionList.push(connection);
                             ConnectionData.AddConnection(connection);
                         }
-                        await FindConceptsFromConnections(connectionList);
                     }
                 }
                 else{
@@ -86,6 +78,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
         }
         HandleInternalError(error, BaseUrl.GetConnectionBulkUrl());
       }
+      await FindConceptsFromConnections(connectionList);
 
       return connectionList;
 

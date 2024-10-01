@@ -1,4 +1,5 @@
 import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
+import { IndexDbUpdate } from "../Database/IndexUpdate";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Connection } from "./Connection";
 import { ConnectionBinaryTree } from "./ConnectionBinaryTree/ConnectionBinaryTree";
@@ -107,6 +108,9 @@ export class ConnectionData{
     //         }
     //     }
     // }
+    if(myConnection.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
+        IndexDbUpdate.UpdateConnectionIndexDb(myConnection);
+    }
     return myConnection;
     }
 
