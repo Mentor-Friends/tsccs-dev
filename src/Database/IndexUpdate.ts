@@ -14,7 +14,7 @@ export class IndexDbUpdate{
     * This is the maximum number of concepts or connections that needs to be in the buffer before flusing them
     * to index db
     */
-   static INDEX_DB_BUFFER_MAX = 2;
+   static INDEX_DB_BUFFER_MAX = 30;
 
    /**
     * This means that indexdb is in use.
@@ -47,17 +47,24 @@ export class IndexDbUpdate{
     * 
     */
    public  static async UpdateConceptIndexDb(concept: Concept){
+    await navigator.locks.request("updateConceptLock", async (lock) => {
     try{
-        if(concept.count < IndexDbUpdate.MAX_USE_FOR_INDEX_DB){
+        let localConcept = concept;
+        if(localConcept.count < IndexDbUpdate.MAX_USE_FOR_INDEX_DB){
             IndexDbUpdate.concepts.push(concept);
             if(IndexDbUpdate.concepts.length > IndexDbUpdate.INDEX_DB_BUFFER_MAX){
                 let toUpdateConcepts = IndexDbUpdate.concepts.slice();
                 IndexDbUpdate.concepts = [];
                 if(IndexDbUpdate.IN_USE == false){
                     IndexDbUpdate.IN_USE = true;
+                    let time = new Date().getTime();
                     for(let i =0; i< toUpdateConcepts.length; i++){
-                        await UpdateToDatabase("concept",toUpdateConcepts[i]);
+                        setTimeout(()=>{
+                            UpdateToDatabase("concept",toUpdateConcepts[i])
+                        } , 0);
+                      //  await UpdateToDatabase("concept",toUpdateConcepts[i]);
                     }
+                    console.log("this is the time for the indexdb write", new Date().getTime() - time);
                 }
     
                 IndexDbUpdate.IN_USE = false;
@@ -68,7 +75,7 @@ export class IndexDbUpdate{
         console.log("This is the error in the concept indexdb update", error);
         IndexDbUpdate.IN_USE =false;
     }
-
+    });
 
    }
 
@@ -79,6 +86,7 @@ export class IndexDbUpdate{
     * 
     */
    public static async UpdateConnectionIndexDb(connection: Connection){
+    await navigator.locks.request("updateConnectionLock", async (lock) => {
     try{
         if(connection.count < IndexDbUpdate.MAX_USE_FOR_INDEX_DB){
             IndexDbUpdate.connections.push(connection);
@@ -87,9 +95,14 @@ export class IndexDbUpdate{
                 IndexDbUpdate.connections = [];
                 if(IndexDbUpdate.IN_USE == false){
                     IndexDbUpdate.IN_USE = true;
+                let time = new Date().getTime();
                 for(let i =0; i< toUpdateConnections.length; i++){
-                    await UpdateToDatabase("connection",toUpdateConnections[i]);
+                    setTimeout(()=>{
+                        UpdateToDatabase("connection",toUpdateConnections[i])
+                    } , 0);
+                   // await UpdateToDatabase("connection",toUpdateConnections[i]);
                 }
+                console.log("this is the time for the indexdb write", new Date().getTime() - time);
                 }
                 IndexDbUpdate.IN_USE = false;
             }
@@ -99,7 +112,7 @@ export class IndexDbUpdate{
         console.log("indexdb update error", error);
         IndexDbUpdate.IN_USE = false;
     }
-
+    });
 
    }
 

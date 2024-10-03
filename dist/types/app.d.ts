@@ -1,4 +1,5 @@
 export { init, updateAccessToken };
+export { SearchLinkMultipleApi } from './Api/Search/SearchLinkMultipleApi';
 export { SplitStrings } from './Services/SplitStrings';
 export { GetCompositionList, GetCompositionListWithId } from './Services/GetCompositionList';
 export { GetCompositionListLocal, GetCompositionListLocalWithId } from './Services/Local/GetCompositionListLocal';
@@ -47,7 +48,7 @@ export { CreateTheCompositionWithCache } from './Services/Composition/CreateComp
 export { CreateDefaultLConcept } from './Services/Local/CreateDefaultLConcept';
 export { CreateTheConnectionGeneral } from './Services/CreateTheConnectionGeneral';
 export { CreateTheConnectionLocal } from './Services/Local/CreateTheConnectionLocal';
-export { GetCompositionListAll, GetCompositionListAllWithId } from './Services/GetCompositionList';
+export { GetCompositionListAll, GetCompositionListAllWithId, GetCompositionListWithIdUpdated } from './Services/GetCompositionList';
 export { GetUserGhostId, AddGhostConcept } from './Services/User/UserTranslation';
 export { SearchLinkMultipleAll, FormatFromConnections } from './Services/Search/SearchLinkMultiple';
 export { GetTheConceptLocal } from './Services/Local/GetTheConceptLocal';
@@ -65,7 +66,8 @@ export { GetConnectionBetweenTwoConceptsLinker } from './Services/GetConnectionB
 export { DelayFunctionExecution } from './Services/Common/DelayFunction';
 export { GetCompositionWithIdAndDateFromMemory } from './Services/GetComposition';
 export { GetConceptByCharacterAndType } from './Api/GetConceptByCharacterAndType';
-export { SearchWithTypeAndLinker } from './Api/Search/SearchWithTypeAndLinker';
+export { SearchWithTypeAndLinkerApi } from './Api/Search/SearchWithTypeAndLinker';
+export { SearchWithTypeAndLinker } from './Services/Search/SearchWithTypeAndLinker';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';

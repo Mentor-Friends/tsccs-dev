@@ -99,6 +99,9 @@ export class ConnectionData{
         var returnedConcept = node.value;
         if(returnedConcept){
             myConnection = returnedConcept as Connection;
+            //if(myConnection.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
+               // IndexDbUpdate.UpdateConnectionIndexDb(myConnection);
+            //}
         }
     }
     // if(myConcept.id == 0 || myConcept == null){
@@ -108,9 +111,7 @@ export class ConnectionData{
     //         }
     //     }
     // }
-    if(myConnection.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
-        IndexDbUpdate.UpdateConnectionIndexDb(myConnection);
-    }
+
     return myConnection;
     }
 

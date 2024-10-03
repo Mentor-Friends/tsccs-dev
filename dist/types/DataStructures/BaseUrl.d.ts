@@ -39,6 +39,7 @@ export declare class BaseUrl {
     static CreateSessionVisitUrl(): string;
     static ViewInternalDataUrl(): string;
     static SearchInternalWithAuthenticatedCcsUrl(): string;
+    static SearchInternalWithCcsUrl(): string;
     static CreateGhostConceptApiUrl(): string;
     static CreateGhostConnectionApiUrl(): string;
     static GetRealConceptById(): string;

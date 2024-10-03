@@ -4,7 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData"
-import { GetConceptBulk } from "../app";
+import { GetConceptBulk, GetTheConcept } from "../app";
 
 
 
@@ -66,11 +66,11 @@ export async function GetCompositionWithAllIds(id:number){
  * @returns 
  */
 export async function GetCompositionFromMemory(id:number){
-    var connectionList:Connection[] = [];
-    var returnOutput: any = {};
+    let connectionList:Connection[] = [];
+    let returnOutput: any = {};
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
-    var compositionList:number[] = [];
+    let compositionList:number[] = [];
 
     for(var i=0; i<connectionList.length; i++){
         if(!compositionList.includes(connectionList[i].ofTheConceptId)){
@@ -78,39 +78,68 @@ export async function GetCompositionFromMemory(id:number){
         }
     }
 
-    var concept = await ConceptsData.GetConcept(id);
+    let concept = await ConceptsData.GetConcept(id);
     if(concept.id == 0 && id != null && id != undefined){
-     var conceptString = await  GetConcept(id);
+        let conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
-    var output = await recursiveFetch(id, connectionList, compositionList);
-    var mainString = concept?.type?.characterValue ?? "";
+    let output = await recursiveFetchConcept(concept, connectionList, compositionList);
+    let mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     return returnOutput;
 }
 
 
 export async function GetCompositionWithIdFromMemory(id:number){
-    var connectionList:Connection[] = [];
-    var returnOutput: any = {};
+    let connectionList:Connection[] = [];
+    let returnOutput: any = {};
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
 
-    var compositionList:number[] = [];
-    for(var i=0; i<connectionList.length; i++){
+    let compositionList:number[] = [];
+    for(let i=0; i<connectionList.length; i++){
         if(!compositionList.includes(connectionList[i].ofTheConceptId)){
             compositionList.push(connectionList[i].ofTheConceptId);
         }
     }
-    var concept = await ConceptsData.GetConcept(id);
+    let concept = await ConceptsData.GetConcept(id);
     if(concept.id == 0 && id != null && id != undefined){
         console.log("this concept you cannot find ", id);
-     var conceptString = await  GetConcept(id);
+        let conceptString = await  GetConcept(id);
      concept = conceptString as Concept;
     }
     let output = await recursiveFetchConcept(concept, connectionList, compositionList);
-    var mainString = concept?.type?.characterValue ?? "";
-    returnOutput[mainString] = output;
-    var FinalReturn: any = {};
+   // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
+     let mainString = concept?.type?.characterValue ?? "";
+     returnOutput[mainString] = output;
+    let FinalReturn: any = {};
+    FinalReturn['created_at'] = concept.entryTimeStamp;
+    FinalReturn['data'] = returnOutput;
+    FinalReturn['id'] = id;
+    return FinalReturn;
+}
+
+export async function GetCompositionWithIdFromMemoryNew(id:number){
+    let connectionList:Connection[] = [];
+    let returnOutput: any = {};
+    connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+
+    let compositionList:number[] = [];
+    for(let i=0; i<connectionList.length; i++){
+        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+            compositionList.push(connectionList[i].ofTheConceptId);
+        }
+    }
+    let concept = await ConceptsData.GetConcept(id);
+    if(concept.id == 0 && id != null && id != undefined){
+        console.log("this concept you cannot find ", id);
+        let conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    let output = await recursiveFetchConcept(concept, connectionList, compositionList);
+   // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
+     let mainString = concept?.type?.characterValue ?? "";
+     returnOutput[mainString] = output;
+    let FinalReturn: any = {};
     FinalReturn['created_at'] = concept.entryTimeStamp;
     FinalReturn['data'] = returnOutput;
     FinalReturn['id'] = id;
@@ -295,6 +324,87 @@ export async function recursiveFetchConcept(concept:Concept, connectionList:Conn
      return output;
 
  }
+
+
+ /**
+ * This function takes concepts and connections and then builds a json.
+ * @param concept The concept that needs to get other concepts that are inside of it.
+ * @param connectionList List of connections that are available in the composition. We have to loop over it.
+ * @param compositionList Composition list is the list of concepts that have connections inside of them.
+ * @param visitedConcepts This is a checking mechanism to not go in loops. So preferably pass an empty array.
+ * @returns 
+ */
+export async function recursiveFetchConceptSingleLoop(concept:Concept, connectionList:Connection[], compositionList:number[], visitedConcepts: number[] = []){
+
+    var output : any= {};
+    let id = concept.id;
+    if(!compositionList.includes(id)){
+
+        return concept?.characterValue;
+    }
+    else{
+        if(visitedConcepts.includes(id)){
+            return "";
+          }
+          else{
+            visitedConcepts.push(id);
+          }
+        for(var i=0; i<connectionList.length; i++){
+                let newData = await GetTheConcept(connectionList[i].ofTheConceptId);
+                let toConcept = await GetTheConcept(connectionList[i].toTheConceptId);
+                let ofKey = newData.id;
+                let toConceptKey = toConcept?.type?.characterValue ?? "";
+                var regex = "the_";
+
+
+                var localmainString = toConceptKey;
+        
+                var localToKey = localmainString.replace(regex, "");
+                if(output[ofKey] == undefined || output[ofKey] == null){
+                    output[ofKey] = {};
+                }
+                output[ofKey][localToKey] = toConcept.characterValue;
+
+
+                
+        }
+
+    }
+    let finalOutput:any = {};
+    for(let i=0 ; i<connectionList.length; i++ ){
+        let ofConcept = await GetTheConcept(connectionList[i].ofTheConceptId);
+        let toConcept = await GetTheConcept(connectionList[i].toTheConceptId);
+        let ofConceptKey = ofConcept?.type?.characterValue ?? "";
+        let toConceptKey = toConcept?.type?.characterValue ?? "";
+        var regex = "the_";
+
+
+        var localmainString = toConceptKey;
+
+        var localToKey = localmainString.replace(regex, "");
+        if(finalOutput[ofConcept.id] == undefined || finalOutput[ofConcept.id] == null){
+            finalOutput[ofConcept.id] = {};
+        }
+        let internalOutput = finalOutput[ofConcept.id];
+
+        if(internalOutput[ofConceptKey] == undefined || internalOutput[ofConceptKey] == null){
+            internalOutput[ofConceptKey] = {};
+        }
+
+        if(output[connectionList[i].ofTheConceptId] != undefined && output[connectionList[i].toTheConceptId] != undefined){
+
+            internalOutput[ofConceptKey][localToKey]= output[toConcept.id];
+        }
+        else{
+
+            internalOutput[ofConceptKey][localToKey] = toConcept.characterValue;
+        }
+
+    }
+    return finalOutput[concept.id];
+
+ }
+
 
 
 export async function recursiveFetch(id:number, connectionList:Connection[], compositionList:number[], visitedConcepts: number[] = []){
