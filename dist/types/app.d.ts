@@ -1,4 +1,5 @@
 export { init, updateAccessToken };
+export { SearchLinkMultipleApi } from './Api/Search/SearchLinkMultipleApi';
 export { SplitStrings } from './Services/SplitStrings';
 export { GetCompositionList, GetCompositionListWithId } from './Services/GetCompositionList';
 export { GetCompositionListLocal, GetCompositionListLocalWithId } from './Services/Local/GetCompositionListLocal';
@@ -66,6 +67,8 @@ export { DelayFunctionExecution } from './Services/Common/DelayFunction';
 export { GetCompositionWithIdAndDateFromMemory } from './Services/GetComposition';
 export { GetConceptByCharacterAndType } from './Api/GetConceptByCharacterAndType';
 export { SearchWithTypeAndLinker } from './Api/Search/SearchWithTypeAndLinker';
+export { GetConnectionDataPrefetch } from './Services/GetCompositionBulk';
+export { FormatFromConnectionsAltered } from './Services/Search/SearchLinkMultiple';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';

@@ -10,7 +10,7 @@ export class ConnectionOfTheTree{
     static node: ConnectionOfNode | null = null;
 
     static CreateCompositionKey(ofTheConceptId: number, typeId: number){
-        return ofTheConceptId.toString(4) + typeId.toString(4);
+        return ofTheConceptId;
     }
 
     static GetConnectionByOfTheConceptAndTypeId(ofTheConceptId:number, typeId:number){
