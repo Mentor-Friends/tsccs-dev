@@ -34,7 +34,6 @@ try{
       console.log("recursive search error ", response.status);
       HandleHttpError(response);
     }
-    return concepts;
 
 }
 
@@ -46,6 +45,8 @@ catch (error) {
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
   }
+  return concepts;
+
 }
 export  async function RecursiveSearchApiRaw(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
   var concepts:any[] = [];

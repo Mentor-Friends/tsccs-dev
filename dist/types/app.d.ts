@@ -63,6 +63,9 @@ export { CreateConnectionBetweenTwoConceptsLocal } from './Services/Local/Create
 export { DeleteConceptLocal } from './Services/Local/DeleteConceptLocal';
 export { GetConnectionBetweenTwoConceptsLinker } from './Services/GetConnectionBetweenTwoConceptsLinker';
 export { DelayFunctionExecution } from './Services/Common/DelayFunction';
+export { GetCompositionWithIdAndDateFromMemory } from './Services/GetComposition';
+export { GetConceptByCharacterAndType } from './Api/GetConceptByCharacterAndType';
+export { SearchWithTypeAndLinker } from './Api/Search/SearchWithTypeAndLinker';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';

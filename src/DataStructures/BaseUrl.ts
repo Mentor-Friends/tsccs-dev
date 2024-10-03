@@ -113,6 +113,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/make-name-from-frontend';
     }
 
+    static SearchAllTypeWithLinker(){
+        return this.BASE_URL + '/api/search-all-with-linker-ccs';
+    }
+
     static LoginUrl(){
         return this.BASE_URL + '/api/auth/login';
     }

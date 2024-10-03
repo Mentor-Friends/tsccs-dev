@@ -21,12 +21,13 @@ export async function GetConcept(id: number){
             return conceptUse;
         }
         else{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            var header = GetRequestHeader();
             console.log("this is the url", BaseUrl.GetConceptUrl());
+            const formdata = new FormData();
+            formdata.append("id", id.toString());
             const response = await fetch(BaseUrl.GetConceptUrl(),{
                 method: 'POST',
-                headers:header,
-                body: `id=${id}`
+                body: formdata
             });
             if(response.ok){
                 result = await response.json() as Concept;

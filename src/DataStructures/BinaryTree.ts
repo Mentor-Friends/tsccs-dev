@@ -43,13 +43,6 @@ export class BinaryTree{
     }
 
     static async getNodeFromTree(id:number){
-
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
         if(this.root){
             var Node = this.root.getFromNode(id, this.root);
             return Node;
@@ -64,6 +57,12 @@ export class BinaryTree{
         }
     }
 
+
+    static async getConceptListFromIds(ids: number[], connectionArray: Concept [], remainingIds: any){
+        if(this.root){
+            this.root.checkIfIdsInNode(this.root, ids, connectionArray, remainingIds);
+        }
+    }
 
 
 

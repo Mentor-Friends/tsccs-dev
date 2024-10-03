@@ -1,4 +1,5 @@
-import { removeFromDatabase, storeToDatabase } from "../Database/indexeddb";
+import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
+import { IndexDbUpdate } from "../Database/IndexUpdate";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Connection } from "./Connection";
 import { ConnectionBinaryTree } from "./ConnectionBinaryTree/ConnectionBinaryTree";
@@ -25,7 +26,7 @@ export class ConnectionData{
     }
 
     static AddConnectionToStorage(connection:Connection){
-        storeToDatabase("connection", connection);
+        UpdateToDatabase("connection", connection);
     }
 
 
@@ -39,12 +40,11 @@ export class ConnectionData{
     //         storeToDatabase("connection",connection);
     //     }
     //     this.connectionArray.push(connection);
-    if(!connection.isTemp){
-        storeToDatabase("connection", connection);
+   // if(!connection.isTemp){
+        //UpdateToDatabase("connection", connection);
         ConnectionBinaryTree.addConnectionToTree(connection);
         ConnectionTypeTree.addConnectionToTree(connection);
         ConnectionOfTheTree.addConnection(connection);
-    }
 
     }
 
@@ -90,6 +90,10 @@ export class ConnectionData{
         return ConnectionTypeTree.connectionTypeRoot;
     }
 
+    static async GetConnectionBulkData(ids: number[], connectionArray: Connection[], remainingIds: any){
+        await ConnectionBinaryTree.getConnectionListFromIds(ids, connectionArray, remainingIds);
+    }
+
     static async GetConnection(id: number){
     //    var  myConcept: Connection|null;
     //    myConcept = null;
@@ -99,7 +103,7 @@ export class ConnectionData{
     //         }
     //     }
     //     return myConcept;
-
+    
     var  myConnection: Connection = new Connection(0,0,0,0,0,0,0);
     var node = await ConnectionBinaryTree.getNodeFromTree(id);
     if(node?.value){
@@ -115,6 +119,9 @@ export class ConnectionData{
     //         }
     //     }
     // }
+    if(myConnection.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
+        IndexDbUpdate.UpdateConnectionIndexDb(myConnection);
+    }
     return myConnection;
     }
 

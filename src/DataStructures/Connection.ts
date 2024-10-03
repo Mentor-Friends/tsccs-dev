@@ -5,6 +5,7 @@ import { ConnectionData } from "./ConnectionData";
 
 export class Connection{
     id: number;
+    count: number = 0;
     userId: number;
     ghostId: number;
     ofTheConceptId: number;

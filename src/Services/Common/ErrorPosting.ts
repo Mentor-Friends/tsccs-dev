@@ -14,7 +14,15 @@ export  function HandleHttpError(response: Response){
 }
 
 export function HandleInternalError(error: any, url: string = ""){
-    let errorResponse = new FreeSchemaResponse(error.message, false, 500, error.stack);
-    errorResponse.setUrl(url);
-    throw errorResponse;
+    if(error.status){
+        let errorResponse = new FreeSchemaResponse(error.message, false, error.status, error.stack);
+        errorResponse.setUrl(url);
+        throw errorResponse;
+    }
+    else{
+        let errorResponse = new FreeSchemaResponse(error.message, false, 500, error.stack);
+        errorResponse.setUrl(url);
+        throw errorResponse;
+    }
+    throw error;
 }

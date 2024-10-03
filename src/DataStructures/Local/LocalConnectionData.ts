@@ -1,4 +1,4 @@
-import {storeToDatabase } from "../../Database/indexdblocal";
+import {UpdateToDatabase } from "../../Database/indexdblocal";
 import { removeFromDatabase } from "../../Database/indexdblocal";
 import { ConvertFromLConnectionToConnection } from "../../Services/Local/ConvertFromLConnectionToConnection";
 import { Connection } from "../Connection";
@@ -32,7 +32,7 @@ export class LocalConnectionData{
         }
         if(connection.id != 0){
 
-            storeToDatabase("localconnection",connection);
+            UpdateToDatabase("localconnection",connection);
         }
         this.connectionArray.push(connection);
     }

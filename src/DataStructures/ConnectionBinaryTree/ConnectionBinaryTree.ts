@@ -49,17 +49,17 @@ export class ConnectionBinaryTree{
 
 
     static async getNodeFromTree(id:number){
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
         if(this.connectionroot){
             var Node = this.connectionroot.getFromNode(id, this.connectionroot);
             return Node;
         }
         return this.connectionroot;
+    }
+
+    static async getConnectionListFromIds(ids: number[], connectionArray: Connection [], remainingIds: any){
+        if(this.connectionroot){
+            this.connectionroot.checkIfIdsInNode(this.connectionroot, ids, connectionArray, remainingIds);
+        }
     }
 
 

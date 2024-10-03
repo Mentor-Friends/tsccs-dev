@@ -1,9 +1,10 @@
 import { Concept } from "./Concept";
-import { removeFromDatabase, storeToDatabase, UpdateToDatabase } from "../Database/indexeddb";
+import { IndexDb, removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { BinaryTree } from "./BinaryTree";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
+import { IndexDbUpdate } from "../Database/IndexUpdate";
 export class ConceptsData{
 
     name: string;
@@ -45,8 +46,12 @@ export class ConceptsData{
 
     static AddConceptToStorage(concept: Concept){
         if(concept.id > 0){
-        storeToDatabase("concept",concept);
+            UpdateToDatabase("concept",concept);
         }
+    }
+
+    static async GetConceptBulkData(ids: number[], connectionArray: Concept[], remainingIds: any){
+        await BinaryTree.getConceptListFromIds(ids, connectionArray, remainingIds);
     }
 
     static AddConcept(concept: Concept){
@@ -58,7 +63,8 @@ export class ConceptsData{
         //    if(contains){
           //   this.RemoveConcept(concept);
           //  }
-             UpdateToDatabase("concept",concept);
+             //UpdateToDatabase("concept",concept);
+             //IndexDbUpdate.UpdateConceptIndexDb(concept);
              BinaryTree.addConceptToTree(concept);
               BinaryTypeTree.addConceptToTree(concept);
               BinaryCharacterTree.addConceptToTree(concept);
@@ -110,13 +116,9 @@ export class ConceptsData{
                 myConcept = returnedConcept as Concept;
             }
         }
-        // if(myConcept.id == 0 || myConcept == null){
-        //     for(var i=0; i<this.conceptsArray.length; i++){
-        //         if(this.conceptsArray[i].id == id){
-        //             myConcept = this.conceptsArray[i];
-        //         }
-        //     }
-        // }
+        if(myConcept.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
+            IndexDbUpdate.UpdateConceptIndexDb(myConcept);
+        }
         return myConcept;
     }
 

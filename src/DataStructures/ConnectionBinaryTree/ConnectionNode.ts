@@ -272,6 +272,12 @@ export class ConnectionNode{
     public getFromNode(id: number, node: ConnectionNode | null) :ConnectionNode | null{
         if(node){
             if(id == node.key){
+                if(node.value.count){
+                    node.value.count++ ;
+                }
+                else{
+                    node.value.count = 1;
+                }
                 return node;
             }
             else if(id < node.key){
@@ -301,6 +307,26 @@ export class ConnectionNode{
         }
         return node;
 
+    }
+
+    public checkIfIdsInNode(node: ConnectionNode | null, ids: number[], connectionArray: Connection[], remainingIds: any){
+        if(node){
+            if(ids.includes(node.key)){
+                connectionArray.push(node.value);
+                //remainingIds[node.key] = true;
+                let index = ids.indexOf(node.key);
+                ids.splice(index, 1);
+
+            }
+            if(node.leftNode){
+                this.checkIfIdsInNode(node.leftNode, ids, connectionArray, remainingIds);
+
+            }
+            if(node.rightNode){
+                this.checkIfIdsInNode(node.rightNode, ids, connectionArray, remainingIds);
+
+            }
+        }
     }
 
 
