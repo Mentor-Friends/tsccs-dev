@@ -20,6 +20,11 @@ export class ConnectionBinaryTree{
         this.addNodeToTree(node);
     }
 
+    static traverse(){
+        return this.connectionroot?.traverse(this.connectionroot);
+    }
+
+
     static async waitForDataToLoad(){
         return new Promise((resolve,reject) => {
             this.checkFlag(resolve);

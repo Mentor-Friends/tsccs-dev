@@ -329,6 +329,22 @@ export class ConnectionNode{
         }
     }
 
+    public traverse(node: ConnectionNode|null){
+        let count = 0;
+        if(node){
+            count = count + 1;
+            if(node?.leftNode){
+              count +=  this.traverse(node.leftNode);
+            }
+            if(node.rightNode){
+              count +=  this.traverse(node.rightNode);
+            }
+
+        }
+        return count ;
+
+    }
+
 
     public removeNode(passedNode:ConnectionNode|null,id:number){
         if(passedNode == null){

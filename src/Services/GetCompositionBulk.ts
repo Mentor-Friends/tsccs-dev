@@ -105,20 +105,20 @@ export async function GetConnectionDataPrefetch(connectionIds:number[]){
     let remainingConnections: number[] = [];
     let connectionsAll:Connection[] = [];
     let remainingIds: any = {};
-    // for(let i=0; i< connectionIds.length; i++){
-    //     let connection = await ConnectionData.GetConnection(connectionIds[i]);
+    for(let i=0; i< connectionIds.length; i++){
+        let connection = await ConnectionData.GetConnection(connectionIds[i]);
 
-    //     if(connection.id == 0){
-    //         remainingConnections.push(connectionIds[i]);
-    //     }
-    //     else{
-    //         connectionsAll.push(connection);
-    //     }
-    // }
-    // for(let i=0; i< connectionIds.length; i++){
-    //     remainingIds[connectionIds[i]] = false;
-    // }
-    await ConnectionData.GetConnectionBulkData(connectionIds, connectionsAll, remainingIds);
+        if(connection.id == 0){
+            remainingConnections.push(connectionIds[i]);
+        }
+        else{
+            connectionsAll.push(connection);
+        }
+    }
+    for(let i=0; i< connectionIds.length; i++){
+        remainingIds[connectionIds[i]] = false;
+    }
+    //await ConnectionData.GetConnectionBulkData(connectionIds, connectionsAll, remainingIds);
     // for(let key in remainingIds){
     //     if(remainingIds[key] == false){
     //         remainingConnections.push(Number(key));
