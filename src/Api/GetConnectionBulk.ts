@@ -72,7 +72,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('Get Connection Bulk error message: ', error.message);
+          console.log('Get Connection Bulk error message: ', error);
         } else {
           console.log('Get Connection Bulk unexpected error: ', error);
         }

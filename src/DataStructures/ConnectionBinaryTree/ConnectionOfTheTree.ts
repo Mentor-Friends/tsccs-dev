@@ -32,14 +32,31 @@ export class ConnectionOfTheTree{
      * @param connection connection that needs to be added.
      */
     static addConnection(connection: Connection){
-        if(connection.id == 0){
+        if(connection.id > 0){
             let key = this.CreateCompositionKey(connection.ofTheConceptId, connection.typeId);
+
+
             if(this.node){
-                let existingNode = this.node.getFromNode(key, this.node);
-                let connectionList = existingNode.value;
-                if(!connectionList.contains(connection.id)){
-                    connectionList.push(connection.id);
+                let event = new Event(`${key}`);
+                dispatchEvent(event);
+                let existingNode:ConnectionOfNode|null = this.node.getFromNode(key, this.node);
+                if(existingNode){
+                    let connectionList: number[] = existingNode?.value;
+                    if(connectionList.length == 0){
+                        existingNode.value = [];
+                    }
+                        if(!connectionList.includes(connection.id)){
+                            connectionList.push(connection.id);
+                        }
+                } 
+                else{
+                    let list: number [] = [];
+                    list.push(connection.id);
+                    let connectionNode = new ConnectionOfNode(key, list, null, null);
+                    this.addNodeToTree(connectionNode);
                 }
+
+
             }
             else{
                 let list: number [] = [];
@@ -47,10 +64,11 @@ export class ConnectionOfTheTree{
                 let connectionNode = new ConnectionOfNode(key, list, null, null);
                 this.addNodeToTree(connectionNode);
             }
+
             
         }
         else{
-            console.log("cannot insert key id with  n 0 to the connection tree");
+            console.log("cannot insert key id with  n 0 to the connection tree", connection);
         }
 
     }

@@ -25,8 +25,6 @@ export class ConnectionOfNode extends NodePrimitive{
     public addNode(passedNode: ConnectionOfNode, node: ConnectionOfNode | null, height: number){
         if(node == null){
             node= passedNode;
-            let event = new Event(node.key);
-            dispatchEvent(event);
             return node;
         }
 
