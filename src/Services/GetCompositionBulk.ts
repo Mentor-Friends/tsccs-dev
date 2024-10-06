@@ -107,7 +107,7 @@ export async function GetConnectionDataPrefetch(connectionIds:number[]){
     let remainingIds: any = {};
     for(let i=0; i< connectionIds.length; i++){
         let connection = await ConnectionData.GetConnection(connectionIds[i]);
-
+        console.log("this is the connection fetch", connection);
         if(connection.id == 0){
             remainingConnections.push(connectionIds[i]);
         }
@@ -124,7 +124,7 @@ export async function GetConnectionDataPrefetch(connectionIds:number[]){
     //         remainingConnections.push(Number(key));
     //     }
     // }
-    remainingConnections = connectionIds;
+   // remainingConnections = connectionIds;
     let prefetchConcepts : number [] = [];
     let connectionsAllLocal = await GetConnectionBulk(remainingConnections);
     connectionsAll = [...connectionsAll,...connectionsAllLocal];
@@ -152,5 +152,46 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(conceptIds
         let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
         compositions[conceptIds[i]] = comp;
     }
+    return compositions;
+}
+
+/**
+ * This function converts the conceptIds and internal connections to create compositions.
+ * @param conceptIds these are the concept ids that need to be fetched to create their compositions
+ * @param connections these are the connections that are used to create the structure.
+ * @returns a dictionary / object that has key as their conceptId and the value as their composition object.
+ */
+export async function GetCompositionFromConnectionsWithDataIdInObjectNew(conceptIds:number[]=[], connections:number[] = []){
+
+    // get all the connections that are not available in memory from the api.
+    await GetConnectionBulk(connections);
+    // create a list of compositions from the fetched concepts and connections.
+    let compositions:any = {};
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
+        compositions[conceptIds[i]] = comp;
+    }
+    return compositions;
+}
+
+
+/**
+ * This function converts the conceptIds and internal connections to create compositions.
+ * @param conceptIds these are the concept ids that need to be fetched to create their compositions
+ * @param connections these are the connections that are used to create the structure.
+ * @returns a dictionary / object that has key as their conceptId and the value as their composition object.
+ */
+export async function GetCompositionFromConnectionsInObject(conceptIds:number[]=[], connections:number[] = []){
+
+    // get all the connections that are not available in memory from the api.
+    await GetConnectionBulk(connections);
+    // create a list of compositions from the fetched concepts and connections.
+    let compositions:any = {};
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionFromMemory(conceptIds[i]);
+        console.log("this is the comp", comp);
+        compositions[conceptIds[i]] = comp;
+    }
+    console.log("This is the composition list", compositions);
     return compositions;
 }

@@ -157,6 +157,11 @@ export class BaseUrl{
         return this.BASE_URL + '/api/search-composition-internal-authenticated-ccs';
     }
 
+    static SearchInternalWithCcsUrl(){
+        return this.BASE_URL + '/api/search-composition-internal-authenticated-ccs';
+    }
+
+
 
     static CreateGhostConceptApiUrl(){
         return BaseUrl.NODE_URL + '/api/v1/local-concepts'

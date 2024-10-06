@@ -2,7 +2,7 @@ import { BaseUrl, SearchQuery, SearchStructure } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
-export async function SearchWithTypeAndLinker(searchStructure:SearchStructure, searchQuery:SearchQuery[], token = ""){
+export async function SearchWithTypeAndLinkerApi(searchStructure:SearchStructure, searchQuery:SearchQuery[], token = ""){
     let queryUrl = BaseUrl.SearchAllTypeWithLinker();
     var header = GetRequestHeaderWithAuthorization("application/json", token);
     queryUrl = queryUrl + '?search=' + searchStructure.search  + '&type=' + searchStructure.type + '&inpage=' + searchStructure.inpage + '&page=' + searchStructure.page;

@@ -114,11 +114,12 @@ export class ConceptsData{
             var returnedConcept = node.value;
             if(returnedConcept){
                 myConcept = returnedConcept as Concept;
+                if(myConcept.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
+                    IndexDbUpdate.UpdateConceptIndexDb(myConcept);
+                }
             }
         }
-        if(myConcept.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
-            IndexDbUpdate.UpdateConceptIndexDb(myConcept);
-        }
+
         return myConcept;
     }
 
