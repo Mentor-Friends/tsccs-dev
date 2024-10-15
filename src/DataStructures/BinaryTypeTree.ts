@@ -12,6 +12,9 @@ export class BinaryTypeTree{
             return this.typeRoot;
         }
         else{
+            let event = new CustomEvent(`${node.value.typeId}`, {detail: node.value.id});
+            console.log("this is the fired event", event);
+            dispatchEvent(event);
             this.typeRoot = this.typeRoot.addTypeNode(node,this.typeRoot,this.typeRoot.height);
         }
         return this.typeRoot;

@@ -10,30 +10,39 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
   let reverse: number[] = [];
   let mainCompositionId: number = searchQuery[0].composition;
   let conceptsConnections: any = {} ;
+  let result: any = {};
   try{
     if(caller?.isDataLoaded){
-        conceptsConnections.compositionIds = caller.compositionIds?.slice();
+        conceptsConnections.compositionIds = caller.conceptIds?.slice();
         conceptsConnections.internalConnections = caller.internalConnections?.slice();
         conceptsConnections.linkers = caller.linkers?.slice();
         conceptsConnections.reverse = caller.reverse?.slice();
+        result = conceptsConnections;
+        conceptIds = result.compositionIds ;
+        connections = result.internalConnections ;
+        linkers = result.linkers;
+        reverse = result.reverse;
 
     }
     else{
         conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
-         caller.compositionIds = conceptsConnections.compositionIds?.slice();
+         caller.conceptIds = conceptsConnections.compositionIds?.slice();
          caller.internalConnections = conceptsConnections.internalConnections?.slice();
          caller.linkers = conceptsConnections.linkers?.slice();
          caller.reverse = conceptsConnections.reverse?.slice();
          caller.isDataLoaded = true;
+         result = conceptsConnections;
 
-
+         conceptIds = result.compositionIds ;
+         connections = result.internalConnections ;
+         linkers = result.linkers;
+         reverse = result.reverse;
     }
 
-    const result = conceptsConnections;
-    conceptIds = result.compositionIds ;
-     connections = result.internalConnections ;
-     linkers = result.linkers;
-     reverse = result.reverse;
+    
+
+
+
       
     console.log("this is the input to data layer", linkers, conceptIds, connections, mainCompositionId);
     let out = await DataIdBuildLayer(linkers, conceptIds, connections, reverse, mainCompositionId);

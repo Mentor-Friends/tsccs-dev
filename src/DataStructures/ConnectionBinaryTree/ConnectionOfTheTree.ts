@@ -38,6 +38,7 @@ export class ConnectionOfTheTree{
 
             if(this.node){
                 let event = new Event(`${key}`);
+                console.log("dispatched the of the concecpt event", event);
                 dispatchEvent(event);
                 let existingNode:ConnectionOfNode|null = this.node.getFromNode(key, this.node);
                 if(existingNode){

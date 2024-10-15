@@ -8,6 +8,36 @@ import { GetConceptBulk, GetTheConcept } from "../app";
 
 
 
+export async function GetCompositionById(id:number){
+    let connectionList:Connection[] = [];
+    let returnOutput: any = {};
+    let connectionListString = await GetAllConnectionsOfComposition(id);
+    connectionList = connectionListString as Connection[];
+    let compositionList:number[] = [];
+
+    for(let i=0; i<connectionList.length; i++){
+        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+            compositionList.push(connectionList[i].ofTheConceptId);
+        }
+    }
+    return {"connectionList": connectionList, "compositionList": compositionList};
+
+
+}
+
+export async  function RecursiveFetchBuildLayer(id:number, connectionList: Connection[], compositionList: number[]){
+    var returnOutput: any = {};
+    var concept = await ConceptsData.GetConcept(id);
+    if(concept.id == 0 && id != null && id != undefined){
+     var conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    var output = await recursiveFetch(id, connectionList, compositionList);
+    var mainString = concept?.type?.characterValue ?? "";
+    returnOutput[mainString] = output;
+    return returnOutput;
+}
+
 export async function GetComposition(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};

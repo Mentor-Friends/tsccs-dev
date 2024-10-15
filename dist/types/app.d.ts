@@ -69,8 +69,10 @@ export { GetConceptByCharacterAndType } from './Api/GetConceptByCharacterAndType
 export { GetConnectionDataPrefetch } from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered } from './Services/Search/SearchLinkMultiple';
 export { SearchWithTypeAndLinkerApi } from './Api/Search/SearchWithTypeAndLinker';
-export { Wrapper } from './WrapperFunctions/Wrapper';
-export { SearchLinkMultipleAllWidget } from './WrapperFunctions/SearchLinkMultipleAllWidget';
+export { DependencyObserver } from './WrapperFunctions/DepenedencyObserver';
+export { SearchLinkMultipleAllObservable, searchLinkMultipleListener } from './WrapperFunctions/SearchLinkMultipleAllObservable';
+export { GetCompositionListener } from './WrapperFunctions/GetCompositionObservable';
+export { GetCompositionListListener } from './WrapperFunctions/GetCompositionListObservable';
 export { SearchWithTypeAndLinker } from './Services/Search/SearchWithTypeAndLinker';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
