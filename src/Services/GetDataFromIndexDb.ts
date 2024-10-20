@@ -34,10 +34,10 @@ import { getObjectsFromIndexDb } from "../Database/indexeddb";
 
  export async function GetConnectionsFromIndexDbLocal(){
     try{
-        var connectionList = await getObjectsFromLocalIndexDb("localconnection");
+        let connectionList = await getObjectsFromLocalIndexDb("localconnection");
 
         if(Array.isArray(connectionList)){
-            for(var i=0 ;i < connectionList.length ;i++){
+            for(let i=0 ;i < connectionList.length ;i++){
                 LocalConnectionData.AddConnectionToMemory(connectionList[i]);
             }
         }

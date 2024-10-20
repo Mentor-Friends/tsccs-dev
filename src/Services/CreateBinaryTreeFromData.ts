@@ -10,7 +10,7 @@ export default  async function CreateConceptBinaryTreeFromIndexDb(){
     try{
         let conceptList = await getObjectsFromIndexDb("concept");
         if(Array.isArray(conceptList)){
-            for(var i=0 ;i < conceptList.length ;i++){
+            for(let i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
                 ConceptsData.AddConceptToMemory(concept);
             }

@@ -20,7 +20,7 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
      typeId: number,orderId:number = 1, typeString: string = "", userId: number = 999
     ){  
         try{
-            var accessId : number = 4;
+            let accessId : number = 4;
             // let randomid = -Math.floor(Math.random() * 100000000);
             let randomid = await LocalId.getConnectionId();
              let realOfTheConceptId = 0;

@@ -15,8 +15,8 @@ export class ConnectionData{
 
     static connectionDictionary:Connection[] = [];
     static  CheckContains(connection: Connection){
-        var contains = false;
-        for(var i=0; i<this.connectionArray.length; i++){
+        let contains = false;
+        for(let i=0; i<this.connectionArray.length; i++){
          if(this.connectionArray[i].id == connection.id){
              contains = true;
          }
@@ -104,10 +104,10 @@ export class ConnectionData{
     //     }
     //     return myConcept;
     
-    var  myConnection: Connection = new Connection(0,0,0,0,0,0,0);
-    var node = await ConnectionBinaryTree.getNodeFromTree(id);
+    let  myConnection: Connection = new Connection(0,0,0,0,0,0,0);
+    let node = await ConnectionBinaryTree.getNodeFromTree(id);
     if(node?.value){
-        var returnedConcept = node.value;
+        let returnedConcept = node.value;
         if(returnedConcept){
             myConnection = returnedConcept as Connection;
             //if(myConnection.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
@@ -127,10 +127,10 @@ export class ConnectionData{
     }
 
     static async GetConnectionsOfCompositionLocal(id: number){
-        var connections :Connection[] = [];
-        var node = await ConnectionTypeTree.getNodeFromTree(id);
+        let connections :Connection[] = [];
+        let node = await ConnectionTypeTree.getNodeFromTree(id);
         if(node?.value){
-            var returnedConnection = node.value;
+            let returnedConnection = node.value;
             if(returnedConnection){
                 let myConnection = returnedConnection as Connection;
                 connections.push(myConnection);

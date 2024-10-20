@@ -1,4 +1,5 @@
 import { ConnectionData } from "../app";
+import { NORMAL } from "../Constants/FormatConstants";
 
 /**
  * This is the class that helps us observe anything that the function is doing
@@ -18,6 +19,7 @@ export class DependencyObserver{
     isUpdating: boolean = false; // this flag helps us check if the state is being updated while the connection updates.
     data: any;  // this is the actual data that needs to be returned.
     fetched: boolean = false;
+    format: number = NORMAL;
 
     /**
      * This function will be called when there is a need to listen to a certain type of concept that will update
@@ -123,6 +125,7 @@ export class DependencyObserver{
           await this.bind();
           return callback(this.data);
       }
+
 
       /**
        * 

@@ -9,13 +9,13 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
   let connectionList:Connection[] = []; 
   try{
-        var urlencoded = new URLSearchParams();
+        let urlencoded = new URLSearchParams();
         urlencoded.append("typeId", `${typeId}`);
         urlencoded.append("ofTheConceptId", `${ofTheConceptId}`);
         urlencoded.append("userId", `${userId}`);
         urlencoded.append("inpage", `${inpage}`);
         urlencoded.append("page", `${page}`);
-        var header = GetRequestHeader('application/x-www-form-urlencoded');
+        let header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetAllConnectionsOfConceptUrl(),{
                 method: 'POST',
                 headers: header,

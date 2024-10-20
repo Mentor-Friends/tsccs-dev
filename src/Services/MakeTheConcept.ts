@@ -7,8 +7,8 @@ export default async function MakeTheConcept(referent:string, userId:number, cat
 typeId:number, referentId:number,
 accessId:number, typeCharacter:string){
 
-    var conceptString = await GetConceptByCharacterAndType(referent, typeId);
-    var concept = conceptString as Concept;
+    let conceptString = await GetConceptByCharacterAndType(referent, typeId);
+    let concept = conceptString as Concept;
 
     if(concept.id == 0){
 

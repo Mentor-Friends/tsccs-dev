@@ -37,7 +37,7 @@ export class ConnectionTypeTree{
 
     static addConnectionToTree(connection:Connection){
         if(connection.typeId != 0){
-            var node: ConnectionNode = new ConnectionNode(connection.typeId, connection, null, null);
+            let node: ConnectionNode = new ConnectionNode(connection.typeId, connection, null, null);
             this.addNodeToTree(node);
         }
 
@@ -55,23 +55,23 @@ export class ConnectionTypeTree{
 
 
         if(this.connectionTypeRoot){
-            var Node = this.connectionTypeRoot.getFromNode(id, this.connectionTypeRoot);
+            let Node = this.connectionTypeRoot.getFromNode(id, this.connectionTypeRoot);
             return Node;
         }
         return this.connectionTypeRoot;
     }
 
     static async getTypeVariantsFromTree(typeId:number){
-        var connection : Connection[] = [];
+        let connection : Connection[] = [];
 
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return connection;
-        }
+        // try{
+        //     let data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return connection;
+        // }
 
-            var Node = this.getNodeFromTree(typeId);
+        let Node = this.getNodeFromTree(typeId);
     
             if(Node){
                 connection.push(Node?.value);

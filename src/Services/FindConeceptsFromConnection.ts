@@ -7,7 +7,7 @@ import { GetConceptBulk } from "../Api/GetConceptBulk";
  * @param connectionList list of connections whose concepts need to be found out.
  */
 export  async function FindConceptsFromConnections(connectionList:Connection[] = []){
-    var ConceptList:number[] = [];
+    let ConceptList:number[] = [];
     if(connectionList.length > 0){
         for(let i=0;i < connectionList.length; i++){
 

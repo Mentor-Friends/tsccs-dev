@@ -4,15 +4,15 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
 
 export async function LoginToBackend(email:string, password:string){
     try{
-        var object = {
+        let object = {
             'email': email,
             'password': password
         }
 
-        var myHeaders = new Headers();
+        let myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        var requestObject = JSON.stringify(object);
+        let requestObject = JSON.stringify(object);
 
             const response = await fetch(BaseUrl.LoginUrl(),{
                 method: 'POST',

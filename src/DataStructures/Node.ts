@@ -33,7 +33,7 @@ export class Node{
             node = passedNode;
             return node;
         }
-        var contains = false;
+        let contains = false;
         for(let i=0; i<node.variants.length; i++){
             if(node.variants[i].value.id == passedNode.value.id){
                 contains = true;
@@ -52,8 +52,8 @@ export class Node{
             return node;
         }
 
-        var LeftNode = node.leftNode;
-        var RightNode = node.rightNode;
+        let LeftNode = node.leftNode;
+        let RightNode = node.rightNode;
 
         if(node.key > passedNode.key){
             node.leftNode = this.addNode(passedNode,LeftNode,height);
@@ -100,8 +100,6 @@ export class Node{
         return node;
         
     }
-
-
     
     public checkIfIdsInNode(node: Node | null, ids: number[], connectionArray: Concept[], remainingIds: any){
         if(node){
@@ -123,7 +121,7 @@ export class Node{
     }
 
     public addCharacterNode(passedNode:Node, node:Node|null, height:number){
-        var debugFlag = false;
+        let debugFlag = false;
         if(passedNode.value.characterValue != ""){
 
             // if(passedNode.value.characterValue == "Default"){
@@ -146,8 +144,8 @@ export class Node{
         //     return node;
         // }
 
-        var LeftNode = node.leftNode;
-        var RightNode = node.rightNode;
+        let LeftNode = node.leftNode;
+        let RightNode = node.rightNode;
 
         if(node.key > passedNode.key){
             if(debugFlag){
@@ -189,7 +187,7 @@ export class Node{
         if(balancingFactor > 1){
             if(node.leftNode){
                 if(passedNode.key < node.leftNode.key){
-                   var returner =  this.rightRotate(node);
+                    let returner =  this.rightRotate(node);
                    if(debugFlag){
                     console.log("returning here 1 ",returner);
                    }
@@ -197,7 +195,7 @@ export class Node{
                 }
                 else if(passedNode.key > node.leftNode.key){
                     node.leftNode = this.leftRotate(node.leftNode);
-                    var returner =  this.rightRotate(node);
+                    let returner =  this.rightRotate(node);
                     if(debugFlag){
                         console.log("returning here 2 ",returner);
                     }
@@ -211,7 +209,7 @@ export class Node{
             if(node.rightNode){
                 if(passedNode.key > node.rightNode.key){
 
-                    var returner =  this.leftRotate(node);
+                    let returner =  this.leftRotate(node);
                     if(debugFlag){
                         console.log("returning here 3 ",returner);
                     }
@@ -219,7 +217,7 @@ export class Node{
                 }
                 else if (passedNode.key < node.rightNode.key){
                     node.rightNode = this.rightRotate(node.rightNode);
-                    var returner = this.leftRotate(node);
+                    let returner = this.leftRotate(node);
                     if(debugFlag){
                         console.log("returning here4 ",returner, node);
 
@@ -242,7 +240,7 @@ export class Node{
     }
 
     public addTypeNode(passedNode:Node, node:Node|null, height:number){
-        var debugFlag = false;
+        let debugFlag = false;
         if(passedNode.value.typeId != 0){
 
             // if(passedNode.value.characterValue == "Default"){
@@ -254,12 +252,13 @@ export class Node{
             if(debugFlag){
                 console.log("equal here", node);
             }
+            console.log("adding the type node to the tree", passedNode);
             node = passedNode;
             return node;
         }
 
-        var LeftNode = node.leftNode;
-        var RightNode = node.rightNode;
+        let LeftNode = node.leftNode;
+        let RightNode = node.rightNode;
 
         if(node.key > passedNode.key){
             if(debugFlag){
@@ -279,9 +278,11 @@ export class Node{
             if(debugFlag){
                 console.log("else here", node, passedNode);
             }
+            console.log("adding the type node to the tree down", passedNode);
             if (node.key == passedNode.key && node.key != 0 && node.value.id != passedNode.value.id){
                     node.addCurrentNodeType(passedNode,node);
             }
+            console.log("adding the type node to the tree last", node);
             return node;
         }
 
@@ -297,7 +298,7 @@ export class Node{
         if(balancingFactor > 1){
             if(node.leftNode){
                 if(passedNode.key < node.leftNode.key){
-                   var returner =  this.rightRotate(node);
+                    let returner =  this.rightRotate(node);
                    if(debugFlag){
                     console.log("returning here 1 ",returner);
                    }
@@ -305,7 +306,7 @@ export class Node{
                 }
                 else if(passedNode.key > node.leftNode.key){
                     node.leftNode = this.leftRotate(node.leftNode);
-                    var returner =  this.rightRotate(node);
+                    let returner =  this.rightRotate(node);
                     if(debugFlag){
                         console.log("returning here 2 ",returner);
                     }
@@ -319,7 +320,7 @@ export class Node{
             if(node.rightNode){
                 if(passedNode.key > node.rightNode.key){
 
-                    var returner =  this.leftRotate(node);
+                    let returner =  this.leftRotate(node);
                     if(debugFlag){
                         console.log("returning here 3 ",returner);
                     }
@@ -327,7 +328,7 @@ export class Node{
                 }
                 else if (passedNode.key < node.rightNode.key){
                     node.rightNode = this.rightRotate(node.rightNode);
-                    var returner = this.leftRotate(node);
+                    let returner = this.leftRotate(node);
                     if(debugFlag){
                         console.log("returning here4 ",returner, node);
 
@@ -406,12 +407,12 @@ export class Node{
     public getFromNode(id: number, node: Node | null) :Node | null{
         if(node){
             if(id == node.key){
-                if(node.value.count){
-                    node.value.count++ ;
-                }
-                else{
-                    node.value.count = 1;
-                }
+                // if(node.value.count){
+                //     node.value.count++ ;
+                // }
+                // else{
+                //     node.value.count = 1;
+                // }
                 return node;
             }
             else if(id < node.key){
@@ -560,7 +561,7 @@ export class Node{
             }
             else{                
                 // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
-                var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
+                let immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
                 passedNode.value = immediateSuccessor.value;
                 passedNode.key = immediateSuccessor.key;
                 passedNode.variants = immediateSuccessor.variants;
@@ -589,7 +590,7 @@ export class Node{
 
             //condition if the main node is equal to the value
             if(passedNode.value.id == conceptId ){
-                var newNode = passedNode.variants[0];
+                let newNode = passedNode.variants[0];
                 if(newNode){
                     passedNode.value = newNode.value;
                     passedNode.key = newNode.key;
@@ -624,7 +625,7 @@ export class Node{
         }
         else{                
             // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
-            var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
+            let immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
             passedNode.value = immediateSuccessor.value;
             passedNode.key = immediateSuccessor.key;
             passedNode.variants = immediateSuccessor.variants;

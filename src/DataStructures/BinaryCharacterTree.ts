@@ -77,12 +77,12 @@ export class BinaryCharacterTree{
 
     static async getCharacterAndTypeFromTree(value:string, typeId: number){
 
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return null;
+        // }
         if(this.characterRoot){
             var Node = this.characterRoot.getFromNodeWithCharacterAndType(value, typeId,this.characterRoot);
             return Node;
@@ -92,12 +92,12 @@ export class BinaryCharacterTree{
 
     static async getCharacterAndCategoryFromTree(value:string, categoryId: number){
 
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return null;
+        // }
         if(this.characterRoot){
             var Node = this.characterRoot.getFromNodeWithCharacterAndCategory(value, categoryId,this.characterRoot);
             return Node;

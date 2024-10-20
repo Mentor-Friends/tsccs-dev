@@ -7,7 +7,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 export async function GetReservedIds(){
     try{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            let header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetReservedIdUrl(),{
                 method: 'GET',
                 headers: header,
@@ -17,7 +17,7 @@ export async function GetReservedIds(){
                 throw new Error(`Error! status: ${response.status}`);
             }
              const result = await response.json();
-             for(var i=0; i< result.length; i++){
+             for(let i=0; i< result.length; i++){
                 ReservedIds.AddId(result[i]);
              }
     }

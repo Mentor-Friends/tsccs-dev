@@ -26,11 +26,11 @@ export default async function CreateTheConceptLocal(referent:string, typecharact
 typeId:number, 
 accessId:number, isComposition: boolean = false, referentId:number = 0){
     try{
-        //var id = -Math.floor(Math.random() * 100000000);
-        var id = await LocalId.getConceptId();
+        //let id = -Math.floor(Math.random() * 100000000);
+        let id = await LocalId.getConceptId();
         console.log("this is the getting id type connection", id);
 
-        var isNew: boolean = true;
+        let isNew: boolean = true;
         let created_on:Date = new Date();
         let updated_on:Date = new Date();
         if(referent == "the"){
@@ -38,7 +38,7 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
             return concept;
         }
 
-        var concept = new Concept(id,userId,typeId,categoryId,referentId, referent, accessId, isNew,created_on,updated_on,typecharacter );
+        let concept = new Concept(id,userId,typeId,categoryId,referentId, referent, accessId, isNew,created_on,updated_on,typecharacter );
         concept.isTemp = true;
         concept.isComposition = isComposition;
         LocalConceptsData.AddConcept(concept);

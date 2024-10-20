@@ -10,12 +10,12 @@ import GetConceptByCharacterLocal from "./GetConceptByCharacterLocal";
  */
 export  async function GetCompositionListLocal(compositionName: string,userId:number){
    try{
-      var concept = await GetConceptByCharacterLocal(compositionName);
-      var CompositionList :any = [];
+      let concept = await GetConceptByCharacterLocal(compositionName);
+      let CompositionList :any = [];
       if(concept.id != 0){
-       var conceptList = await LocalConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
-       for(var i=0; i< conceptList.length; i++){
-         var compositionJson= await GetCompositionLocal(conceptList[i].id);
+       let conceptList = await LocalConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
+       for(let i=0; i< conceptList.length; i++){
+         let compositionJson= await GetCompositionLocal(conceptList[i].id);
             CompositionList.push(compositionJson);
        }
       }
@@ -35,13 +35,13 @@ export  async function GetCompositionListLocal(compositionName: string,userId:nu
  */
 export  async function GetCompositionListLocalWithId(compositionName: string, userId: number){
    try{
-      var concept = await GetConceptByCharacterLocal(compositionName);
-      var CompositionList :any = [];
+      let concept = await GetConceptByCharacterLocal(compositionName);
+      let CompositionList :any = [];
       if(concept.id != 0){
-       var conceptList = await LocalConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
+       let conceptList = await LocalConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
    
-       for(var i=0; i< conceptList.length; i++){
-         var compositionJson= await GetCompositionLocalWithId(conceptList[i].id);
+       for(let i=0; i< conceptList.length; i++){
+         let compositionJson= await GetCompositionLocalWithId(conceptList[i].id);
             CompositionList.push(compositionJson);
        }
       }

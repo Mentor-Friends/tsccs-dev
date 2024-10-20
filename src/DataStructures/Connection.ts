@@ -21,6 +21,8 @@ export class Connection{
     toUpdate:boolean = false;
     applicationId: number = BaseUrl.BASE_RANDOMIZER;
     type: Concept = CreateDefaultConcept();
+    ofConcept: Concept = CreateDefaultConcept();
+    toConcept: Concept = CreateDefaultConcept();
 
     constructor(id: number = 0, ofTheConceptId: number, toTheConceptId: number,
         userId: number, typeId: number,  orderId: number,

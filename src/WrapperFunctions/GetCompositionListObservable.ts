@@ -1,6 +1,6 @@
 import { GetAllConceptsByType } from "../Api/GetAllConceptsByType";
-import { ConceptsData, Connection, ConnectionData, GetAllConnectionsOfCompositionBulk, GetComposition, GetCompositionList, GetConceptByCharacter } from "../app";
-import { GetCompositionById, GetCompositionFromMemory, RecursiveFetchBuildLayer } from "../Services/GetComposition";
+import { ConceptsData, Connection, ConnectionData, DATAID, GetAllConnectionsOfCompositionBulk, GetComposition, GetCompositionList, GetConceptByCharacter, JUSTDATA, NORMAL } from "../app";
+import { GetCompositionById, GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionWithIdFromMemory, RecursiveFetchBuildLayer } from "../Services/GetComposition";
 import { DependencyObserver } from "./DepenedencyObserver";
 import { GetCompositionListener, GetCompositionObservable } from "./GetCompositionObservable";
 
@@ -14,12 +14,13 @@ export class GetCompositionListObservable extends DependencyObserver{
     page: number;
     data: any = [];
     startPage:number = 0;
-    constructor(compositionName:string, userId: number, inpage: number , page: number){
+    constructor(compositionName:string, userId: number, inpage: number , page: number, format: number){
         super();
         this.compositionName = compositionName;
         this.userId = userId;
         this.inpage = inpage;
         this.page = page;
+        this.format = format;
     }
 
 
@@ -31,7 +32,9 @@ export class GetCompositionListObservable extends DependencyObserver{
         
             if(concept){
                 await GetAllConceptsByType(this.compositionName, this.userId);
+                console.log("getting the user data", concept.id, this.userId);
                 let conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,this.userId);
+                console.log("this is the concept list", conceptList);
                 var startPage = this.inpage * (this.page - 1);
                 for(var i=startPage; i< startPage + this.inpage; i++){
                     if(conceptList[i]){
@@ -53,13 +56,44 @@ export class GetCompositionListObservable extends DependencyObserver{
 
     async build(){
         this.data = [];
-        for(var i=this.startPage; i< this.startPage + this.inpage; i++){
-          if(this.compositionIds[i]){
-    
-             var compositionJson= await GetCompositionFromMemory(this.compositionIds[i]);
-             this.data.push(compositionJson);
-          }
+        console.log("this is building the data");
+        if(this.format == JUSTDATA){
+            for(let i=this.startPage; i< this.startPage + this.inpage; i++){
+                if(this.compositionIds[i]){
+          
+                   let compositionJson= await GetCompositionFromMemory(this.compositionIds[i]);
+                   this.data.push(compositionJson);
+                }
+              }
         }
+        else if(this.format == DATAID){
+            for(let i=this.startPage; i< this.startPage + this.inpage; i++){
+                if(this.compositionIds[i]){
+          
+                    let compositionJson= await GetCompositionWithIdFromMemory(this.compositionIds[i]);
+                   this.data.push(compositionJson);
+                }
+              }
+        }
+        else if(this.format == NORMAL){
+            for(let i=this.startPage; i< this.startPage + this.inpage; i++){
+                if(this.compositionIds[i]){
+          
+                    let compositionJson= await GetCompositionFromMemoryNormal(this.compositionIds[i]);
+                   this.data.push(compositionJson);
+                }
+              }
+        }
+        else{
+            for(let i=this.startPage; i< this.startPage + this.inpage; i++){
+                if(this.compositionIds[i]){
+          
+                    let compositionJson= await GetCompositionFromMemory(this.compositionIds[i]);
+                   this.data.push(compositionJson);
+                }
+              }
+        }
+
         console.log("this is the list", this.data);
         return this.data;
     }
@@ -68,6 +102,6 @@ export class GetCompositionListObservable extends DependencyObserver{
 /**
  * This function will give you the list of the concepts by composition name with a listener to any data change.
  */
-export function GetCompositionListListener(compositionName:string, userId: number, inpage: number, page: number){
-    return new GetCompositionListObservable(compositionName, userId, inpage, page);
+export function GetCompositionListListener(compositionName:string, userId: number, inpage: number, page: number, format:number = JUSTDATA){
+    return new GetCompositionListObservable(compositionName, userId, inpage, page,format);
 }

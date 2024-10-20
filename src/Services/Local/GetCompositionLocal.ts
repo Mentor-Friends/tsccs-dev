@@ -11,27 +11,27 @@ import { GetComposition } from "../GetComposition";
 
 export async function GetCompositionLocal(id:number){
     try{
-        var connectionList:LConnection[] = [];
-        var returnOutput: any = {};
+        let connectionList:LConnection[] = [];
+        let returnOutput: any = {};
         connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
         //connectionList = ConnectionData.GetConnectionsOfComposition(id);
-        var compositionList:number[] = [];
+        let compositionList:number[] = [];
     
-        for(var i=0; i<connectionList.length; i++){
+        for(let i=0; i<connectionList.length; i++){
             if(!compositionList.includes(connectionList[i].ofTheConceptId)){
                 compositionList.push(connectionList[i].ofTheConceptId);
             }
         }
     
-        var concept = await LocalConceptsData.GetConcept(id);
+        let concept = await LocalConceptsData.GetConcept(id);
         if(concept.id == 0){
            let realConcept:Concept = await TranslateLocalToReal(id);
            if(realConcept.id > 0){
             return await GetComposition(realConcept.id);
            }
         }
-        var output = await recursiveFetchLocal(id, connectionList, compositionList);
-        var mainString = concept?.type?.characterValue ?? "top";
+        let output = await recursiveFetchLocal(id, connectionList, compositionList);
+        let mainString = concept?.type?.characterValue ?? "top";
         returnOutput[mainString] = output;
         return returnOutput;
     }
@@ -43,21 +43,21 @@ export async function GetCompositionLocal(id:number){
 
 export async function GetCompositionLocalWithId(id:number){
     try{
-        var connectionList:LConnection[] = [];
-        var returnOutput: any = {};
-        var FinalReturn: any = {};
+        let connectionList:LConnection[] = [];
+        let returnOutput: any = {};
+        let FinalReturn: any = {};
     
         connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
-        var compositionList:number[] = [];
-        for(var i=0; i<connectionList.length; i++){
+        let compositionList:number[] = [];
+        for(let i=0; i<connectionList.length; i++){
             if(!compositionList.includes(connectionList[i].ofTheConceptId)){
                 compositionList.push(connectionList[i].ofTheConceptId);
             }
         }
-        var concept = await LocalConceptsData.GetConcept(id);
+        let concept = await LocalConceptsData.GetConcept(id);
         if(concept.id != 0){
-            var output = await recursiveFetchLocal(id, connectionList, compositionList);
-            var mainString = concept?.type?.characterValue ?? "top";
+            let output = await recursiveFetchLocal(id, connectionList, compositionList);
+            let mainString = concept?.type?.characterValue ?? "top";
             returnOutput[mainString] = output;
         }
     
@@ -75,20 +75,20 @@ export async function GetCompositionLocalWithId(id:number){
 
  async function recursiveFetchLocal(id:number, connectionList:LConnection[], compositionList:number[], visitedConcepts: number[] = []){
 
-    var output : any= {};
-    var arroutput: any = [];
-    var concept = await LocalConceptsData.GetConcept(id);
+    let output : any= {};
+    let arroutput: any = [];
+    let concept = await LocalConceptsData.GetConcept(id);
     if(concept.id != 0){
         if(concept.type == null){
 
-            var toConceptTypeId: number  = concept.typeId;
-            var toConceptType = await LocalConceptsData.GetConcept(toConceptTypeId);
+            let toConceptTypeId: number  = concept.typeId;
+            let toConceptType = await LocalConceptsData.GetConcept(toConceptTypeId);
 
             concept.type = toConceptType;
         }
     }
 
-    var mainString = concept?.type?.characterValue ?? "top";
+    let mainString = concept?.type?.characterValue ?? "top";
 
     if(!compositionList.includes(id)){
         return concept?.characterValue;
@@ -100,28 +100,28 @@ export async function GetCompositionLocalWithId(id:number){
           else{
             visitedConcepts.push(id);
           }
-        for(var i=0; i<connectionList.length; i++){
+        for(let i=0; i<connectionList.length; i++){
 
             if(connectionList[i].ofTheConceptId == id){
-                var toConceptId = connectionList[i].toTheConceptId;
+                let toConceptId = connectionList[i].toTheConceptId;
 
-                var toConcept = await LocalConceptsData.GetConcept(toConceptId);
+                let toConcept = await LocalConceptsData.GetConcept(toConceptId);
                 if(toConcept.id != 0){
                     if(toConcept?.type == null){
 
-                        var toConceptTypeId: number  = toConcept.typeId;
-                        var toConceptType = await LocalConceptsData.GetConcept(toConceptTypeId);
+                        let toConceptTypeId: number  = toConcept.typeId;
+                        let toConceptType = await LocalConceptsData.GetConcept(toConceptTypeId);
 
                         toConcept.type = toConceptType;
                     }
                 }
 
-                var regex = "the_";
+                let regex = "the_";
 
 
-                var localmainString = toConcept?.type?.characterValue ?? "top";
+                let localmainString = toConcept?.type?.characterValue ?? "top";
 
-                var localKey = localmainString.replace(regex, "");
+                let localKey = localmainString.replace(regex, "");
 
                 if(isNaN(Number(localKey)) ){
 

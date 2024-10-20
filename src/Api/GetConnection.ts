@@ -5,7 +5,7 @@ import { Connection } from "../DataStructures/Connection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 export async function GetConnection(id: number){
-    var result :Connection= await ConnectionData.GetConnection(id);
+    let result :Connection= await ConnectionData.GetConnection(id);
 
     try{
         if(result.id != 0){
@@ -13,7 +13,7 @@ export async function GetConnection(id: number){
             return result;
         }
         else{
-            var header = GetRequestHeader('application/x-www-form-urlencoded')
+            let header = GetRequestHeader('application/x-www-form-urlencoded')
             const formdata = new FormData();
             formdata.append("id", id.toString());
             const response = await fetch(BaseUrl.GetConnectionUrl(),{

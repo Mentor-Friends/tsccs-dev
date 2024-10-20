@@ -5,8 +5,8 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 export default async function MakeTheConceptLocal(referent:string, typeCharacter:string, userId:number, categoryId:number,
 typeId:number){
 
-    var conceptString = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent,typeId);
-    var concept = conceptString as Concept;
+    let conceptString = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent,typeId);
+    let concept = conceptString as Concept;
     let accessId = 4;
     if(typeCharacter == "the"){
         categoryId = 1;

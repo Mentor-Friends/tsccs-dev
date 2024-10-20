@@ -10,8 +10,8 @@ import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
 export async function CreateConnectionBetweenTwoConcepts(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, count:boolean = false){
 
-        var userId:number = ofTheConcept.userId;
-        var accessId: number = 4;
+        let userId:number = ofTheConcept.userId;
+        let accessId: number = 4;
         if(both){
             let prefix1: string = toTheConcept.type?.characterValue + "_s";
             let linkerAdd1 = linker + "_by";
@@ -19,7 +19,7 @@ export async function CreateConnectionBetweenTwoConcepts(ofTheConcept: Concept, 
             if(count){
                await CountRelationship(linkerAdd1, toTheConcept, userId);
               }
-            var connectionConceptReverse = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
+            let connectionConceptReverse = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
             let newConnection = new Connection(0,toTheConcept.id, ofTheConcept.id, userId,
                connectionConceptReverse.id, 1000, accessId );
             SyncData.AddConnection(newConnection);
@@ -30,7 +30,7 @@ export async function CreateConnectionBetweenTwoConcepts(ofTheConcept: Concept, 
         if(count){
          await CountRelationship(linkerAdd, ofTheConcept, userId);
         }
-        var connectionConcept = await MakeTheInstanceConcept("connection",forwardLinker,false,999,999,999);
+        let connectionConcept = await MakeTheInstanceConcept("connection",forwardLinker,false,999,999,999);
         let newConnection = new Connection(0,ofTheConcept.id, toTheConcept.id,userId,
            connectionConcept.id, 1000,  accessId );
         SyncData.AddConnection(newConnection);
@@ -39,19 +39,19 @@ export async function CreateConnectionBetweenTwoConcepts(ofTheConcept: Concept, 
 
 
 export async function CountRelationship(linker: string, concept:Concept, passedUserId: number | null = null){
-   var concept1:Concept = concept; 
-   var userId:number = passedUserId ?? concept.userId;
-   var accessId: number = 4;
-   var sessionInformationId = 999;
-   var forwardLinkerCount:string = linker + "_count";
-   var forwardLinkerCountString = concept.type?.characterValue +  "_s" + "_" + forwardLinkerCount;
-   var forwardLinkerCountConcept = await MakeTheInstanceConcept("connection",forwardLinkerCountString,false,userId,accessId,sessionInformationId);
+   let concept1:Concept = concept; 
+   let userId:number = passedUserId ?? concept.userId;
+   let accessId: number = 4;
+   let sessionInformationId = 999;
+   let forwardLinkerCount:string = linker + "_count";
+   let forwardLinkerCountString = concept.type?.characterValue +  "_s" + "_" + forwardLinkerCount;
+   let forwardLinkerCountConcept = await MakeTheInstanceConcept("connection",forwardLinkerCountString,false,userId,accessId,sessionInformationId);
 
-   var connectionsString = await GetConnectionOfTheConcept(forwardLinkerCountConcept.id, concept.id, userId, 10, 1);
-   var connections = connectionsString as Connection[];
-   var countConceptList:Concept[] = [];
-   var countConcept = CreateDefaultConcept();
-   for(var i=0; i<connections.length; i++){
+   let connectionsString = await GetConnectionOfTheConcept(forwardLinkerCountConcept.id, concept.id, userId, 10, 1);
+   let connections = connectionsString as Connection[];
+   let countConceptList:Concept[] = [];
+   let countConcept = CreateDefaultConcept();
+   for(let i=0; i<connections.length; i++){
      let toConcept = await GetTheConcept(connections[i].toTheConceptId);
      countConceptList.push(toConcept);
    }
@@ -60,7 +60,7 @@ export async function CountRelationship(linker: string, concept:Concept, passedU
 
    }
    else{
-      var oldcountConcept = countConceptList[0];
+      let oldcountConcept = countConceptList[0];
       let count:number = 0;
       try{
          count = Number(oldcountConcept.characterValue);
@@ -84,8 +84,8 @@ export async function CountRelationship(linker: string, concept:Concept, passedU
 
 export async function CreateConnectionBetweenTwoConceptsGeneral(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, count:boolean = false){
 
-   var userId:number = ofTheConcept.userId;
-   var accessId: number = 4;
+   let userId:number = ofTheConcept.userId;
+   let accessId: number = 4;
    if(both){
        let prefix1: string = toTheConcept.type?.characterValue + "_s";
        let linkerAdd1 = linker + "_by";
@@ -93,7 +93,7 @@ export async function CreateConnectionBetweenTwoConceptsGeneral(ofTheConcept: Co
        if(count){
           await CountRelationship(linkerAdd1, toTheConcept, userId);
          }
-       var connectionConceptReverse = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
+       let connectionConceptReverse = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
        let newConnection = new Connection(0,toTheConcept.id, ofTheConcept.id, userId,
           connectionConceptReverse.id, 1000, accessId  );
        SyncData.AddConnection(newConnection);
@@ -104,7 +104,7 @@ export async function CreateConnectionBetweenTwoConceptsGeneral(ofTheConcept: Co
    if(count){
     await CountRelationship(linkerAdd, ofTheConcept, userId);
    }
-   var connectionConcept = await MakeTheInstanceConcept("connection",forwardLinker,false,999,999,999);
+   let connectionConcept = await MakeTheInstanceConcept("connection",forwardLinker,false,999,999,999);
    let newConnection = await CreateTheConnectionGeneral(ofTheConcept.id,ofTheConcept.userId, toTheConcept.id,
       connectionConcept.id, 1000,  accessId);
    return newConnection;

@@ -44,12 +44,12 @@ export class ConnectionOfNode extends NodePrimitive{
         if(balancingFactor > 1){
             if(node.leftNode){
                 if(passedNode.key < node.leftNode.key){
-                   var returner =  this.rightRotate(node);
+                    let returner =  this.rightRotate(node);
                    return returner;
                 }
                 else if(passedNode.key > node.leftNode.key){
                     node.leftNode = this.leftRotate(node.leftNode);
-                    var returner =  this.rightRotate(node);
+                    let returner =  this.rightRotate(node);
                         return returner;
                 }
             }
@@ -59,12 +59,12 @@ export class ConnectionOfNode extends NodePrimitive{
             if(node.rightNode){
                 if(passedNode.key > node.rightNode.key){
 
-                    var returner =  this.leftRotate(node);
+                    let returner =  this.leftRotate(node);
                     return returner;
                 }
                 else if (passedNode.key < node.rightNode.key){
                     node.rightNode = this.rightRotate(node.rightNode);
-                    var returner = this.leftRotate(node);
+                    let returner = this.leftRotate(node);
                     return returner;
                 }
             }

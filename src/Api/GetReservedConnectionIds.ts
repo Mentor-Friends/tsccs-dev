@@ -7,7 +7,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 export async function GetReservedConnectionIds(){
     try{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            let header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetReservedConnectionIdUrl(),{
                 method: 'GET',
                 headers: header,
@@ -17,7 +17,7 @@ export async function GetReservedConnectionIds(){
                 throw new Error(`Error! status: ${response.status}`);
             }
              const result = await response.json();
-             for(var i=0; i< result.length; i++){
+             for(let i=0; i< result.length; i++){
                 ReservedConnectionIds.AddId(result[i]);
              }
     }

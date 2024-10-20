@@ -23,7 +23,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
 
     try{
       if(conceptIds.length > 0){
-        var bulkConceptFetch: number[] = [];
+        let bulkConceptFetch: number[] = [];
         for(let i=0; i<conceptIds.length; i++){
             let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
             if(conceptUse.id == 0){
@@ -49,7 +49,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
             return result;
         }
         else{
-            var header = GetRequestHeader();
+            let header = GetRequestHeader();
             const response = await fetch(BaseUrl.GetConceptBulkUrl(),{
                 method: 'POST',
                 headers: header,
@@ -57,6 +57,8 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
             });
             if(response.ok){
                 result = await response.json();
+                console.log("got all the concepts", result);
+
                 if(result.length > 0){
                     for(let i=0 ; i<result.length; i++){
                         let concept = result[i] as Concept;
@@ -64,6 +66,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
                     }
     
                 }
+                console.log("added the concepts");
             }
             else{
                 console.log("Get Concept Bulk error", response.status);

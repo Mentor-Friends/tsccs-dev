@@ -6,18 +6,18 @@ import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
 export default  async function CreateTheComposition(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null)
 {
-    var localUserId:number = userId ?? 999;
-    var localAccessId: number = accessId ?? 4;
-    var localSessionId: number = sessionInformationId ?? 999;
-    var MainKeyLocal: number = mainKey ?? 0;
-    var MainConcept = CreateDefaultConcept();
+    let localUserId:number = userId ?? 999;
+    let localAccessId: number = accessId ?? 4;
+    let localSessionId: number = sessionInformationId ?? 999;
+    let MainKeyLocal: number = mainKey ?? 0;
+    let MainConcept = CreateDefaultConcept();
     for (const key in json) {
         if((typeof json[key] != 'string' && typeof json[key] != 'number') ){
             if(ofTheConceptId == null && ofTheConceptUserId == null){
 
-                var localMainKey = MainKeyLocal;
+                let localMainKey = MainKeyLocal;
                 let conceptString = await MakeTheInstanceConcept(key, "", true, localUserId, localAccessId, localSessionId);
-                var concept = conceptString as Concept;
+                let concept = conceptString as Concept;
                 MainConcept = concept;
                 localMainKey = concept.id;
                 MainKeyLocal = concept.id;
@@ -26,22 +26,22 @@ export default  async function CreateTheComposition(json: any, ofTheConceptId:nu
     
             }
             else{
-                var ofThe:number = ofTheConceptId ?? 999;
-                var ofTheUser:number = ofTheConceptUserId ?? 999;
-                var localMainKey = MainKeyLocal;
-                var conceptString = await MakeTheInstanceConcept(key, "", true, localUserId, localAccessId, localSessionId  );
-                var concept = conceptString as Concept;
+                let ofThe:number = ofTheConceptId ?? 999;
+                let ofTheUser:number = ofTheConceptUserId ?? 999;
+                let localMainKey = MainKeyLocal;
+                let conceptString = await MakeTheInstanceConcept(key, "", true, localUserId, localAccessId, localSessionId  );
+                let concept = conceptString as Concept;
                 MainConcept = concept;
                 await createTheConnection(ofThe, ofTheUser, concept.id, localMainKey);
                 await CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
             }
         }
         else{
-            var ofThe:number = ofTheConceptId ?? 999;
-            var ofTheUser:number = ofTheConceptUserId ?? 10267;
-            var localMainKey = MainKeyLocal;
-            var conceptString = await MakeTheInstanceConcept(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
-            var concept = conceptString as Concept;
+            let ofThe:number = ofTheConceptId ?? 999;
+            let ofTheUser:number = ofTheConceptUserId ?? 10267;
+            let localMainKey = MainKeyLocal;
+            let conceptString = await MakeTheInstanceConcept(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
+            let concept = conceptString as Concept;
             await createTheConnection(ofThe, ofTheUser, concept.id,  localMainKey);
 
         }

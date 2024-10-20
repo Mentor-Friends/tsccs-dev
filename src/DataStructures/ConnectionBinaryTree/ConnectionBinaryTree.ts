@@ -16,7 +16,7 @@ export class ConnectionBinaryTree{
     }
 
     static addConnectionToTree(connection:Connection){
-        var node: ConnectionNode = new ConnectionNode(connection.id, connection, null, null);
+        let node: ConnectionNode = new ConnectionNode(connection.id, connection, null, null);
         this.addNodeToTree(node);
     }
 
@@ -55,7 +55,7 @@ export class ConnectionBinaryTree{
 
     static async getNodeFromTree(id:number){
         if(this.connectionroot){
-            var Node = this.connectionroot.getFromNode(id, this.connectionroot);
+            let Node = this.connectionroot.getFromNode(id, this.connectionroot);
             return Node;
         }
         return this.connectionroot;

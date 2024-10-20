@@ -36,15 +36,15 @@ export class BinaryTree{
       };
 
     static addConceptToTree(concept:Concept){
-        var node: Node = new Node(concept.id, concept, null, null);
-        var characterNode: Node = new Node(concept.characterValue, concept, null,null);
+        let node: Node = new Node(concept.id, concept, null, null);
+        let characterNode: Node = new Node(concept.characterValue, concept, null,null);
         BinaryCharacterTree.addNodeToTree(characterNode);
         this.addNodeToTree(node);
     }
 
     static async getNodeFromTree(id:number){
         if(this.root){
-            var Node = this.root.getFromNode(id, this.root);
+            let Node = this.root.getFromNode(id, this.root);
             return Node;
         }
         return null;

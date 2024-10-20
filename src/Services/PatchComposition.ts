@@ -2,5 +2,5 @@ import { GetCompositionConnectionsBetweenTwoConcepts } from "../Api/GetCompositi
 import { Concept } from "../DataStructures/Concept";
 
 export default function PatchComposition(ofConcept:Concept, MainConcept:Concept, toConcept:Concept){
-  var connection =   GetCompositionConnectionsBetweenTwoConcepts(ofConcept.id, toConcept.id, MainConcept.id);
+  let connection =   GetCompositionConnectionsBetweenTwoConcepts(ofConcept.id, toConcept.id, MainConcept.id);
 }

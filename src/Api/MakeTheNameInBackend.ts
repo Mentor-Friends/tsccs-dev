@@ -3,16 +3,16 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function MakeTheNameInBackend(newConceptId:number, referent:string, typeId: number, typeUserId:number){
     try{
-        var object = {
+        let object = {
             'newConceptId': newConceptId,
             'referent': referent,
             'typeId': typeId,
             'typeUserId': typeUserId
         }
 
-        var myHeaders = GetRequestHeader();
+        let myHeaders = GetRequestHeader();
 
-        var requestObject = JSON.stringify(object);
+        let requestObject = JSON.stringify(object);
             const response = await fetch(BaseUrl.MakeTheNameInBackendUrl(),{
                 method: 'POST',
                 headers: myHeaders,

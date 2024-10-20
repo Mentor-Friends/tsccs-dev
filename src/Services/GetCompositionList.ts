@@ -11,15 +11,15 @@ import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
 // for eg get list of boomgpt
 export  async function GetCompositionList(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
    
-   var concept = await GetConceptByCharacter(compositionName);
-   var CompositionList :any = [];
+   let concept = await GetConceptByCharacter(compositionName);
+   let CompositionList :any = [];
 
    if(concept){
     await GetAllConceptsByType(compositionName, userId);
-    var conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
-    var startPage = inpage * (page - 1);
-    var prefetchComposition:number[] = [];
-    for(var i=startPage; i< startPage + inpage; i++){
+    let conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
+    let startPage = inpage * (page - 1);
+    let prefetchComposition:number[] = [];
+    for(let i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
          
          prefetchComposition.push(conceptList[i].id);
@@ -28,10 +28,10 @@ export  async function GetCompositionList(compositionName: string,userId:number,
 
     await GetAllConnectionsOfCompositionBulk(prefetchComposition);
 
-    for(var i=startPage; i< startPage + inpage; i++){
+    for(let i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
 
-         var compositionJson= await GetCompositionFromMemory(conceptList[i].id);
+         let compositionJson= await GetCompositionFromMemory(conceptList[i].id);
          CompositionList.push(compositionJson);
       }
     }
@@ -86,9 +86,9 @@ export async function GetCompositionListAll(compositionName: string,userId:numbe
 
 
 export async function GetCompositionListAllWithId(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
-   var conceptLocal = await GetConceptByCharacterLocal(compositionName);
-   var conceptOnline = await GetConceptByCharacter(compositionName);
-   var CompositionList :any = [];
+   let conceptLocal = await GetConceptByCharacterLocal(compositionName);
+   let conceptOnline = await GetConceptByCharacter(compositionName);
+   let CompositionList :any = [];
    let conceptList: any[] = [];
    let conceptListLocal: Concept[] = [];
    let finalLocal : Concept[] = [];
@@ -124,23 +124,23 @@ export async function GetCompositionListAllWithId(compositionName: string,userId
 }
 
 export  async function GetCompositionListWithId(compositionName: string, userId: number,  inpage:number = 10, page:number =1){
-   var concept = await GetConceptByCharacter(compositionName);
-   var CompositionList :any = [];
+   let concept = await GetConceptByCharacter(compositionName);
+   let CompositionList :any = [];
    if(concept){
     await GetAllConceptsByType(compositionName, userId);
-    var conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
-    var startPage = inpage * (page - 1);
-    var prefetchComposition:number[] = [];
-    for(var i=startPage; i< startPage + inpage; i++){
+    let conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
+    let startPage = inpage * (page - 1);
+    let prefetchComposition:number[] = [];
+    for(let i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
          
          prefetchComposition.push(conceptList[i].id);
       }
     }
     await GetAllConnectionsOfCompositionBulk(prefetchComposition);
-    for(var i=startPage; i< startPage + inpage; i++){
+    for(let i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
-         var compositionJson= await GetCompositionWithIdFromMemory(conceptList[i].id);
+         let compositionJson= await GetCompositionWithIdFromMemory(conceptList[i].id);
             CompositionList.push(compositionJson);
       }
     }
@@ -150,23 +150,23 @@ export  async function GetCompositionListWithId(compositionName: string, userId:
 
 
 export  async function GetCompositionListWithIdUpdated(compositionName: string, userId: number,  inpage:number = 10, page:number =1){
-   var concept = await GetConceptByCharacterUpdated(compositionName);
-   var CompositionList :any = [];
+   let concept = await GetConceptByCharacterUpdated(compositionName);
+   let CompositionList :any = [];
    if(concept){
     await GetAllConceptsByType(compositionName, userId);
-    var conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
-    var startPage = inpage * (page - 1);
-    var prefetchComposition:number[] = [];
-    for(var i=startPage; i< startPage + inpage; i++){
+    let conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,userId);
+    let startPage = inpage * (page - 1);
+    let prefetchComposition:number[] = [];
+    for(let i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
          
          prefetchComposition.push(conceptList[i].id);
       }
     }
     await GetAllConnectionsOfCompositionBulk(prefetchComposition);
-    for(var i=startPage; i< startPage + inpage; i++){
+    for(let i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){
-         var compositionJson= await GetCompositionWithIdFromMemory(conceptList[i].id);
+         let compositionJson= await GetCompositionWithIdFromMemory(conceptList[i].id);
             CompositionList.push(compositionJson);
       }
     }
@@ -176,23 +176,23 @@ export  async function GetCompositionListWithIdUpdated(compositionName: string, 
 
 export async function FormatTheConcepts(conceptList: Concept[], localConceptList: Concept[] , inpage:number = 10, page:number =1){
    let CompositionList: any[] = [];
-   var startPage = inpage * (page - 1);
-   var prefetchComposition:number[] = [];
+   let startPage = inpage * (page - 1);
+   let prefetchComposition:number[] = [];
    let localConceptLength = localConceptList.length;
-   for(var i=startPage; i< startPage + inpage - localConceptLength; i++){
+   for(let i=startPage; i< startPage + inpage - localConceptLength; i++){
       if(conceptList[i]){
         prefetchComposition.push(conceptList[i].id);
       }
    }
-   for(var i=0; i< localConceptList.length; i++){
-      var compositionJson= await GetCompositionLocalWithId(localConceptList[i].id);
+   for(let i=0; i< localConceptList.length; i++){
+      let compositionJson= await GetCompositionLocalWithId(localConceptList[i].id);
          CompositionList.push(compositionJson);
     }
 
    await GetAllConnectionsOfCompositionBulk(prefetchComposition);
-   for(var i=startPage; i< startPage + inpage - localConceptLength; i++){
+   for(let i=startPage; i< startPage + inpage - localConceptLength; i++){
      if(conceptList[i]){
-        var compositionJson= await GetCompositionWithIdFromMemory(conceptList[i].id);
+        let compositionJson= await GetCompositionWithIdFromMemory(conceptList[i].id);
            CompositionList.push(compositionJson);
      }
    }

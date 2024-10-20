@@ -72,7 +72,7 @@ export {GetCompositionWithIdAndDateFromMemory} from './Services/GetComposition';
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
-
+export {NORMAL, JUSTDATA, DATAID, DATAIDDATE} from './Constants/FormatConstants';
 export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
 export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
 export {SearchLinkMultipleAllObservable, searchLinkMultipleListener} from './WrapperFunctions/SearchLinkMultipleAllObservable';

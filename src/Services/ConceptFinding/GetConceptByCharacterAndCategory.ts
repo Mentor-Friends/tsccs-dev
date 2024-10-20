@@ -10,7 +10,7 @@ export async function GetConceptByCharacterAndCategory(character: string){
         concept.characterValue ="the";
         return concept;
     }
-    var splittedStringArray = SplitStrings(character);
+    let splittedStringArray = SplitStrings(character);
     if(splittedStringArray.length > 1){
         let category = 1;
         let prefix = await GetConceptByCharacterAndCategory(splittedStringArray[0])
@@ -27,7 +27,7 @@ export async function GetConceptByCharacterAndCategory(character: string){
 }
 
 export  async function GetConceptByCharacter(characterValue: string){
-    var concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
+    let concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
     if(concept.id == 0){
        concept = await GetConceptByCharacterValue(characterValue);
     }

@@ -8,11 +8,11 @@ export default async function CreateTheConcept(referent:string, userId:number, c
 typeId:number,referentId:number,
 accessId:number, typeCharacter:string){
 
-var id = await ReservedIds.getId();
-var isNew: boolean = true;
+let id = await ReservedIds.getId();
+let isNew: boolean = true;
 let created_on:Date = new Date();
 let updated_on:Date = new Date();
-// var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
+// let concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
     // securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on,updated_on);
 let concept = new Concept(id, userId, typeId, categoryId, referentId, referent, accessId, isNew, created_on, updated_on, typeCharacter);
 
@@ -26,11 +26,11 @@ export  async function CreateTheConceptTemporary(referent:string, userId:number,
     typeId:number, referentId:number,
     accessId:number, typeCharacter:string){
     
-    var id = await ReservedIds.getId();
-    var isNew: boolean = true;
+    let id = await ReservedIds.getId();
+    let isNew: boolean = true;
     let created_on:Date = new Date();
     let updated_on:Date = new Date();
-    // var concept = new Concept(id,userId,typeId,typeUserId,categoryId,referentId, referent,
+    // let concept = new Concept(id,userId,typeId,typeUserId,categoryId,referentId, referent,
     //     accessId,isNew,created_on, updated_on);
     let concept = new Concept(id, userId, typeId, categoryId, referentId, referent, accessId, isNew, created_on, updated_on, typeCharacter);
     concept.isTemp = true;
@@ -42,11 +42,11 @@ export  async function CreateTheConceptImmediate(referent:string, userId:number,
     typeId:number,referentId:number,
     accessId:number, typeCharacter:string){
     
-    var id = await ReservedIds.getId();
-    var isNew: boolean = false;
+    let id = await ReservedIds.getId();
+    let isNew: boolean = false;
     let created_on:Date = new Date();
 let updated_on:Date = new Date();
-    // var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
+    // let concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
     //     securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on, updated_on);
     
     let concept = new Concept(id, userId, typeId, categoryId, referentId, referent, accessId, isNew, created_on, updated_on, typeCharacter);

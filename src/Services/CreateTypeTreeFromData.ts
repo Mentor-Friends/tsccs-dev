@@ -1,5 +1,6 @@
 import { BinaryTypeTree } from "../DataStructures/BinaryTypeTree";
 import { Node } from "../DataStructures/Node";
+import { TypeNode } from "../DataStructures/TypeNode";
 import { getObjectsFromIndexDb } from "../Database/indexeddb";
 
 export  async function CreateTypeTreeFromData(){
@@ -8,8 +9,8 @@ export  async function CreateTypeTreeFromData(){
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
-                let node = new Node(concept.typeId, concept, null, null);
-                 BinaryTypeTree.addNodeToTree(node);
+                let node = new TypeNode(concept.typeId, concept.id);
+                 BinaryTypeTree.addType(node);
             }
 
         }

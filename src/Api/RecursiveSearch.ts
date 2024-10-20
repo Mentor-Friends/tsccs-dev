@@ -8,16 +8,16 @@ import { resolveObjectURL } from "buffer";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 
 export  async function RecursiveSearchApi(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
-  var concepts:any[] = [];
+  let concepts:any[] = [];
 
 try{
-    var searchQuery = new SearchQuery();
+    let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.listLinkers = listLinkers;
     searchQuery.textSearch = textSearch;
-    var raw = JSON.stringify(searchQuery);
-    var Connections :Connection [] = []; 
-    var myHeaders = GetRequestHeader();
+    let raw = JSON.stringify(searchQuery);
+    let Connections :Connection [] = []; 
+    let myHeaders = GetRequestHeader();
     const response = await fetch(BaseUrl.RecursiveSearchUrl(),{
         method: 'POST',
         headers: myHeaders,
@@ -25,9 +25,9 @@ try{
     });
     if(response.ok){
       const result = await response.json();
-      var conceptIds = result.compositionIds;
-      var connections = result.internalConnections;
-      var externalConnections = result.externalConnections;
+      let conceptIds = result.compositionIds;
+      let connections = result.internalConnections;
+      let externalConnections = result.externalConnections;
       concepts = await GetCompositionFromConnectionsWithDataId(conceptIds,connections);
     }
     else{
@@ -49,16 +49,16 @@ catch (error) {
 
 }
 export  async function RecursiveSearchApiRaw(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
-  var concepts:any[] = [];
+  let concepts:any[] = [];
 
 try{
-    var searchQuery = new SearchQuery();
+    let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.listLinkers = listLinkers;
     searchQuery.textSearch = textSearch;
-    var raw = JSON.stringify(searchQuery);
-    var Connections :Connection [] = []; 
-    var myHeaders = GetRequestHeader();
+    let raw = JSON.stringify(searchQuery);
+    let Connections :Connection [] = []; 
+    let myHeaders = GetRequestHeader();
     const response = await fetch(BaseUrl.RecursiveSearchUrl(),{
         method: 'POST',
         headers: myHeaders,
@@ -66,9 +66,9 @@ try{
     });
     if(response.ok){
       const result = await response.json();
-      var conceptIds = result.compositionIds;
-      var connections = result.internalConnections;
-      var externalConnections = result.externalConnections;
+      let conceptIds = result.compositionIds;
+      let connections = result.internalConnections;
+      let externalConnections = result.externalConnections;
       return result;
     }
     else{
@@ -90,16 +90,16 @@ catch (error) {
 
 
 export  async function RecursiveSearchApiRawFullLinker(composition:number = 0, fullLinkers:string[] = [], textSearch:string = ""){
-  var concepts:any[] = [];
+  let concepts:any[] = [];
 
 try{
-    var searchQuery = new SearchQuery();
+    let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.fullLinkers = fullLinkers;
     searchQuery.textSearch = textSearch;
-    var raw = JSON.stringify(searchQuery);
-    var Connections :Connection [] = []; 
-    var myHeaders = GetRequestHeader();
+    let raw = JSON.stringify(searchQuery);
+    let Connections :Connection [] = []; 
+    let myHeaders = GetRequestHeader();
     const response = await fetch(BaseUrl.RecursiveSearchUrl(),{
         method: 'POST',
         headers: myHeaders,
@@ -107,9 +107,9 @@ try{
     });
     if(response.ok){
       const result = await response.json();
-      var conceptIds = result.compositionIds;
-      var connections = result.internalConnections;
-      var externalConnections = result.externalConnections;
+      let conceptIds = result.compositionIds;
+      let connections = result.internalConnections;
+      let externalConnections = result.externalConnections;
       return result;
     }
     else{
@@ -130,16 +130,16 @@ catch (error) {
 }
 
 export  async function RecursiveSearchApiNewRawFullLinker(composition:number = 0, fullLinkers:string[] = [], textSearch:string = ""){
-  var concepts:any[] = [];
+  let concepts:any[] = [];
 
 try{
-    var searchQuery = new SearchQuery();
+    let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.fullLinkers = fullLinkers;
     searchQuery.textSearch = textSearch;
-    var raw = JSON.stringify(searchQuery);
-    var Connections :Connection [] = []; 
-    var myHeaders = GetRequestHeader();
+    let raw = JSON.stringify(searchQuery);
+    let Connections :Connection [] = []; 
+    let myHeaders = GetRequestHeader();
     const response = await fetch(BaseUrl.RecursiveSearchUrl(),{
         method: 'POST',
         headers: myHeaders,
@@ -147,9 +147,9 @@ try{
     });
     if(response.ok){
       const result = await response.json();
-      var conceptIds = result.compositionIds;
-      var connections = result.internalConnections;
-      var externalConnections = result.externalConnections;
+      let conceptIds = result.compositionIds;
+      let connections = result.internalConnections;
+      let externalConnections = result.externalConnections;
       return result;
     }
     else{

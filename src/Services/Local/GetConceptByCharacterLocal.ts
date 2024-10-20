@@ -3,7 +3,7 @@ import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { Concept, CreateDefaultLConcept, LocalSyncData, SplitStrings } from "../../app";
 
 export default async function GetConceptByCharacterLocal(characterValue: string){
-    var concept = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
+    let concept = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
     return concept;
 }
 
@@ -20,7 +20,7 @@ export async function GetConceptByCharacterAndCategoryLocal(character: string){
         lconcept.characterValue ="the";
         return lconcept;
     }
-    var splittedStringArray = SplitStrings(character);
+    let splittedStringArray = SplitStrings(character);
     if(splittedStringArray.length > 1){
         let category = 1;
         let prefix = await GetConceptByCharacterAndCategoryLocal(splittedStringArray[0])
@@ -43,8 +43,8 @@ export async function GetConceptByCategoryAndCharacterLocalMemory(value:string, 
 
 export  async function GetConceptByCharacterLocalFull(characterValue: string){
     try{
-        var concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
-        var literalCharacter = `${characterValue}`;
+        let concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
+        let literalCharacter = `${characterValue}`;
         if((concept == null || concept?.id == 0) && literalCharacter){
             await GetLocalConceptByCharacterValue(characterValue);
             concept = await LocalConceptsData.GetConceptByCharacter(characterValue);

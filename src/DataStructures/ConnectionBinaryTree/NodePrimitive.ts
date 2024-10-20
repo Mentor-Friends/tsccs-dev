@@ -125,7 +125,7 @@ export class NodePrimitive{
         }
         else{                
             // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
-            var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
+            let immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
             passedNode.value = immediateSuccessor.value;
             passedNode.key = immediateSuccessor.key;
             passedNode.variants = immediateSuccessor.variants;

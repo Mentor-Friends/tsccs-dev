@@ -1,13 +1,14 @@
-import { Connection, ConnectionData, GetComposition } from "../app";
-import { GetCompositionById, RecursiveFetchBuildLayer } from "../Services/GetComposition";
+import { Connection, ConnectionData, DATAID, GetComposition, JUSTDATA, NORMAL } from "../app";
+import { GetCompositionById, RecursiveFetchBuildLayer, RecursiveFetchBuildLayerDataId, RecursiveFetchBuildLayerNormal } from "../Services/GetComposition";
 import { DependencyObserver } from "./DepenedencyObserver";
 
 export class GetCompositionObservable extends DependencyObserver{
     id: number;
 
-    constructor(id:number){
+    constructor(id:number, format:number = JUSTDATA){
         super();
         this.id = id;
+        this.format = format;
     }
 
     async bind(){
@@ -34,8 +35,21 @@ export class GetCompositionObservable extends DependencyObserver{
         for(let i= 0; i< latestConnectionIds.length; i++){
          latestConnectionList.push(await ConnectionData.GetConnection(latestConnectionIds[i]));
         }
-        console.log("this is the data for the build layer", latestConnectionList, this.mainConcept, this.internalConnections, this.compositionIds);
-        this.data = await RecursiveFetchBuildLayer(this.mainConcept, latestConnectionList, this.compositionIds);
+        if(this.format == JUSTDATA){
+            console.log("this is the data for the build layer", latestConnectionList, this.mainConcept, this.internalConnections, this.compositionIds);
+            this.data = await RecursiveFetchBuildLayer(this.mainConcept, latestConnectionList, this.compositionIds);
+        }
+        else if(this.format == DATAID){
+            this.data = await RecursiveFetchBuildLayerDataId(this.mainConcept, latestConnectionList, this.compositionIds);
+        }
+        else if(this.format == NORMAL){
+            this.data = await RecursiveFetchBuildLayerNormal(this.mainConcept, latestConnectionList, this.compositionIds);
+        }
+        else{
+            this.data = await RecursiveFetchBuildLayer(this.mainConcept, latestConnectionList, this.compositionIds);
+
+        }
+
         return this.data;
     }
 }
@@ -45,6 +59,6 @@ export class GetCompositionObservable extends DependencyObserver{
  * @param id Id of the composition
  * @returns composition of the id given in the json form.
  */
-export function GetCompositionListener(id:number){
-    return new GetCompositionObservable(id);
+export function GetCompositionListener(id:number, format: number = JUSTDATA){
+    return new GetCompositionObservable(id, format);
 }

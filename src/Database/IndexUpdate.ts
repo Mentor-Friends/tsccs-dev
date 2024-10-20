@@ -62,7 +62,7 @@ export class IndexDbUpdate{
                         setTimeout(()=>{
                             UpdateToDatabase("concept",toUpdateConcepts[i])
                         } , 0);
-                      //  await UpdateToDatabase("concept",toUpdateConcepts[i]);
+                       await UpdateToDatabase("concept",toUpdateConcepts[i]);
                     }
                     console.log("this is the time for the indexdb write", new Date().getTime() - time);
                 }
@@ -100,7 +100,7 @@ export class IndexDbUpdate{
                     setTimeout(()=>{
                         UpdateToDatabase("connection",toUpdateConnections[i])
                     } , 0);
-                   // await UpdateToDatabase("connection",toUpdateConnections[i]);
+                   await UpdateToDatabase("connection",toUpdateConnections[i]);
                 }
                 console.log("this is the time for the indexdb write", new Date().getTime() - time);
                 }
