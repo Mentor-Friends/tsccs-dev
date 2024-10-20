@@ -72,7 +72,7 @@ export {GetCompositionWithIdAndDateFromMemory} from './Services/GetComposition';
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
-export {NORMAL, JUSTDATA, DATAID, DATAIDDATE} from './Constants/FormatConstants';
+export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW} from './Constants/FormatConstants';
 export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
 export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
 export {SearchLinkMultipleAllObservable, searchLinkMultipleListener} from './WrapperFunctions/SearchLinkMultipleAllObservable';
@@ -80,6 +80,7 @@ export {GetCompositionListener} from './WrapperFunctions/GetCompositionObservabl
 export {GetCompositionListListener} from './WrapperFunctions/GetCompositionListObservable';
 export {SearchWithTypeAndLinker} from './Services/Search/SearchWithTypeAndLinker';
 export {GetLinkListener} from './WrapperFunctions/GetLinkObservable';
+export {RecursiveSearchListener} from './WrapperFunctions/RecursiveSearchObservable'
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
