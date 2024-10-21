@@ -1,4 +1,4 @@
-import { ConnectionData } from "../app";
+import { CompositionNode, ConnectionData } from "../app";
 import { NORMAL } from "../Constants/FormatConstants";
 
 /**
@@ -60,6 +60,7 @@ export class DependencyObserver{
      */
     listenToEvent(id: number) {
         window.addEventListener(`${id}`, (event) => {
+            console.log("this is listening after the event is fired", id, event);
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;

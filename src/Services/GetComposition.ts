@@ -166,7 +166,8 @@ export async function GetCompositionWithAllIds(id:number){
 export async function GetCompositionFromMemory(id:number){
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
-    connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+    connectionList = await ConnectionData.GetConnectionsOfConcept(id);
+    //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     let compositionList:number[] = [];
 
@@ -199,10 +200,11 @@ export async function GetCompositionFromMemory(id:number){
 export async function GetCompositionFromMemoryNormal(id:number){
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
-    connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+    connectionList = await ConnectionData.GetConnectionsOfConcept(id);
+    //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     let compositionList:number[] = [];
-
+    console.log("this is the connection list that you build", connectionList)
     for(let i=0; i<connectionList.length; i++){
         if(!compositionList.includes(connectionList[i].ofTheConceptId)){
             compositionList.push(connectionList[i].ofTheConceptId);
@@ -217,6 +219,7 @@ export async function GetCompositionFromMemoryNormal(id:number){
     let output = await recursiveFetchConceptNormal(concept, connectionList, compositionList);
     let mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
+    console.log("this is the output of memory normal", returnOutput);
     return returnOutput;
 }
 
@@ -230,7 +233,8 @@ export async function GetCompositionFromMemoryNormal(id:number){
 export async function GetCompositionWithIdFromMemory(id:number){
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
-    connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+    connectionList = await ConnectionData.GetConnectionsOfConcept(id);
+    //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
 
     let compositionList:number[] = [];
     for(let i=0; i<connectionList.length; i++){
@@ -265,7 +269,8 @@ export async function GetCompositionWithIdFromMemory(id:number){
 export async function GetCompositionWithIdFromMemoryNew(id:number){
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
-    connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+    connectionList = await ConnectionData.GetConnectionsOfConcept(id);
+    // connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
 
     let compositionList:number[] = [];
     for(let i=0; i<connectionList.length; i++){
@@ -303,8 +308,8 @@ export async function GetCompositionWithIdFromMemoryNew(id:number){
 export async function GetCompositionWithIdAndDateFromMemory(id:number){
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
-    connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
-
+    //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+    connectionList = await ConnectionData.GetConnectionsOfConcept(id);
     let compositionList:number[] = [];
 
     for(let i=0; i<connectionList.length; i++){

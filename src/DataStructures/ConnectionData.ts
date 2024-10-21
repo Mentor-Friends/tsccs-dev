@@ -79,7 +79,11 @@ export class ConnectionData{
     }
 
     static GetConnectionByOfTheConceptAndType(ofTheConceptId: number, typeId: number ){
-        return ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
+        let connections =  ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
+        if(connections){
+            return connections;
+        }
+        return [];
     }
 
     static GetConnectionTree(){
@@ -148,6 +152,19 @@ export class ConnectionData{
         // }
         return connections;
     }
+
+    static async GetConnectionsOfConcept(id: number){
+        let connectionIds: number [] = [];
+        let connections: Connection[] = [];
+        connectionIds = ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+        for(let i=0; i< connectionIds.length; i++){
+                let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+                if(conn){
+                    connections.push(conn.value);
+                }   
+        }
+        return connections;
+    } 
 
     getName(){
         return this.name;

@@ -53,6 +53,9 @@ export class BinaryTree{
 
     static async removeNodeFromTree(id:number){
         if(this.root){
+            let event = new Event(`${id}`);
+             console.log("this is the fired event after delete", event);
+             dispatchEvent(event);
             this.root = this.root.removeNode(this.root,id);
         }
     }

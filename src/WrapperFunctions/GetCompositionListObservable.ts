@@ -48,6 +48,7 @@ export class GetCompositionListObservable extends DependencyObserver{
             this.isDataLoaded = true;
             this.listenToEventType(concept.id);
             for(let i= 0 ; i< this.compositionIds.length; i++){
+                console.log("list listen", this.compositionIds[i]);
                 this.listenToEvent(this.compositionIds[i]);
             }
         }
@@ -56,7 +57,7 @@ export class GetCompositionListObservable extends DependencyObserver{
 
     async build(){
         this.data = [];
-        console.log("this is building the data");
+        console.log("this is building the data list");
         if(this.format == JUSTDATA){
             for(let i=this.startPage; i< this.startPage + this.inpage; i++){
                 if(this.compositionIds[i]){
@@ -94,7 +95,6 @@ export class GetCompositionListObservable extends DependencyObserver{
               }
         }
 
-        console.log("this is the list", this.data);
         return this.data;
     }
 }

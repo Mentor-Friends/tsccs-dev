@@ -7,7 +7,8 @@ import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPo
 export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
-        connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
+        //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
+        connectionList = await ConnectionData.GetConnectionsOfConcept(composition_id);
         if(connectionList.length == 0){
           var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_id);
           connectionList = connectionListString as Connection[];
