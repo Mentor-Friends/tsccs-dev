@@ -375,7 +375,6 @@ export class ConnectionNode{
         /**
          * This is dispatched incase the connection is deleted and others are listening
          */
-
         let event = new Event(`${passedNode.value.ofTheConceptId}`);
         dispatchEvent(event);
         if(passedNode.leftNode == null){
