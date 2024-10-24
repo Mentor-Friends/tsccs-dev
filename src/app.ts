@@ -73,6 +73,7 @@ export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType'
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
 export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW} from './Constants/FormatConstants';
+export {PRIVATE , PUBLIC , ADMIN} from './Constants/AccessConstants';
 export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
 export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
 export {SearchLinkMultipleAllObservable, searchLinkMultipleListener} from './WrapperFunctions/SearchLinkMultipleAllObservable';
