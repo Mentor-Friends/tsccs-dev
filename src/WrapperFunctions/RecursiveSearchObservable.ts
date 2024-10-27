@@ -13,6 +13,7 @@ class RecursiveSearchObservable extends DependencyObserver {
   searchText: string = "";
   textSearch: string;
   connections: Connection[] = [];
+  externalConnectionIds: number[] = []
   data: any = [];
 
   /**
@@ -38,6 +39,9 @@ class RecursiveSearchObservable extends DependencyObserver {
 
   async bind(): Promise<any> {
     if (!this.isDataLoaded) {
+      
+      this.isDataLoaded = true;
+      
       const result = await RecursiveSearchApiRaw(
         this.mainConcept,
         this.searchLinkers,
@@ -46,37 +50,47 @@ class RecursiveSearchObservable extends DependencyObserver {
 
       this.compositionIds = result.compositionIds || [];
       this.internalConnections = result.internalConnections || [];
-      const externalConnections = result.externalConnections || [];
-      const internalConnections = await GetConnectionBulk(
-        this.internalConnections
-      );
-      this.connections = await GetConnectionBulk(externalConnections);
+      this.externalConnectionIds = result.externalConnections || [];
+
+
+
+
+
+      // const internalConnections = await GetConnectionBulk(
+      //   this.internalConnections
+      // );
+      this.connections = await GetConnectionBulk(this.externalConnectionIds);
       var prefetch: number[] = [];
 
       // listen external connection
-      for (var i = 0; i < this.connections.length; i++) {
-        prefetch.push(this.connections[i].toTheConceptId);
-        this.listenToEvent(this.connections[i].toTheConceptId);
-      }
+      // for (var i = 0; i < this.connections.length; i++) {
+      //   prefetch.push(this.connections[i].toTheConceptId);
+      //    this.listenToEvent(this.connections[i].toTheConceptId);
+      // }
       // listen internal connection
-      for (var i = 0; i < internalConnections.length; i++) {
-        prefetch.push(internalConnections[i].toTheConceptId);
-        this.listenToEvent(internalConnections[i].toTheConceptId);
-      }
-      await GetAllConnectionsOfCompositionBulk(prefetch);
+      // for (var i = 0; i < this.internalConnections.length; i++) {
+      //   //prefetch.push(internalConnections[i].toTheConceptId);
+      //    this.listenToEvent(this.internalConnections[i]);
+      // }
 
-      this.isDataLoaded = true;
-      this.listenToEvent(this.mainConcept);
+      for(let i=0 ; i< this.compositionIds.length; i++){
+      this.listenToEvent(this.compositionIds[i]);
+      }
+       //await GetAllConnectionsOfCompositionBulk(prefetch);
+
+       //this.listenToEvent(this.mainConcept);
     }
     return await this.build();
   }
 
   async build() {
+
+    //return  GetCompositionFromConnectionsWithDataId(this.compositionIds, this.externalConnectionIds)
     if (this.format && this.format == RAW) {
       this.data = {
         compositionIds: this.compositionIds,
         internalConnections: this.internalConnections,
-        externalConnections: this.connections,
+        externalConnections: this.externalConnectionIds
       };
     } else {
       this.data = await GetCompositionFromConnectionsWithDataId(
@@ -85,7 +99,8 @@ class RecursiveSearchObservable extends DependencyObserver {
       );
     }
     return this.data;
-  }
+  // }
+}
 }
 
 /**
