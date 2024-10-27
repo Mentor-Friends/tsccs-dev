@@ -31,7 +31,7 @@ export class DependencyObserver{
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
-
+                console.log("listening to event type", event);
                 setTimeout( async function(){
                     let myEvent = event as CustomEvent;
                     if(!that.compositionIds.includes(myEvent?.detail)){

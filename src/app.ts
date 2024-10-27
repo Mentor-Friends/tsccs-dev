@@ -82,6 +82,7 @@ export {GetCompositionListListener} from './WrapperFunctions/GetCompositionListO
 export {SearchWithTypeAndLinker} from './Services/Search/SearchWithTypeAndLinker';
 export {GetLinkListener} from './WrapperFunctions/GetLinkObservable';
 export {RecursiveSearchListener} from './WrapperFunctions/RecursiveSearchObservable'
+export {GetLinkListListener} from './WrapperFunctions/GetLinkListObservable';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -110,6 +111,8 @@ import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {BaseUrl} from './DataStructures/BaseUrl';
+export {StatefulWidget} from './Widgets/StatefulWidget';
+export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete

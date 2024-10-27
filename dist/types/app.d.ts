@@ -78,6 +78,7 @@ export { GetCompositionListListener } from './WrapperFunctions/GetCompositionLis
 export { SearchWithTypeAndLinker } from './Services/Search/SearchWithTypeAndLinker';
 export { GetLinkListener } from './WrapperFunctions/GetLinkObservable';
 export { RecursiveSearchListener } from './WrapperFunctions/RecursiveSearchObservable';
+export { GetLinkListListener } from './WrapperFunctions/GetLinkListObservable';
 export { SyncData } from './DataStructures/SyncData';
 export { Concept } from './DataStructures/Concept';
 export { LConcept } from './DataStructures/Local/LConcept';
@@ -101,6 +102,8 @@ export { FilterSearch } from './DataStructures/FilterSearch';
 export { SearchStructure } from './DataStructures/Search/SearchStructure';
 export { LocalConceptsData } from './DataStructures/Local/LocalConceptData';
 export { BaseUrl } from './DataStructures/BaseUrl';
+export { StatefulWidget } from './Widgets/StatefulWidget';
+export { DeleteConnectionByType } from './Services/DeleteConnectionByType';
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.
