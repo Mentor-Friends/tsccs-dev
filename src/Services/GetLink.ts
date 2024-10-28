@@ -5,8 +5,21 @@ import { Concept } from "./../DataStructures/Concept";
 import { GetCompositionWithIdAndDateFromMemory, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
+import { sendMessage, serviceWoker } from "../app";
 
-export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1){
+export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1) {
+  if (serviceWoker) {
+    console.log('data receiving')
+    const res: any = await sendMessage('getLink', {id, linker, inpage, page})
+    console.log('data received from sw', res)
+    return res.data
+  } else {
+    console.log('used old BT')
+    return await GetLinkData(id, linker, inpage, page)
+  }
+}
+
+export async function GetLinkData(id:number, linker:string, inpage:number=10, page:number=1){
     let output: any[] = [];
     let  concept:Concept = await GetTheConcept(id);
     let linkString: string = concept.type?.characterValue + "_s" + "_" + linker;

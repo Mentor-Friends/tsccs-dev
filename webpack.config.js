@@ -1,12 +1,16 @@
 const path = require('path');
 //import * as path from 'path';
 module.exports = env => ({
-   entry: './src/app.ts',
+   entry: {
+      main: './src/app.ts',
+      serviceWorker: './src/service-worker.ts'
+   },
    mode: 'development',  // convert to production for production
    devtool: 'source-map', // remove for production
    watch: true,
    output: {
-      filename: 'bundle.js',
+      // filename: 'bundle.js',
+      filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
        libraryTarget: 'commonjs', // remove this for window library
       library: {

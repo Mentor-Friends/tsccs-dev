@@ -1,10 +1,22 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { DATAID, JUSTDATA, NORMAL } from "../../Constants/FormatConstants";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
-import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept } from "../../app";
+import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept, sendMessage, serviceWoker } from "../../app";
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetCompositionFromConnectionsWithDataIdInObjectNew, GetConnectionDataPrefetch } from "../GetCompositionBulk";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
+  if (serviceWoker) {
+    console.log('data receiving searc')
+    const res: any = await sendMessage('searchLinkMultipleAll', {searchQuery, token, caller, format})
+    console.log('data received search from sw', res)
+    return res.data
+  } else {
+    console.log('used old BT')
+    return await SearchLinkMultipleAll(searchQuery, token, caller, format)
+  }
+}
+
+export async function SearchLinkMultipleAllData(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
   let conceptIds: number[] = [];
   let linkers: number [] = [];
   let connections: number[] = [];
