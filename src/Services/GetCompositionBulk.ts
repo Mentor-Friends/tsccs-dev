@@ -199,10 +199,8 @@ export async function GetCompositionFromConnectionsInObject(conceptIds:number[]=
     let compositions:any = {};
     for(let i=0; i< conceptIds.length;i++){
         let comp = await GetCompositionFromMemory(conceptIds[i]);
-        console.log("this is the comp", comp);
         compositions[conceptIds[i]] = comp;
     }
-    console.log("This is the composition list", compositions);
     return compositions;
 }
 

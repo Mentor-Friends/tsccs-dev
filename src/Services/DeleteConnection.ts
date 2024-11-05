@@ -9,5 +9,5 @@ export  async function DeleteConnectionById(id:number){
     await DeleteTheConnection(id);
    //removeFromDatabase("connection",id);
    ConnectionBinaryTree.removeNodeFromTree(id);
-   ConnectionTypeTree.removeTypeConcept(connection.typeId,id);
+   //ConnectionTypeTree.removeTypeConcept(connection.typeId,id);
 }

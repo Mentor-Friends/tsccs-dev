@@ -69,7 +69,7 @@ export class ConnectionData{
        if(connection.id != 0){
          removeFromDatabase("connection",connection.id);
          ConnectionBinaryTree.removeNodeFromTree(connection.id);
-         ConnectionTypeTree.removeTypeConcept(connection.typeId, connection.id);
+        // ConnectionTypeTree.removeTypeConcept(connection.typeId, connection.id);
          ConnectionOfTheTree.removeNodeFromTree(connection.id);
        }
     }
@@ -80,6 +80,14 @@ export class ConnectionData{
 
     static GetConnectionByOfTheConceptAndType(ofTheConceptId: number, typeId: number ){
         let connections =  ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
+        if(connections){
+            return connections;
+        }
+        return [];
+    }
+
+    static GetConnectionByOfType(ofTheConceptId: number,typeId: number){
+        let connections =  ConnectionTypeTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId,typeId);
         if(connections){
             return connections;
         }
@@ -130,27 +138,31 @@ export class ConnectionData{
     return myConnection;
     }
 
+    // commented
     static async GetConnectionsOfCompositionLocal(id: number){
         let connections :Connection[] = [];
-        let node = await ConnectionTypeTree.getNodeFromTree(id);
-        if(node?.value){
-            let returnedConnection = node.value;
-            if(returnedConnection){
-                let myConnection = returnedConnection as Connection;
-                connections.push(myConnection);
-                for(let i=0; i<node.variants.length;i++){
-                    connections.push(node.variants[i].value);
-                }
-            }
+        let connectionIds: number[] = [];
+        connectionIds = ConnectionData.GetConnectionByOfType(id,id);
+        for(let i=0; i< connectionIds.length; i++){
+            let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+            if(conn){
+                connections.push(conn.value);
+            }   
         }
-        // if(myConcept.id == 0 || myConcept == null){
-        //     for(var i=0; i<this.conceptsArray.length; i++){
-        //         if(this.conceptsArray[i].id == id){
-        //             myConcept = this.conceptsArray[i];
+        console.log("these are the connections from the local", connections, connectionIds);
+        return connections;
+        //let node = await ConnectionTypeTree.getNodeFromTree(id);
+        // if(node?.value){
+        //     let returnedConnection = node.value;
+        //     if(returnedConnection){
+        //         let myConnection = returnedConnection as Connection;
+        //         connections.push(myConnection);
+        //         for(let i=0; i<node.variants.length;i++){
+        //             connections.push(node.variants[i].value);
         //         }
         //     }
         // }
-        return connections;
+        //return connections;
     }
 
     static async GetConnectionsOfConcept(id: number){
@@ -158,11 +170,12 @@ export class ConnectionData{
         let connections: Connection[] = [];
         connectionIds = ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
         for(let i=0; i< connectionIds.length; i++){
-                let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
-                if(conn){
-                    connections.push(conn.value);
-                }   
+            let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+            if(conn){
+                connections.push(conn.value);
+            }   
         }
+
         return connections;
     } 
 
