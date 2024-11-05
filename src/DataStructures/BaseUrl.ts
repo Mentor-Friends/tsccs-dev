@@ -113,8 +113,14 @@ export class BaseUrl{
         return this.BASE_URL + '/api/make-name-from-frontend';
     }
 
-    static SearchAllTypeWithLinker(){
-        return this.BASE_URL + '/api/search-all-with-linker-ccs';
+    static SearchAllTypeWithLinker(auth: boolean = true){
+        if(auth){
+            return this.BASE_URL + '/api/search-all-with-linker-ccs';
+
+        }
+        else{
+            return this.BASE_URL + '/api-search-compositions-internal-clean-ccs';
+        }
     }
 
     static LoginUrl(){
@@ -158,7 +164,7 @@ export class BaseUrl{
     }
 
     static SearchInternalWithCcsUrl(){
-        return this.BASE_URL + '/api/search-composition-internal-authenticated-ccs';
+        return this.BASE_URL + '/api-search-compositions-internal-clean-ccs';
     }
 
 

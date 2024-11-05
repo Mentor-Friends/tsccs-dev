@@ -32,9 +32,9 @@ export async function SearchInternalApi(search: SearchStructure, token: string =
 }
 
 
-export async function SearchInternalAllApi(search: SearchStructure, token: string = ""){
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
-    let queryUrl = BaseUrl.SearchInternalWithAuthenticatedCcsUrl();
+export async function SearchInternalAllApi(search: SearchStructure){
+    var header = GetRequestHeaderWithAuthorization("application/json", "");
+    let queryUrl = BaseUrl.SearchInternalWithCcsUrl();
     queryUrl = queryUrl + '?composition=' + search.composition + '&search=' + search.search  + '&internalComposition=' + search.internalComposition + '&type=' + search.type + '&inpage=' + search.inpage + '&page=' + search.page;
     try{
         const response = await fetch(queryUrl,{

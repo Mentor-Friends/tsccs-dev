@@ -63,7 +63,7 @@ export {GetConceptByCharacterAndCategoryLocal} from './Services/Local/GetConcept
 export {ViewInternalData} from './Services/View/ViewInternalData';
 export {ViewInternalDataApi} from './Api/View/ViewInternalDataApi';
 export {convertFromLConceptToConcept, convertFromConceptToLConcept} from './Services/Conversion/ConvertConcepts';
-export {SearchLinkInternal} from './Services/Search/SearchLinkInternal';
+export {SearchLinkInternal,SearchLinkInternalAll} from './Services/Search/SearchLinkInternal';
 export {CreateConnectionBetweenTwoConceptsLocal} from './Services/Local/CreateConnectionBetweenTwoConceptsLocal';
 export {DeleteConceptLocal} from './Services/Local/DeleteConceptLocal';
 export {GetConnectionBetweenTwoConceptsLinker} from './Services/GetConnectionBetweenTwoConceptsLinker';
