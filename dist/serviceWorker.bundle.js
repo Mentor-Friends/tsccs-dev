@@ -8139,6 +8139,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api_Create_CreateTheConnectionApi__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Api/Create/CreateTheConnectionApi */ "./src/Api/Create/CreateTheConnectionApi.ts");
 /* harmony import */ var _ConceptData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ConceptData */ "./src/DataStructures/ConceptData.ts");
 /* harmony import */ var _ConnectionData__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ConnectionData */ "./src/DataStructures/ConnectionData.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8148,6 +8149,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -8210,6 +8212,10 @@ class SyncData {
     }
     static SyncDataOnline() {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('sw triggered');
+            if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWoker) {
+                yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('SyncDataOnline', {});
+            }
             for (let i = 0; i < this.conceptsSyncArray.length; i++) {
                 _ConceptData__WEBPACK_IMPORTED_MODULE_3__.ConceptsData.AddConcept(this.conceptsSyncArray[i]);
             }
@@ -9677,6 +9683,200 @@ function InsertUniqueNumber(Array, toInsert) {
 
 /***/ }),
 
+/***/ "./src/ServiceWorker/actions/createActions.ts":
+/*!****************************************************!*\
+  !*** ./src/ServiceWorker/actions/createActions.ts ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createActions: () => (/* binding */ createActions)
+/* harmony export */ });
+/* harmony import */ var _Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Services/CreateTheComposition */ "./src/Services/CreateTheComposition.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+const createActions = {
+    CreateTheComposition: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_0__.CreateTheCompositionData)(payload.json, payload.ofTheConceptId, payload.ofTheConceptUserId, payload.mainKey, payload.userId, payload.accessId, payload.sessionInformationId);
+        return { success: true, data };
+    })
+};
+
+
+/***/ }),
+
+/***/ "./src/ServiceWorker/actions/getActions.ts":
+/*!*************************************************!*\
+  !*** ./src/ServiceWorker/actions/getActions.ts ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getActions: () => (/* binding */ getActions)
+/* harmony export */ });
+/* harmony import */ var _Services_GetComposition__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Services/GetComposition */ "./src/Services/GetComposition.ts");
+/* harmony import */ var _Services_GetLink__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Services/GetLink */ "./src/Services/GetLink.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const getActions = {
+    GetLink: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_GetLink__WEBPACK_IMPORTED_MODULE_1__.GetLinkData)(payload.id, payload.linker, payload.inpage, payload.page);
+        return { success: true, data };
+    }),
+    GetComposition: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_0__.GetCompositionData)(payload.id);
+        return { success: true, data };
+    }),
+    GetCompositionById: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_0__.GetCompositionByIdData)(payload.id);
+        return { success: true, data };
+    }),
+};
+
+
+/***/ }),
+
+/***/ "./src/ServiceWorker/actions/index.ts":
+/*!********************************************!*\
+  !*** ./src/ServiceWorker/actions/index.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createActions: () => (/* reexport safe */ _actions_createActions__WEBPACK_IMPORTED_MODULE_2__.createActions),
+/* harmony export */   getActions: () => (/* reexport safe */ _actions_getActions__WEBPACK_IMPORTED_MODULE_0__.getActions),
+/* harmony export */   searchActions: () => (/* reexport safe */ _actions_searchActions__WEBPACK_IMPORTED_MODULE_1__.searchActions),
+/* harmony export */   syncActions: () => (/* reexport safe */ _actions_syncActions__WEBPACK_IMPORTED_MODULE_4__.syncActions),
+/* harmony export */   updateActions: () => (/* reexport safe */ _actions_updateActions__WEBPACK_IMPORTED_MODULE_3__.updateActions)
+/* harmony export */ });
+/* harmony import */ var _actions_getActions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../actions/getActions */ "./src/ServiceWorker/actions/getActions.ts");
+/* harmony import */ var _actions_searchActions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../actions/searchActions */ "./src/ServiceWorker/actions/searchActions.ts");
+/* harmony import */ var _actions_createActions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../actions/createActions */ "./src/ServiceWorker/actions/createActions.ts");
+/* harmony import */ var _actions_updateActions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../actions/updateActions */ "./src/ServiceWorker/actions/updateActions.ts");
+/* harmony import */ var _actions_syncActions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../actions/syncActions */ "./src/ServiceWorker/actions/syncActions.ts");
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/ServiceWorker/actions/searchActions.ts":
+/*!****************************************************!*\
+  !*** ./src/ServiceWorker/actions/searchActions.ts ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   searchActions: () => (/* binding */ searchActions)
+/* harmony export */ });
+/* harmony import */ var _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Services/Search/SearchLinkMultiple */ "./src/Services/Search/SearchLinkMultiple.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+const searchActions = {
+    SearchLinkMultipleAll: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_0__.SearchLinkMultipleAllData)(payload.searchQuery, payload.token, payload.caller, payload.format);
+        return { success: true, data };
+    })
+};
+
+
+/***/ }),
+
+/***/ "./src/ServiceWorker/actions/syncActions.ts":
+/*!**************************************************!*\
+  !*** ./src/ServiceWorker/actions/syncActions.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   syncActions: () => (/* binding */ syncActions)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+const syncActions = {
+    SyncDataOnline: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log('sync actions sw');
+        yield _app__WEBPACK_IMPORTED_MODULE_0__.SyncData.SyncDataOnline();
+        return { success: true, data: undefined };
+    })
+};
+
+
+/***/ }),
+
+/***/ "./src/ServiceWorker/actions/updateActions.ts":
+/*!****************************************************!*\
+  !*** ./src/ServiceWorker/actions/updateActions.ts ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   updateActions: () => (/* binding */ updateActions)
+/* harmony export */ });
+/* harmony import */ var _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Services/Local/UpdateCompositionLocal */ "./src/Services/Local/UpdateCompositionLocal.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+const updateActions = {
+    UpdateCompositionLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        yield (0,_Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_0__.UpdateCompositionLocalData)(payload.patcherStructure);
+        return { success: true };
+    })
+};
+
+
+/***/ }),
+
 /***/ "./src/Services/CheckForConnectionDeletion.ts":
 /*!****************************************************!*\
   !*** ./src/Services/CheckForConnectionDeletion.ts ***!
@@ -10594,11 +10794,13 @@ function CreateDefaultConcept() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   CreateTheCompositionData: () => (/* binding */ CreateTheCompositionData),
 /* harmony export */   "default": () => (/* binding */ CreateTheComposition)
 /* harmony export */ });
-/* harmony import */ var _CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CreateDefaultConcept */ "./src/Services/CreateDefaultConcept.ts");
-/* harmony import */ var _CreateTheConnection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CreateTheConnection */ "./src/Services/CreateTheConnection.ts");
-/* harmony import */ var _MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MakeTheInstanceConcept */ "./src/Services/MakeTheInstanceConcept.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CreateDefaultConcept */ "./src/Services/CreateDefaultConcept.ts");
+/* harmony import */ var _CreateTheConnection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CreateTheConnection */ "./src/Services/CreateTheConnection.ts");
+/* harmony import */ var _MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./MakeTheInstanceConcept */ "./src/Services/MakeTheInstanceConcept.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10611,18 +10813,33 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function CreateTheComposition(json_1) {
+    return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null) {
+        if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWoker) {
+            console.log('data receiving');
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheComposition', { json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId });
+            console.log('data received from sw', res);
+            return res.data;
+        }
+        else {
+            console.log('used old BT');
+            return yield CreateTheCompositionData(json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId);
+        }
+    });
+}
+function CreateTheCompositionData(json_1) {
     return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null) {
         let localUserId = userId !== null && userId !== void 0 ? userId : 999;
         let localAccessId = accessId !== null && accessId !== void 0 ? accessId : 4;
         let localSessionId = sessionInformationId !== null && sessionInformationId !== void 0 ? sessionInformationId : 999;
         let MainKeyLocal = mainKey !== null && mainKey !== void 0 ? mainKey : 0;
-        let MainConcept = (0,_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_0__.CreateDefaultConcept)();
+        let MainConcept = (0,_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_1__.CreateDefaultConcept)();
         for (const key in json) {
             if ((typeof json[key] != 'string' && typeof json[key] != 'number')) {
                 if (ofTheConceptId == null && ofTheConceptUserId == null) {
                     let localMainKey = MainKeyLocal;
-                    let conceptString = yield (0,_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_2__["default"])(key, "", true, localUserId, localAccessId, localSessionId);
+                    let conceptString = yield (0,_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_3__["default"])(key, "", true, localUserId, localAccessId, localSessionId);
                     let concept = conceptString;
                     MainConcept = concept;
                     localMainKey = concept.id;
@@ -10633,10 +10850,10 @@ function CreateTheComposition(json_1) {
                     let ofThe = ofTheConceptId !== null && ofTheConceptId !== void 0 ? ofTheConceptId : 999;
                     let ofTheUser = ofTheConceptUserId !== null && ofTheConceptUserId !== void 0 ? ofTheConceptUserId : 999;
                     let localMainKey = MainKeyLocal;
-                    let conceptString = yield (0,_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_2__["default"])(key, "", true, localUserId, localAccessId, localSessionId);
+                    let conceptString = yield (0,_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_3__["default"])(key, "", true, localUserId, localAccessId, localSessionId);
                     let concept = conceptString;
                     MainConcept = concept;
-                    yield (0,_CreateTheConnection__WEBPACK_IMPORTED_MODULE_1__.createTheConnection)(ofThe, ofTheUser, concept.id, localMainKey);
+                    yield (0,_CreateTheConnection__WEBPACK_IMPORTED_MODULE_2__.createTheConnection)(ofThe, ofTheUser, concept.id, localMainKey);
                     yield CreateTheComposition(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId);
                 }
             }
@@ -10644,9 +10861,9 @@ function CreateTheComposition(json_1) {
                 let ofThe = ofTheConceptId !== null && ofTheConceptId !== void 0 ? ofTheConceptId : 999;
                 let ofTheUser = ofTheConceptUserId !== null && ofTheConceptUserId !== void 0 ? ofTheConceptUserId : 10267;
                 let localMainKey = MainKeyLocal;
-                let conceptString = yield (0,_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_2__["default"])(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
+                let conceptString = yield (0,_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_3__["default"])(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
                 let concept = conceptString;
-                yield (0,_CreateTheConnection__WEBPACK_IMPORTED_MODULE_1__.createTheConnection)(ofThe, ofTheUser, concept.id, localMainKey);
+                yield (0,_CreateTheConnection__WEBPACK_IMPORTED_MODULE_2__.createTheConnection)(ofThe, ofTheUser, concept.id, localMainKey);
             }
         }
         return MainConcept;
@@ -11017,6 +11234,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   GetComposition: () => (/* binding */ GetComposition),
 /* harmony export */   GetCompositionById: () => (/* binding */ GetCompositionById),
+/* harmony export */   GetCompositionByIdData: () => (/* binding */ GetCompositionByIdData),
+/* harmony export */   GetCompositionData: () => (/* binding */ GetCompositionData),
 /* harmony export */   GetCompositionFromMemory: () => (/* binding */ GetCompositionFromMemory),
 /* harmony export */   GetCompositionFromMemoryNormal: () => (/* binding */ GetCompositionFromMemoryNormal),
 /* harmony export */   GetCompositionWithAllIds: () => (/* binding */ GetCompositionWithAllIds),
@@ -11054,6 +11273,19 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 function GetCompositionById(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWoker) {
+            console.log('data receiving');
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionById', { id });
+            console.log('data received from sw', res);
+            return res.data;
+        }
+        else {
+            return yield GetCompositionByIdData;
+        }
+    });
+}
+function GetCompositionByIdData(id) {
     return __awaiter(this, void 0, void 0, function* () {
         let connectionList = [];
         let returnOutput = {};
@@ -11151,6 +11383,28 @@ function RecursiveFetchBuildLayerNormal(id, connectionList, compositionList) {
  * @returns
  */
 function GetComposition(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWoker) {
+            console.log('data receiving');
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetComposition', { id });
+            console.log('data received from sw', res);
+            return res.data;
+        }
+        else {
+            return yield GetCompositionData(id);
+        }
+    });
+}
+/**
+ * ## format JUSTDATA ##
+ * this function builds the composition with the main id as the point of building.
+ * This just requires the id
+ * @param id id of the main composition that you want to build
+ * @param connectionList  list of connections
+ * @param compositionList list of of_the_concept_ids for all the connections.
+ * @returns
+ */
+function GetCompositionData(id) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
         let connectionList = [];
@@ -12577,8 +12831,9 @@ function GetLink(id_1, linker_1) {
     return __awaiter(this, arguments, void 0, function* (id, linker, inpage = 10, page = 1) {
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWoker) {
             console.log('data receiving');
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('getLink', { id, linker, inpage, page });
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetLink', { id, linker, inpage, page });
             console.log('data received from sw', res);
+            console.log('getLinke raw', yield GetLinkRaw(id, linker, inpage, page));
             return res.data;
         }
         else {
@@ -14130,7 +14385,8 @@ function MakeTheTypeConceptLocal(typeString, sessionId, sessionUserId, userId) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   UpdateCompositionLocal: () => (/* binding */ UpdateCompositionLocal)
+/* harmony export */   UpdateCompositionLocal: () => (/* binding */ UpdateCompositionLocal),
+/* harmony export */   UpdateCompositionLocalData: () => (/* binding */ UpdateCompositionLocalData)
 /* harmony export */ });
 /* harmony import */ var _Helpers_UniqueInsert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Helpers/UniqueInsert */ "./src/Helpers/UniqueInsert.ts");
 /* harmony import */ var _Helpers_CheckIfExists__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Helpers/CheckIfExists */ "./src/Helpers/CheckIfExists.ts");
@@ -14161,6 +14417,22 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 // function to update the cache composition
 function UpdateCompositionLocal(patcherStructure) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (_app__WEBPACK_IMPORTED_MODULE_7__.serviceWoker) {
+            console.log("data receiving");
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_7__.sendMessage)("UpdateCompositionLocal", {
+                patcherStructure,
+            });
+            console.log('updated data from sw');
+            console.log("data received from sw", res);
+            return res.data;
+        }
+        else {
+            return yield UpdateCompositionLocalData(patcherStructure);
+        }
+    });
+}
+function UpdateCompositionLocalData(patcherStructure) {
     return __awaiter(this, void 0, void 0, function* () {
         // get all the default userId, sessionId, accessId passed by the patcherStructure
         const userId = patcherStructure.userId;
@@ -14216,7 +14488,7 @@ function UpdateCompositionLocal(patcherStructure) {
             if (parentConcept.id > 0) {
                 localConcept = parentConcept;
             }
-            if (Array.isArray(value) || typeof value == 'object') {
+            if (Array.isArray(value) || typeof value == "object") {
                 insertingConcept = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_6__.MakeTheInstanceConceptLocal)(key, "", true, composition.userId, 4, 999);
                 yield (0,_CreateTheCompositionLocal__WEBPACK_IMPORTED_MODULE_5__.CreateTheCompositionLocal)(object[key], insertingConcept.id, insertingConcept.userId, composition.id, composition.userId, 4, 999);
             }
@@ -14727,7 +14999,7 @@ function SearchLinkMultipleAll(searchQuery_1) {
     return __awaiter(this, arguments, void 0, function* (searchQuery, token = "", caller = null, format = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.DATAID) {
         if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWoker) {
             console.log('data receiving searc');
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('searchLinkMultipleAll', { searchQuery, token, caller, format });
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('SearchLinkMultipleAll', { searchQuery, token, caller, format });
             console.log('data received search from sw', res);
             return res.data;
         }
@@ -16733,6 +17005,16 @@ function init() {
                     //    console.log('Service Workers registered:', registrations);
                     //    if (registrations.length > 0) {
                     //       // TODO:: check if mftsccs sw is available or not
+                    //   registrations.forEach((registration, index) => {
+                    //    console.log(`Service Worker ${index + 1}:`, registration);
+                    //    if (registration.active) {
+                    //        console.log('Status: Active');
+                    //    } else if (registration.waiting) {
+                    //        console.log('Status: Waiting');
+                    //    } else {
+                    //        console.log('Status: No active worker');
+                    //    }
+                    //   });
                     //       alreadyRegistered = true
                     //    } else {
                     //       let customSelf = self as any
@@ -16765,9 +17047,9 @@ function init() {
                     // }, 1000)
                     yield new Promise((resolve, reject) => {
                         navigator.serviceWorker
-                            .register("/serviceWorker.bundle.js", {
+                            .register("./serviceWorker.bundle.js", {
                             type: "module",
-                            scope: "/",
+                            scope: "/mftsccs-browser",
                         })
                             .then((registration) => __awaiter(this, void 0, void 0, function* () {
                             console.log("Service Worker registered with scope:", registration.scope);
@@ -16870,6 +17152,7 @@ function init() {
     });
 }
 function sendMessage(type, payload) {
+    // TODO:: add payload validator based on type of the message
     return new Promise((resolve) => {
         const responseHandler = (event) => {
             resolve(event.data);
@@ -16879,6 +17162,16 @@ function sendMessage(type, payload) {
         serviceWoker === null || serviceWoker === void 0 ? void 0 : serviceWoker.postMessage({ type, payload });
     });
 }
+// export function sendMessage(type: string, payload: any) {
+//    return new Promise((resolve) => {
+//      const responseHandler = (event: any) => {
+//        resolve(event.data);
+//        navigator.serviceWorker.removeEventListener("message", responseHandler);
+//      };
+//      navigator.serviceWorker.addEventListener("message", responseHandler);
+//      navigator.serviceWorker.controller?.postMessage({ type, payload });
+//    });
+//  }
 
 
 /***/ })
@@ -16949,10 +17242,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
 /* harmony import */ var _Services_CreateBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Services/CreateBinaryTreeFromData */ "./src/Services/CreateBinaryTreeFromData.ts");
 /* harmony import */ var _Services_GetDataFromIndexDb__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Services/GetDataFromIndexDb */ "./src/Services/GetDataFromIndexDb.ts");
-/* harmony import */ var _Services_GetLink__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Services/GetLink */ "./src/Services/GetLink.ts");
-/* harmony import */ var _Services_InitializeSystem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Services/InitializeSystem */ "./src/Services/InitializeSystem.ts");
-/* harmony import */ var _Services_Local_CreateLocalBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Services/Local/CreateLocalBinaryTreeFromData */ "./src/Services/Local/CreateLocalBinaryTreeFromData.ts");
-/* harmony import */ var _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Services/Search/SearchLinkMultiple */ "./src/Services/Search/SearchLinkMultiple.ts");
+/* harmony import */ var _Services_InitializeSystem__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Services/InitializeSystem */ "./src/Services/InitializeSystem.ts");
+/* harmony import */ var _Services_Local_CreateLocalBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Services/Local/CreateLocalBinaryTreeFromData */ "./src/Services/Local/CreateLocalBinaryTreeFromData.ts");
+/* harmony import */ var _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ServiceWorker/actions */ "./src/ServiceWorker/actions/index.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16962,7 +17254,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 
 
 
@@ -16985,26 +17276,28 @@ self.addEventListener("activate", (event) => __awaiter(void 0, void 0, void 0, f
 // self.addEventListener('fetch', (event: any) => {
 //     console.log('Fetching: sw', event.request.url);
 // });
+// Actions that can be performed in this service worker
+const actions = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ init: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        yield init(payload === null || payload === void 0 ? void 0 : payload.url, payload === null || payload === void 0 ? void 0 : payload.aiurl, payload === null || payload === void 0 ? void 0 : payload.accessToken, payload === null || payload === void 0 ? void 0 : payload.nodeUrl, payload === null || payload === void 0 ? void 0 : payload.enableAi, payload === null || payload === void 0 ? void 0 : payload.applicationName, payload === null || payload === void 0 ? void 0 : payload.isTest);
+        return { success: true, data: undefined };
+    }) }, _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.getActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.searchActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.createActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.updateActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.syncActions);
 // Listen message received by service worker
 self.addEventListener("message", (event) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("message received sw", event);
     const { type, payload } = event.data;
     if (!type)
         return;
-    if (type == "init") {
-        console.log("initialized data sww");
-        yield init(payload === null || payload === void 0 ? void 0 : payload.url, payload === null || payload === void 0 ? void 0 : payload.aiurl, payload === null || payload === void 0 ? void 0 : payload.accessToken, payload === null || payload === void 0 ? void 0 : payload.nodeUrl, payload === null || payload === void 0 ? void 0 : payload.enableAi, payload === null || payload === void 0 ? void 0 : payload.applicationName, payload === null || payload === void 0 ? void 0 : payload.isTest);
-        event.source.postMessage({ success: true, data: {} });
+    console.log('has type', type);
+    let responseData = { success: false, data: undefined };
+    if (actions[type]) {
+        console.log('if type');
+        responseData = yield actions[type](payload);
     }
-    else if (type == "getLink") {
-        console.log("data sent from service worker");
-        const data = yield (0,_Services_GetLink__WEBPACK_IMPORTED_MODULE_5__.GetLinkData)(payload.id, payload.linker, payload.inpage, payload.page);
-        event.source.postMessage({ success: true, data });
+    else {
+        console.log('else type');
+        console.log(`Unable to handle "${type}" case in service worker`);
     }
-    else if (type == "searchLinkMultipleAll") {
-        const data = yield (0,_Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_8__.SearchLinkMultipleAllData)(payload.searchQuery, payload.token, payload.caller, payload.format);
-        event.source.postMessage({ success: true, data });
-    }
+    event.source.postMessage(responseData);
 }));
 /**
  * Method to initialize the initial data in service worker
@@ -17045,7 +17338,7 @@ function init() {
          * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
          * If the developer does not want to use this feature then they can just set enableAi to false.
          */
-        yield (0,_Services_InitializeSystem__WEBPACK_IMPORTED_MODULE_6__["default"])();
+        yield (0,_Services_InitializeSystem__WEBPACK_IMPORTED_MODULE_5__["default"])();
         const start = new Date().getTime();
         /**
          * This  will create a binary tree in the memory from the indexdb.
@@ -17072,7 +17365,7 @@ function init() {
          * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
          * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
          */
-        yield (0,_Services_Local_CreateLocalBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_7__["default"])()
+        yield (0,_Services_Local_CreateLocalBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_6__["default"])()
             .then(() => {
             // IdentifierFlags.isLocalDataLoaded = true;
             // IdentifierFlags.isLocalTypeLoaded = true;

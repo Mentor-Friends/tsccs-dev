@@ -6,10 +6,9 @@ import {
   GetConnectionsFromIndexDb,
   GetConnectionsFromIndexDbLocal,
 } from "./Services/GetDataFromIndexDb";
-import { GetLinkData } from "./Services/GetLink";
 import InitializeSystem from "./Services/InitializeSystem";
 import CreateLocalBinaryTreeFromIndexDb from "./Services/Local/CreateLocalBinaryTreeFromData";
-import { SearchLinkMultipleAllData } from "./Services/Search/SearchLinkMultiple";
+import { Actions, createActions, getActions, searchActions, syncActions, updateActions } from "./ServiceWorker/actions";
 
 // Install Service Worker
 self.addEventListener("install", (event) => {
@@ -28,42 +27,46 @@ self.addEventListener("activate", async (event) => {
 //     console.log('Fetching: sw', event.request.url);
 // });
 
+// Actions that can be performed in this service worker
+const actions: Actions = {
+  init: async (payload: any) => {
+    await init(
+        payload?.url,
+        payload?.aiurl,
+        payload?.accessToken,
+        payload?.nodeUrl,
+        payload?.enableAi,
+        payload?.applicationName,
+        payload?.isTest
+      );
+    return {success: true, data: undefined}
+  },
+  // imported actions
+  ...getActions,
+  ...searchActions,
+  ...createActions,
+  ...updateActions,
+  ...syncActions,
+}
+
 // Listen message received by service worker
 self.addEventListener("message", async (event: any) => {
   console.log("message received sw", event);
   const { type, payload }: any = event.data;
   if (!type) return;
+  console.log('has type', type)
+  let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
 
-  if (type == "init") {
-    console.log("initialized data sww");
-    await init(
-      payload?.url,
-      payload?.aiurl,
-      payload?.accessToken,
-      payload?.nodeUrl,
-      payload?.enableAi,
-      payload?.applicationName,
-      payload?.isTest
-    );
-    event.source.postMessage({ success: true, data: {} });
-  } else if (type == "getLink") {
-    console.log("data sent from service worker");
-    const data = await GetLinkData(
-      payload.id,
-      payload.linker,
-      payload.inpage,
-      payload.page
-    );
-    event.source.postMessage({ success: true, data });
-  } else if (type == "searchLinkMultipleAll") {
-    const data = await SearchLinkMultipleAllData(
-      payload.searchQuery,
-      payload.token,
-      payload.caller,
-      payload.format
-    );
-    event.source.postMessage({ success: true, data });
+  if (actions[type]) {
+    console.log('if type')
+    responseData = await actions[type](payload);
+  } else {
+    console.log('else type')
+    console.log(`Unable to handle "${type}" case in service worker`)
   }
+  
+  event.source.postMessage(responseData)
+
 });
 
 /**

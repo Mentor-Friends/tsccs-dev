@@ -325,6 +325,16 @@ async function init(
         //    console.log('Service Workers registered:', registrations);
         //    if (registrations.length > 0) {
         //       // TODO:: check if mftsccs sw is available or not
+      //   registrations.forEach((registration, index) => {
+      //    console.log(`Service Worker ${index + 1}:`, registration);
+      //    if (registration.active) {
+      //        console.log('Status: Active');
+      //    } else if (registration.waiting) {
+      //        console.log('Status: Waiting');
+      //    } else {
+      //        console.log('Status: No active worker');
+      //    }
+   //   });
         //       alreadyRegistered = true
         //    } else {
 
@@ -363,9 +373,9 @@ async function init(
         // }, 1000)
         await new Promise<void>((resolve, reject) => {
            navigator.serviceWorker
-             .register("/serviceWorker.bundle.js", {
+             .register("./serviceWorker.bundle.js", {
                type: "module",
-               scope: "/",
+               scope: "/mftsccs-browser",
              })
              .then(async (registration) => {
                console.log(
@@ -470,6 +480,7 @@ async function init(
 }
 
 export function sendMessage(type: string, payload: any) {
+   // TODO:: add payload validator based on type of the message
   return new Promise((resolve) => {
     const responseHandler = (event: any) => {
       resolve(event.data);
@@ -480,3 +491,15 @@ export function sendMessage(type: string, payload: any) {
     serviceWoker?.postMessage({ type, payload });
   });
 }
+
+// export function sendMessage(type: string, payload: any) {
+//    return new Promise((resolve) => {
+//      const responseHandler = (event: any) => {
+//        resolve(event.data);
+//        navigator.serviceWorker.removeEventListener("message", responseHandler);
+//      };
+ 
+//      navigator.serviceWorker.addEventListener("message", responseHandler);
+//      navigator.serviceWorker.controller?.postMessage({ type, payload });
+//    });
+//  }

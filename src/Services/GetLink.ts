@@ -10,8 +10,9 @@ import { sendMessage, serviceWoker } from "../app";
 export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1) {
   if (serviceWoker) {
     console.log('data receiving')
-    const res: any = await sendMessage('getLink', {id, linker, inpage, page})
+    const res: any = await sendMessage('GetLink', {id, linker, inpage, page})
     console.log('data received from sw', res)
+    console.log('getLinke raw', await GetLinkRaw(id, linker, inpage, page))
     return res.data
   } else {
     console.log('used old BT')

@@ -7,7 +7,7 @@ import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInO
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
   if (serviceWoker) {
     console.log('data receiving searc')
-    const res: any = await sendMessage('searchLinkMultipleAll', {searchQuery, token, caller, format})
+    const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
     console.log('data received search from sw', res)
     return res.data
   } else {
