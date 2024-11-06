@@ -42,7 +42,6 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
             else{
                 stringToCheck = "the_" + type;
             }
-    
             if(composition){
                 let   typeConceptString = await MakeTheTypeConceptLocal(type, sessionInformationId, userId, userId );
                typeConcept = typeConceptString as Concept;

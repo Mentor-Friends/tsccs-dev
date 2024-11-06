@@ -6,4 +6,5 @@ export class SearchStructure{
     userId: number = 999;
     inpage: number = 10;
     page: number = 1;
+    auth: boolean = true;
 }

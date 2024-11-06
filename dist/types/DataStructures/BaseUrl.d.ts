@@ -29,7 +29,7 @@ export declare class BaseUrl {
     static RecursiveSearchUrl(): string;
     static SearchLinkMultipleAllApiUrl(): string;
     static MakeTheNameInBackendUrl(): string;
-    static SearchAllTypeWithLinker(): string;
+    static SearchAllTypeWithLinker(auth?: boolean): string;
     static LoginUrl(): string;
     static SignupUrl(): string;
     static GetCompositionConnectionBetweenTwoConceptsUrl(): string;

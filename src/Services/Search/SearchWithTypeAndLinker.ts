@@ -1,5 +1,5 @@
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi} from '../../app';
-import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
+import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
 
 /**
@@ -40,6 +40,38 @@ export async function SearchWithTypeAndLinker(searchStructure:SearchStructure, s
     let mainCompositionIds = result.mainCompositionIds;
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let concepts = await GetCompositionFromConnectionsInObject(conceptIds, connections);
+    let output:any =  await FormatConceptsAndConnections(prefetchConnections, concepts, mainCompositionIds, reverse);
+    return output;
+}
+
+/**
+ * ## Format dataid ##
+ * @param linkers 
+ * @param conceptIds 
+ * @param connections 
+ * @param mainCompositionIds 
+ * @param reverse 
+ * @returns 
+ */
+export async function formatDataArrayDataId(linkers: number[], conceptIds: number[], connections: number[], mainCompositionIds: number[], reverse: number[] ){
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds, connections);
+    let output:any =  await FormatFromConnectionsAlteredArray(prefetchConnections, concepts, conceptIds, mainCompositionIds, reverse);
+    return output;
+}
+
+/**
+ * ## Format Normal ##
+ * @param linkers 
+ * @param conceptIds 
+ * @param connections 
+ * @param mainCompositionIds 
+ * @param reverse 
+ * @returns 
+ */
+export async function formatDataArrayNormal(linkers: number[], conceptIds: number[], connections: number[], mainCompositionIds: number[], reverse: number[] ){
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let concepts = await GetCompositionFromConnectionsInObjectNormal(conceptIds, connections);
     let output:any =  await FormatConceptsAndConnections(prefetchConnections, concepts, mainCompositionIds, reverse);
     return output;
 }
