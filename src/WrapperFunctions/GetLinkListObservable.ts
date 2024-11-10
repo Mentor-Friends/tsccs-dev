@@ -63,6 +63,7 @@ export class GetLinkListObservable extends DependencyObserver{
 
     async bind(){
         if(!this.isDataLoaded){
+
             this.isDataLoaded = true;
             var concept = await GetConceptByCharacter(this.searchCharacter);
             let result:any = await SearchWithTypeAndLinkerApi( this.searchStructure, this.searchQuery, this.token);

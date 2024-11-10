@@ -7,6 +7,7 @@ import { CreateDefaultLConcept } from "../../Services/Local/CreateDefaultLConcep
 import { ConceptsData } from "../ConceptData";
 import { ConvertFromLConceptToConcept } from "../../Services/Local/ConvertFromLConceptToConcept";
 import { LocalGhostIdTree } from "./LocalGhostIdTree";
+import { LocalConnectionData } from "./LocalConnectionData";
 export class LocalConceptsData{
 
     name: string;
@@ -166,6 +167,12 @@ export class LocalConceptsData{
         //  }
         ConceptList = await LocalBinaryTypeTree.getTypeVariantsFromTreeWithUserId(typeId, userId);
          return ConceptList;
+     }
+
+
+     static async ClearData(){
+        this.localconceptsArray = [];
+        LocalConnectionData.connectionArray = [];
      }
 
 
