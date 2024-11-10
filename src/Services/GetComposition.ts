@@ -264,7 +264,6 @@ export async function GetCompositionWithIdFromMemory(id:number){
     let returnOutput: any = {};
    // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
-    console.log("this is the local data composition", connectionList);
 
     let compositionList:number[] = [];
     for(let i=0; i<connectionList.length; i++){

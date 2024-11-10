@@ -19,13 +19,11 @@ export default async function GetTheConcept(id: number, userId: number = 999){
            return concept;
         }
         concept = await ConceptsData.GetConcept(id);
-        console.log("this is the concept form memory", concept);
         if((concept == null || concept.id == 0) && id != null && id != undefined){
          let conceptString = await  GetConcept(id);
     
          concept = conceptString as Concept;
         }
-        console.log("this is the concept from network", concept);
         if( concept.id != 0){
     
             if(concept.type == null){

@@ -149,7 +149,6 @@ export class ConnectionData{
                 connections.push(conn.value);
             }   
         }
-        console.log("these are the connections from the local", connections, connectionIds);
         return connections;
         //let node = await ConnectionTypeTree.getNodeFromTree(id);
         // if(node?.value){
@@ -169,6 +168,8 @@ export class ConnectionData{
         let connectionIds: number [] = [];
         let connections: Connection[] = [];
         connectionIds = ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+        console.log("this is the id", connectionIds);
+
         for(let i=0; i< connectionIds.length; i++){
             let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
             if(conn){

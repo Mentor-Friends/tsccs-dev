@@ -126,7 +126,15 @@ export class BinaryTypeTree{
             conceptIds = node.value;
 
             for(let i=0 ; i < conceptIds.length; i ++){
-                concepts.push(await GetTheConcept(conceptIds[i]));
+                let alreadyExist = false;
+                for(let j=0; j<concepts.length; j++){
+                    if(concepts[j].id == conceptIds[i]){
+                        alreadyExist = true;
+                    }
+                }   
+                if(!alreadyExist){
+                    concepts.push(await GetTheConcept(conceptIds[i]));
+                }
             }
         }
 
