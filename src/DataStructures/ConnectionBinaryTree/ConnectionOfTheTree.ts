@@ -37,9 +37,7 @@ export class ConnectionOfTheTree{
 
 
             if(this.node){
-                // let event = new Event(`${key}`);
-                // // console.log("dispatched the of the concecpt event", event);
-                // dispatchEvent(event);
+
                 let existingNode:ConnectionOfNode|null = this.node.getFromNode(key, this.node);
                 if(existingNode){
                     let connectionList: number[] = existingNode?.value;
@@ -66,6 +64,10 @@ export class ConnectionOfTheTree{
                 this.addNodeToTree(connectionNode);
             }
 
+            let event = new Event(`${key}`);
+            // console.log("dispatched the of the concecpt event", event);
+            dispatchEvent(event);
+
             
         }
         else{
@@ -82,9 +84,9 @@ export class ConnectionOfTheTree{
     static async addNodeToTree(connectionOfNode:ConnectionOfNode){
         if(this.node == null){
             this.node = connectionOfNode;
-            let event = new Event(`${this.node.key}`);
-            console.log("dispatched the of the concecpt event", event);
-            dispatchEvent(event);
+            // let event = new Event(`${this.node.key}`);
+            // console.log("dispatched the of the concecpt event", event);
+            // dispatchEvent(event);
             return this.node;
         }
         else{
