@@ -18,7 +18,7 @@ import {
   LConnection,
   LocalSyncData,
   sendMessage,
-  serviceWoker,
+  serviceWorker,
 } from "../../app";
 import {
   convertFromConceptToLConcept,
@@ -29,22 +29,14 @@ import {
 export async function UpdateCompositionLocal(
   patcherStructure: PatcherStructure
 ) {
-  if (serviceWoker) {
-    console.log("data receiving");
+  if (serviceWorker) {
     const res: any = await sendMessage("UpdateCompositionLocal", {
       patcherStructure,
     });
-    console.log('updated data from sw')
     console.log("data received from sw", res);
     return res.data;
-  } else {
-    return await UpdateCompositionLocalData(patcherStructure);
   }
-}
 
-export async function UpdateCompositionLocalData(
-  patcherStructure: PatcherStructure
-) {
   // get all the default userId, sessionId, accessId passed by the patcherStructure
   const userId = patcherStructure.userId;
   const sessionId = patcherStructure.sessionId;

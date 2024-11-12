@@ -2,7 +2,7 @@ import { Concept } from "../../DataStructures/Concept";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
-import { LocalSyncData } from "../../app";
+import { LocalSyncData, sendMessage, serviceWorker } from "../../app";
 
 
 /**
@@ -22,6 +22,12 @@ import { LocalSyncData } from "../../app";
  */
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0){
+        if (serviceWorker) {
+            const res: any = await sendMessage('MakeTheInstanceConceptLocal', {type, referent, composition, userId, accessId, sessionInformationId, referentId})
+            console.log('data received from sw', res)
+            return res.data
+          }
+
         try{
             let sessionInformationId: number = 999;
             let categoryId: number = 4;

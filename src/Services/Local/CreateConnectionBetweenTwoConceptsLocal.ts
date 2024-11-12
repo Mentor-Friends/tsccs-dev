@@ -1,9 +1,15 @@
-import { Concept, CreateTheConnectionLocal, MakeTheInstanceConceptLocal } from "../../app";
+import { Concept, CreateTheConnectionLocal, MakeTheInstanceConceptLocal, sendMessage, serviceWorker } from "../../app";
 import { HandleInternalError } from "../Common/ErrorPosting";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false){
-
     try{
+        if (serviceWorker) {
+            const res: any = await sendMessage('CreateConnectionBetweenTwoConceptsLocal', {ofTheConcept, toTheConcept, linker, both})
+            console.log('data received from sw', res)
+            return res.data
+          }
+
+        console.log('of THe', ofTheConcept, 'to the', toTheConcept)
         var userId:number = ofTheConcept.userId;
 
         if(both){

@@ -1,3 +1,4 @@
+import { dispatchIdEvent } from "../../app";
 import {  Connection } from "./../Connection";
 
 export class ConnectionNode{
@@ -376,7 +377,8 @@ export class ConnectionNode{
          * This is dispatched incase the connection is deleted and others are listening
          */
         let event = new Event(`${passedNode.value.ofTheConceptId}`);
-        dispatchEvent(event);
+        // dispatchEvent(event);
+        dispatchIdEvent(passedNode.value.ofTheConceptId)
         if(passedNode.leftNode == null){
             let temp = passedNode.rightNode;
             passedNode = null;

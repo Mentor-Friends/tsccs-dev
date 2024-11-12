@@ -494,6 +494,71 @@ function TrashTheConcept(id, token) {
 
 /***/ }),
 
+/***/ "./src/Api/GetAiData.ts":
+/*!******************************!*\
+  !*** ./src/Api/GetAiData.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GetAiData: () => (/* binding */ GetAiData)
+/* harmony export */ });
+/* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
+/* harmony import */ var _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/ConceptData */ "./src/DataStructures/ConceptData.ts");
+/* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _Services_InitializeSystem__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Services/InitializeSystem */ "./src/Services/InitializeSystem.ts");
+/* harmony import */ var _Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Services/Security/GetRequestHeader */ "./src/Services/Security/GetRequestHeader.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+function GetAiData() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const start = new Date().getTime();
+            var header = (0,_Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_4__.GetRequestHeaderWithAuthorization)('application/x-www-form-urlencoded');
+            const response = yield fetch(_DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.GetAllAiData(), {
+                method: 'GET',
+                headers: header,
+            });
+            if (!response.ok) {
+                console.log('Ai Error Message: ', "Cannot get response");
+                (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_2__.HandleHttpError)(response);
+            }
+            const result = yield response.json();
+            for (var i = 0; i < result.length; i++) {
+                _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_1__.ConceptsData.AddConcept(result[i]);
+            }
+            (0,_Services_InitializeSystem__WEBPACK_IMPORTED_MODULE_3__.PurgatoryDatabaseUpdated)();
+            let elapsed = new Date().getTime() - start;
+            console.log("The time taken is ", elapsed);
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                console.log('Ai Error Message: ', error.message);
+            }
+            else {
+                console.log('Ai Error Message: ', error);
+            }
+            (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_2__.HandleInternalError)(error, _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.GetAllAiData());
+        }
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/Api/GetAllConceptsByType.ts":
 /*!*****************************************!*\
   !*** ./src/Api/GetAllConceptsByType.ts ***!
@@ -665,6 +730,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Services_CheckForConnectionDeletion__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Services/CheckForConnectionDeletion */ "./src/Services/CheckForConnectionDeletion.ts");
 /* harmony import */ var _Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../Services/Security/GetRequestHeader */ "./src/Services/Security/GetRequestHeader.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -681,8 +747,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function GetAllConnectionsOfCompositionBulk() {
     return __awaiter(this, arguments, void 0, function* (composition_ids = []) {
+        if (_app__WEBPACK_IMPORTED_MODULE_7__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_7__.sendMessage)('GetAllConnectionsOfCompositionBulk', { composition_ids });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         var connectionList = [];
         var conceptList = [];
         if (composition_ids.length <= 0) {
@@ -963,6 +1035,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function GetConcept(id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('GetConcept', { id });
+                console.log('data received from sw', res);
+                return res.data;
+            }
             let result = (0,_app__WEBPACK_IMPORTED_MODULE_3__.CreateDefaultConcept)();
             var conceptUse = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_0__.ConceptsData.GetConcept(id);
             let isNpc = _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_0__.ConceptsData.GetNpc(id);
@@ -1172,6 +1249,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
 /* harmony import */ var _Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/Security/GetRequestHeader */ "./src/Services/Security/GetRequestHeader.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1185,10 +1263,16 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function GetConceptByCharacterAndType(characterValue, typeId) {
     return __awaiter(this, void 0, void 0, function* () {
-        let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_0__.ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue, typeId);
         try {
+            if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetConceptByCharacterAndType', { characterValue, typeId });
+                console.log('data received from sw', res);
+                return res.data;
+            }
+            let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_0__.ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue, typeId);
             if (concept == null || concept.id == 0) {
                 var json = {
                     'character_value': `${characterValue}`,
@@ -1377,6 +1461,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Services_FindConeceptsFromConnection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/FindConeceptsFromConnection */ "./src/Services/FindConeceptsFromConnection.ts");
 /* harmony import */ var _Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Services/Security/GetRequestHeader */ "./src/Services/Security/GetRequestHeader.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1391,6 +1476,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 /**
  * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched
  * @param connectionIds array of connection ids that need to fetched by the local system
@@ -1398,6 +1484,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  */
 function GetConnectionBulk() {
     return __awaiter(this, arguments, void 0, function* (connectionIds = []) {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetConnectionBulk', { connectionIds });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let connectionList = [];
         try {
             if (connectionIds.length > 0) {
@@ -1475,6 +1566,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
 /* harmony import */ var _Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Services/Security/GetRequestHeader */ "./src/Services/Security/GetRequestHeader.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1487,8 +1579,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function GetConnectionOfTheConcept(typeId_1, ofTheConceptId_1, userId_1) {
     return __awaiter(this, arguments, void 0, function* (typeId, ofTheConceptId, userId, inpage = 10, page = 1) {
+        if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('GetConnectionOfTheConcept', { typeId, ofTheConceptId, userId, inpage, page });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let connectionList = [];
         try {
             let urlencoded = new URLSearchParams();
@@ -1931,6 +2029,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/GetCompositionBulk */ "./src/Services/GetCompositionBulk.ts");
 /* harmony import */ var _Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Services/Security/GetRequestHeader */ "./src/Services/Security/GetRequestHeader.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1940,6 +2039,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -1987,6 +2087,11 @@ function RecursiveSearchApi() {
 }
 function RecursiveSearchApiRaw() {
     return __awaiter(this, arguments, void 0, function* (composition = 0, listLinkers = [], textSearch = "") {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('RecursiveSearchApiRaw', { composition, listLinkers, textSearch });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let concepts = [];
         try {
             let searchQuery = new _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_1__.SearchQuery();
@@ -1997,9 +2102,9 @@ function RecursiveSearchApiRaw() {
             let Connections = [];
             let myHeaders = (0,_Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_3__.GetRequestHeader)();
             const response = yield fetch(_DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl(), {
-                method: 'POST',
+                method: "POST",
                 headers: myHeaders,
-                body: raw
+                body: raw,
             });
             if (response.ok) {
                 const result = yield response.json();
@@ -2016,10 +2121,10 @@ function RecursiveSearchApiRaw() {
         }
         catch (error) {
             if (error instanceof Error) {
-                console.log('recursive search error message: ', error.message);
+                console.log("recursive search error message: ", error.message);
             }
             else {
-                console.log('recursive search unexpected error: ', error);
+                console.log("recursive search unexpected error: ", error);
             }
             (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_4__.HandleInternalError)(error, _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl());
         }
@@ -2923,6 +3028,22 @@ const RAW = 5;
 
 /***/ }),
 
+/***/ "./src/Constants/general.const.ts":
+/*!****************************************!*\
+  !*** ./src/Constants/general.const.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   broadcastChannel: () => (/* binding */ broadcastChannel)
+/* harmony export */ });
+const channelName = 'Freeschema_mftsccs_browser_channel';
+const broadcastChannel = new BroadcastChannel(channelName);
+
+
+/***/ }),
+
 /***/ "./src/DataStructures/BaseUrl.ts":
 /*!***************************************!*\
   !*** ./src/DataStructures/BaseUrl.ts ***!
@@ -3240,6 +3361,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _BinaryCharacterTree__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BinaryCharacterTree */ "./src/DataStructures/BinaryCharacterTree.ts");
 /* harmony import */ var _Node__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Node */ "./src/DataStructures/Node.ts");
 /* harmony import */ var _IdentifierFlags__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./IdentifierFlags */ "./src/DataStructures/IdentifierFlags.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -3249,6 +3371,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -3301,7 +3424,8 @@ class BinaryTree {
             if (this.root) {
                 let event = new Event(`${id}`);
                 console.log("this is the fired event after delete", event);
-                dispatchEvent(event);
+                //  dispatchEvent(event);
+                (0,_app__WEBPACK_IMPORTED_MODULE_3__.dispatchIdEvent)(id);
                 this.root = this.root.removeNode(this.root, id);
             }
         });
@@ -3377,7 +3501,8 @@ class BinaryTypeTree {
             else {
                 let event = new CustomEvent(`${node.key}`, { detail: node.value[0] });
                 // console.log("this is the fired event", event);
-                dispatchEvent(event);
+                //  dispatchEvent(event);
+                (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(node.key, { detail: node.value[0] });
                 // console.log("this is the fired event", event);
                 this.root = this.root.addType(this.root, node.key, node.value[0]);
             }
@@ -3441,7 +3566,15 @@ class BinaryTypeTree {
             if (node) {
                 conceptIds = node.value;
                 for (let i = 0; i < conceptIds.length; i++) {
-                    concepts.push(yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(conceptIds[i]));
+                    let alreadyExist = false;
+                    for (let j = 0; j < concepts.length; j++) {
+                        if (concepts[j].id == conceptIds[i]) {
+                            alreadyExist = true;
+                        }
+                    }
+                    if (!alreadyExist) {
+                        concepts.push(yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(conceptIds[i]));
+                    }
                 }
             }
             return concepts;
@@ -4034,7 +4167,6 @@ class ConceptsData {
             //  }
             //UpdateToDatabase("concept",concept);
             //IndexDbUpdate.UpdateConceptIndexDb(concept);
-            console.log("this is the added concept", concept);
             _BinaryTree__WEBPACK_IMPORTED_MODULE_1__.BinaryTree.addConceptToTree(concept);
             _BinaryTypeTree__WEBPACK_IMPORTED_MODULE_3__.BinaryTypeTree.addConceptToTree(concept);
             //BinaryCharacterTree.addConceptToTree(concept);
@@ -4299,6 +4431,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ConnectionNode: () => (/* binding */ ConnectionNode)
 /* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+
 class ConnectionNode {
     constructor(key, value, leftNode, rightNode) {
         this.variants = [];
@@ -4612,7 +4746,8 @@ class ConnectionNode {
          * This is dispatched incase the connection is deleted and others are listening
          */
         let event = new Event(`${passedNode.value.ofTheConceptId}`);
-        dispatchEvent(event);
+        // dispatchEvent(event);
+        (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(passedNode.value.ofTheConceptId);
         if (passedNode.leftNode == null) {
             let temp = passedNode.rightNode;
             passedNode = null;
@@ -4710,9 +4845,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ConnectionOfNode: () => (/* binding */ ConnectionOfNode)
 /* harmony export */ });
-/* harmony import */ var _NodePrimitive__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NodePrimitive */ "./src/DataStructures/ConnectionBinaryTree/NodePrimitive.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _NodePrimitive__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NodePrimitive */ "./src/DataStructures/ConnectionBinaryTree/NodePrimitive.ts");
 
-class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_0__.NodePrimitive {
+
+class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_1__.NodePrimitive {
     constructor(key, value, leftNode, rightNode) {
         super(key, value, leftNode, rightNode);
         this.key = "";
@@ -4726,6 +4863,10 @@ class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_0__.NodeP
     addNode(passedNode, node, height) {
         if (node == null) {
             node = passedNode;
+            // let event = new Event(`${passedNode.key}`);
+            // dispatchEvent(event);
+            console.log('event fired null passedNode', passedNode);
+            (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(passedNode.key);
             return node;
         }
         let LeftNode = node.leftNode;
@@ -4784,7 +4925,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ConnectionOfTheTree: () => (/* binding */ ConnectionOfTheTree)
 /* harmony export */ });
-/* harmony import */ var _ConnectionOfNode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ConnectionOfNode */ "./src/DataStructures/ConnectionBinaryTree/ConnectionOfNode.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _ConnectionOfNode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ConnectionOfNode */ "./src/DataStructures/ConnectionBinaryTree/ConnectionOfNode.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -4794,6 +4936,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 /**
  * This is a binary tree that is used to store the reference to the main connection of the concept.
@@ -4821,11 +4964,14 @@ class ConnectionOfTheTree {
     static addConnection(connection) {
         if (connection.id > 0) {
             let key = this.CreateCompositionKey(connection.ofTheConceptId, connection.typeId);
+            console.log('key this.node', key, this.node);
             if (this.node) {
                 // let event = new Event(`${key}`);
                 // // console.log("dispatched the of the concecpt event", event);
                 // dispatchEvent(event);
+                (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(key);
                 let existingNode = this.node.getFromNode(key, this.node);
+                console.log(existingNode, 'existing node');
                 if (existingNode) {
                     let connectionList = existingNode === null || existingNode === void 0 ? void 0 : existingNode.value;
                     if (connectionList.length == 0) {
@@ -4838,14 +4984,14 @@ class ConnectionOfTheTree {
                 else {
                     let list = [];
                     list.push(connection.id);
-                    let connectionNode = new _ConnectionOfNode__WEBPACK_IMPORTED_MODULE_0__.ConnectionOfNode(key, list, null, null);
+                    let connectionNode = new _ConnectionOfNode__WEBPACK_IMPORTED_MODULE_1__.ConnectionOfNode(key, list, null, null);
                     this.addNodeToTree(connectionNode);
                 }
             }
             else {
                 let list = [];
                 list.push(connection.id);
-                let connectionNode = new _ConnectionOfNode__WEBPACK_IMPORTED_MODULE_0__.ConnectionOfNode(key, list, null, null);
+                let connectionNode = new _ConnectionOfNode__WEBPACK_IMPORTED_MODULE_1__.ConnectionOfNode(key, list, null, null);
                 this.addNodeToTree(connectionNode);
             }
         }
@@ -4864,7 +5010,8 @@ class ConnectionOfTheTree {
                 this.node = connectionOfNode;
                 let event = new Event(`${this.node.key}`);
                 console.log("dispatched the of the concecpt event", event);
-                dispatchEvent(event);
+                // dispatchEvent(event);
+                (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(this.node.key);
                 return this.node;
             }
             else {
@@ -5214,11 +5361,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ConnectionData: () => (/* binding */ ConnectionData)
 /* harmony export */ });
-/* harmony import */ var _Database_indexeddb__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Database/indexeddb */ "./src/Database/indexeddb.ts");
-/* harmony import */ var _Connection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Connection */ "./src/DataStructures/Connection.ts");
-/* harmony import */ var _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionBinaryTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionBinaryTree.ts");
-/* harmony import */ var _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionOfTheTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionOfTheTree.ts");
-/* harmony import */ var _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionTypeTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionTypeTree.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _Database_indexeddb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Database/indexeddb */ "./src/Database/indexeddb.ts");
+/* harmony import */ var _Connection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Connection */ "./src/DataStructures/Connection.ts");
+/* harmony import */ var _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionBinaryTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionBinaryTree.ts");
+/* harmony import */ var _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionOfTheTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionOfTheTree.ts");
+/* harmony import */ var _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionTypeTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionTypeTree.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5228,6 +5376,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -5247,7 +5396,7 @@ class ConnectionData {
         return contains;
     }
     static AddConnectionToStorage(connection) {
-        (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_0__.UpdateToDatabase)("connection", connection);
+        (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_1__.UpdateToDatabase)("connection", connection);
     }
     static AddConnection(connection) {
         //    var contains = this.CheckContains(connection);
@@ -5260,15 +5409,16 @@ class ConnectionData {
         //     this.connectionArray.push(connection);
         // if(!connection.isTemp){
         //UpdateToDatabase("connection", connection);
-        _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__.ConnectionBinaryTree.addConnectionToTree(connection);
-        _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionTypeTree.addConnectionToTree(connection);
-        _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionOfTheTree.addConnection(connection);
+        console.log('testing add connection', connection);
+        _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.addConnectionToTree(connection);
+        _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.addConnectionToTree(connection);
+        _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.addConnection(connection);
     }
     static AddConnectionToMemory(connection) {
         if (!connection.isTemp) {
-            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__.ConnectionBinaryTree.addConnectionToTree(connection);
-            _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionTypeTree.addConnectionToTree(connection);
-            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionOfTheTree.addConnection(connection);
+            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.addConnectionToTree(connection);
+            _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.addConnectionToTree(connection);
+            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.addConnection(connection);
         }
     }
     static AddToDictionary(connection) {
@@ -5281,42 +5431,54 @@ class ConnectionData {
         //     }
         //    }
         if (connection.id != 0) {
-            (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_0__.removeFromDatabase)("connection", connection.id);
-            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__.ConnectionBinaryTree.removeNodeFromTree(connection.id);
+            (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_1__.removeFromDatabase)("connection", connection.id);
+            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.removeNodeFromTree(connection.id);
             // ConnectionTypeTree.removeTypeConcept(connection.typeId, connection.id);
-            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionOfTheTree.removeNodeFromTree(connection.id);
+            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.removeNodeFromTree(connection.id);
         }
     }
     static GetConnectionTypeOfTree() {
-        _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionOfTheTree.node;
+        _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.node;
     }
     static GetConnectionByOfTheConceptAndType(ofTheConceptId, typeId) {
-        let connections = _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
-        if (connections) {
-            return connections;
-        }
-        return [];
+        return __awaiter(this, void 0, void 0, function* () {
+            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData_GetConnectionByOfTheConceptAndType", { ofTheConceptId, typeId });
+                console.log("data received from sw", res);
+                return res.data;
+            }
+            let connections = _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
+            if (connections) {
+                return connections;
+            }
+            return [];
+        });
     }
     static GetConnectionByOfType(ofTheConceptId, typeId) {
-        let connections = _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionTypeTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
+        let connections = _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
         if (connections) {
             return connections;
         }
         return [];
     }
     static GetConnectionTree() {
-        return _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__.ConnectionBinaryTree.connectionroot;
+        return _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.connectionroot;
     }
     static GetConnectionTypeTree() {
-        return _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionTypeTree.connectionTypeRoot;
+        return _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.connectionTypeRoot;
     }
     static GetConnectionBulkData(ids, connectionArray, remainingIds) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__.ConnectionBinaryTree.getConnectionListFromIds(ids, connectionArray, remainingIds);
+            yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getConnectionListFromIds(ids, connectionArray, remainingIds);
         });
     }
     static GetConnection(id) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('ConnectionData_GetConnection', { id });
+                console.log('data received from sw', res);
+                return res.data;
+            }
             //    var  myConcept: Connection|null;
             //    myConcept = null;
             //     for(var i=0; i<this.connectionArray.length; i++){
@@ -5325,8 +5487,8 @@ class ConnectionData {
             //         }
             //     }
             //     return myConcept;
-            let myConnection = new _Connection__WEBPACK_IMPORTED_MODULE_1__.Connection(0, 0, 0, 0, 0, 0, 0);
-            let node = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__.ConnectionBinaryTree.getNodeFromTree(id);
+            let myConnection = new _Connection__WEBPACK_IMPORTED_MODULE_2__.Connection(0, 0, 0, 0, 0, 0, 0);
+            let node = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getNodeFromTree(id);
             if (node === null || node === void 0 ? void 0 : node.value) {
                 let returnedConcept = node.value;
                 if (returnedConcept) {
@@ -5353,7 +5515,7 @@ class ConnectionData {
             let connectionIds = [];
             connectionIds = ConnectionData.GetConnectionByOfType(id, id);
             for (let i = 0; i < connectionIds.length; i++) {
-                let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+                let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
                 if (conn) {
                     connections.push(conn.value);
                 }
@@ -5378,9 +5540,9 @@ class ConnectionData {
         return __awaiter(this, void 0, void 0, function* () {
             let connectionIds = [];
             let connections = [];
-            connectionIds = ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+            connectionIds = yield ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
             for (let i = 0; i < connectionIds.length; i++) {
-                let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_2__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+                let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
                 if (conn) {
                     connections.push(conn.value);
                 }
@@ -6416,6 +6578,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Services_Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../Services/Local/CreateDefaultLConcept */ "./src/Services/Local/CreateDefaultLConcept.ts");
 /* harmony import */ var _ConceptData__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../ConceptData */ "./src/DataStructures/ConceptData.ts");
 /* harmony import */ var _LocalGhostIdTree__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./LocalGhostIdTree */ "./src/DataStructures/Local/LocalGhostIdTree.ts");
+/* harmony import */ var _LocalConnectionData__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./LocalConnectionData */ "./src/DataStructures/Local/LocalConnectionData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -6425,6 +6588,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -6572,6 +6736,12 @@ class LocalConceptsData {
             //  }
             ConceptList = yield _LocalBinaryTypeTree__WEBPACK_IMPORTED_MODULE_3__.LocalBinaryTypeTree.getTypeVariantsFromTreeWithUserId(typeId, userId);
             return ConceptList;
+        });
+    }
+    static ClearData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.localconceptsArray = [];
+            _LocalConnectionData__WEBPACK_IMPORTED_MODULE_7__.LocalConnectionData.connectionArray = [];
         });
     }
     getName() {
@@ -7040,6 +7210,11 @@ class LocalSyncData {
     static SyncDataOnline() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('sw triggered');
+                if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+                    const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData_SyncDataOnline', {});
+                    return res.data;
+                }
                 let conceptsArray = this.conceptsSyncArray.slice();
                 let connectionsArray = this.connectionSyncArray.slice();
                 this.connectionSyncArray = [];
@@ -8148,6 +8323,24 @@ class SettingData {
 
 /***/ }),
 
+/***/ "./src/DataStructures/Settings.ts":
+/*!****************************************!*\
+  !*** ./src/DataStructures/Settings.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Settings: () => (/* binding */ Settings)
+/* harmony export */ });
+class Settings {
+}
+Settings.isUpdated = false;
+Settings.isOnlineSync = false;
+
+
+/***/ }),
+
 /***/ "./src/DataStructures/SyncData.ts":
 /*!****************************************!*\
   !*** ./src/DataStructures/SyncData.ts ***!
@@ -8237,8 +8430,9 @@ class SyncData {
     static SyncDataOnline() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('sw triggered');
-            if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWoker) {
-                yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('SyncDataOnline', {});
+            if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('SyncData_SyncDataOnline', {});
+                return res.data;
             }
             for (let i = 0; i < this.conceptsSyncArray.length; i++) {
                 _ConceptData__WEBPACK_IMPORTED_MODULE_3__.ConceptsData.AddConcept(this.conceptsSyncArray[i]);
@@ -10396,6 +10590,66 @@ function convertFromConnectionToLConnection(connection) {
 
 /***/ }),
 
+/***/ "./src/Services/CreateBinaryTreeFromData.ts":
+/*!**************************************************!*\
+  !*** ./src/Services/CreateBinaryTreeFromData.ts ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ CreateConceptBinaryTreeFromIndexDb)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _Database_indexeddb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Database/indexeddb */ "./src/Database/indexeddb.ts");
+/* harmony import */ var _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../DataStructures/ConceptData */ "./src/DataStructures/ConceptData.ts");
+/* harmony import */ var _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../DataStructures/IdentifierFlags */ "./src/DataStructures/IdentifierFlags.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+/**
+ * This function builds up the binary tree on startup from the indexdb
+ */
+function CreateConceptBinaryTreeFromIndexDb() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let conceptList = yield (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_1__.getObjectsFromIndexDb)("concept");
+            if (Array.isArray(conceptList)) {
+                for (let i = 0; i < conceptList.length; i++) {
+                    let concept = conceptList[i];
+                    _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.AddConceptToMemory(concept);
+                }
+            }
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_3__.IdentifierFlags.isDataLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_3__.IdentifierFlags.isCharacterLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_3__.IdentifierFlags.isTypeLoaded = true;
+        }
+        catch (error) {
+            yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.DelayFunctionExecution)(2000, CreateConceptBinaryTreeFromIndexDb());
+            let errorObject = {
+                "message": "Cannot create Binary Tree Concept",
+                "ok": false,
+                "status": 400,
+                "data": error
+            };
+            throw errorObject;
+        }
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/Services/CreateConnectionBetweenTwoConcepts.ts":
 /*!************************************************************!*\
   !*** ./src/Services/CreateConnectionBetweenTwoConcepts.ts ***!
@@ -10562,7 +10816,6 @@ function CreateDefaultConcept() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   CreateTheCompositionData: () => (/* binding */ CreateTheCompositionData),
 /* harmony export */   "default": () => (/* binding */ CreateTheComposition)
 /* harmony export */ });
 /* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
@@ -10584,20 +10837,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function CreateTheComposition(json_1) {
     return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null) {
-        if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWoker) {
-            console.log('data receiving');
+        if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheComposition', { json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId });
             console.log('data received from sw', res);
             return res.data;
         }
-        else {
-            console.log('used old BT');
-            return yield CreateTheCompositionData(json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId);
-        }
-    });
-}
-function CreateTheCompositionData(json_1) {
-    return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null) {
         let localUserId = userId !== null && userId !== void 0 ? userId : 999;
         let localAccessId = accessId !== null && accessId !== void 0 ? accessId : 4;
         let localSessionId = sessionInformationId !== null && sessionInformationId !== void 0 ? sessionInformationId : 999;
@@ -10915,7 +11159,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   DeleteConnectionByType: () => (/* binding */ DeleteConnectionByType)
 /* harmony export */ });
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _Api_GetAllLinkerConnectionsFromTheConcept__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetAllLinkerConnectionsFromTheConcept */ "./src/Api/GetAllLinkerConnectionsFromTheConcept.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10926,10 +11171,15 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
+
 function DeleteConnectionByType(id, linker) {
     return __awaiter(this, void 0, void 0, function* () {
-        let connections = yield _app__WEBPACK_IMPORTED_MODULE_0__.ConnectionData.GetConnectionsOfConcept(id);
-        let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacter)(linker);
+        let externalConnections = yield (0,_Api_GetAllLinkerConnectionsFromTheConcept__WEBPACK_IMPORTED_MODULE_0__.GetAllLinkerConnectionsFromTheConcept)(id);
+        for (let i = 0; i < externalConnections.length; i++) {
+            _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.AddConnection(externalConnections[i]);
+        }
+        let connections = yield _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.GetConnectionsOfConcept(id);
+        let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConceptByCharacter)(linker);
         let toDelete = [];
         for (let i = 0; i < connections.length; i++) {
             if (connections[i].typeId == concept.id) {
@@ -10937,7 +11187,7 @@ function DeleteConnectionByType(id, linker) {
             }
         }
         for (let i = 0; i < toDelete.length; i++) {
-            (0,_app__WEBPACK_IMPORTED_MODULE_0__.DeleteConnectionById)(toDelete[i].id);
+            (0,_app__WEBPACK_IMPORTED_MODULE_1__.DeleteConnectionById)(toDelete[i].id);
         }
     });
 }
@@ -11036,8 +11286,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   GetComposition: () => (/* binding */ GetComposition),
 /* harmony export */   GetCompositionById: () => (/* binding */ GetCompositionById),
-/* harmony export */   GetCompositionByIdData: () => (/* binding */ GetCompositionByIdData),
-/* harmony export */   GetCompositionData: () => (/* binding */ GetCompositionData),
 /* harmony export */   GetCompositionFromMemory: () => (/* binding */ GetCompositionFromMemory),
 /* harmony export */   GetCompositionFromMemoryNormal: () => (/* binding */ GetCompositionFromMemoryNormal),
 /* harmony export */   GetCompositionWithAllIds: () => (/* binding */ GetCompositionWithAllIds),
@@ -11076,19 +11324,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function GetCompositionById(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWoker) {
-            console.log('data receiving');
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionById', { id });
             console.log('data received from sw', res);
             return res.data;
         }
-        else {
-            return yield GetCompositionByIdData;
-        }
-    });
-}
-function GetCompositionByIdData(id) {
-    return __awaiter(this, void 0, void 0, function* () {
         let connectionList = [];
         let returnOutput = {};
         let connectionListString = yield (0,_Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_1__.GetAllConnectionsOfComposition)(id);
@@ -11186,29 +11426,12 @@ function RecursiveFetchBuildLayerNormal(id, connectionList, compositionList) {
  */
 function GetComposition(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWoker) {
-            console.log('data receiving');
+        var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetComposition', { id });
             console.log('data received from sw', res);
             return res.data;
         }
-        else {
-            return yield GetCompositionData(id);
-        }
-    });
-}
-/**
- * ## format JUSTDATA ##
- * this function builds the composition with the main id as the point of building.
- * This just requires the id
- * @param id id of the main composition that you want to build
- * @param connectionList  list of connections
- * @param compositionList list of of_the_concept_ids for all the connections.
- * @returns
- */
-function GetCompositionData(id) {
-    return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b;
         let connectionList = [];
         let returnOutput = {};
         let connectionListString = yield (0,_Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_1__.GetAllConnectionsOfComposition)(id);
@@ -11332,11 +11555,15 @@ function GetCompositionFromMemoryNormal(id) {
 function GetCompositionWithIdFromMemory(id) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionWithIdFromMemory', { id });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let connectionList = [];
         let returnOutput = {};
         // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
         connectionList = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_3__.ConnectionData.GetConnectionsOfCompositionLocal(id);
-        console.log("this is the local data composition", connectionList);
         let compositionList = [];
         for (let i = 0; i < connectionList.length; i++) {
             if (!compositionList.includes(connectionList[i].ofTheConceptId)) {
@@ -11961,6 +12188,11 @@ function GetCompositionBulkWithDataId() {
  */
 function GetCompositionFromConnectionsWithDataId() {
     return __awaiter(this, arguments, void 0, function* (conceptIds = [], connectionIds = []) {
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetCompositionFromConnectionsWithDataId', { conceptIds, connectionIds });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let newConnections = yield (0,_Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(connectionIds);
         let oldConnections = yield (0,_FindConnectionsOfCompositionBulkInMemory__WEBPACK_IMPORTED_MODULE_3__.FindConnectionsOfCompositionsBulkInMemory)(conceptIds);
         //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
@@ -12518,6 +12750,80 @@ function GetConnectionById(id) {
 
 /***/ }),
 
+/***/ "./src/Services/GetDataFromIndexDb.ts":
+/*!********************************************!*\
+  !*** ./src/Services/GetDataFromIndexDb.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   GetConnectionsFromIndexDb: () => (/* binding */ GetConnectionsFromIndexDb),
+/* harmony export */   GetConnectionsFromIndexDbLocal: () => (/* binding */ GetConnectionsFromIndexDbLocal)
+/* harmony export */ });
+/* harmony import */ var _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../DataStructures/ConnectionData */ "./src/DataStructures/ConnectionData.ts");
+/* harmony import */ var _DataStructures_Local_LocalConnectionData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/Local/LocalConnectionData */ "./src/DataStructures/Local/LocalConnectionData.ts");
+/* harmony import */ var _Database_indexdblocal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Database/indexdblocal */ "./src/Database/indexdblocal.ts");
+/* harmony import */ var _Database_indexeddb__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Database/indexeddb */ "./src/Database/indexeddb.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+function GetConnectionsFromIndexDb() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let connectionList = yield (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_3__.getObjectsFromIndexDb)("connection");
+            if (Array.isArray(connectionList)) {
+                for (let i = 0; i < connectionList.length; i++) {
+                    _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_0__.ConnectionData.AddConnectionToMemory(connectionList[i]);
+                }
+            }
+        }
+        catch (error) {
+            let errorObject = {
+                "message": "Cannot create Connection Binary Tree Concept",
+                "ok": false,
+                "status": 400,
+                "data": error
+            };
+            throw errorObject;
+        }
+    });
+}
+function GetConnectionsFromIndexDbLocal() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let connectionList = yield (0,_Database_indexdblocal__WEBPACK_IMPORTED_MODULE_2__.getObjectsFromLocalIndexDb)("localconnection");
+            if (Array.isArray(connectionList)) {
+                for (let i = 0; i < connectionList.length; i++) {
+                    _DataStructures_Local_LocalConnectionData__WEBPACK_IMPORTED_MODULE_1__.LocalConnectionData.AddConnectionToMemory(connectionList[i]);
+                }
+            }
+        }
+        catch (error) {
+            let errorObject = {
+                "message": "Cannot create Local Connection Binary Tree Concept",
+                "ok": false,
+                "status": 400,
+                "data": error
+            };
+            throw errorObject;
+        }
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/Services/GetLink.ts":
 /*!*********************************!*\
   !*** ./src/Services/GetLink.ts ***!
@@ -12527,7 +12833,6 @@ function GetConnectionById(id) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   GetLink: () => (/* binding */ GetLink),
-/* harmony export */   GetLinkData: () => (/* binding */ GetLinkData),
 /* harmony export */   GetLinkRaw: () => (/* binding */ GetLinkRaw)
 /* harmony export */ });
 /* harmony import */ var _Api_GetConceptByCharacterAndType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetConceptByCharacterAndType */ "./src/Api/GetConceptByCharacterAndType.ts");
@@ -12553,22 +12858,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function GetLink(id_1, linker_1) {
     return __awaiter(this, arguments, void 0, function* (id, linker, inpage = 10, page = 1) {
-        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWoker) {
+        var _a;
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
             console.log('data receiving');
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetLink', { id, linker, inpage, page });
             console.log('data received from sw', res);
-            console.log('getLinke raw', yield GetLinkRaw(id, linker, inpage, page));
             return res.data;
         }
-        else {
-            console.log('used old BT');
-            return yield GetLinkData(id, linker, inpage, page);
-        }
-    });
-}
-function GetLinkData(id_1, linker_1) {
-    return __awaiter(this, arguments, void 0, function* (id, linker, inpage = 10, page = 1) {
-        var _a;
         let output = [];
         let concept = yield (0,_GetTheConcept__WEBPACK_IMPORTED_MODULE_3__["default"])(id);
         let linkString = ((_a = concept.type) === null || _a === void 0 ? void 0 : _a.characterValue) + "_s" + "_" + linker;
@@ -12790,6 +13086,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function GetTheConcept(id_1) {
     return __awaiter(this, arguments, void 0, function* (id, userId = 999) {
         try {
+            if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetTheConcept', { id, userId });
+                console.log('data received from sw', res);
+                return res.data;
+            }
             let concept = (0,_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_3__.CreateDefaultConcept)();
             if (id < 0) {
                 let lconcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetUserGhostId)(userId, id);
@@ -12797,12 +13098,10 @@ function GetTheConcept(id_1) {
                 return concept;
             }
             concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConcept(id);
-            console.log("this is the concept form memory", concept);
             if ((concept == null || concept.id == 0) && id != null && id != undefined) {
                 let conceptString = yield (0,_Api_GetConcept__WEBPACK_IMPORTED_MODULE_0__.GetConcept)(id);
                 concept = conceptString;
             }
-            console.log("this is the concept from network", concept);
             if (concept.id != 0) {
                 if (concept.type == null) {
                     let conceptType = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConcept(concept.typeId);
@@ -12819,6 +13118,74 @@ function GetTheConcept(id_1) {
             console.error("this is the error in the getting concept", err);
             throw err;
         }
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/Services/InitializeSystem.ts":
+/*!******************************************!*\
+  !*** ./src/Services/InitializeSystem.ts ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PurgatoryDatabaseUpdated: () => (/* binding */ PurgatoryDatabaseUpdated),
+/* harmony export */   "default": () => (/* binding */ InitializeSystem)
+/* harmony export */ });
+/* harmony import */ var _Api_GetAiData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetAiData */ "./src/Api/GetAiData.ts");
+/* harmony import */ var _DataStructures_SettingData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/SettingData */ "./src/DataStructures/SettingData.ts");
+/* harmony import */ var _DataStructures_Settings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../DataStructures/Settings */ "./src/DataStructures/Settings.ts");
+/* harmony import */ var _Database_indexeddb__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Database/indexeddb */ "./src/Database/indexeddb.ts");
+/* harmony import */ var _Database_indexdblocal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Database/indexdblocal */ "./src/Database/indexdblocal.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+function InitializeSystem() {
+    return __awaiter(this, arguments, void 0, function* (enableAi = true) {
+        try {
+            yield (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_3__.openDatabase)("concepts");
+            yield (0,_Database_indexdblocal__WEBPACK_IMPORTED_MODULE_4__.openDatabase)("concepts");
+            if (enableAi) {
+                var statsData = yield (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_3__.GetLastSettingsFromDatabase)();
+                var settings = statsData;
+                if (settings.isOnlineSync) {
+                    return true;
+                }
+                yield (0,_Api_GetAiData__WEBPACK_IMPORTED_MODULE_0__.GetAiData)();
+            }
+            return true;
+        }
+        catch (error) {
+            let errorObject = {
+                "message": "cannot initlize the AI system",
+                "ok": false,
+                "status": 400,
+                "data": error
+            };
+            console.log(errorObject);
+            return true;
+        }
+    });
+}
+function PurgatoryDatabaseUpdated() {
+    return __awaiter(this, void 0, void 0, function* () {
+        _DataStructures_Settings__WEBPACK_IMPORTED_MODULE_2__.Settings.isOnlineSync = true;
+        var settingData = new _DataStructures_SettingData__WEBPACK_IMPORTED_MODULE_1__.SettingData(_DataStructures_Settings__WEBPACK_IMPORTED_MODULE_2__.Settings.isOnlineSync);
+        (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_3__.AiUpdateFlag)(settingData);
     });
 }
 
@@ -12875,6 +13242,12 @@ function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1,
     return __awaiter(this, arguments, void 0, function* (ofTheConcept, toTheConcept, linker, both = false) {
         var _a, _b;
         try {
+            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateConnectionBetweenTwoConceptsLocal', { ofTheConcept, toTheConcept, linker, both });
+                console.log('data received from sw', res);
+                return res.data;
+            }
+            console.log('of THe', ofTheConcept, 'to the', toTheConcept);
             var userId = ofTheConcept.userId;
             if (both) {
                 let prefix1 = ((_a = toTheConcept.type) === null || _a === void 0 ? void 0 : _a.characterValue) + "_s";
@@ -13798,6 +14171,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function GetTheConceptLocal(id) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetTheConceptLocal', { id });
+                console.log('data received from sw', res);
+                return res.data;
+            }
             let lconcept = (0,_app__WEBPACK_IMPORTED_MODULE_2__.CreateDefaultLConcept)();
             if (id < 0) {
                 lconcept = yield _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_0__.LocalConceptsData.GetConcept(id);
@@ -13912,6 +14290,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  */
 function MakeTheInstanceConceptLocal(type_1, referent_1) {
     return __awaiter(this, arguments, void 0, function* (type, referent, composition = false, userId, accessId, sessionInformationId = 999, referentId = 0) {
+        if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('MakeTheInstanceConceptLocal', { type, referent, composition, userId, accessId, sessionInformationId, referentId });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         try {
             let sessionInformationId = 999;
             let categoryId = 4;
@@ -14043,8 +14426,7 @@ function MakeTheTypeConceptLocal(typeString, sessionId, sessionUserId, userId) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   UpdateCompositionLocal: () => (/* binding */ UpdateCompositionLocal),
-/* harmony export */   UpdateCompositionLocalData: () => (/* binding */ UpdateCompositionLocalData)
+/* harmony export */   UpdateCompositionLocal: () => (/* binding */ UpdateCompositionLocal)
 /* harmony export */ });
 /* harmony import */ var _Helpers_UniqueInsert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Helpers/UniqueInsert */ "./src/Helpers/UniqueInsert.ts");
 /* harmony import */ var _Helpers_CheckIfExists__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Helpers/CheckIfExists */ "./src/Helpers/CheckIfExists.ts");
@@ -14076,22 +14458,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 // function to update the cache composition
 function UpdateCompositionLocal(patcherStructure) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (_app__WEBPACK_IMPORTED_MODULE_7__.serviceWoker) {
-            console.log("data receiving");
+        if (_app__WEBPACK_IMPORTED_MODULE_7__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_7__.sendMessage)("UpdateCompositionLocal", {
                 patcherStructure,
             });
-            console.log('updated data from sw');
             console.log("data received from sw", res);
             return res.data;
         }
-        else {
-            return yield UpdateCompositionLocalData(patcherStructure);
-        }
-    });
-}
-function UpdateCompositionLocalData(patcherStructure) {
-    return __awaiter(this, void 0, void 0, function* () {
         // get all the default userId, sessionId, accessId passed by the patcherStructure
         const userId = patcherStructure.userId;
         const sessionId = patcherStructure.sessionId;
@@ -14633,8 +15006,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FormatFromConnections: () => (/* binding */ FormatFromConnections),
 /* harmony export */   FormatFromConnectionsAltered: () => (/* binding */ FormatFromConnectionsAltered),
 /* harmony export */   FormatFromConnectionsAlteredArray: () => (/* binding */ FormatFromConnectionsAlteredArray),
-/* harmony export */   SearchLinkMultipleAll: () => (/* binding */ SearchLinkMultipleAll),
-/* harmony export */   SearchLinkMultipleAllData: () => (/* binding */ SearchLinkMultipleAllData)
+/* harmony export */   SearchLinkMultipleAll: () => (/* binding */ SearchLinkMultipleAll)
 /* harmony export */ });
 /* harmony import */ var _Api_Search_SearchLinkMultipleApi__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Api/Search/SearchLinkMultipleApi */ "./src/Api/Search/SearchLinkMultipleApi.ts");
 /* harmony import */ var _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Constants/FormatConstants */ "./src/Constants/FormatConstants.ts");
@@ -14655,21 +15027,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function SearchLinkMultipleAll(searchQuery_1) {
     return __awaiter(this, arguments, void 0, function* (searchQuery, token = "", caller = null, format = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.DATAID) {
-        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWoker) {
-            console.log('data receiving searc');
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('SearchLinkMultipleAll', { searchQuery, token, caller, format });
             console.log('data received search from sw', res);
             return res.data;
         }
-        else {
-            console.log('used old BT');
-            return yield SearchLinkMultipleAll(searchQuery, token, caller, format);
-        }
-    });
-}
-function SearchLinkMultipleAllData(searchQuery_1) {
-    return __awaiter(this, arguments, void 0, function* (searchQuery, token = "", caller = null, format = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.DATAID) {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
         let conceptIds = [];
         let linkers = [];
         let connections = [];
@@ -15908,6 +16271,7 @@ class DependencyObserver {
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id) {
+        console.log('listening to id: ', id);
         window.addEventListener(`${id}`, (event) => {
             console.log("this is listening after the event is fired", id, event);
             if (!this.isUpdating) {
@@ -16398,6 +16762,8 @@ class GetLinkObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3_
     }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
+            this.data = [];
+            this.connections = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConnectionBulk)(this.linkers);
             for (var i = 0; i < this.connections.length; i++) {
                 let toConceptId = this.connections[i].toTheConceptId;
                 let toConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(toConceptId);
@@ -16423,6 +16789,49 @@ class GetLinkObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3_
         });
     }
 }
+// class GetLinkServiceObservable
+// {
+//     mainConcept: number
+//     linker:string;
+//     inpage: number;
+//     page: number;
+//     format: number = NORMAL;
+//     connections: Connection[] = [];
+//     data: any = [];
+//     subscribers: any[] = []
+//     /**
+//      * 
+//      * @param id this is the id whose links need to be found
+//      * @param linker this is the type connection that is connected to the mainConcept(id)
+//      * @param inpage number of outputs that has to be displayed
+//      * @param page the page which needs to be displayed as per the inpage parameter
+//      * @param format the format in which the output should be displayed (NORMAL, DATAID,JUSTDATA,DATAIDDATE)
+//      */
+//     constructor(id: number, linker:string, inpage: number, page: number, format: number){
+//         this.mainConcept = id;
+//         this.linker = linker;
+//         this.inpage = inpage;
+//         this.page = page;
+//         this.format = format;
+//     }
+//     async subscribe(callback: Function) {
+//         this.subscribers.push(callback);
+//         const listenerId = Date.now() + '-' + Math.floor(Math.random() * 99999999)
+//         const listener = {
+//             listenerId: listenerId,
+//             callback: callback,
+//             createdAt: Date.now()
+//         }
+//         subscribedListeners.push(listener)
+//         console.log('listener', serviceWorker)
+//         // const res: any = await sendMessage('GetLinkListener', {id: this.mainConcept, linker: this.linker, inpage: this.inpage, page: this.page, format: this.format, listener })
+//         const res: any = await sendMessage('GetLinkListener', {id: this.mainConcept, linker: this.linker, inpage: this.inpage, page: this.page, format: this.format, listener: {
+//             listenerId: listenerId,
+//             createdAt: Date.now()
+//         } })
+//         return callback(res.data);
+//     }
+// }
 /**
  *
  * @param id this is the id whose links need to be found
@@ -16433,6 +16842,10 @@ class GetLinkObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3_
  */
 function GetLinkListener(id, linker, inpage, page, format = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.NORMAL) {
     return new GetLinkObservable(id, linker, inpage, page, format);
+    // console.log("serviceworker", serviceWorker);
+    // if (serviceWorker) {
+    //   return new GetLinkServiceObservable(id, linker, inpage, page, format);
+    // } else return new GetLinkObservable(id, linker, inpage, page, format);
 }
 
 
@@ -16612,244 +17025,251 @@ function searchLinkMultipleListener(searchQueries, token, format = _Constants_Fo
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   ADMIN: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_65__.ADMIN),
-/* harmony export */   AddGhostConcept: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_49__.AddGhostConcept),
-/* harmony export */   BaseUrl: () => (/* reexport safe */ _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_94__.BaseUrl),
-/* harmony export */   BinaryTree: () => (/* reexport safe */ _DataStructures_BinaryTree__WEBPACK_IMPORTED_MODULE_82__.BinaryTree),
-/* harmony export */   Composition: () => (/* reexport safe */ _DataStructures_Composition_Composition__WEBPACK_IMPORTED_MODULE_86__.Composition),
-/* harmony export */   CompositionBinaryTree: () => (/* reexport safe */ _DataStructures_Composition_CompositionBinaryTree__WEBPACK_IMPORTED_MODULE_87__.CompositionBinaryTree),
-/* harmony export */   CompositionNode: () => (/* reexport safe */ _DataStructures_Composition_CompositionNode__WEBPACK_IMPORTED_MODULE_88__.CompositionNode),
-/* harmony export */   Concept: () => (/* reexport safe */ _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_76__.Concept),
-/* harmony export */   ConceptsData: () => (/* reexport safe */ _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_80__.ConceptsData),
-/* harmony export */   Connection: () => (/* reexport safe */ _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_79__.Connection),
-/* harmony export */   ConnectionData: () => (/* reexport safe */ _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_81__.ConnectionData),
-/* harmony export */   CreateComposition: () => (/* reexport safe */ _Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_8__["default"]),
-/* harmony export */   CreateConnectionBetweenTwoConcepts: () => (/* reexport safe */ _Services_CreateConnectionBetweenTwoConcepts__WEBPACK_IMPORTED_MODULE_10__.CreateConnectionBetweenTwoConcepts),
-/* harmony export */   CreateConnectionBetweenTwoConceptsGeneral: () => (/* reexport safe */ _Services_CreateConnectionBetweenTwoConcepts__WEBPACK_IMPORTED_MODULE_10__.CreateConnectionBetweenTwoConceptsGeneral),
-/* harmony export */   CreateConnectionBetweenTwoConceptsLocal: () => (/* reexport safe */ _Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_59__.CreateConnectionBetweenTwoConceptsLocal),
-/* harmony export */   CreateDefaultConcept: () => (/* reexport safe */ _Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_18__.CreateDefaultConcept),
-/* harmony export */   CreateDefaultLConcept: () => (/* reexport safe */ _Services_Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_46__.CreateDefaultLConcept),
-/* harmony export */   CreateSession: () => (/* reexport safe */ _Api_Session_CreateSession__WEBPACK_IMPORTED_MODULE_41__.CreateSession),
-/* harmony export */   CreateSessionVisit: () => (/* reexport safe */ _Api_Session_CreateSessionVisit__WEBPACK_IMPORTED_MODULE_42__.CreateSessionVisit),
-/* harmony export */   CreateTheCompositionLocal: () => (/* reexport safe */ _Services_Local_CreateTheCompositionLocal__WEBPACK_IMPORTED_MODULE_9__.CreateTheCompositionLocal),
-/* harmony export */   CreateTheCompositionWithCache: () => (/* reexport safe */ _Services_Composition_CreateCompositionCache__WEBPACK_IMPORTED_MODULE_45__.CreateTheCompositionWithCache),
-/* harmony export */   CreateTheConnection: () => (/* reexport safe */ _Services_CreateTheConnection__WEBPACK_IMPORTED_MODULE_15__.createTheConnection),
-/* harmony export */   CreateTheConnectionGeneral: () => (/* reexport safe */ _Services_CreateTheConnectionGeneral__WEBPACK_IMPORTED_MODULE_47__.CreateTheConnectionGeneral),
-/* harmony export */   CreateTheConnectionLocal: () => (/* reexport safe */ _Services_Local_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_48__.CreateTheConnectionLocal),
-/* harmony export */   DATAID: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_64__.DATAID),
-/* harmony export */   DATAIDDATE: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_64__.DATAIDDATE),
-/* harmony export */   DelayFunctionExecution: () => (/* reexport safe */ _Services_Common_DelayFunction__WEBPACK_IMPORTED_MODULE_62__.DelayFunctionExecution),
-/* harmony export */   DeleteConceptById: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_23__.DeleteConceptById),
-/* harmony export */   DeleteConceptLocal: () => (/* reexport safe */ _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_60__.DeleteConceptLocal),
-/* harmony export */   DeleteConnectionById: () => (/* reexport safe */ _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_24__.DeleteConnectionById),
-/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_97__.DeleteConnectionByType),
-/* harmony export */   DependencyObserver: () => (/* reexport safe */ _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_67__.DependencyObserver),
-/* harmony export */   FilterSearch: () => (/* reexport safe */ _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_91__.FilterSearch),
-/* harmony export */   FormatFromConnections: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_50__.FormatFromConnections),
-/* harmony export */   FormatFromConnectionsAltered: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_50__.FormatFromConnectionsAltered),
-/* harmony export */   GetAllConnectionsOfComposition: () => (/* reexport safe */ _Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_5__.GetAllConnectionsOfComposition),
-/* harmony export */   GetAllConnectionsOfCompositionBulk: () => (/* reexport safe */ _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_32__.GetAllConnectionsOfCompositionBulk),
-/* harmony export */   GetComposition: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_6__.GetComposition),
-/* harmony export */   GetCompositionBulk: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_29__.GetCompositionBulk),
-/* harmony export */   GetCompositionBulkWithDataId: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_29__.GetCompositionBulkWithDataId),
-/* harmony export */   GetCompositionFromConnectionsWithDataId: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_29__.GetCompositionFromConnectionsWithDataId),
-/* harmony export */   GetCompositionFromConnectionsWithDataIdInObject: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_29__.GetCompositionFromConnectionsWithDataIdInObject),
-/* harmony export */   GetCompositionFromConnectionsWithDataIdIndex: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_29__.GetCompositionFromConnectionsWithDataIdIndex),
-/* harmony export */   GetCompositionFromConnectionsWithIndex: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_29__.GetCompositionFromConnectionsWithIndex),
-/* harmony export */   GetCompositionList: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_3__.GetCompositionList),
-/* harmony export */   GetCompositionListAll: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_3__.GetCompositionListAll),
-/* harmony export */   GetCompositionListAllWithId: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_3__.GetCompositionListAllWithId),
-/* harmony export */   GetCompositionListListener: () => (/* reexport safe */ _WrapperFunctions_GetCompositionListObservable__WEBPACK_IMPORTED_MODULE_70__.GetCompositionListListener),
-/* harmony export */   GetCompositionListLocal: () => (/* reexport safe */ _Services_Local_GetCompositionListLocal__WEBPACK_IMPORTED_MODULE_4__.GetCompositionListLocal),
-/* harmony export */   GetCompositionListLocalWithId: () => (/* reexport safe */ _Services_Local_GetCompositionListLocal__WEBPACK_IMPORTED_MODULE_4__.GetCompositionListLocalWithId),
-/* harmony export */   GetCompositionListWithId: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_3__.GetCompositionListWithId),
-/* harmony export */   GetCompositionListWithIdUpdated: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_3__.GetCompositionListWithIdUpdated),
-/* harmony export */   GetCompositionListener: () => (/* reexport safe */ _WrapperFunctions_GetCompositionObservable__WEBPACK_IMPORTED_MODULE_69__.GetCompositionListener),
-/* harmony export */   GetCompositionLocal: () => (/* reexport safe */ _Services_Local_GetCompositionLocal__WEBPACK_IMPORTED_MODULE_7__.GetCompositionLocal),
-/* harmony export */   GetCompositionLocalWithId: () => (/* reexport safe */ _Services_Local_GetCompositionLocal__WEBPACK_IMPORTED_MODULE_7__.GetCompositionLocalWithId),
-/* harmony export */   GetCompositionWithAllIds: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_6__.GetCompositionWithAllIds),
-/* harmony export */   GetCompositionWithCache: () => (/* reexport safe */ _Services_Composition_CompositionCache__WEBPACK_IMPORTED_MODULE_40__.GetCompositionWithCache),
-/* harmony export */   GetCompositionWithDataIdBulk: () => (/* reexport safe */ _Services_Composition_CompositionCache__WEBPACK_IMPORTED_MODULE_40__.GetCompositionWithDataIdBulk),
-/* harmony export */   GetCompositionWithDataIdWithCache: () => (/* reexport safe */ _Services_Composition_CompositionCache__WEBPACK_IMPORTED_MODULE_40__.GetCompositionWithDataIdWithCache),
-/* harmony export */   GetCompositionWithId: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_6__.GetCompositionWithId),
-/* harmony export */   GetCompositionWithIdAndDateFromMemory: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_6__.GetCompositionWithIdAndDateFromMemory),
-/* harmony export */   GetConceptBulk: () => (/* reexport safe */ _Api_GetConceptBulk__WEBPACK_IMPORTED_MODULE_30__.GetConceptBulk),
-/* harmony export */   GetConceptByCharacter: () => (/* reexport safe */ _Services_GetConceptByCharacter__WEBPACK_IMPORTED_MODULE_16__["default"]),
-/* harmony export */   GetConceptByCharacterAndCategoryLocal: () => (/* reexport safe */ _Services_Local_GetConceptByCharacterLocal__WEBPACK_IMPORTED_MODULE_54__.GetConceptByCharacterAndCategoryLocal),
-/* harmony export */   GetConceptByCharacterAndType: () => (/* reexport safe */ _Api_GetConceptByCharacterAndType__WEBPACK_IMPORTED_MODULE_63__.GetConceptByCharacterAndType),
-/* harmony export */   GetConnectionBetweenTwoConceptsLinker: () => (/* reexport safe */ _Services_GetConnectionBetweenTwoConceptsLinker__WEBPACK_IMPORTED_MODULE_61__.GetConnectionBetweenTwoConceptsLinker),
-/* harmony export */   GetConnectionBulk: () => (/* reexport safe */ _Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_31__.GetConnectionBulk),
-/* harmony export */   GetConnectionById: () => (/* reexport safe */ _Services_GetConnections__WEBPACK_IMPORTED_MODULE_26__.GetConnectionById),
-/* harmony export */   GetConnectionDataPrefetch: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_29__.GetConnectionDataPrefetch),
-/* harmony export */   GetConnectionOfTheConcept: () => (/* reexport safe */ _Api_GetConnectionOfTheConcept__WEBPACK_IMPORTED_MODULE_34__.GetConnectionOfTheConcept),
-/* harmony export */   GetLink: () => (/* reexport safe */ _Services_GetLink__WEBPACK_IMPORTED_MODULE_17__.GetLink),
-/* harmony export */   GetLinkListListener: () => (/* reexport safe */ _WrapperFunctions_GetLinkListObservable__WEBPACK_IMPORTED_MODULE_74__.GetLinkListListener),
-/* harmony export */   GetLinkListener: () => (/* reexport safe */ _WrapperFunctions_GetLinkObservable__WEBPACK_IMPORTED_MODULE_72__.GetLinkListener),
-/* harmony export */   GetLinkRaw: () => (/* reexport safe */ _Services_GetLink__WEBPACK_IMPORTED_MODULE_17__.GetLinkRaw),
-/* harmony export */   GetLinkerConnectionFromConcepts: () => (/* reexport safe */ _Services_GetLinkerConnectionFromConcept__WEBPACK_IMPORTED_MODULE_22__.GetLinkerConnectionFromConcepts),
-/* harmony export */   GetLinkerConnectionToConcepts: () => (/* reexport safe */ _Services_GetLinkerConnectionFromConcept__WEBPACK_IMPORTED_MODULE_22__.GetLinkerConnectionToConcepts),
-/* harmony export */   GetRelation: () => (/* reexport safe */ _Services_GetRelation__WEBPACK_IMPORTED_MODULE_43__.GetRelation),
-/* harmony export */   GetRelationLocal: () => (/* reexport safe */ _Services_Local_GetRelationLocal__WEBPACK_IMPORTED_MODULE_53__.GetRelationLocal),
-/* harmony export */   GetRelationRaw: () => (/* reexport safe */ _Services_GetRelation__WEBPACK_IMPORTED_MODULE_43__.GetRelationRaw),
-/* harmony export */   GetTheConcept: () => (/* reexport safe */ _Services_GetTheConcept__WEBPACK_IMPORTED_MODULE_11__["default"]),
-/* harmony export */   GetTheConceptLocal: () => (/* reexport safe */ _Services_Local_GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_51__.GetTheConceptLocal),
-/* harmony export */   GetUserGhostId: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_49__.GetUserGhostId),
-/* harmony export */   JUSTDATA: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_64__.JUSTDATA),
-/* harmony export */   LConcept: () => (/* reexport safe */ _DataStructures_Local_LConcept__WEBPACK_IMPORTED_MODULE_77__.LConcept),
-/* harmony export */   LConnection: () => (/* reexport safe */ _DataStructures_Local_LConnection__WEBPACK_IMPORTED_MODULE_78__.LConnection),
-/* harmony export */   LocalConceptsData: () => (/* reexport safe */ _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_93__.LocalConceptsData),
-/* harmony export */   LocalSyncData: () => (/* reexport safe */ _DataStructures_Local_LocalSyncData__WEBPACK_IMPORTED_MODULE_89__.LocalSyncData),
-/* harmony export */   LoginToBackend: () => (/* reexport safe */ _Api_Login__WEBPACK_IMPORTED_MODULE_33__.LoginToBackend),
-/* harmony export */   MakeTheInstanceConcept: () => (/* reexport safe */ _Services_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_12__["default"]),
-/* harmony export */   MakeTheInstanceConceptLocal: () => (/* reexport safe */ _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_13__.MakeTheInstanceConceptLocal),
-/* harmony export */   MakeTheTimestamp: () => (/* reexport safe */ _Services_MakeTheTimestamp__WEBPACK_IMPORTED_MODULE_27__.MakeTheTimestamp),
-/* harmony export */   MakeTheTypeConcept: () => (/* reexport safe */ _Services_MakeTheTypeConcept__WEBPACK_IMPORTED_MODULE_20__.MakeTheTypeConcept),
-/* harmony export */   MakeTheTypeConceptApi: () => (/* reexport safe */ _Api_MakeTheTypeConceptApi__WEBPACK_IMPORTED_MODULE_21__.MakeTheTypeConceptApi),
-/* harmony export */   MakeTheTypeConceptLocal: () => (/* reexport safe */ _Services_Local_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_19__.MakeTheTypeConceptLocal),
-/* harmony export */   NORMAL: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_64__.NORMAL),
-/* harmony export */   PRIVATE: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_65__.PRIVATE),
-/* harmony export */   PUBLIC: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_65__.PUBLIC),
-/* harmony export */   PatcherStructure: () => (/* reexport safe */ _DataStructures_PatcherStructure__WEBPACK_IMPORTED_MODULE_84__.PatcherStructure),
-/* harmony export */   RAW: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_64__.RAW),
-/* harmony export */   RecursiveSearchApi: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_28__.RecursiveSearchApi),
-/* harmony export */   RecursiveSearchApiNewRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_28__.RecursiveSearchApiNewRawFullLinker),
-/* harmony export */   RecursiveSearchApiRaw: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_28__.RecursiveSearchApiRaw),
-/* harmony export */   RecursiveSearchApiRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_28__.RecursiveSearchApiRawFullLinker),
-/* harmony export */   RecursiveSearchListener: () => (/* reexport safe */ _WrapperFunctions_RecursiveSearchObservable__WEBPACK_IMPORTED_MODULE_73__.RecursiveSearchListener),
-/* harmony export */   SearchAllConcepts: () => (/* reexport safe */ _Api_Search_Search__WEBPACK_IMPORTED_MODULE_38__.SearchAllConcepts),
-/* harmony export */   SearchLinkInternal: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_58__.SearchLinkInternal),
-/* harmony export */   SearchLinkInternalAll: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_58__.SearchLinkInternalAll),
-/* harmony export */   SearchLinkMultipleAll: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_50__.SearchLinkMultipleAll),
-/* harmony export */   SearchLinkMultipleAllObservable: () => (/* reexport safe */ _WrapperFunctions_SearchLinkMultipleAllObservable__WEBPACK_IMPORTED_MODULE_68__.SearchLinkMultipleAllObservable),
-/* harmony export */   SearchLinkMultipleApi: () => (/* reexport safe */ _Api_Search_SearchLinkMultipleApi__WEBPACK_IMPORTED_MODULE_1__.SearchLinkMultipleApi),
-/* harmony export */   SearchQuery: () => (/* reexport safe */ _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_83__.SearchQuery),
-/* harmony export */   SearchStructure: () => (/* reexport safe */ _DataStructures_Search_SearchStructure__WEBPACK_IMPORTED_MODULE_92__.SearchStructure),
-/* harmony export */   SearchWithLinker: () => (/* reexport safe */ _Api_Search_SearchWithLinker__WEBPACK_IMPORTED_MODULE_39__.SearchWithLinker),
-/* harmony export */   SearchWithTypeAndLinker: () => (/* reexport safe */ _Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_71__.SearchWithTypeAndLinker),
-/* harmony export */   SearchWithTypeAndLinkerApi: () => (/* reexport safe */ _Api_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_66__.SearchWithTypeAndLinkerApi),
-/* harmony export */   SessionData: () => (/* reexport safe */ _DataStructures_Session_SessionData__WEBPACK_IMPORTED_MODULE_85__.SessionData),
-/* harmony export */   Signin: () => (/* reexport safe */ _Api_Signin__WEBPACK_IMPORTED_MODULE_36__["default"]),
-/* harmony export */   Signup: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_35__["default"]),
-/* harmony export */   SplitStrings: () => (/* reexport safe */ _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_2__.SplitStrings),
-/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_96__.StatefulWidget),
-/* harmony export */   SyncData: () => (/* reexport safe */ _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_75__.SyncData),
-/* harmony export */   TrashTheConcept: () => (/* reexport safe */ _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_25__.TrashTheConcept),
-/* harmony export */   UpdateComposition: () => (/* reexport safe */ _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_37__["default"]),
-/* harmony export */   UpdateCompositionLocal: () => (/* reexport safe */ _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_52__.UpdateCompositionLocal),
-/* harmony export */   UserBinaryTree: () => (/* reexport safe */ _DataStructures_User_UserBinaryTree__WEBPACK_IMPORTED_MODULE_90__.UserBinaryTree),
-/* harmony export */   ViewInternalData: () => (/* reexport safe */ _Services_View_ViewInternalData__WEBPACK_IMPORTED_MODULE_55__.ViewInternalData),
-/* harmony export */   ViewInternalDataApi: () => (/* reexport safe */ _Api_View_ViewInternalDataApi__WEBPACK_IMPORTED_MODULE_56__.ViewInternalDataApi),
-/* harmony export */   convertFromConceptToLConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_57__.convertFromConceptToLConcept),
-/* harmony export */   convertFromLConceptToConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_57__.convertFromLConceptToConcept),
-/* harmony export */   getFromDatabaseWithType: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_14__.getFromDatabaseWithType),
-/* harmony export */   getObjectsFromIndexDb: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_14__.getObjectsFromIndexDb),
+/* harmony export */   ADMIN: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__.ADMIN),
+/* harmony export */   AddGhostConcept: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_50__.AddGhostConcept),
+/* harmony export */   BaseUrl: () => (/* reexport safe */ _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl),
+/* harmony export */   BinaryTree: () => (/* reexport safe */ _DataStructures_BinaryTree__WEBPACK_IMPORTED_MODULE_83__.BinaryTree),
+/* harmony export */   Composition: () => (/* reexport safe */ _DataStructures_Composition_Composition__WEBPACK_IMPORTED_MODULE_87__.Composition),
+/* harmony export */   CompositionBinaryTree: () => (/* reexport safe */ _DataStructures_Composition_CompositionBinaryTree__WEBPACK_IMPORTED_MODULE_88__.CompositionBinaryTree),
+/* harmony export */   CompositionNode: () => (/* reexport safe */ _DataStructures_Composition_CompositionNode__WEBPACK_IMPORTED_MODULE_89__.CompositionNode),
+/* harmony export */   Concept: () => (/* reexport safe */ _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_77__.Concept),
+/* harmony export */   ConceptsData: () => (/* reexport safe */ _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_81__.ConceptsData),
+/* harmony export */   Connection: () => (/* reexport safe */ _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_80__.Connection),
+/* harmony export */   ConnectionData: () => (/* reexport safe */ _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_82__.ConnectionData),
+/* harmony export */   CreateComposition: () => (/* reexport safe */ _Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_9__["default"]),
+/* harmony export */   CreateConnectionBetweenTwoConcepts: () => (/* reexport safe */ _Services_CreateConnectionBetweenTwoConcepts__WEBPACK_IMPORTED_MODULE_11__.CreateConnectionBetweenTwoConcepts),
+/* harmony export */   CreateConnectionBetweenTwoConceptsGeneral: () => (/* reexport safe */ _Services_CreateConnectionBetweenTwoConcepts__WEBPACK_IMPORTED_MODULE_11__.CreateConnectionBetweenTwoConceptsGeneral),
+/* harmony export */   CreateConnectionBetweenTwoConceptsLocal: () => (/* reexport safe */ _Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_60__.CreateConnectionBetweenTwoConceptsLocal),
+/* harmony export */   CreateDefaultConcept: () => (/* reexport safe */ _Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_19__.CreateDefaultConcept),
+/* harmony export */   CreateDefaultLConcept: () => (/* reexport safe */ _Services_Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_47__.CreateDefaultLConcept),
+/* harmony export */   CreateSession: () => (/* reexport safe */ _Api_Session_CreateSession__WEBPACK_IMPORTED_MODULE_42__.CreateSession),
+/* harmony export */   CreateSessionVisit: () => (/* reexport safe */ _Api_Session_CreateSessionVisit__WEBPACK_IMPORTED_MODULE_43__.CreateSessionVisit),
+/* harmony export */   CreateTheCompositionLocal: () => (/* reexport safe */ _Services_Local_CreateTheCompositionLocal__WEBPACK_IMPORTED_MODULE_10__.CreateTheCompositionLocal),
+/* harmony export */   CreateTheCompositionWithCache: () => (/* reexport safe */ _Services_Composition_CreateCompositionCache__WEBPACK_IMPORTED_MODULE_46__.CreateTheCompositionWithCache),
+/* harmony export */   CreateTheConnection: () => (/* reexport safe */ _Services_CreateTheConnection__WEBPACK_IMPORTED_MODULE_16__.createTheConnection),
+/* harmony export */   CreateTheConnectionGeneral: () => (/* reexport safe */ _Services_CreateTheConnectionGeneral__WEBPACK_IMPORTED_MODULE_48__.CreateTheConnectionGeneral),
+/* harmony export */   CreateTheConnectionLocal: () => (/* reexport safe */ _Services_Local_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_49__.CreateTheConnectionLocal),
+/* harmony export */   DATAID: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.DATAID),
+/* harmony export */   DATAIDDATE: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.DATAIDDATE),
+/* harmony export */   DelayFunctionExecution: () => (/* reexport safe */ _Services_Common_DelayFunction__WEBPACK_IMPORTED_MODULE_63__.DelayFunctionExecution),
+/* harmony export */   DeleteConceptById: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__.DeleteConceptById),
+/* harmony export */   DeleteConceptLocal: () => (/* reexport safe */ _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_61__.DeleteConceptLocal),
+/* harmony export */   DeleteConnectionById: () => (/* reexport safe */ _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_25__.DeleteConnectionById),
+/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_102__.DeleteConnectionByType),
+/* harmony export */   DependencyObserver: () => (/* reexport safe */ _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_68__.DependencyObserver),
+/* harmony export */   FilterSearch: () => (/* reexport safe */ _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_92__.FilterSearch),
+/* harmony export */   FormatFromConnections: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnections),
+/* harmony export */   FormatFromConnectionsAltered: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnectionsAltered),
+/* harmony export */   GetAllConnectionsOfComposition: () => (/* reexport safe */ _Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_6__.GetAllConnectionsOfComposition),
+/* harmony export */   GetAllConnectionsOfCompositionBulk: () => (/* reexport safe */ _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_33__.GetAllConnectionsOfCompositionBulk),
+/* harmony export */   GetComposition: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetComposition),
+/* harmony export */   GetCompositionBulk: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionBulk),
+/* harmony export */   GetCompositionBulkWithDataId: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionBulkWithDataId),
+/* harmony export */   GetCompositionFromConnectionsWithDataId: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithDataId),
+/* harmony export */   GetCompositionFromConnectionsWithDataIdInObject: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithDataIdInObject),
+/* harmony export */   GetCompositionFromConnectionsWithDataIdIndex: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithDataIdIndex),
+/* harmony export */   GetCompositionFromConnectionsWithIndex: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithIndex),
+/* harmony export */   GetCompositionList: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__.GetCompositionList),
+/* harmony export */   GetCompositionListAll: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__.GetCompositionListAll),
+/* harmony export */   GetCompositionListAllWithId: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__.GetCompositionListAllWithId),
+/* harmony export */   GetCompositionListListener: () => (/* reexport safe */ _WrapperFunctions_GetCompositionListObservable__WEBPACK_IMPORTED_MODULE_71__.GetCompositionListListener),
+/* harmony export */   GetCompositionListLocal: () => (/* reexport safe */ _Services_Local_GetCompositionListLocal__WEBPACK_IMPORTED_MODULE_5__.GetCompositionListLocal),
+/* harmony export */   GetCompositionListLocalWithId: () => (/* reexport safe */ _Services_Local_GetCompositionListLocal__WEBPACK_IMPORTED_MODULE_5__.GetCompositionListLocalWithId),
+/* harmony export */   GetCompositionListWithId: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__.GetCompositionListWithId),
+/* harmony export */   GetCompositionListWithIdUpdated: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__.GetCompositionListWithIdUpdated),
+/* harmony export */   GetCompositionListener: () => (/* reexport safe */ _WrapperFunctions_GetCompositionObservable__WEBPACK_IMPORTED_MODULE_70__.GetCompositionListener),
+/* harmony export */   GetCompositionLocal: () => (/* reexport safe */ _Services_Local_GetCompositionLocal__WEBPACK_IMPORTED_MODULE_8__.GetCompositionLocal),
+/* harmony export */   GetCompositionLocalWithId: () => (/* reexport safe */ _Services_Local_GetCompositionLocal__WEBPACK_IMPORTED_MODULE_8__.GetCompositionLocalWithId),
+/* harmony export */   GetCompositionWithAllIds: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetCompositionWithAllIds),
+/* harmony export */   GetCompositionWithCache: () => (/* reexport safe */ _Services_Composition_CompositionCache__WEBPACK_IMPORTED_MODULE_41__.GetCompositionWithCache),
+/* harmony export */   GetCompositionWithDataIdBulk: () => (/* reexport safe */ _Services_Composition_CompositionCache__WEBPACK_IMPORTED_MODULE_41__.GetCompositionWithDataIdBulk),
+/* harmony export */   GetCompositionWithDataIdWithCache: () => (/* reexport safe */ _Services_Composition_CompositionCache__WEBPACK_IMPORTED_MODULE_41__.GetCompositionWithDataIdWithCache),
+/* harmony export */   GetCompositionWithId: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetCompositionWithId),
+/* harmony export */   GetCompositionWithIdAndDateFromMemory: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetCompositionWithIdAndDateFromMemory),
+/* harmony export */   GetConceptBulk: () => (/* reexport safe */ _Api_GetConceptBulk__WEBPACK_IMPORTED_MODULE_31__.GetConceptBulk),
+/* harmony export */   GetConceptByCharacter: () => (/* reexport safe */ _Services_GetConceptByCharacter__WEBPACK_IMPORTED_MODULE_17__["default"]),
+/* harmony export */   GetConceptByCharacterAndCategoryLocal: () => (/* reexport safe */ _Services_Local_GetConceptByCharacterLocal__WEBPACK_IMPORTED_MODULE_55__.GetConceptByCharacterAndCategoryLocal),
+/* harmony export */   GetConceptByCharacterAndType: () => (/* reexport safe */ _Api_GetConceptByCharacterAndType__WEBPACK_IMPORTED_MODULE_64__.GetConceptByCharacterAndType),
+/* harmony export */   GetConnectionBetweenTwoConceptsLinker: () => (/* reexport safe */ _Services_GetConnectionBetweenTwoConceptsLinker__WEBPACK_IMPORTED_MODULE_62__.GetConnectionBetweenTwoConceptsLinker),
+/* harmony export */   GetConnectionBulk: () => (/* reexport safe */ _Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_32__.GetConnectionBulk),
+/* harmony export */   GetConnectionById: () => (/* reexport safe */ _Services_GetConnections__WEBPACK_IMPORTED_MODULE_27__.GetConnectionById),
+/* harmony export */   GetConnectionDataPrefetch: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetConnectionDataPrefetch),
+/* harmony export */   GetConnectionOfTheConcept: () => (/* reexport safe */ _Api_GetConnectionOfTheConcept__WEBPACK_IMPORTED_MODULE_35__.GetConnectionOfTheConcept),
+/* harmony export */   GetLink: () => (/* reexport safe */ _Services_GetLink__WEBPACK_IMPORTED_MODULE_18__.GetLink),
+/* harmony export */   GetLinkListListener: () => (/* reexport safe */ _WrapperFunctions_GetLinkListObservable__WEBPACK_IMPORTED_MODULE_75__.GetLinkListListener),
+/* harmony export */   GetLinkListener: () => (/* reexport safe */ _WrapperFunctions_GetLinkObservable__WEBPACK_IMPORTED_MODULE_73__.GetLinkListener),
+/* harmony export */   GetLinkRaw: () => (/* reexport safe */ _Services_GetLink__WEBPACK_IMPORTED_MODULE_18__.GetLinkRaw),
+/* harmony export */   GetLinkerConnectionFromConcepts: () => (/* reexport safe */ _Services_GetLinkerConnectionFromConcept__WEBPACK_IMPORTED_MODULE_23__.GetLinkerConnectionFromConcepts),
+/* harmony export */   GetLinkerConnectionToConcepts: () => (/* reexport safe */ _Services_GetLinkerConnectionFromConcept__WEBPACK_IMPORTED_MODULE_23__.GetLinkerConnectionToConcepts),
+/* harmony export */   GetRelation: () => (/* reexport safe */ _Services_GetRelation__WEBPACK_IMPORTED_MODULE_44__.GetRelation),
+/* harmony export */   GetRelationLocal: () => (/* reexport safe */ _Services_Local_GetRelationLocal__WEBPACK_IMPORTED_MODULE_54__.GetRelationLocal),
+/* harmony export */   GetRelationRaw: () => (/* reexport safe */ _Services_GetRelation__WEBPACK_IMPORTED_MODULE_44__.GetRelationRaw),
+/* harmony export */   GetTheConcept: () => (/* reexport safe */ _Services_GetTheConcept__WEBPACK_IMPORTED_MODULE_12__["default"]),
+/* harmony export */   GetTheConceptLocal: () => (/* reexport safe */ _Services_Local_GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_52__.GetTheConceptLocal),
+/* harmony export */   GetUserGhostId: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_50__.GetUserGhostId),
+/* harmony export */   JUSTDATA: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.JUSTDATA),
+/* harmony export */   LConcept: () => (/* reexport safe */ _DataStructures_Local_LConcept__WEBPACK_IMPORTED_MODULE_78__.LConcept),
+/* harmony export */   LConnection: () => (/* reexport safe */ _DataStructures_Local_LConnection__WEBPACK_IMPORTED_MODULE_79__.LConnection),
+/* harmony export */   LocalConceptsData: () => (/* reexport safe */ _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_94__.LocalConceptsData),
+/* harmony export */   LocalSyncData: () => (/* reexport safe */ _DataStructures_Local_LocalSyncData__WEBPACK_IMPORTED_MODULE_90__.LocalSyncData),
+/* harmony export */   LoginToBackend: () => (/* reexport safe */ _Api_Login__WEBPACK_IMPORTED_MODULE_34__.LoginToBackend),
+/* harmony export */   MakeTheInstanceConcept: () => (/* reexport safe */ _Services_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_13__["default"]),
+/* harmony export */   MakeTheInstanceConceptLocal: () => (/* reexport safe */ _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_14__.MakeTheInstanceConceptLocal),
+/* harmony export */   MakeTheTimestamp: () => (/* reexport safe */ _Services_MakeTheTimestamp__WEBPACK_IMPORTED_MODULE_28__.MakeTheTimestamp),
+/* harmony export */   MakeTheTypeConcept: () => (/* reexport safe */ _Services_MakeTheTypeConcept__WEBPACK_IMPORTED_MODULE_21__.MakeTheTypeConcept),
+/* harmony export */   MakeTheTypeConceptApi: () => (/* reexport safe */ _Api_MakeTheTypeConceptApi__WEBPACK_IMPORTED_MODULE_22__.MakeTheTypeConceptApi),
+/* harmony export */   MakeTheTypeConceptLocal: () => (/* reexport safe */ _Services_Local_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_20__.MakeTheTypeConceptLocal),
+/* harmony export */   NORMAL: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.NORMAL),
+/* harmony export */   PRIVATE: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__.PRIVATE),
+/* harmony export */   PUBLIC: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__.PUBLIC),
+/* harmony export */   PatcherStructure: () => (/* reexport safe */ _DataStructures_PatcherStructure__WEBPACK_IMPORTED_MODULE_85__.PatcherStructure),
+/* harmony export */   RAW: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.RAW),
+/* harmony export */   RecursiveSearchApi: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApi),
+/* harmony export */   RecursiveSearchApiNewRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiNewRawFullLinker),
+/* harmony export */   RecursiveSearchApiRaw: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRaw),
+/* harmony export */   RecursiveSearchApiRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRawFullLinker),
+/* harmony export */   RecursiveSearchListener: () => (/* reexport safe */ _WrapperFunctions_RecursiveSearchObservable__WEBPACK_IMPORTED_MODULE_74__.RecursiveSearchListener),
+/* harmony export */   SearchAllConcepts: () => (/* reexport safe */ _Api_Search_Search__WEBPACK_IMPORTED_MODULE_39__.SearchAllConcepts),
+/* harmony export */   SearchLinkInternal: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternal),
+/* harmony export */   SearchLinkInternalAll: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternalAll),
+/* harmony export */   SearchLinkMultipleAll: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.SearchLinkMultipleAll),
+/* harmony export */   SearchLinkMultipleAllObservable: () => (/* reexport safe */ _WrapperFunctions_SearchLinkMultipleAllObservable__WEBPACK_IMPORTED_MODULE_69__.SearchLinkMultipleAllObservable),
+/* harmony export */   SearchLinkMultipleApi: () => (/* reexport safe */ _Api_Search_SearchLinkMultipleApi__WEBPACK_IMPORTED_MODULE_2__.SearchLinkMultipleApi),
+/* harmony export */   SearchQuery: () => (/* reexport safe */ _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_84__.SearchQuery),
+/* harmony export */   SearchStructure: () => (/* reexport safe */ _DataStructures_Search_SearchStructure__WEBPACK_IMPORTED_MODULE_93__.SearchStructure),
+/* harmony export */   SearchWithLinker: () => (/* reexport safe */ _Api_Search_SearchWithLinker__WEBPACK_IMPORTED_MODULE_40__.SearchWithLinker),
+/* harmony export */   SearchWithTypeAndLinker: () => (/* reexport safe */ _Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_72__.SearchWithTypeAndLinker),
+/* harmony export */   SearchWithTypeAndLinkerApi: () => (/* reexport safe */ _Api_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_67__.SearchWithTypeAndLinkerApi),
+/* harmony export */   SessionData: () => (/* reexport safe */ _DataStructures_Session_SessionData__WEBPACK_IMPORTED_MODULE_86__.SessionData),
+/* harmony export */   Signin: () => (/* reexport safe */ _Api_Signin__WEBPACK_IMPORTED_MODULE_37__["default"]),
+/* harmony export */   Signup: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_36__["default"]),
+/* harmony export */   SplitStrings: () => (/* reexport safe */ _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_3__.SplitStrings),
+/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_101__.StatefulWidget),
+/* harmony export */   SyncData: () => (/* reexport safe */ _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_76__.SyncData),
+/* harmony export */   TrashTheConcept: () => (/* reexport safe */ _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_26__.TrashTheConcept),
+/* harmony export */   UpdateComposition: () => (/* reexport safe */ _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_38__["default"]),
+/* harmony export */   UpdateCompositionLocal: () => (/* reexport safe */ _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_53__.UpdateCompositionLocal),
+/* harmony export */   UserBinaryTree: () => (/* reexport safe */ _DataStructures_User_UserBinaryTree__WEBPACK_IMPORTED_MODULE_91__.UserBinaryTree),
+/* harmony export */   ViewInternalData: () => (/* reexport safe */ _Services_View_ViewInternalData__WEBPACK_IMPORTED_MODULE_56__.ViewInternalData),
+/* harmony export */   ViewInternalDataApi: () => (/* reexport safe */ _Api_View_ViewInternalDataApi__WEBPACK_IMPORTED_MODULE_57__.ViewInternalDataApi),
+/* harmony export */   convertFromConceptToLConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromConceptToLConcept),
+/* harmony export */   convertFromLConceptToConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromLConceptToConcept),
+/* harmony export */   dispatchIdEvent: () => (/* binding */ dispatchIdEvent),
+/* harmony export */   getFromDatabaseWithType: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getFromDatabaseWithType),
+/* harmony export */   getObjectsFromIndexDb: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getObjectsFromIndexDb),
 /* harmony export */   init: () => (/* binding */ init),
-/* harmony export */   recursiveFetch: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_6__.recursiveFetch),
-/* harmony export */   recursiveFetchNew: () => (/* reexport safe */ _Services_Composition_BuildComposition__WEBPACK_IMPORTED_MODULE_44__.recursiveFetchNew),
-/* harmony export */   searchLinkMultipleListener: () => (/* reexport safe */ _WrapperFunctions_SearchLinkMultipleAllObservable__WEBPACK_IMPORTED_MODULE_68__.searchLinkMultipleListener),
+/* harmony export */   recursiveFetch: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.recursiveFetch),
+/* harmony export */   recursiveFetchNew: () => (/* reexport safe */ _Services_Composition_BuildComposition__WEBPACK_IMPORTED_MODULE_45__.recursiveFetchNew),
+/* harmony export */   searchLinkMultipleListener: () => (/* reexport safe */ _WrapperFunctions_SearchLinkMultipleAllObservable__WEBPACK_IMPORTED_MODULE_69__.searchLinkMultipleListener),
 /* harmony export */   sendMessage: () => (/* binding */ sendMessage),
-/* harmony export */   serviceWoker: () => (/* binding */ serviceWoker),
-/* harmony export */   storeToDatabase: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_14__.storeToDatabase),
+/* harmony export */   serviceWorker: () => (/* binding */ serviceWorker),
+/* harmony export */   storeToDatabase: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.storeToDatabase),
+/* harmony export */   subscribedListeners: () => (/* binding */ subscribedListeners),
 /* harmony export */   updateAccessToken: () => (/* binding */ updateAccessToken)
 /* harmony export */ });
-/* harmony import */ var _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DataStructures/IdentifierFlags */ "./src/DataStructures/IdentifierFlags.ts");
-/* harmony import */ var _Api_Search_SearchLinkMultipleApi__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Api/Search/SearchLinkMultipleApi */ "./src/Api/Search/SearchLinkMultipleApi.ts");
-/* harmony import */ var _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Services/SplitStrings */ "./src/Services/SplitStrings.ts");
-/* harmony import */ var _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Services/GetCompositionList */ "./src/Services/GetCompositionList.ts");
-/* harmony import */ var _Services_Local_GetCompositionListLocal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Services/Local/GetCompositionListLocal */ "./src/Services/Local/GetCompositionListLocal.ts");
-/* harmony import */ var _Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Api/GetAllConnectionsOfComposition */ "./src/Api/GetAllConnectionsOfComposition.ts");
-/* harmony import */ var _Services_GetComposition__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Services/GetComposition */ "./src/Services/GetComposition.ts");
-/* harmony import */ var _Services_Local_GetCompositionLocal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Services/Local/GetCompositionLocal */ "./src/Services/Local/GetCompositionLocal.ts");
-/* harmony import */ var _Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Services/CreateTheComposition */ "./src/Services/CreateTheComposition.ts");
-/* harmony import */ var _Services_Local_CreateTheCompositionLocal__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Services/Local/CreateTheCompositionLocal */ "./src/Services/Local/CreateTheCompositionLocal.ts");
-/* harmony import */ var _Services_CreateConnectionBetweenTwoConcepts__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Services/CreateConnectionBetweenTwoConcepts */ "./src/Services/CreateConnectionBetweenTwoConcepts.ts");
-/* harmony import */ var _Services_GetTheConcept__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Services/GetTheConcept */ "./src/Services/GetTheConcept.ts");
-/* harmony import */ var _Services_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Services/MakeTheInstanceConcept */ "./src/Services/MakeTheInstanceConcept.ts");
-/* harmony import */ var _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Services/Local/MakeTheInstanceConceptLocal */ "./src/Services/Local/MakeTheInstanceConceptLocal.ts");
-/* harmony import */ var _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Database/NoIndexDb */ "./src/Database/NoIndexDb.ts");
-/* harmony import */ var _Services_CreateTheConnection__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Services/CreateTheConnection */ "./src/Services/CreateTheConnection.ts");
-/* harmony import */ var _Services_GetConceptByCharacter__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Services/GetConceptByCharacter */ "./src/Services/GetConceptByCharacter.ts");
-/* harmony import */ var _Services_GetLink__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Services/GetLink */ "./src/Services/GetLink.ts");
-/* harmony import */ var _Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./Services/CreateDefaultConcept */ "./src/Services/CreateDefaultConcept.ts");
-/* harmony import */ var _Services_Local_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./Services/Local/MakeTheTypeLocal */ "./src/Services/Local/MakeTheTypeLocal.ts");
-/* harmony import */ var _Services_MakeTheTypeConcept__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Services/MakeTheTypeConcept */ "./src/Services/MakeTheTypeConcept.ts");
-/* harmony import */ var _Api_MakeTheTypeConceptApi__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./Api/MakeTheTypeConceptApi */ "./src/Api/MakeTheTypeConceptApi.ts");
-/* harmony import */ var _Services_GetLinkerConnectionFromConcept__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./Services/GetLinkerConnectionFromConcept */ "./src/Services/GetLinkerConnectionFromConcept.ts");
-/* harmony import */ var _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./Services/DeleteConcept */ "./src/Services/DeleteConcept.ts");
-/* harmony import */ var _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./Services/DeleteConnection */ "./src/Services/DeleteConnection.ts");
-/* harmony import */ var _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./Api/Delete/DeleteConceptInBackend */ "./src/Api/Delete/DeleteConceptInBackend.ts");
-/* harmony import */ var _Services_GetConnections__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./Services/GetConnections */ "./src/Services/GetConnections.ts");
-/* harmony import */ var _Services_MakeTheTimestamp__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./Services/MakeTheTimestamp */ "./src/Services/MakeTheTimestamp.ts");
-/* harmony import */ var _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./Api/RecursiveSearch */ "./src/Api/RecursiveSearch.ts");
-/* harmony import */ var _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./Services/GetCompositionBulk */ "./src/Services/GetCompositionBulk.ts");
-/* harmony import */ var _Api_GetConceptBulk__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./Api/GetConceptBulk */ "./src/Api/GetConceptBulk.ts");
-/* harmony import */ var _Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./Api/GetConnectionBulk */ "./src/Api/GetConnectionBulk.ts");
-/* harmony import */ var _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./Api/GetAllConnectionsOfCompositionBulk */ "./src/Api/GetAllConnectionsOfCompositionBulk.ts");
-/* harmony import */ var _Api_Login__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./Api/Login */ "./src/Api/Login.ts");
-/* harmony import */ var _Api_GetConnectionOfTheConcept__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./Api/GetConnectionOfTheConcept */ "./src/Api/GetConnectionOfTheConcept.ts");
-/* harmony import */ var _Api_Signup__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./Api/Signup */ "./src/Api/Signup.ts");
-/* harmony import */ var _Api_Signin__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./Api/Signin */ "./src/Api/Signin.ts");
-/* harmony import */ var _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./Services/UpdateComposition */ "./src/Services/UpdateComposition.ts");
-/* harmony import */ var _Api_Search_Search__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./Api/Search/Search */ "./src/Api/Search/Search.ts");
-/* harmony import */ var _Api_Search_SearchWithLinker__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./Api/Search/SearchWithLinker */ "./src/Api/Search/SearchWithLinker.ts");
-/* harmony import */ var _Services_Composition_CompositionCache__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./Services/Composition/CompositionCache */ "./src/Services/Composition/CompositionCache.ts");
-/* harmony import */ var _Api_Session_CreateSession__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./Api/Session/CreateSession */ "./src/Api/Session/CreateSession.ts");
-/* harmony import */ var _Api_Session_CreateSessionVisit__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./Api/Session/CreateSessionVisit */ "./src/Api/Session/CreateSessionVisit.ts");
-/* harmony import */ var _Services_GetRelation__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./Services/GetRelation */ "./src/Services/GetRelation.ts");
-/* harmony import */ var _Services_Composition_BuildComposition__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./Services/Composition/BuildComposition */ "./src/Services/Composition/BuildComposition.ts");
-/* harmony import */ var _Services_Composition_CreateCompositionCache__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./Services/Composition/CreateCompositionCache */ "./src/Services/Composition/CreateCompositionCache.ts");
-/* harmony import */ var _Services_Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./Services/Local/CreateDefaultLConcept */ "./src/Services/Local/CreateDefaultLConcept.ts");
-/* harmony import */ var _Services_CreateTheConnectionGeneral__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./Services/CreateTheConnectionGeneral */ "./src/Services/CreateTheConnectionGeneral.ts");
-/* harmony import */ var _Services_Local_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./Services/Local/CreateTheConnectionLocal */ "./src/Services/Local/CreateTheConnectionLocal.ts");
-/* harmony import */ var _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./Services/User/UserTranslation */ "./src/Services/User/UserTranslation.ts");
-/* harmony import */ var _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./Services/Search/SearchLinkMultiple */ "./src/Services/Search/SearchLinkMultiple.ts");
-/* harmony import */ var _Services_Local_GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./Services/Local/GetTheConceptLocal */ "./src/Services/Local/GetTheConceptLocal.ts");
-/* harmony import */ var _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./Services/Local/UpdateCompositionLocal */ "./src/Services/Local/UpdateCompositionLocal.ts");
-/* harmony import */ var _Services_Local_GetRelationLocal__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./Services/Local/GetRelationLocal */ "./src/Services/Local/GetRelationLocal.ts");
-/* harmony import */ var _Services_Local_GetConceptByCharacterLocal__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./Services/Local/GetConceptByCharacterLocal */ "./src/Services/Local/GetConceptByCharacterLocal.ts");
-/* harmony import */ var _Services_View_ViewInternalData__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./Services/View/ViewInternalData */ "./src/Services/View/ViewInternalData.ts");
-/* harmony import */ var _Api_View_ViewInternalDataApi__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./Api/View/ViewInternalDataApi */ "./src/Api/View/ViewInternalDataApi.ts");
-/* harmony import */ var _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./Services/Conversion/ConvertConcepts */ "./src/Services/Conversion/ConvertConcepts.ts");
-/* harmony import */ var _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./Services/Search/SearchLinkInternal */ "./src/Services/Search/SearchLinkInternal.ts");
-/* harmony import */ var _Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./Services/Local/CreateConnectionBetweenTwoConceptsLocal */ "./src/Services/Local/CreateConnectionBetweenTwoConceptsLocal.ts");
-/* harmony import */ var _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! ./Services/Local/DeleteConceptLocal */ "./src/Services/Local/DeleteConceptLocal.ts");
-/* harmony import */ var _Services_GetConnectionBetweenTwoConceptsLinker__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./Services/GetConnectionBetweenTwoConceptsLinker */ "./src/Services/GetConnectionBetweenTwoConceptsLinker.ts");
-/* harmony import */ var _Services_Common_DelayFunction__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./Services/Common/DelayFunction */ "./src/Services/Common/DelayFunction.ts");
-/* harmony import */ var _Api_GetConceptByCharacterAndType__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(/*! ./Api/GetConceptByCharacterAndType */ "./src/Api/GetConceptByCharacterAndType.ts");
-/* harmony import */ var _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(/*! ./Constants/FormatConstants */ "./src/Constants/FormatConstants.ts");
-/* harmony import */ var _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_65__ = __webpack_require__(/*! ./Constants/AccessConstants */ "./src/Constants/AccessConstants.ts");
-/* harmony import */ var _Api_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_66__ = __webpack_require__(/*! ./Api/Search/SearchWithTypeAndLinker */ "./src/Api/Search/SearchWithTypeAndLinker.ts");
-/* harmony import */ var _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_67__ = __webpack_require__(/*! ./WrapperFunctions/DepenedencyObserver */ "./src/WrapperFunctions/DepenedencyObserver.ts");
-/* harmony import */ var _WrapperFunctions_SearchLinkMultipleAllObservable__WEBPACK_IMPORTED_MODULE_68__ = __webpack_require__(/*! ./WrapperFunctions/SearchLinkMultipleAllObservable */ "./src/WrapperFunctions/SearchLinkMultipleAllObservable.ts");
-/* harmony import */ var _WrapperFunctions_GetCompositionObservable__WEBPACK_IMPORTED_MODULE_69__ = __webpack_require__(/*! ./WrapperFunctions/GetCompositionObservable */ "./src/WrapperFunctions/GetCompositionObservable.ts");
-/* harmony import */ var _WrapperFunctions_GetCompositionListObservable__WEBPACK_IMPORTED_MODULE_70__ = __webpack_require__(/*! ./WrapperFunctions/GetCompositionListObservable */ "./src/WrapperFunctions/GetCompositionListObservable.ts");
-/* harmony import */ var _Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_71__ = __webpack_require__(/*! ./Services/Search/SearchWithTypeAndLinker */ "./src/Services/Search/SearchWithTypeAndLinker.ts");
-/* harmony import */ var _WrapperFunctions_GetLinkObservable__WEBPACK_IMPORTED_MODULE_72__ = __webpack_require__(/*! ./WrapperFunctions/GetLinkObservable */ "./src/WrapperFunctions/GetLinkObservable.ts");
-/* harmony import */ var _WrapperFunctions_RecursiveSearchObservable__WEBPACK_IMPORTED_MODULE_73__ = __webpack_require__(/*! ./WrapperFunctions/RecursiveSearchObservable */ "./src/WrapperFunctions/RecursiveSearchObservable.ts");
-/* harmony import */ var _WrapperFunctions_GetLinkListObservable__WEBPACK_IMPORTED_MODULE_74__ = __webpack_require__(/*! ./WrapperFunctions/GetLinkListObservable */ "./src/WrapperFunctions/GetLinkListObservable.ts");
-/* harmony import */ var _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_75__ = __webpack_require__(/*! ./DataStructures/SyncData */ "./src/DataStructures/SyncData.ts");
-/* harmony import */ var _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(/*! ./DataStructures/Concept */ "./src/DataStructures/Concept.ts");
-/* harmony import */ var _DataStructures_Local_LConcept__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(/*! ./DataStructures/Local/LConcept */ "./src/DataStructures/Local/LConcept.ts");
-/* harmony import */ var _DataStructures_Local_LConnection__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(/*! ./DataStructures/Local/LConnection */ "./src/DataStructures/Local/LConnection.ts");
-/* harmony import */ var _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(/*! ./DataStructures/Connection */ "./src/DataStructures/Connection.ts");
-/* harmony import */ var _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(/*! ./DataStructures/ConceptData */ "./src/DataStructures/ConceptData.ts");
-/* harmony import */ var _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(/*! ./DataStructures/ConnectionData */ "./src/DataStructures/ConnectionData.ts");
-/* harmony import */ var _DataStructures_BinaryTree__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(/*! ./DataStructures/BinaryTree */ "./src/DataStructures/BinaryTree.ts");
-/* harmony import */ var _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(/*! ./DataStructures/SearchQuery */ "./src/DataStructures/SearchQuery.ts");
-/* harmony import */ var _DataStructures_PatcherStructure__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(/*! ./DataStructures/PatcherStructure */ "./src/DataStructures/PatcherStructure.ts");
-/* harmony import */ var _DataStructures_Session_SessionData__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(/*! ./DataStructures/Session/SessionData */ "./src/DataStructures/Session/SessionData.ts");
-/* harmony import */ var _DataStructures_Composition_Composition__WEBPACK_IMPORTED_MODULE_86__ = __webpack_require__(/*! ./DataStructures/Composition/Composition */ "./src/DataStructures/Composition/Composition.ts");
-/* harmony import */ var _DataStructures_Composition_CompositionBinaryTree__WEBPACK_IMPORTED_MODULE_87__ = __webpack_require__(/*! ./DataStructures/Composition/CompositionBinaryTree */ "./src/DataStructures/Composition/CompositionBinaryTree.ts");
-/* harmony import */ var _DataStructures_Composition_CompositionNode__WEBPACK_IMPORTED_MODULE_88__ = __webpack_require__(/*! ./DataStructures/Composition/CompositionNode */ "./src/DataStructures/Composition/CompositionNode.ts");
-/* harmony import */ var _DataStructures_Local_LocalSyncData__WEBPACK_IMPORTED_MODULE_89__ = __webpack_require__(/*! ./DataStructures/Local/LocalSyncData */ "./src/DataStructures/Local/LocalSyncData.ts");
-/* harmony import */ var _DataStructures_User_UserBinaryTree__WEBPACK_IMPORTED_MODULE_90__ = __webpack_require__(/*! ./DataStructures/User/UserBinaryTree */ "./src/DataStructures/User/UserBinaryTree.ts");
-/* harmony import */ var _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_91__ = __webpack_require__(/*! ./DataStructures/FilterSearch */ "./src/DataStructures/FilterSearch.ts");
-/* harmony import */ var _DataStructures_Search_SearchStructure__WEBPACK_IMPORTED_MODULE_92__ = __webpack_require__(/*! ./DataStructures/Search/SearchStructure */ "./src/DataStructures/Search/SearchStructure.ts");
-/* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_93__ = __webpack_require__(/*! ./DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
-/* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_94__ = __webpack_require__(/*! ./DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
-/* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_95__ = __webpack_require__(/*! ./DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
-/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_96__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
-/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_97__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
+/* harmony import */ var _Services_CreateBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Services/CreateBinaryTreeFromData */ "./src/Services/CreateBinaryTreeFromData.ts");
+/* harmony import */ var _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DataStructures/IdentifierFlags */ "./src/DataStructures/IdentifierFlags.ts");
+/* harmony import */ var _Api_Search_SearchLinkMultipleApi__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Api/Search/SearchLinkMultipleApi */ "./src/Api/Search/SearchLinkMultipleApi.ts");
+/* harmony import */ var _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Services/SplitStrings */ "./src/Services/SplitStrings.ts");
+/* harmony import */ var _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Services/GetCompositionList */ "./src/Services/GetCompositionList.ts");
+/* harmony import */ var _Services_Local_GetCompositionListLocal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Services/Local/GetCompositionListLocal */ "./src/Services/Local/GetCompositionListLocal.ts");
+/* harmony import */ var _Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Api/GetAllConnectionsOfComposition */ "./src/Api/GetAllConnectionsOfComposition.ts");
+/* harmony import */ var _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Services/GetComposition */ "./src/Services/GetComposition.ts");
+/* harmony import */ var _Services_Local_GetCompositionLocal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Services/Local/GetCompositionLocal */ "./src/Services/Local/GetCompositionLocal.ts");
+/* harmony import */ var _Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Services/CreateTheComposition */ "./src/Services/CreateTheComposition.ts");
+/* harmony import */ var _Services_Local_CreateTheCompositionLocal__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Services/Local/CreateTheCompositionLocal */ "./src/Services/Local/CreateTheCompositionLocal.ts");
+/* harmony import */ var _Services_CreateConnectionBetweenTwoConcepts__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Services/CreateConnectionBetweenTwoConcepts */ "./src/Services/CreateConnectionBetweenTwoConcepts.ts");
+/* harmony import */ var _Services_GetTheConcept__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Services/GetTheConcept */ "./src/Services/GetTheConcept.ts");
+/* harmony import */ var _Services_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Services/MakeTheInstanceConcept */ "./src/Services/MakeTheInstanceConcept.ts");
+/* harmony import */ var _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Services/Local/MakeTheInstanceConceptLocal */ "./src/Services/Local/MakeTheInstanceConceptLocal.ts");
+/* harmony import */ var _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Database/NoIndexDb */ "./src/Database/NoIndexDb.ts");
+/* harmony import */ var _Services_CreateTheConnection__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Services/CreateTheConnection */ "./src/Services/CreateTheConnection.ts");
+/* harmony import */ var _Services_GetConceptByCharacter__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Services/GetConceptByCharacter */ "./src/Services/GetConceptByCharacter.ts");
+/* harmony import */ var _Services_GetLink__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./Services/GetLink */ "./src/Services/GetLink.ts");
+/* harmony import */ var _Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./Services/CreateDefaultConcept */ "./src/Services/CreateDefaultConcept.ts");
+/* harmony import */ var _Services_Local_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./Services/Local/MakeTheTypeLocal */ "./src/Services/Local/MakeTheTypeLocal.ts");
+/* harmony import */ var _Services_MakeTheTypeConcept__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./Services/MakeTheTypeConcept */ "./src/Services/MakeTheTypeConcept.ts");
+/* harmony import */ var _Api_MakeTheTypeConceptApi__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./Api/MakeTheTypeConceptApi */ "./src/Api/MakeTheTypeConceptApi.ts");
+/* harmony import */ var _Services_GetLinkerConnectionFromConcept__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./Services/GetLinkerConnectionFromConcept */ "./src/Services/GetLinkerConnectionFromConcept.ts");
+/* harmony import */ var _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./Services/DeleteConcept */ "./src/Services/DeleteConcept.ts");
+/* harmony import */ var _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./Services/DeleteConnection */ "./src/Services/DeleteConnection.ts");
+/* harmony import */ var _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./Api/Delete/DeleteConceptInBackend */ "./src/Api/Delete/DeleteConceptInBackend.ts");
+/* harmony import */ var _Services_GetConnections__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./Services/GetConnections */ "./src/Services/GetConnections.ts");
+/* harmony import */ var _Services_MakeTheTimestamp__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! ./Services/MakeTheTimestamp */ "./src/Services/MakeTheTimestamp.ts");
+/* harmony import */ var _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! ./Api/RecursiveSearch */ "./src/Api/RecursiveSearch.ts");
+/* harmony import */ var _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! ./Services/GetCompositionBulk */ "./src/Services/GetCompositionBulk.ts");
+/* harmony import */ var _Api_GetConceptBulk__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! ./Api/GetConceptBulk */ "./src/Api/GetConceptBulk.ts");
+/* harmony import */ var _Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! ./Api/GetConnectionBulk */ "./src/Api/GetConnectionBulk.ts");
+/* harmony import */ var _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! ./Api/GetAllConnectionsOfCompositionBulk */ "./src/Api/GetAllConnectionsOfCompositionBulk.ts");
+/* harmony import */ var _Api_Login__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! ./Api/Login */ "./src/Api/Login.ts");
+/* harmony import */ var _Api_GetConnectionOfTheConcept__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! ./Api/GetConnectionOfTheConcept */ "./src/Api/GetConnectionOfTheConcept.ts");
+/* harmony import */ var _Api_Signup__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! ./Api/Signup */ "./src/Api/Signup.ts");
+/* harmony import */ var _Api_Signin__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! ./Api/Signin */ "./src/Api/Signin.ts");
+/* harmony import */ var _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! ./Services/UpdateComposition */ "./src/Services/UpdateComposition.ts");
+/* harmony import */ var _Api_Search_Search__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! ./Api/Search/Search */ "./src/Api/Search/Search.ts");
+/* harmony import */ var _Api_Search_SearchWithLinker__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! ./Api/Search/SearchWithLinker */ "./src/Api/Search/SearchWithLinker.ts");
+/* harmony import */ var _Services_Composition_CompositionCache__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! ./Services/Composition/CompositionCache */ "./src/Services/Composition/CompositionCache.ts");
+/* harmony import */ var _Api_Session_CreateSession__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! ./Api/Session/CreateSession */ "./src/Api/Session/CreateSession.ts");
+/* harmony import */ var _Api_Session_CreateSessionVisit__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! ./Api/Session/CreateSessionVisit */ "./src/Api/Session/CreateSessionVisit.ts");
+/* harmony import */ var _Services_GetRelation__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./Services/GetRelation */ "./src/Services/GetRelation.ts");
+/* harmony import */ var _Services_Composition_BuildComposition__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./Services/Composition/BuildComposition */ "./src/Services/Composition/BuildComposition.ts");
+/* harmony import */ var _Services_Composition_CreateCompositionCache__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./Services/Composition/CreateCompositionCache */ "./src/Services/Composition/CreateCompositionCache.ts");
+/* harmony import */ var _Services_Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! ./Services/Local/CreateDefaultLConcept */ "./src/Services/Local/CreateDefaultLConcept.ts");
+/* harmony import */ var _Services_CreateTheConnectionGeneral__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! ./Services/CreateTheConnectionGeneral */ "./src/Services/CreateTheConnectionGeneral.ts");
+/* harmony import */ var _Services_Local_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./Services/Local/CreateTheConnectionLocal */ "./src/Services/Local/CreateTheConnectionLocal.ts");
+/* harmony import */ var _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./Services/User/UserTranslation */ "./src/Services/User/UserTranslation.ts");
+/* harmony import */ var _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! ./Services/Search/SearchLinkMultiple */ "./src/Services/Search/SearchLinkMultiple.ts");
+/* harmony import */ var _Services_Local_GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! ./Services/Local/GetTheConceptLocal */ "./src/Services/Local/GetTheConceptLocal.ts");
+/* harmony import */ var _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_53__ = __webpack_require__(/*! ./Services/Local/UpdateCompositionLocal */ "./src/Services/Local/UpdateCompositionLocal.ts");
+/* harmony import */ var _Services_Local_GetRelationLocal__WEBPACK_IMPORTED_MODULE_54__ = __webpack_require__(/*! ./Services/Local/GetRelationLocal */ "./src/Services/Local/GetRelationLocal.ts");
+/* harmony import */ var _Services_Local_GetConceptByCharacterLocal__WEBPACK_IMPORTED_MODULE_55__ = __webpack_require__(/*! ./Services/Local/GetConceptByCharacterLocal */ "./src/Services/Local/GetConceptByCharacterLocal.ts");
+/* harmony import */ var _Services_View_ViewInternalData__WEBPACK_IMPORTED_MODULE_56__ = __webpack_require__(/*! ./Services/View/ViewInternalData */ "./src/Services/View/ViewInternalData.ts");
+/* harmony import */ var _Api_View_ViewInternalDataApi__WEBPACK_IMPORTED_MODULE_57__ = __webpack_require__(/*! ./Api/View/ViewInternalDataApi */ "./src/Api/View/ViewInternalDataApi.ts");
+/* harmony import */ var _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__ = __webpack_require__(/*! ./Services/Conversion/ConvertConcepts */ "./src/Services/Conversion/ConvertConcepts.ts");
+/* harmony import */ var _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__ = __webpack_require__(/*! ./Services/Search/SearchLinkInternal */ "./src/Services/Search/SearchLinkInternal.ts");
+/* harmony import */ var _Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_60__ = __webpack_require__(/*! ./Services/Local/CreateConnectionBetweenTwoConceptsLocal */ "./src/Services/Local/CreateConnectionBetweenTwoConceptsLocal.ts");
+/* harmony import */ var _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_61__ = __webpack_require__(/*! ./Services/Local/DeleteConceptLocal */ "./src/Services/Local/DeleteConceptLocal.ts");
+/* harmony import */ var _Services_GetConnectionBetweenTwoConceptsLinker__WEBPACK_IMPORTED_MODULE_62__ = __webpack_require__(/*! ./Services/GetConnectionBetweenTwoConceptsLinker */ "./src/Services/GetConnectionBetweenTwoConceptsLinker.ts");
+/* harmony import */ var _Services_Common_DelayFunction__WEBPACK_IMPORTED_MODULE_63__ = __webpack_require__(/*! ./Services/Common/DelayFunction */ "./src/Services/Common/DelayFunction.ts");
+/* harmony import */ var _Api_GetConceptByCharacterAndType__WEBPACK_IMPORTED_MODULE_64__ = __webpack_require__(/*! ./Api/GetConceptByCharacterAndType */ "./src/Api/GetConceptByCharacterAndType.ts");
+/* harmony import */ var _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__ = __webpack_require__(/*! ./Constants/FormatConstants */ "./src/Constants/FormatConstants.ts");
+/* harmony import */ var _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__ = __webpack_require__(/*! ./Constants/AccessConstants */ "./src/Constants/AccessConstants.ts");
+/* harmony import */ var _Api_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_67__ = __webpack_require__(/*! ./Api/Search/SearchWithTypeAndLinker */ "./src/Api/Search/SearchWithTypeAndLinker.ts");
+/* harmony import */ var _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_68__ = __webpack_require__(/*! ./WrapperFunctions/DepenedencyObserver */ "./src/WrapperFunctions/DepenedencyObserver.ts");
+/* harmony import */ var _WrapperFunctions_SearchLinkMultipleAllObservable__WEBPACK_IMPORTED_MODULE_69__ = __webpack_require__(/*! ./WrapperFunctions/SearchLinkMultipleAllObservable */ "./src/WrapperFunctions/SearchLinkMultipleAllObservable.ts");
+/* harmony import */ var _WrapperFunctions_GetCompositionObservable__WEBPACK_IMPORTED_MODULE_70__ = __webpack_require__(/*! ./WrapperFunctions/GetCompositionObservable */ "./src/WrapperFunctions/GetCompositionObservable.ts");
+/* harmony import */ var _WrapperFunctions_GetCompositionListObservable__WEBPACK_IMPORTED_MODULE_71__ = __webpack_require__(/*! ./WrapperFunctions/GetCompositionListObservable */ "./src/WrapperFunctions/GetCompositionListObservable.ts");
+/* harmony import */ var _Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_72__ = __webpack_require__(/*! ./Services/Search/SearchWithTypeAndLinker */ "./src/Services/Search/SearchWithTypeAndLinker.ts");
+/* harmony import */ var _WrapperFunctions_GetLinkObservable__WEBPACK_IMPORTED_MODULE_73__ = __webpack_require__(/*! ./WrapperFunctions/GetLinkObservable */ "./src/WrapperFunctions/GetLinkObservable.ts");
+/* harmony import */ var _WrapperFunctions_RecursiveSearchObservable__WEBPACK_IMPORTED_MODULE_74__ = __webpack_require__(/*! ./WrapperFunctions/RecursiveSearchObservable */ "./src/WrapperFunctions/RecursiveSearchObservable.ts");
+/* harmony import */ var _WrapperFunctions_GetLinkListObservable__WEBPACK_IMPORTED_MODULE_75__ = __webpack_require__(/*! ./WrapperFunctions/GetLinkListObservable */ "./src/WrapperFunctions/GetLinkListObservable.ts");
+/* harmony import */ var _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_76__ = __webpack_require__(/*! ./DataStructures/SyncData */ "./src/DataStructures/SyncData.ts");
+/* harmony import */ var _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_77__ = __webpack_require__(/*! ./DataStructures/Concept */ "./src/DataStructures/Concept.ts");
+/* harmony import */ var _DataStructures_Local_LConcept__WEBPACK_IMPORTED_MODULE_78__ = __webpack_require__(/*! ./DataStructures/Local/LConcept */ "./src/DataStructures/Local/LConcept.ts");
+/* harmony import */ var _DataStructures_Local_LConnection__WEBPACK_IMPORTED_MODULE_79__ = __webpack_require__(/*! ./DataStructures/Local/LConnection */ "./src/DataStructures/Local/LConnection.ts");
+/* harmony import */ var _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_80__ = __webpack_require__(/*! ./DataStructures/Connection */ "./src/DataStructures/Connection.ts");
+/* harmony import */ var _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_81__ = __webpack_require__(/*! ./DataStructures/ConceptData */ "./src/DataStructures/ConceptData.ts");
+/* harmony import */ var _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_82__ = __webpack_require__(/*! ./DataStructures/ConnectionData */ "./src/DataStructures/ConnectionData.ts");
+/* harmony import */ var _DataStructures_BinaryTree__WEBPACK_IMPORTED_MODULE_83__ = __webpack_require__(/*! ./DataStructures/BinaryTree */ "./src/DataStructures/BinaryTree.ts");
+/* harmony import */ var _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_84__ = __webpack_require__(/*! ./DataStructures/SearchQuery */ "./src/DataStructures/SearchQuery.ts");
+/* harmony import */ var _DataStructures_PatcherStructure__WEBPACK_IMPORTED_MODULE_85__ = __webpack_require__(/*! ./DataStructures/PatcherStructure */ "./src/DataStructures/PatcherStructure.ts");
+/* harmony import */ var _DataStructures_Session_SessionData__WEBPACK_IMPORTED_MODULE_86__ = __webpack_require__(/*! ./DataStructures/Session/SessionData */ "./src/DataStructures/Session/SessionData.ts");
+/* harmony import */ var _DataStructures_Composition_Composition__WEBPACK_IMPORTED_MODULE_87__ = __webpack_require__(/*! ./DataStructures/Composition/Composition */ "./src/DataStructures/Composition/Composition.ts");
+/* harmony import */ var _DataStructures_Composition_CompositionBinaryTree__WEBPACK_IMPORTED_MODULE_88__ = __webpack_require__(/*! ./DataStructures/Composition/CompositionBinaryTree */ "./src/DataStructures/Composition/CompositionBinaryTree.ts");
+/* harmony import */ var _DataStructures_Composition_CompositionNode__WEBPACK_IMPORTED_MODULE_89__ = __webpack_require__(/*! ./DataStructures/Composition/CompositionNode */ "./src/DataStructures/Composition/CompositionNode.ts");
+/* harmony import */ var _DataStructures_Local_LocalSyncData__WEBPACK_IMPORTED_MODULE_90__ = __webpack_require__(/*! ./DataStructures/Local/LocalSyncData */ "./src/DataStructures/Local/LocalSyncData.ts");
+/* harmony import */ var _DataStructures_User_UserBinaryTree__WEBPACK_IMPORTED_MODULE_91__ = __webpack_require__(/*! ./DataStructures/User/UserBinaryTree */ "./src/DataStructures/User/UserBinaryTree.ts");
+/* harmony import */ var _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_92__ = __webpack_require__(/*! ./DataStructures/FilterSearch */ "./src/DataStructures/FilterSearch.ts");
+/* harmony import */ var _DataStructures_Search_SearchStructure__WEBPACK_IMPORTED_MODULE_93__ = __webpack_require__(/*! ./DataStructures/Search/SearchStructure */ "./src/DataStructures/Search/SearchStructure.ts");
+/* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_94__ = __webpack_require__(/*! ./DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
+/* harmony import */ var _Services_GetDataFromIndexDb__WEBPACK_IMPORTED_MODULE_95__ = __webpack_require__(/*! ./Services/GetDataFromIndexDb */ "./src/Services/GetDataFromIndexDb.ts");
+/* harmony import */ var _Services_Local_CreateLocalBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_96__ = __webpack_require__(/*! ./Services/Local/CreateLocalBinaryTreeFromData */ "./src/Services/Local/CreateLocalBinaryTreeFromData.ts");
+/* harmony import */ var _Services_InitializeSystem__WEBPACK_IMPORTED_MODULE_97__ = __webpack_require__(/*! ./Services/InitializeSystem */ "./src/Services/InitializeSystem.ts");
+/* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__ = __webpack_require__(/*! ./DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
+/* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__ = __webpack_require__(/*! ./DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
+/* harmony import */ var _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__ = __webpack_require__(/*! ./Constants/general.const */ "./src/Constants/general.const.ts");
+/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
+/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16964,14 +17384,21 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-var serviceWoker;
+
+
+
+
+
+var serviceWorker;
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.
  * @param accessToken access token got from the sign in process
  */
 function updateAccessToken(accessToken = "") {
-    _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_95__.TokenStorage.BearerAccessToken = accessToken;
+    _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__.TokenStorage.BearerAccessToken = accessToken;
+    if (serviceWorker)
+        sendMessage('updateAccessToken', { accessToken });
 }
 /**
  *
@@ -16992,101 +17419,8 @@ function init() {
          * set in the indexdb this is replaced by the indexdb value.
          */
         try {
-            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_94__.BaseUrl.BASE_URL = url;
-            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_94__.BaseUrl.AI_URL = aiurl;
-            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_94__.BaseUrl.NODE_URL = nodeUrl;
-            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_94__.BaseUrl.BASE_APPLICATION = applicationName;
-            _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_95__.TokenStorage.BearerAccessToken = accessToken;
-            let randomizer = Math.floor(Math.random() * 100000000);
-            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_94__.BaseUrl.BASE_RANDOMIZER = randomizer;
-            if (isTest) {
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isDataLoaded = true;
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isCharacterLoaded = true;
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isTypeLoaded = true;
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isLocalDataLoaded = true;
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isLocalTypeLoaded = true;
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isLocalCharacterLoaded = true;
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isConnectionLoaded = true;
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isConnectionTypeLoaded = true;
-                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_0__.IdentifierFlags.isLocalConnectionLoaded = true;
-                return true;
-            }
-            console.log("This ist he base url", _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_94__.BaseUrl.BASE_URL, randomizer);
-            // /**
-            //     * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
-            //     * We use some sort of AI algorithm to initilize these concepts with the most used concept.
-            //     * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
-            //     * If the developer does not want to use this feature then they can just set enableAi to false.
-            //     */
-            // await InitializeSystem(enableAi);
-            // const start = new Date().getTime();
-            // /**
-            //  * This  will create a binary tree in the memory from the indexdb.
-            //  * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
-            //  * and that the type binary tree has been loaded.
-            //  * These trees are helpful in caching concepts and connections for the data fabric.
-            //  */
-            // await   CreateConceptBinaryTreeFromIndexDb().then(()=>{
-            //    // IdentifierFlags.isDataLoaded= true;
-            //    // IdentifierFlags.isCharacterLoaded= true;
-            //    // IdentifierFlags.isTypeLoaded= true;
-            //    let elapsed = new Date().getTime() - start;
-            //    console.log("The time taken to prepare concept  data is  ", elapsed);
-            // }).catch((event) => {
-            //   // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
-            //    throw event;
-            // });
-            // /**
-            //  * This will create a binary tree of local concepts that is saved from the indexdb.
-            //  * This process after finishing creating a binary tree of local concepts then set flag to denote that
-            //  * LocalBinaryTree has been created from the concepts in indexdb
-            //  * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
-            //  * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
-            //  */
-            // await CreateLocalBinaryTreeFromIndexDb().then(()=>{
-            //    // IdentifierFlags.isLocalDataLoaded = true;
-            //    // IdentifierFlags.isLocalTypeLoaded = true;
-            //    // IdentifierFlags.isLocalCharacterLoaded = true;
-            //    let elapsed = new Date().getTime() - start;
-            //    console.log("The time taken to prepare local concept  ", elapsed);
-            // }).catch((event) => {
-            //   throw event;
-            // });
-            // /**
-            //  * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
-            //  * a static class called LocalConnectionData.
-            //  * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
-            //  */
-            // await GetConnectionsFromIndexDbLocal().then(()=>{
-            //    IdentifierFlags.isLocalConnectionLoaded = true;
-            // }).catch((event) => {
-            //    //console.log("This is the error in creating local connections binary tree");
-            //    throw event;
-            // });
-            // /**
-            //  * We have designed our system to use local concepts and connections with its own local ids(negative ids) that
-            //  * is only valid for the browser that creates this. We have a translator in our node server.
-            //  * This function does this process in initlization.
-            //  */
-            // // PopulateTheLocalSettingsToMemory().then(()=>{
-            // // }).catch((event) => {
-            // //    //console.log("This is the error in populating binary tree");
-            // //   throw event;
-            // // });
-            // /**
-            //  * This process gets the connections from indexdb and loads it to the connections array which is inside of
-            //  * a static class called ConnectionData.
-            //  * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
-            //  */
-            // await GetConnectionsFromIndexDb().then(()=>{
-            //    IdentifierFlags.isConnectionLoaded = true;
-            //    IdentifierFlags.isConnectionTypeLoaded = true;
-            //    let elapsed = new Date().getTime() - start;
-            //    console.log("The time taken to prepare connections  ", elapsed);
-            // }).catch((event) => {
-            //    //console.log("This is the error in creating connections tree");
-            //    throw event;
-            // });
+            yield initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest);
+            listenBroadCastMessages();
             console.log("setSW", setSW);
             let alreadyRegistered = false;
             // await initializeServiceWorker();
@@ -17147,7 +17481,7 @@ function init() {
                             console.log("Service Worker registered with scope:", registration.scope);
                             if (registration.active) {
                                 console.log("active sw");
-                                serviceWoker = registration.active;
+                                serviceWorker = registration.active;
                                 // register()
                                 // sendMessage('init', {})
                                 yield sendMessage("init", {
@@ -17175,7 +17509,7 @@ function init() {
                                             if (newWorker.state === "activated") {
                                                 // && navigator.serviceWorker.controller) {
                                                 console.log("New Service Worker is active", registration);
-                                                serviceWoker = registration.active;
+                                                serviceWorker = registration.active;
                                                 // Send init message now that it's active
                                                 yield sendMessage("init", {
                                                     url,
@@ -17202,7 +17536,7 @@ function init() {
                             //   console.log("waiting sw activation");
                             // } else if (registration.active) {
                             //   console.log("active sw");
-                            //   serviceWoker = registration.active;
+                            //   serviceWorker = registration.active;
                             //   // register()
                             //   // sendMessage('init', {})
                             //   await sendMessage("init", {
@@ -17251,19 +17585,191 @@ function sendMessage(type, payload) {
             navigator.serviceWorker.removeEventListener("message", responseHandler);
         };
         navigator.serviceWorker.addEventListener("message", responseHandler);
-        serviceWoker === null || serviceWoker === void 0 ? void 0 : serviceWoker.postMessage({ type, payload });
+        serviceWorker === null || serviceWorker === void 0 ? void 0 : serviceWorker.postMessage({ type, payload });
     });
 }
-// export function sendMessage(type: string, payload: any) {
-//    return new Promise((resolve) => {
-//      const responseHandler = (event: any) => {
-//        resolve(event.data);
-//        navigator.serviceWorker.removeEventListener("message", responseHandler);
-//      };
-//      navigator.serviceWorker.addEventListener("message", responseHandler);
-//      navigator.serviceWorker.controller?.postMessage({ type, payload });
-//    });
-//  }
+function dispatchIdEvent(id, data = {}) {
+    console.log('id event dispatched', id);
+    if (serviceWorker) {
+        // let event = new Event(`${id}`);
+        let event = new CustomEvent(`${id}`, data);
+        console.log("event fired from", event);
+        dispatchEvent(event);
+    }
+    else {
+        _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__.broadcastChannel.postMessage({ type: 'dispatchEvent', payload: { id } });
+    }
+}
+let subscribedListeners = [];
+// actions for message received on broadcast channel (specially from service worker)
+const broadcastActions = {
+    GetLinkListener: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const listener = subscribedListeners.find(listener => listener.listenerId == payload.listenerId);
+        listener === null || listener === void 0 ? void 0 : listener.callback(payload.data);
+        return { success: true };
+    }),
+    dispatchEvent: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        if (serviceWorker) {
+            let event = new Event(payload.id || '');
+            console.log("this is the fired event after delete", event);
+            dispatchEvent(event);
+        }
+        return { success: true };
+    })
+};
+function listenBroadCastMessages() {
+    // broadcast event can be listened through both the service worker and other tabs
+    _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__.broadcastChannel.addEventListener('message', (event) => __awaiter(this, void 0, void 0, function* () {
+        console.log('Received in Main Thread:', event, event.data);
+        const { type, payload } = event.data;
+        if (!type)
+            return;
+        console.log('has type broadcast', type);
+        let responseData = { success: false, data: undefined };
+        if (broadcastActions[type]) {
+            console.log('if bc type');
+            responseData = yield broadcastActions[type](payload);
+        }
+        else {
+            console.log('else bc type');
+            console.log(`Unable to handle "${type}" case in service worker`);
+        }
+    }));
+}
+// Utility function to handle service worker or fallback logic
+function handleServiceWorkerRequest(serviceWorkerMethod, params, fallbackFunction) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (serviceWorker) {
+            console.log('Data receiving');
+            const res = yield sendMessage(serviceWorkerMethod, params);
+            console.log('Data received from SW', res);
+            return res.data;
+        }
+        else {
+            console.log('Used old BT');
+            return yield fallbackFunction(...params);
+        }
+    });
+}
+/**
+ * Method to initialize the initial data
+ * @param url string
+ * @param aiurl string
+ * @param accessToken string
+ * @param nodeUrl string
+ * @param enableAi boolean
+ * @param applicationName string
+ * @param isTest boolean
+ * @returns Promise<any>
+ */
+function initConceptConnection() {
+    return __awaiter(this, arguments, void 0, function* (url = "", aiurl = "", accessToken = "", nodeUrl = "", enableAi = true, applicationName = "", isTest = false) {
+        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_URL = url;
+        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.AI_URL = aiurl;
+        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.NODE_URL = nodeUrl;
+        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_APPLICATION = applicationName;
+        _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__.TokenStorage.BearerAccessToken = accessToken;
+        let randomizer = Math.floor(Math.random() * 100000000);
+        // BaseUrl.BASE_RANDOMIZER = randomizer;
+        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_RANDOMIZER = 999;
+        if (isTest) {
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isDataLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isCharacterLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isTypeLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalDataLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalTypeLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalCharacterLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionTypeLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
+            return true;
+        }
+        console.log("This ist he base url", _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_URL, randomizer);
+        /**
+         * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
+         * We use some sort of AI algorithm to initilize these concepts with the most used concept.
+         * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
+         * If the developer does not want to use this feature then they can just set enableAi to false.
+         */
+        yield (0,_Services_InitializeSystem__WEBPACK_IMPORTED_MODULE_97__["default"])();
+        const start = new Date().getTime();
+        /**
+         * This  will create a binary tree in the memory from the indexdb.
+         * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
+         * and that the type binary tree has been loaded.
+         * These trees are helpful in caching concepts and connections for the data fabric.
+         */
+        yield (0,_Services_CreateBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_0__["default"])()
+            .then(() => {
+            // IdentifierFlags.isDataLoaded= true;
+            // IdentifierFlags.isCharacterLoaded= true;
+            // IdentifierFlags.isTypeLoaded= true;
+            let elapsed = new Date().getTime() - start;
+            console.log("The time taken to prepare concept  data is  ", elapsed);
+        })
+            .catch((event) => {
+            // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
+            throw event;
+        });
+        /**
+         * This will create a binary tree of local concepts that is saved from the indexdb.
+         * This process after finishing creating a binary tree of local concepts then set flag to denote that
+         * LocalBinaryTree has been created from the concepts in indexdb
+         * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
+         * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
+         */
+        yield (0,_Services_Local_CreateLocalBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_96__["default"])()
+            .then(() => {
+            // IdentifierFlags.isLocalDataLoaded = true;
+            // IdentifierFlags.isLocalTypeLoaded = true;
+            // IdentifierFlags.isLocalCharacterLoaded = true;
+            let elapsed = new Date().getTime() - start;
+            console.log("The time taken to prepare local concept  ", elapsed);
+        })
+            .catch((event) => {
+            throw event;
+        });
+        /**
+         * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
+         * a static class called LocalConnectionData.
+         * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+         */
+        yield (0,_Services_GetDataFromIndexDb__WEBPACK_IMPORTED_MODULE_95__.GetConnectionsFromIndexDbLocal)()
+            .then(() => {
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
+        })
+            .catch((event) => {
+            //console.log("This is the error in creating local connections binary tree");
+            throw event;
+        });
+        /**
+         * We have designed our system to use local concepts and connections with its own local ids(negative ids) that
+         * is only valid for the browser that creates this. We have a translator in our node server.
+         * This function does this process in initlization.
+         */
+        // PopulateTheLocalSettingsToMemory().then(()=>{
+        // }).catch((event) => {
+        //    //console.log("This is the error in populating binary tree");
+        //   throw event;
+        // });
+        /**
+         * This process gets the connections from indexdb and loads it to the connections array which is inside of
+         * a static class called ConnectionData.
+         * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+         */
+        yield (0,_Services_GetDataFromIndexDb__WEBPACK_IMPORTED_MODULE_95__.GetConnectionsFromIndexDb)()
+            .then(() => {
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionLoaded = true;
+            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionTypeLoaded = true;
+            let elapsed = new Date().getTime() - start;
+            console.log("The time taken to prepare connections  ", elapsed);
+        })
+            .catch((event) => {
+            //console.log("This is the error in creating connections tree");
+            throw event;
+        });
+    });
+}
 
 
 /***/ })

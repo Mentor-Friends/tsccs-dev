@@ -4,6 +4,7 @@ export {getActions} from '../actions/getActions'
 export {searchActions} from '../actions/searchActions'
 export {createActions} from '../actions/createActions'
 export {updateActions} from '../actions/updateActions'
+export {connectionActions} from '../actions/connectionActions'
 export {syncActions} from '../actions/syncActions'
 
 // Define the type of syncActions object

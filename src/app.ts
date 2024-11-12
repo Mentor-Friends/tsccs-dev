@@ -110,11 +110,12 @@ import CreateLocalBinaryTreeFromIndexDb from './Services/Local/CreateLocalBinary
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+import { broadcastChannel } from "./Constants/general.const";
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
 
-export var serviceWoker: any;
+export var serviceWorker: any;
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
@@ -123,6 +124,7 @@ export var serviceWoker: any;
  */
 function updateAccessToken(accessToken: string = "") {
   TokenStorage.BearerAccessToken = accessToken;
+  if (serviceWorker) sendMessage('updateAccessToken', { accessToken })
 }
 /**
  *
@@ -151,107 +153,9 @@ async function init(
    * set in the indexdb this is replaced by the indexdb value.
    */
   try {
-    BaseUrl.BASE_URL = url;
-    BaseUrl.AI_URL = aiurl;
-    BaseUrl.NODE_URL = nodeUrl;
-    BaseUrl.BASE_APPLICATION = applicationName;
-    TokenStorage.BearerAccessToken = accessToken;
-    let randomizer = Math.floor(Math.random() * 100000000);
-    BaseUrl.BASE_RANDOMIZER = randomizer;
-    if (isTest) {
-      IdentifierFlags.isDataLoaded = true;
-      IdentifierFlags.isCharacterLoaded = true;
-      IdentifierFlags.isTypeLoaded = true;
-      IdentifierFlags.isLocalDataLoaded = true;
-      IdentifierFlags.isLocalTypeLoaded = true;
-      IdentifierFlags.isLocalCharacterLoaded = true;
-      IdentifierFlags.isConnectionLoaded = true;
-      IdentifierFlags.isConnectionTypeLoaded = true;
-      IdentifierFlags.isLocalConnectionLoaded = true;
-      return true;
-    }
-    console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
+    await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
 
-    // /**
-    //     * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
-    //     * We use some sort of AI algorithm to initilize these concepts with the most used concept.
-    //     * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
-    //     * If the developer does not want to use this feature then they can just set enableAi to false.
-    //     */
-    // await InitializeSystem(enableAi);
-    // const start = new Date().getTime();
-
-    // /**
-    //  * This  will create a binary tree in the memory from the indexdb.
-    //  * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
-    //  * and that the type binary tree has been loaded.
-    //  * These trees are helpful in caching concepts and connections for the data fabric.
-    //  */
-    // await   CreateConceptBinaryTreeFromIndexDb().then(()=>{
-    //    // IdentifierFlags.isDataLoaded= true;
-    //    // IdentifierFlags.isCharacterLoaded= true;
-    //    // IdentifierFlags.isTypeLoaded= true;
-    //    let elapsed = new Date().getTime() - start;
-    //    console.log("The time taken to prepare concept  data is  ", elapsed);
-    // }).catch((event) => {
-    //   // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
-    //    throw event;
-    // });
-
-    // /**
-    //  * This will create a binary tree of local concepts that is saved from the indexdb.
-    //  * This process after finishing creating a binary tree of local concepts then set flag to denote that
-    //  * LocalBinaryTree has been created from the concepts in indexdb
-    //  * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
-    //  * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
-    //  */
-    // await CreateLocalBinaryTreeFromIndexDb().then(()=>{
-    //    // IdentifierFlags.isLocalDataLoaded = true;
-    //    // IdentifierFlags.isLocalTypeLoaded = true;
-    //    // IdentifierFlags.isLocalCharacterLoaded = true;
-    //    let elapsed = new Date().getTime() - start;
-    //    console.log("The time taken to prepare local concept  ", elapsed);
-    // }).catch((event) => {
-    //   throw event;
-    // });
-
-    // /**
-    //  * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
-    //  * a static class called LocalConnectionData.
-    //  * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
-    //  */
-    // await GetConnectionsFromIndexDbLocal().then(()=>{
-    //    IdentifierFlags.isLocalConnectionLoaded = true;
-    // }).catch((event) => {
-    //    //console.log("This is the error in creating local connections binary tree");
-    //    throw event;
-    // });
-
-    // /**
-    //  * We have designed our system to use local concepts and connections with its own local ids(negative ids) that
-    //  * is only valid for the browser that creates this. We have a translator in our node server.
-    //  * This function does this process in initlization.
-    //  */
-    // // PopulateTheLocalSettingsToMemory().then(()=>{
-    // // }).catch((event) => {
-    // //    //console.log("This is the error in populating binary tree");
-    // //   throw event;
-    // // });
-
-    // /**
-    //  * This process gets the connections from indexdb and loads it to the connections array which is inside of
-    //  * a static class called ConnectionData.
-    //  * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
-    //  */
-    // await GetConnectionsFromIndexDb().then(()=>{
-    //    IdentifierFlags.isConnectionLoaded = true;
-    //    IdentifierFlags.isConnectionTypeLoaded = true;
-    //    let elapsed = new Date().getTime() - start;
-    //    console.log("The time taken to prepare connections  ", elapsed);
-    // }).catch((event) => {
-    //    //console.log("This is the error in creating connections tree");
-    //    throw event;
-    // });
+    listenBroadCastMessages()
 
     console.log("setSW", setSW);
     let alreadyRegistered = false;
@@ -322,7 +226,7 @@ async function init(
                );
                if (registration.active) {
                  console.log("active sw");
-                 serviceWoker = registration.active;
+                 serviceWorker = registration.active;
    
                  // register()
                  // sendMessage('init', {})
@@ -350,7 +254,7 @@ async function init(
                        if (newWorker.state === "activated") {
                          // && navigator.serviceWorker.controller) {
                          console.log("New Service Worker is active", registration);
-                         serviceWoker = registration.active;
+                         serviceWorker = registration.active;
                          // Send init message now that it's active
                          await sendMessage("init", {
                            url,
@@ -376,7 +280,7 @@ async function init(
                //   console.log("waiting sw activation");
                // } else if (registration.active) {
                //   console.log("active sw");
-               //   serviceWoker = registration.active;
+               //   serviceWorker = registration.active;
    
                //   // register()
                //   // sendMessage('init', {})
@@ -426,8 +330,20 @@ export function sendMessage(type: string, payload: any) {
     };
 
     navigator.serviceWorker.addEventListener("message", responseHandler);
-    serviceWoker?.postMessage({ type, payload });
+    serviceWorker?.postMessage({ type, payload });
   });
+}
+
+export function dispatchIdEvent(id: number|string, data:any = {}) {
+  console.log('id event dispatched', id)
+  if (serviceWorker) {
+    // let event = new Event(`${id}`);
+    let event = new CustomEvent(`${id}`, data)
+    console.log("event fired from", event);
+    dispatchEvent(event);
+  } else {
+    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
+  }
 }
 
 // export function sendMessage(type: string, payload: any) {
@@ -441,3 +357,197 @@ export function sendMessage(type: string, payload: any) {
 //      navigator.serviceWorker.controller?.postMessage({ type, payload });
 //    });
 //  }
+
+type listeners = {
+  listenerId: string | number
+  callback: any,
+  createdAt: number
+}
+export let subscribedListeners: listeners[] = []
+
+// actions for message received on broadcast channel (specially from service worker)
+const broadcastActions: any = {
+  GetLinkListener: async (payload: any) => {
+    const listener = subscribedListeners.find(listener => listener.listenerId == payload.listenerId)
+    listener?.callback(payload.data)
+    return { success: true }
+  },
+  dispatchEvent: async (payload: any) => {
+    if (serviceWorker) {
+      let event = new Event(payload.id || '');
+      console.log("this is the fired event after delete", event);
+      dispatchEvent(event);
+    }
+    return { success: true }
+  }
+}
+
+function listenBroadCastMessages() {
+  
+  // broadcast event can be listened through both the service worker and other tabs
+  broadcastChannel.addEventListener('message', async (event) => {
+    console.log('Received in Main Thread:', event, event.data);
+      const { type, payload }: any = event.data;
+      if (!type) return;
+      console.log('has type broadcast', type)
+      let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
+    
+      if (broadcastActions[type]) {
+        console.log('if bc type')
+        responseData = await broadcastActions[type](payload);
+      } else {
+        console.log('else bc type')
+        console.log(`Unable to handle "${type}" case in service worker`)
+      }
+    
+  });
+}
+
+// Utility function to handle service worker or fallback logic
+async function handleServiceWorkerRequest<T>(
+  serviceWorkerMethod: string, 
+  params: any, 
+  fallbackFunction: Function
+): Promise<T> {
+  if (serviceWorker) {
+    console.log('Data receiving');
+    const res: any = await sendMessage(serviceWorkerMethod, params);
+    console.log('Data received from SW', res);
+    return res.data;
+  } else {
+    console.log('Used old BT');
+    return await fallbackFunction(...params);
+  }
+}
+
+/**
+ * Method to initialize the initial data
+ * @param url string
+ * @param aiurl string
+ * @param accessToken string
+ * @param nodeUrl string
+ * @param enableAi boolean
+ * @param applicationName string
+ * @param isTest boolean
+ * @returns Promise<any>
+ */
+async function initConceptConnection(
+  url: string = "",
+  aiurl: string = "",
+  accessToken: string = "",
+  nodeUrl: string = "",
+  enableAi: boolean = true,
+  applicationName: string = "",
+  isTest: boolean = false
+) {
+  BaseUrl.BASE_URL = url;
+  BaseUrl.AI_URL = aiurl;
+  BaseUrl.NODE_URL = nodeUrl;
+  BaseUrl.BASE_APPLICATION = applicationName;
+  TokenStorage.BearerAccessToken = accessToken;
+  let randomizer = Math.floor(Math.random() * 100000000);
+  // BaseUrl.BASE_RANDOMIZER = randomizer;
+  BaseUrl.BASE_RANDOMIZER = 999;
+  if (isTest) {
+    IdentifierFlags.isDataLoaded = true;
+    IdentifierFlags.isCharacterLoaded = true;
+    IdentifierFlags.isTypeLoaded = true;
+    IdentifierFlags.isLocalDataLoaded = true;
+    IdentifierFlags.isLocalTypeLoaded = true;
+    IdentifierFlags.isLocalCharacterLoaded = true;
+    IdentifierFlags.isConnectionLoaded = true;
+    IdentifierFlags.isConnectionTypeLoaded = true;
+    IdentifierFlags.isLocalConnectionLoaded = true;
+    return true;
+  }
+  console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
+
+  /**
+   * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
+   * We use some sort of AI algorithm to initilize these concepts with the most used concept.
+   * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
+   * If the developer does not want to use this feature then they can just set enableAi to false.
+   */
+  await InitializeSystem();
+  const start = new Date().getTime();
+
+  /**
+   * This  will create a binary tree in the memory from the indexdb.
+   * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
+   * and that the type binary tree has been loaded.
+   * These trees are helpful in caching concepts and connections for the data fabric.
+   */
+  await CreateConceptBinaryTreeFromIndexDb()
+    .then(() => {
+      // IdentifierFlags.isDataLoaded= true;
+      // IdentifierFlags.isCharacterLoaded= true;
+      // IdentifierFlags.isTypeLoaded= true;
+      let elapsed = new Date().getTime() - start;
+      console.log("The time taken to prepare concept  data is  ", elapsed);
+    })
+    .catch((event) => {
+      // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
+      throw event;
+    });
+
+  /**
+   * This will create a binary tree of local concepts that is saved from the indexdb.
+   * This process after finishing creating a binary tree of local concepts then set flag to denote that
+   * LocalBinaryTree has been created from the concepts in indexdb
+   * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
+   * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
+   */
+  await CreateLocalBinaryTreeFromIndexDb()
+    .then(() => {
+      // IdentifierFlags.isLocalDataLoaded = true;
+      // IdentifierFlags.isLocalTypeLoaded = true;
+      // IdentifierFlags.isLocalCharacterLoaded = true;
+      let elapsed = new Date().getTime() - start;
+      console.log("The time taken to prepare local concept  ", elapsed);
+    })
+    .catch((event) => {
+      throw event;
+    });
+
+  /**
+   * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
+   * a static class called LocalConnectionData.
+   * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+   */
+  await GetConnectionsFromIndexDbLocal()
+    .then(() => {
+      IdentifierFlags.isLocalConnectionLoaded = true;
+    })
+    .catch((event) => {
+      //console.log("This is the error in creating local connections binary tree");
+      throw event;
+    });
+
+  /**
+   * We have designed our system to use local concepts and connections with its own local ids(negative ids) that
+   * is only valid for the browser that creates this. We have a translator in our node server.
+   * This function does this process in initlization.
+   */
+  // PopulateTheLocalSettingsToMemory().then(()=>{
+  // }).catch((event) => {
+  //    //console.log("This is the error in populating binary tree");
+  //   throw event;
+  // });
+
+  /**
+   * This process gets the connections from indexdb and loads it to the connections array which is inside of
+   * a static class called ConnectionData.
+   * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+   */
+  await GetConnectionsFromIndexDb()
+    .then(() => {
+      IdentifierFlags.isConnectionLoaded = true;
+      IdentifierFlags.isConnectionTypeLoaded = true;
+      let elapsed = new Date().getTime() - start;
+      console.log("The time taken to prepare connections  ", elapsed);
+    })
+    .catch((event) => {
+      //console.log("This is the error in creating connections tree");
+      throw event;
+    });
+}

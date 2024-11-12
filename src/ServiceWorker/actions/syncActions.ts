@@ -1,12 +1,17 @@
 import { Actions } from ".";
-import { SyncData } from "../../app"
+import { LocalSyncData, SyncData } from "../../app"
 
 
 
 export const syncActions: Actions = {
-    SyncDataOnline: async (payload: any) => {
+    SyncData_SyncDataOnline: async (payload: any) => {
         console.log('sync actions sw')
-        await SyncData.SyncDataOnline();
-        return { success: true, data: undefined }
+        const data = await SyncData.SyncDataOnline();
+        return { success: true, data }
+    },
+    LocalSyncData_SyncDataOnline: async (payload: any) => {
+        console.log('sync actions sw')
+        const data = await LocalSyncData.SyncDataOnline();
+        return { success: true, data }
     }
 }

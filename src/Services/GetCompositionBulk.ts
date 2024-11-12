@@ -1,7 +1,7 @@
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConnectionBulk } from "../Api/GetConnectionBulk";
 import { Connection } from "../DataStructures/Connection";
-import { ConnectionData, GetConceptBulk } from "../app";
+import { ConnectionData, GetConceptBulk, sendMessage, serviceWorker } from "../app";
 import { CheckForConnectionDeletionWithIds } from "./CheckForConnectionDeletion";
 import { FindConnectionsOfCompositionsBulkInMemory } from "./FindConnectionsOfCompositionBulkInMemory";
 import { GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryNew } from "./GetComposition";
@@ -48,6 +48,12 @@ export async function GetCompositionBulkWithDataId(conceptIds:number[]=[]){
  * @returns list of compositions created from the passed conceptIds and connectionIds.
  */
 export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[]=[], connectionIds:number[] = []){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionFromConnectionsWithDataId', {conceptIds, connectionIds})
+        console.log('data received from sw', res)
+        return res.data
+      }
+      
     let newConnections = await GetConnectionBulk(connectionIds);
     let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
     //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);

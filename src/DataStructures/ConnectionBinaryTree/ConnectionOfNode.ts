@@ -1,3 +1,4 @@
+import { dispatchIdEvent } from "../../app";
 import { NodePrimitive } from "./NodePrimitive";
 
 export class ConnectionOfNode extends NodePrimitive{
@@ -25,8 +26,10 @@ export class ConnectionOfNode extends NodePrimitive{
     public addNode(passedNode: ConnectionOfNode, node: ConnectionOfNode | null, height: number){
         if(node == null){
             node= passedNode;
-            let event = new Event(`${passedNode.key}`);
-            dispatchEvent(event);
+            // let event = new Event(`${passedNode.key}`);
+            // dispatchEvent(event);
+            console.log('event fired null passedNode', passedNode)
+            dispatchIdEvent(passedNode.key)
             return node;
         }
 

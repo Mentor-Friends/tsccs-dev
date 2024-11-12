@@ -1,3 +1,4 @@
+import { dispatchIdEvent } from "../../app";
 import { Connection } from "../Connection";
 import { ConnectionOfNode } from "./ConnectionOfNode";
 
@@ -34,13 +35,15 @@ export class ConnectionOfTheTree{
     static addConnection(connection: Connection){
         if(connection.id > 0){
             let key = this.CreateCompositionKey(connection.ofTheConceptId, connection.typeId);
-
+            console.log('key this.node', key, this.node)
 
             if(this.node){
                 // let event = new Event(`${key}`);
                 // // console.log("dispatched the of the concecpt event", event);
                 // dispatchEvent(event);
+                dispatchIdEvent(key)
                 let existingNode:ConnectionOfNode|null = this.node.getFromNode(key, this.node);
+                console.log(existingNode, 'existing node')
                 if(existingNode){
                     let connectionList: number[] = existingNode?.value;
                     if(connectionList.length == 0){
@@ -84,7 +87,8 @@ export class ConnectionOfTheTree{
             this.node = connectionOfNode;
             let event = new Event(`${this.node.key}`);
             console.log("dispatched the of the concecpt event", event);
-            dispatchEvent(event);
+            // dispatchEvent(event);
+            dispatchIdEvent(this.node.key)
             return this.node;
         }
         else{

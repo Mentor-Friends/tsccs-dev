@@ -5,7 +5,7 @@ import { UpdateToDatabase } from "../../Database/indexdblocal";
 import { ConceptsData } from "../ConceptData";
 import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "../Connection";
-import { CreateDefaultConcept, CreateDefaultLConcept } from "../../app";
+import { CreateDefaultConcept, CreateDefaultLConcept, sendMessage, serviceWorker } from "../../app";
 import { LocalConnectionData } from "./LocalConnectionData";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
@@ -74,8 +74,13 @@ export class LocalSyncData{
         }
      }
 
-     static async  SyncDataOnline(){
+     static async SyncDataOnline(){
         try{
+            console.log('sw triggered')
+            if (serviceWorker) {
+                const res: any = await sendMessage('LocalSyncData_SyncDataOnline', {})
+                return res.data
+            }
             let conceptsArray = this.conceptsSyncArray.slice();
             let connectionsArray = this.connectionSyncArray.slice();
     

@@ -4,22 +4,16 @@ import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData"
-import { GetConceptBulk, GetTheConcept, sendMessage, serviceWoker } from "../app";
+import { GetConceptBulk, GetTheConcept, sendMessage, serviceWorker } from "../app";
 
 
 
 export async function GetCompositionById(id:number){
-    if (serviceWoker) {
-        console.log('data receiving')
+    if (serviceWorker) {
         const res: any = await sendMessage('GetCompositionById', {id})
         console.log('data received from sw', res)
         return res.data
-    } else {
-        return await GetCompositionByIdData
     }
-}
-
-export async function GetCompositionByIdData(id:number){
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
     let connectionListString = await GetAllConnectionsOfComposition(id);
@@ -105,7 +99,6 @@ export async  function RecursiveFetchBuildLayerNormal(id:number, connectionList:
     return returnOutput;
 }
 
-
 /**
  * ## format JUSTDATA ##
  * this function builds the composition with the main id as the point of building.
@@ -116,26 +109,12 @@ export async  function RecursiveFetchBuildLayerNormal(id:number, connectionList:
  * @returns 
  */
 export async function GetComposition(id:number){
-    if (serviceWoker) {
-        console.log('data receiving')
+    if (serviceWorker) {
         const res: any = await sendMessage('GetComposition', {id})
         console.log('data received from sw', res)
         return res.data
-    } else {
-        return await GetCompositionData(id)
     }
-}
-
-/**
- * ## format JUSTDATA ##
- * this function builds the composition with the main id as the point of building.
- * This just requires the id
- * @param id id of the main composition that you want to build
- * @param connectionList  list of connections
- * @param compositionList list of of_the_concept_ids for all the connections.
- * @returns 
- */
-export async function GetCompositionData(id:number){
+    
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
     let connectionListString = await GetAllConnectionsOfComposition(id);
@@ -260,6 +239,12 @@ export async function GetCompositionFromMemoryNormal(id:number){
  * @returns 
  */
 export async function GetCompositionWithIdFromMemory(id:number){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionWithIdFromMemory', {id})
+        console.log('data received from sw', res)
+        return res.data
+      }
+
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
    // connectionList = await ConnectionData.GetConnectionsOfConcept(id);

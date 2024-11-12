@@ -1,9 +1,10 @@
 import { Actions } from ".";
-import { CreateTheCompositionData } from "../../Services/CreateTheComposition";
+import CreateTheComposition from "../../Services/CreateTheComposition";
+import { MakeTheInstanceConceptLocal } from "../../Services/Local/MakeTheInstanceConceptLocal";
 
 export const createActions: Actions = {
     CreateTheComposition: async (payload: any) => {
-        const data = await CreateTheCompositionData(
+        const data = await CreateTheComposition(
             payload.json,
             payload.ofTheConceptId,
             payload.ofTheConceptUserId,
@@ -12,6 +13,18 @@ export const createActions: Actions = {
             payload.accessId,
             payload.sessionInformationId
           );
+        return { success: true, data }
+    },
+    MakeTheInstanceConceptLocal: async (payload: any) => {
+        const data = await MakeTheInstanceConceptLocal(
+            payload.type,
+            payload.referent,
+            payload.composition,
+            payload.userId,
+            payload.accessId,
+            payload.sessionInformationId,
+            payload.referentId0
+        )
         return { success: true, data }
     }
 }

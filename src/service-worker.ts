@@ -1,4 +1,4 @@
-import { BaseUrl } from "./app";
+import { BaseUrl, updateAccessToken } from "./app";
 import { IdentifierFlags } from "./DataStructures/IdentifierFlags";
 import { TokenStorage } from "./DataStructures/Security/TokenStorage";
 import CreateConceptBinaryTreeFromIndexDb from "./Services/CreateBinaryTreeFromData";
@@ -8,7 +8,7 @@ import {
 } from "./Services/GetDataFromIndexDb";
 import InitializeSystem from "./Services/InitializeSystem";
 import CreateLocalBinaryTreeFromIndexDb from "./Services/Local/CreateLocalBinaryTreeFromData";
-import { Actions, createActions, getActions, searchActions, syncActions, updateActions } from "./ServiceWorker/actions";
+import { Actions, createActions, getActions, searchActions, syncActions, updateActions, connectionActions } from "./ServiceWorker/actions";
 
 // Install Service Worker
 self.addEventListener("install", (event) => {
@@ -41,11 +41,16 @@ const actions: Actions = {
       );
     return {success: true, data: undefined}
   },
+  updateAccessToken: async (payload) => {
+    updateAccessToken(payload.accessToken)
+    return {success: true}
+  },
   // imported actions
   ...getActions,
   ...searchActions,
   ...createActions,
   ...updateActions,
+  ...connectionActions,
   ...syncActions,
 }
 
