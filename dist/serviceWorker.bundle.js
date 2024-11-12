@@ -4845,11 +4845,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ConnectionOfNode: () => (/* binding */ ConnectionOfNode)
 /* harmony export */ });
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
-/* harmony import */ var _NodePrimitive__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NodePrimitive */ "./src/DataStructures/ConnectionBinaryTree/NodePrimitive.ts");
+/* harmony import */ var _NodePrimitive__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NodePrimitive */ "./src/DataStructures/ConnectionBinaryTree/NodePrimitive.ts");
 
-
-class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_1__.NodePrimitive {
+class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_0__.NodePrimitive {
     constructor(key, value, leftNode, rightNode) {
         super(key, value, leftNode, rightNode);
         this.key = "";
@@ -4865,8 +4863,6 @@ class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_1__.NodeP
             node = passedNode;
             // let event = new Event(`${passedNode.key}`);
             // dispatchEvent(event);
-            console.log('event fired null passedNode', passedNode);
-            (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(passedNode.key);
             return node;
         }
         let LeftNode = node.leftNode;
@@ -4966,10 +4962,6 @@ class ConnectionOfTheTree {
             let key = this.CreateCompositionKey(connection.ofTheConceptId, connection.typeId);
             console.log('key this.node', key, this.node);
             if (this.node) {
-                // let event = new Event(`${key}`);
-                // // console.log("dispatched the of the concecpt event", event);
-                // dispatchEvent(event);
-                (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(key);
                 let existingNode = this.node.getFromNode(key, this.node);
                 console.log(existingNode, 'existing node');
                 if (existingNode) {
@@ -4994,6 +4986,10 @@ class ConnectionOfTheTree {
                 let connectionNode = new _ConnectionOfNode__WEBPACK_IMPORTED_MODULE_1__.ConnectionOfNode(key, list, null, null);
                 this.addNodeToTree(connectionNode);
             }
+            let event = new Event(`${key}`);
+            // console.log("dispatched the of the concecpt event", event);
+            // dispatchEvent(event);
+            (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(key);
         }
         else {
             console.log("cannot insert key id with  n 0 to the connection tree", connection);
@@ -5008,10 +5004,9 @@ class ConnectionOfTheTree {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.node == null) {
                 this.node = connectionOfNode;
-                let event = new Event(`${this.node.key}`);
-                console.log("dispatched the of the concecpt event", event);
+                // let event = new Event(`${this.node.key}`);
+                // console.log("dispatched the of the concecpt event", event);
                 // dispatchEvent(event);
-                (0,_app__WEBPACK_IMPORTED_MODULE_0__.dispatchIdEvent)(this.node.key);
                 return this.node;
             }
             else {
