@@ -5438,7 +5438,7 @@ class ConnectionData {
     static GetConnectionByOfTheConceptAndType(ofTheConceptId, typeId) {
         return __awaiter(this, void 0, void 0, function* () {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData_GetConnectionByOfTheConceptAndType", { ofTheConceptId, typeId });
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionByOfTheConceptAndType", { ofTheConceptId, typeId });
                 console.log("data received from sw", res);
                 return res.data;
             }
@@ -5470,7 +5470,7 @@ class ConnectionData {
     static GetConnection(id) {
         return __awaiter(this, void 0, void 0, function* () {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('ConnectionData_GetConnection', { id });
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('ConnectionData__GetConnection', { id });
                 console.log('data received from sw', res);
                 return res.data;
             }
@@ -5506,6 +5506,11 @@ class ConnectionData {
     // commented
     static GetConnectionsOfCompositionLocal(id) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionsOfCompositionLocal", { id });
+                console.log("data received from sw", res);
+                return res.data;
+            }
             let connections = [];
             let connectionIds = [];
             connectionIds = ConnectionData.GetConnectionByOfType(id, id);
@@ -16744,6 +16749,7 @@ class GetLinkObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3_
                     var prefetch = [];
                     for (var i = 0; i < this.connections.length; i++) {
                         prefetch.push(this.connections[i].toTheConceptId);
+                        this.linkers.push(this.connections[i].id);
                         this.listenToEvent(this.connections[i].toTheConceptId);
                     }
                     // await GetAllConnectionsOfCompositionBulk(prefetch);

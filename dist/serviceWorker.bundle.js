@@ -5438,7 +5438,7 @@ class ConnectionData {
     static GetConnectionByOfTheConceptAndType(ofTheConceptId, typeId) {
         return __awaiter(this, void 0, void 0, function* () {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData_GetConnectionByOfTheConceptAndType", { ofTheConceptId, typeId });
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionByOfTheConceptAndType", { ofTheConceptId, typeId });
                 console.log("data received from sw", res);
                 return res.data;
             }
@@ -5470,7 +5470,7 @@ class ConnectionData {
     static GetConnection(id) {
         return __awaiter(this, void 0, void 0, function* () {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('ConnectionData_GetConnection', { id });
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('ConnectionData__GetConnection', { id });
                 console.log('data received from sw', res);
                 return res.data;
             }
@@ -5506,6 +5506,11 @@ class ConnectionData {
     // commented
     static GetConnectionsOfCompositionLocal(id) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionsOfCompositionLocal", { id });
+                console.log("data received from sw", res);
+                return res.data;
+            }
             let connections = [];
             let connectionIds = [];
             connectionIds = ConnectionData.GetConnectionByOfType(id, id);
@@ -10019,7 +10024,7 @@ const getActions = {
         return { success: true, data };
     }),
     GetConnectionBulk: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(payload.id);
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(payload.connectionIds);
         return { success: true, data };
     }),
     GetConceptByCharacterAndType: (payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -10050,11 +10055,15 @@ const getActions = {
         return { success: true, data };
     }),
     // Connection Data class methods
-    ConnectionData_GetConnectionByOfTheConceptAndType: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    ConnectionData__GetConnectionByOfTheConceptAndType: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         const data = yield _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.GetConnectionByOfTheConceptAndType(payload.ofTheConceptId, payload.typeId);
         return { success: true, data };
     }),
-    ConnectionData_GetConnection: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    ConnectionData__GetConnection: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.GetConnection(payload.id);
+        return { success: true, data };
+    }),
+    ConnectionData__GetConnectionsOfCompositionLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         const data = yield _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.GetConnection(payload.id);
         return { success: true, data };
     }),
@@ -17077,6 +17086,7 @@ class GetLinkObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3_
                     var prefetch = [];
                     for (var i = 0; i < this.connections.length; i++) {
                         prefetch.push(this.connections[i].toTheConceptId);
+                        this.linkers.push(this.connections[i].id);
                         this.listenToEvent(this.connections[i].toTheConceptId);
                     }
                     // await GetAllConnectionsOfCompositionBulk(prefetch);
@@ -18196,7 +18206,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 // Install Service Worker
 self.addEventListener("install", (event) => {
     console.log("Service Worker installing... sw");
-    // event.waitUntil(self.skipWaiting(););
+    // event.waitUntil();
     self.skipWaiting();
 });
 // Activate Service Worker
