@@ -11,9 +11,10 @@ import CreateLocalBinaryTreeFromIndexDb from "./Services/Local/CreateLocalBinary
 import { Actions, createActions, getActions, searchActions, syncActions, updateActions, connectionActions } from "./ServiceWorker/actions";
 
 // Install Service Worker
-self.addEventListener("install", (event) => {
+self.addEventListener("install", (event: any) => {
   console.log("Service Worker installing... sw");
-  (self as any).skipWaiting();
+  // event.waitUntil(self.skipWaiting(););
+  (self as any).skipWaiting()
 });
 
 // Activate Service Worker

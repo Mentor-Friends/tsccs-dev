@@ -17,7 +17,6 @@ export const searchActions: Actions = {
             payload.listLinkers,
             payload.textSearch
         )
-        console.log('paylod data', data)
         return { success: true, data }
     }
 }

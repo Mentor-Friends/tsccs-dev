@@ -17414,7 +17414,7 @@ function init() {
          * set in the indexdb this is replaced by the indexdb value.
          */
         try {
-            yield initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest);
+            // await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
             listenBroadCastMessages();
             console.log("setSW", setSW);
             let alreadyRegistered = false;
@@ -17547,10 +17547,11 @@ function init() {
                             //   console.log("sw check installation", registration);
                             // }
                         }))
-                            .catch((error) => {
+                            .catch((error) => __awaiter(this, void 0, void 0, function* () {
+                            yield initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest);
                             reject(error);
                             console.error("Service Worker registration failed:", error);
-                        });
+                        }));
                     });
                     // }
                     // }).catch(err => {
@@ -17562,6 +17563,7 @@ function init() {
                 }
             }
             else {
+                yield initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest);
                 console.log("Service Worker not supported in this browser.");
             }
             console.log("message sent");
@@ -17606,23 +17608,26 @@ const broadcastActions = {
     dispatchEvent: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         if (serviceWorker) {
             let event = new Event(payload.id || '');
-            console.log("this is the fired event after delete", event);
+            console.log("broadcast dispatched evenet found", event);
             dispatchEvent(event);
         }
+        // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
+        //   clients.forEach(client => {
+        //     client.postMessage({ id, updatedData });
+        //   });
+        // });
         return { success: true };
     })
 };
 function listenBroadCastMessages() {
     // broadcast event can be listened through both the service worker and other tabs
     _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__.broadcastChannel.addEventListener('message', (event) => __awaiter(this, void 0, void 0, function* () {
-        console.log('Received in Main Thread:', event, event.data);
         const { type, payload } = event.data;
+        console.log('Received in Main Thread:', type, event, event.data);
         if (!type)
             return;
-        console.log('has type broadcast', type);
         let responseData = { success: false, data: undefined };
         if (broadcastActions[type]) {
-            console.log('if bc type');
             responseData = yield broadcastActions[type](payload);
         }
         else {

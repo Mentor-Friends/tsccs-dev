@@ -153,7 +153,7 @@ async function init(
    * set in the indexdb this is replaced by the indexdb value.
    */
   try {
-    await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
+    // await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
 
     listenBroadCastMessages()
 
@@ -297,7 +297,9 @@ async function init(
                //   console.log("sw check installation", registration);
                // }
              })
-             .catch((error) => {
+             .catch(async (error) => {
+              
+              await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
                reject(error)
                console.error("Service Worker registration failed:", error);
              });
@@ -310,6 +312,7 @@ async function init(
         console.error("Unable to start service worker", error);
       }
     } else {
+      await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
       console.log("Service Worker not supported in this browser.");
     }
 
@@ -375,9 +378,14 @@ const broadcastActions: any = {
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
       let event = new Event(payload.id || '');
-      console.log("this is the fired event after delete", event);
+      console.log("broadcast dispatched evenet found", event);
       dispatchEvent(event);
     }
+    // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
+    //   clients.forEach(client => {
+    //     client.postMessage({ id, updatedData });
+    //   });
+    // });
     return { success: true }
   }
 }
@@ -386,14 +394,12 @@ function listenBroadCastMessages() {
   
   // broadcast event can be listened through both the service worker and other tabs
   broadcastChannel.addEventListener('message', async (event) => {
-    console.log('Received in Main Thread:', event, event.data);
-      const { type, payload }: any = event.data;
+    const { type, payload }: any = event.data;
+    console.log('Received in Main Thread:', type, event, event.data);
       if (!type) return;
-      console.log('has type broadcast', type)
       let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
     
       if (broadcastActions[type]) {
-        console.log('if bc type')
         responseData = await broadcastActions[type](payload);
       } else {
         console.log('else bc type')
