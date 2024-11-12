@@ -43,6 +43,7 @@ export class GetLinkObservable extends DependencyObserver
               var prefetch :number[] = [];
               for(var i=0; i<this.connections.length; i++){
                 prefetch.push(this.connections[i].toTheConceptId);
+                this.linkers.push(this.connections[i].id)
                 this.listenToEvent(this.connections[i].toTheConceptId);
               }
              // await GetAllConnectionsOfCompositionBulk(prefetch);
@@ -57,7 +58,7 @@ export class GetLinkObservable extends DependencyObserver
     async build(){
 
         this.data = []
-        this.connections = await GetConnectionBulk(this.linkers)
+        this.connections = await GetConnectionBulk(this.linkers);
         for(var i=0; i<this.connections.length; i++){
             let toConceptId = this.connections[i].toTheConceptId;
             let toConcept = await GetTheConcept(toConceptId);

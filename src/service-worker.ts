@@ -13,7 +13,7 @@ import { Actions, createActions, getActions, searchActions, syncActions, updateA
 // Install Service Worker
 self.addEventListener("install", (event: any) => {
   console.log("Service Worker installing... sw");
-  // event.waitUntil(self.skipWaiting(););
+  // event.waitUntil();
   (self as any).skipWaiting()
 });
 

@@ -83,7 +83,7 @@ export class ConnectionData {
   ) {
     if (serviceWorker) {
       const res: any = await sendMessage(
-        "ConnectionData_GetConnectionByOfTheConceptAndType",
+        "ConnectionData__GetConnectionByOfTheConceptAndType",
         { ofTheConceptId, typeId }
       );
       console.log("data received from sw", res);
@@ -133,7 +133,7 @@ export class ConnectionData {
 
   static async GetConnection(id: number) {
     if (serviceWorker) {
-      const res: any = await sendMessage('ConnectionData_GetConnection', {id})
+      const res: any = await sendMessage('ConnectionData__GetConnection', {id})
       console.log('data received from sw', res)
       return res.data
     }
@@ -171,6 +171,14 @@ export class ConnectionData {
 
   // commented
   static async GetConnectionsOfCompositionLocal(id: number) {
+    if (serviceWorker) {
+      const res: any = await sendMessage(
+        "ConnectionData__GetConnectionsOfCompositionLocal",
+        { id }
+      );
+      console.log("data received from sw", res);
+      return res.data;
+    }
     let connections: Connection[] = [];
     let connectionIds: number[] = [];
     connectionIds = ConnectionData.GetConnectionByOfType(id, id);

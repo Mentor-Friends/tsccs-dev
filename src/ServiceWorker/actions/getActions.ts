@@ -38,7 +38,7 @@ export const getActions: Actions = {
     return { success: true, data };
   },
   GetConnectionBulk: async (payload) => {
-    const data = await GetConnectionBulk(payload.id);
+    const data = await GetConnectionBulk(payload.connectionIds);
     return { success: true, data };
   },
   GetConceptByCharacterAndType: async (payload) => {
@@ -72,11 +72,15 @@ export const getActions: Actions = {
   },
 
   // Connection Data class methods
-  ConnectionData_GetConnectionByOfTheConceptAndType: async (payload) => {
+  ConnectionData__GetConnectionByOfTheConceptAndType: async (payload) => {
     const data = await ConnectionData.GetConnectionByOfTheConceptAndType(payload.ofTheConceptId, payload.typeId)
     return { success: true, data };
   },
-  ConnectionData_GetConnection: async (payload) => {
+  ConnectionData__GetConnection: async (payload) => {
+    const data = await ConnectionData.GetConnection(payload.id)
+    return { success: true, data };
+  },
+  ConnectionData__GetConnectionsOfCompositionLocal: async (payload) => {
     const data = await ConnectionData.GetConnection(payload.id)
     return { success: true, data };
   },
