@@ -3,6 +3,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import { GetConceptByCharacterAndCategoryLocal } from "./GetConceptByCharacterLocal";
 import { SplitStrings } from "../SplitStrings";
 import MakeTheConceptLocal from "./MakeTheConceptLocal";
+import { sendMessage, serviceWorker } from "../../app";
 
 /**
  * There are two types of concepts. One type of concept is a type concept. These concepts have no actual value and do not mean
@@ -19,6 +20,14 @@ import MakeTheConceptLocal from "./MakeTheConceptLocal";
 export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number,
     ): Promise<Concept>
 {
+    if (serviceWorker) {
+        const res: any = await sendMessage("MakeTheTypeConceptLocal", {
+          typeString, sessionId, sessionUserId, userId
+        });
+        console.log("data received from sw", res);
+        return res.data;
+      }
+
     let accessId: number = 4;
 
     let existingConcept = await GetConceptByCharacterAndCategoryLocal(typeString);

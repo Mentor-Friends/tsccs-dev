@@ -174,6 +174,11 @@ export async function GetCompositionWithAllIds(id:number){
  * @returns 
  */
 export async function GetCompositionFromMemory(id:number){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionFromMemory', {id})
+        console.log('data received from sw', res)
+        return res.data
+      }
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
     //connectionList = await ConnectionData.GetConnectionsOfConcept(id);
@@ -319,6 +324,11 @@ export async function GetCompositionWithIdFromMemoryNew(id:number){
  * @returns 
  */
 export async function GetCompositionWithIdAndDateFromMemory(id:number){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionWithIdAndDateFromMemory', {id})
+        console.log('data received from sw', res)
+        return res.data
+      }
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
@@ -382,6 +392,11 @@ export async function GetCompositionWithIdFromMemoryFromConnections(id:number, c
  * @returns 
  */
 export async function GetCompositionWithId(id:number){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionWithId', {id})
+        console.log('data received from sw', res)
+        return res.data
+      }
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
     let connectionListString = await GetAllConnectionsOfComposition(id);

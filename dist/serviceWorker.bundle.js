@@ -9911,7 +9911,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   connectionActions: () => (/* binding */ connectionActions)
 /* harmony export */ });
-/* harmony import */ var _Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Services/Local/CreateConnectionBetweenTwoConceptsLocal */ "./src/Services/Local/CreateConnectionBetweenTwoConceptsLocal.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Services/Local/CreateConnectionBetweenTwoConceptsLocal */ "./src/Services/Local/CreateConnectionBetweenTwoConceptsLocal.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9922,11 +9923,17 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
+
 const connectionActions = {
     CreateConnectionBetweenTwoConceptsLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_0__.CreateConnectionBetweenTwoConceptsLocal)(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both);
+        const data = yield (0,_Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_1__.CreateConnectionBetweenTwoConceptsLocal)(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both);
         return { success: true, data };
-    })
+    }),
+    // local
+    CreateTheConnectionLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(payload.ofTheConceptId, payload.toTheConceptId, payload.typeId, payload.orderId, payload.typeString, payload.userId);
+        return { success: true, data };
+    }),
 };
 
 
@@ -9942,8 +9949,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   createActions: () => (/* binding */ createActions)
 /* harmony export */ });
-/* harmony import */ var _Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Services/CreateTheComposition */ "./src/Services/CreateTheComposition.ts");
-/* harmony import */ var _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Services/Local/MakeTheInstanceConceptLocal */ "./src/Services/Local/MakeTheInstanceConceptLocal.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Services/CreateTheComposition */ "./src/Services/CreateTheComposition.ts");
+/* harmony import */ var _Services_Local_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../Services/Local/CreateTheConceptLocal */ "./src/Services/Local/CreateTheConceptLocal.ts");
+/* harmony import */ var _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../Services/Local/MakeTheInstanceConceptLocal */ "./src/Services/Local/MakeTheInstanceConceptLocal.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9955,15 +9964,62 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
+
+
 const createActions = {
     CreateTheComposition: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_0__["default"])(payload.json, payload.ofTheConceptId, payload.ofTheConceptUserId, payload.mainKey, payload.userId, payload.accessId, payload.sessionInformationId);
+        const data = yield (0,_Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_1__["default"])(payload.json, payload.ofTheConceptId, payload.ofTheConceptUserId, payload.mainKey, payload.userId, payload.accessId, payload.sessionInformationId);
         return { success: true, data };
     }),
     MakeTheInstanceConceptLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_1__.MakeTheInstanceConceptLocal)(payload.type, payload.referent, payload.composition, payload.userId, payload.accessId, payload.sessionInformationId, payload.referentId0);
+        const data = yield (0,_Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(payload.type, payload.referent, payload.composition, payload.userId, payload.accessId, payload.sessionInformationId, payload.referentId);
+        return { success: true, data };
+    }),
+    // local
+    CreateTheConceptLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_Local_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__["default"])(payload.referent, payload.typecharacter, payload.userId, payload.categoryId, payload.typeId, payload.accessId, payload.isComposition, payload.referentId);
+        return { success: true, data };
+    }),
+    CreateTheCompositionLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheCompositionLocal)(payload.json, payload.ofTheConceptId, payload.ofTheConceptUserId, payload.mainKey, payload.userId, payload.accessId, payload.sessionInformationId, payload.automaticSync);
         return { success: true, data };
     })
+};
+
+
+/***/ }),
+
+/***/ "./src/ServiceWorker/actions/deleteActions.ts":
+/*!****************************************************!*\
+  !*** ./src/ServiceWorker/actions/deleteActions.ts ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   deleteActions: () => (/* binding */ deleteActions)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+const deleteActions = {
+    DeleteConnectionById: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.DeleteConnectionById)(payload.id);
+        return { success: true, data };
+    }),
+    // local
+    DeleteConceptLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.DeleteConceptLocal)(payload.id);
+        return { success: true, data };
+    }),
 };
 
 
@@ -10023,6 +10079,10 @@ const getActions = {
         const data = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionById)(payload.id);
         return { success: true, data };
     }),
+    GetCompositionWithId: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionWithId)(payload.id);
+        return { success: true, data };
+    }),
     GetConnectionBulk: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(payload.connectionIds);
         return { success: true, data };
@@ -10043,9 +10103,21 @@ const getActions = {
         const data = yield (0,_Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_4__.GetCompositionFromConnectionsWithDataId)(payload.conceptIds, payload.connectionIds);
         return { success: true, data };
     }),
+    GetCompositionFromConnectionsWithDataIdIndex: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_4__.GetCompositionFromConnectionsWithDataIdIndex)(payload.conceptIds, payload.connectionIds);
+        return { success: true, data };
+    }),
     // memory
     GetCompositionWithIdFromMemory: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         const data = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionWithIdFromMemory)(payload.id);
+        return { success: true, data };
+    }),
+    GetCompositionWithIdAndDateFromMemory: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionWithIdAndDateFromMemory)(payload.id);
+        return { success: true, data };
+    }),
+    GetCompositionFromMemory: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionFromMemory)(payload.id);
         return { success: true, data };
     }),
     // locals
@@ -10114,9 +10186,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   connectionActions: () => (/* reexport safe */ _actions_connectionActions__WEBPACK_IMPORTED_MODULE_4__.connectionActions),
 /* harmony export */   createActions: () => (/* reexport safe */ _actions_createActions__WEBPACK_IMPORTED_MODULE_2__.createActions),
+/* harmony export */   deleteActions: () => (/* reexport safe */ _actions_deleteActions__WEBPACK_IMPORTED_MODULE_5__.deleteActions),
 /* harmony export */   getActions: () => (/* reexport safe */ _actions_getActions__WEBPACK_IMPORTED_MODULE_0__.getActions),
 /* harmony export */   searchActions: () => (/* reexport safe */ _actions_searchActions__WEBPACK_IMPORTED_MODULE_1__.searchActions),
-/* harmony export */   syncActions: () => (/* reexport safe */ _actions_syncActions__WEBPACK_IMPORTED_MODULE_5__.syncActions),
+/* harmony export */   syncActions: () => (/* reexport safe */ _actions_syncActions__WEBPACK_IMPORTED_MODULE_6__.syncActions),
 /* harmony export */   updateActions: () => (/* reexport safe */ _actions_updateActions__WEBPACK_IMPORTED_MODULE_3__.updateActions)
 /* harmony export */ });
 /* harmony import */ var _actions_getActions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../actions/getActions */ "./src/ServiceWorker/actions/getActions.ts");
@@ -10124,7 +10197,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _actions_createActions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../actions/createActions */ "./src/ServiceWorker/actions/createActions.ts");
 /* harmony import */ var _actions_updateActions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../actions/updateActions */ "./src/ServiceWorker/actions/updateActions.ts");
 /* harmony import */ var _actions_connectionActions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../actions/connectionActions */ "./src/ServiceWorker/actions/connectionActions.ts");
-/* harmony import */ var _actions_syncActions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../actions/syncActions */ "./src/ServiceWorker/actions/syncActions.ts");
+/* harmony import */ var _actions_deleteActions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../actions/deleteActions */ "./src/ServiceWorker/actions/deleteActions.ts");
+/* harmony import */ var _actions_syncActions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../actions/syncActions */ "./src/ServiceWorker/actions/syncActions.ts");
+
 
 
 
@@ -11460,7 +11535,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _Api_DeleteTheConnection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/DeleteTheConnection */ "./src/Api/DeleteTheConnection.ts");
 /* harmony import */ var _DataStructures_ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionBinaryTree.ts");
-/* harmony import */ var _GetConnections__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./GetConnections */ "./src/Services/GetConnections.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _GetConnections__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./GetConnections */ "./src/Services/GetConnections.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11473,9 +11549,15 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function DeleteConnectionById(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        let connection = yield (0,_GetConnections__WEBPACK_IMPORTED_MODULE_2__.GetConnectionById)(id);
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('DeleteConnectionById', { id });
+            console.log('data received from sw', res);
+            return res.data;
+        }
+        let connection = yield (0,_GetConnections__WEBPACK_IMPORTED_MODULE_3__.GetConnectionById)(id);
         yield (0,_Api_DeleteTheConnection__WEBPACK_IMPORTED_MODULE_0__["default"])(id);
         //removeFromDatabase("connection",id);
         _DataStructures_ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_1__.ConnectionBinaryTree.removeNodeFromTree(id);
@@ -11828,6 +11910,11 @@ function GetCompositionWithAllIds(id) {
 function GetCompositionFromMemory(id) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionFromMemory', { id });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let connectionList = [];
         let returnOutput = {};
         //connectionList = await ConnectionData.GetConnectionsOfConcept(id);
@@ -11972,6 +12059,11 @@ function GetCompositionWithIdFromMemoryNew(id) {
 function GetCompositionWithIdAndDateFromMemory(id) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionWithIdAndDateFromMemory', { id });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let connectionList = [];
         let returnOutput = {};
         connectionList = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_3__.ConnectionData.GetConnectionsOfCompositionLocal(id);
@@ -12031,6 +12123,11 @@ function GetCompositionWithIdFromMemoryFromConnections(id_1) {
 function GetCompositionWithId(id) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionWithId', { id });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let connectionList = [];
         let returnOutput = {};
         let connectionListString = yield (0,_Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_1__.GetAllConnectionsOfComposition)(id);
@@ -12550,6 +12647,11 @@ function GetCompositionFromConnectionsWithDataId() {
  */
 function GetCompositionFromConnectionsWithDataIdIndex() {
     return __awaiter(this, arguments, void 0, function* (conceptIds = [], connectionIds = []) {
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetCompositionFromConnectionsWithDataIdIndex', { conceptIds, connectionIds });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let newConnections = yield (0,_Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(connectionIds);
         let myNewConnections = newConnections;
         let oldConnections = yield (0,_FindConnectionsOfCompositionBulkInMemory__WEBPACK_IMPORTED_MODULE_3__.FindConnectionsOfCompositionsBulkInMemory)(conceptIds);
@@ -13820,9 +13922,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   CreateTheCompositionLocal: () => (/* binding */ CreateTheCompositionLocal)
 /* harmony export */ });
-/* harmony import */ var _Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Local/CreateDefaultLConcept */ "./src/Services/Local/CreateDefaultLConcept.ts");
-/* harmony import */ var _CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CreateTheConnectionLocal */ "./src/Services/Local/CreateTheConnectionLocal.ts");
-/* harmony import */ var _MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MakeTheInstanceConceptLocal */ "./src/Services/Local/MakeTheInstanceConceptLocal.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Local/CreateDefaultLConcept */ "./src/Services/Local/CreateDefaultLConcept.ts");
+/* harmony import */ var _CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CreateTheConnectionLocal */ "./src/Services/Local/CreateTheConnectionLocal.ts");
+/* harmony import */ var _MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./MakeTheInstanceConceptLocal */ "./src/Services/Local/MakeTheInstanceConceptLocal.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13832,6 +13935,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -13849,16 +13953,21 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  */
 function CreateTheCompositionLocal(json_1) {
     return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null, automaticSync = false) {
+        if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheCompositionLocal', { json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let localUserId = userId !== null && userId !== void 0 ? userId : 999;
         let localAccessId = accessId !== null && accessId !== void 0 ? accessId : 999;
         let localSessionId = sessionInformationId !== null && sessionInformationId !== void 0 ? sessionInformationId : 999;
         let MainKeyLocal = mainKey !== null && mainKey !== void 0 ? mainKey : 0;
-        let MainConcept = (0,_Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_0__.CreateDefaultLConcept)();
+        let MainConcept = (0,_Local_CreateDefaultLConcept__WEBPACK_IMPORTED_MODULE_1__.CreateDefaultLConcept)();
         for (const key in json) {
             if (typeof json[key] != 'string' && typeof json[key] != 'number') {
                 if (ofTheConceptId == null && ofTheConceptUserId == null) {
                     let localMainKey = MainKeyLocal;
-                    let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_2__.MakeTheInstanceConceptLocal)(key, "", true, localUserId, localAccessId, localSessionId);
+                    let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, "", true, localUserId, localAccessId, localSessionId);
                     let concept = conceptString;
                     MainConcept = concept;
                     localMainKey = concept.id;
@@ -13869,9 +13978,9 @@ function CreateTheCompositionLocal(json_1) {
                     let ofThe = ofTheConceptId !== null && ofTheConceptId !== void 0 ? ofTheConceptId : 999;
                     let ofTheUser = ofTheConceptUserId !== null && ofTheConceptUserId !== void 0 ? ofTheConceptUserId : 999;
                     let localMainKey = MainKeyLocal;
-                    let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_2__.MakeTheInstanceConceptLocal)(key, "", true, localUserId, localAccessId, localSessionId);
+                    let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, "", true, localUserId, localAccessId, localSessionId);
                     let concept = conceptString;
-                    yield (0,_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_1__.CreateTheConnectionLocal)(ofThe, concept.id, localMainKey);
+                    yield (0,_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_2__.CreateTheConnectionLocal)(ofThe, concept.id, localMainKey);
                     yield CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId);
                 }
             }
@@ -13879,9 +13988,9 @@ function CreateTheCompositionLocal(json_1) {
                 let ofThe = ofTheConceptId !== null && ofTheConceptId !== void 0 ? ofTheConceptId : 999;
                 let ofTheUser = ofTheConceptUserId !== null && ofTheConceptUserId !== void 0 ? ofTheConceptUserId : 999;
                 let localMainKey = MainKeyLocal;
-                let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_2__.MakeTheInstanceConceptLocal)(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
+                let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
                 let concept = conceptString;
-                yield (0,_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_1__.CreateTheConnectionLocal)(ofThe, concept.id, localMainKey);
+                yield (0,_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_2__.CreateTheConnectionLocal)(ofThe, concept.id, localMainKey);
             }
         }
         return MainConcept;
@@ -13901,9 +14010,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ CreateTheConceptLocal)
 /* harmony export */ });
-/* harmony import */ var _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../DataStructures/Concept */ "./src/DataStructures/Concept.ts");
-/* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
-/* harmony import */ var _DataStructures_Local_LocalId__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../DataStructures/Local/LocalId */ "./src/DataStructures/Local/LocalId.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../DataStructures/Concept */ "./src/DataStructures/Concept.ts");
+/* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
+/* harmony import */ var _DataStructures_Local_LocalId__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../DataStructures/Local/LocalId */ "./src/DataStructures/Local/LocalId.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13913,6 +14023,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -13939,20 +14050,25 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function CreateTheConceptLocal(referent_1, typecharacter_1, userId_1, categoryId_1, typeId_1, accessId_1) {
     return __awaiter(this, arguments, void 0, function* (referent, typecharacter, userId, categoryId, typeId, accessId, isComposition = false, referentId = 0) {
         try {
+            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId });
+                console.log('data received from sw', res);
+                return res.data;
+            }
             //let id = -Math.floor(Math.random() * 100000000);
-            let id = yield _DataStructures_Local_LocalId__WEBPACK_IMPORTED_MODULE_2__.LocalId.getConceptId();
+            let id = yield _DataStructures_Local_LocalId__WEBPACK_IMPORTED_MODULE_3__.LocalId.getConceptId();
             console.log("this is the getting id type connection", id);
             let isNew = true;
             let created_on = new Date();
             let updated_on = new Date();
             if (referent == "the") {
-                let concept = new _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_0__.Concept(1, 999, 5, 5, referentId, referent, accessId, isNew, created_on, updated_on, typecharacter);
+                let concept = new _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_1__.Concept(1, 999, 5, 5, referentId, referent, accessId, isNew, created_on, updated_on, typecharacter);
                 return concept;
             }
-            let concept = new _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_0__.Concept(id, userId, typeId, categoryId, referentId, referent, accessId, isNew, created_on, updated_on, typecharacter);
+            let concept = new _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_1__.Concept(id, userId, typeId, categoryId, referentId, referent, accessId, isNew, created_on, updated_on, typecharacter);
             concept.isTemp = true;
             concept.isComposition = isComposition;
-            _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_1__.LocalConceptsData.AddConcept(concept);
+            _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_2__.LocalConceptsData.AddConcept(concept);
             //storeToDatabase("localconcept",concept);
             return concept;
         }
@@ -14007,6 +14123,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  */
 function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) {
     return __awaiter(this, arguments, void 0, function* (ofTheConceptId, toTheConceptId, typeId, orderId = 1, typeString = "", userId = 999) {
+        if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         try {
             let accessId = 4;
             // let randomid = -Math.floor(Math.random() * 100000000);
@@ -14047,8 +14168,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   DeleteConceptLocal: () => (/* binding */ DeleteConceptLocal)
 /* harmony export */ });
-/* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
-/* harmony import */ var _GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./GetTheConceptLocal */ "./src/Services/Local/GetTheConceptLocal.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
+/* harmony import */ var _GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./GetTheConceptLocal */ "./src/Services/Local/GetTheConceptLocal.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14060,10 +14182,16 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
+
 function DeleteConceptLocal(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        let concept = yield (0,_GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_1__.GetTheConceptLocal)(id);
-        _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_0__.LocalConceptsData.RemoveConcept(concept);
+        if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('DeleteConceptLocal', { id });
+            console.log('data received from sw', res);
+            return res.data;
+        }
+        let concept = yield (0,_GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__.GetTheConceptLocal)(id);
+        _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_1__.LocalConceptsData.RemoveConcept(concept);
     });
 }
 
@@ -14449,6 +14577,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function GetRelationLocal(id, relation, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("GetRelationLocal", {
+                    id, relation, userId
+                });
+                console.log("data received from sw", res);
+                return res.data;
+            }
             let typeConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterAndCategoryLocal)(relation);
             let localConnections = [];
             if (typeConcept.id != 0) {
@@ -14699,6 +14834,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _GetConceptByCharacterLocal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./GetConceptByCharacterLocal */ "./src/Services/Local/GetConceptByCharacterLocal.ts");
 /* harmony import */ var _SplitStrings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../SplitStrings */ "./src/Services/SplitStrings.ts");
 /* harmony import */ var _MakeTheConceptLocal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./MakeTheConceptLocal */ "./src/Services/Local/MakeTheConceptLocal.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14708,6 +14844,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -14726,6 +14863,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  */
 function MakeTheTypeConceptLocal(typeString, sessionId, sessionUserId, userId) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)("MakeTheTypeConceptLocal", {
+                typeString, sessionId, sessionUserId, userId
+            });
+            console.log("data received from sw", res);
+            return res.data;
+        }
         let accessId = 4;
         let existingConcept = yield (0,_GetConceptByCharacterLocal__WEBPACK_IMPORTED_MODULE_1__.GetConceptByCharacterAndCategoryLocal)(typeString);
         if (existingConcept) {
@@ -18219,13 +18363,13 @@ self.addEventListener("activate", (event) => __awaiter(void 0, void 0, void 0, f
 //     console.log('Fetching: sw', event.request.url);
 // });
 // Actions that can be performed in this service worker
-const actions = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ init: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const actions = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ init: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         yield init(payload === null || payload === void 0 ? void 0 : payload.url, payload === null || payload === void 0 ? void 0 : payload.aiurl, payload === null || payload === void 0 ? void 0 : payload.accessToken, payload === null || payload === void 0 ? void 0 : payload.nodeUrl, payload === null || payload === void 0 ? void 0 : payload.enableAi, payload === null || payload === void 0 ? void 0 : payload.applicationName, payload === null || payload === void 0 ? void 0 : payload.isTest);
         return { success: true, data: undefined };
     }), updateAccessToken: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         (0,_app__WEBPACK_IMPORTED_MODULE_0__.updateAccessToken)(payload.accessToken);
         return { success: true };
-    }) }, _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.getActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.searchActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.createActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.updateActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.connectionActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.syncActions);
+    }) }, _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.getActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.searchActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.createActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.updateActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.connectionActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.deleteActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.syncActions);
 // Listen message received by service worker
 self.addEventListener("message", (event) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("message received sw", event);

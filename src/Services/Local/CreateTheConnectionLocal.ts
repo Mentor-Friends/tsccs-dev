@@ -1,7 +1,7 @@
 import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
-import { LocalSyncData } from "../../app";
+import { LocalSyncData, sendMessage, serviceWorker } from "../../app";
 
 /**
  * This function creates a connection for the concept connection system. This connection will only be created in real sense
@@ -19,6 +19,11 @@ import { LocalSyncData } from "../../app";
 export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, 
      typeId: number,orderId:number = 1, typeString: string = "", userId: number = 999
     ){  
+        if (serviceWorker) {
+            const res: any = await sendMessage('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId })
+            console.log('data received from sw', res)
+            return res.data
+          }
         try{
             let accessId : number = 4;
             // let randomid = -Math.floor(Math.random() * 100000000);

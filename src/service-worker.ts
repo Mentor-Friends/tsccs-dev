@@ -8,7 +8,7 @@ import {
 } from "./Services/GetDataFromIndexDb";
 import InitializeSystem from "./Services/InitializeSystem";
 import CreateLocalBinaryTreeFromIndexDb from "./Services/Local/CreateLocalBinaryTreeFromData";
-import { Actions, createActions, getActions, searchActions, syncActions, updateActions, connectionActions } from "./ServiceWorker/actions";
+import { Actions, createActions, getActions, searchActions, syncActions, updateActions, connectionActions, deleteActions } from "./ServiceWorker/actions";
 
 // Install Service Worker
 self.addEventListener("install", (event: any) => {
@@ -52,6 +52,7 @@ const actions: Actions = {
   ...createActions,
   ...updateActions,
   ...connectionActions,
+  ...deleteActions,
   ...syncActions,
 }
 

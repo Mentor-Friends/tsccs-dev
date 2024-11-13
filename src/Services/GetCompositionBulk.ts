@@ -74,6 +74,12 @@ export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[
  * @returns dictionary of compositions created from the passed conceptIds and connectionIds with conceptId as its index .
  */
 export async function GetCompositionFromConnectionsWithDataIdIndex(conceptIds:number[]=[], connectionIds:number[] = []){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdIndex', {conceptIds, connectionIds})
+        console.log('data received from sw', res)
+        return res.data
+      }
+
     let newConnections = await GetConnectionBulk(connectionIds);
     let myNewConnections = newConnections as Connection[];
     let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);

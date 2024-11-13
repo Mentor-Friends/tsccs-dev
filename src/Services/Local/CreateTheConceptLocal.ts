@@ -1,3 +1,4 @@
+import { sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
@@ -26,6 +27,12 @@ export default async function CreateTheConceptLocal(referent:string, typecharact
 typeId:number, 
 accessId:number, isComposition: boolean = false, referentId:number = 0){
     try{
+        if (serviceWorker) {
+            const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
+            console.log('data received from sw', res)
+            return res.data
+          }
+
         //let id = -Math.floor(Math.random() * 100000000);
         let id = await LocalId.getConceptId();
         console.log("this is the getting id type connection", id);

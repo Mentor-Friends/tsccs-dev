@@ -5,9 +5,12 @@ import { broadcastChannel } from "../../Constants/general.const";
 import {
   GetComposition,
   GetCompositionById,
+  GetCompositionFromMemory,
+  GetCompositionWithId,
+  GetCompositionWithIdAndDateFromMemory,
   GetCompositionWithIdFromMemory,
 } from "../../Services/GetComposition";
-import { GetCompositionFromConnectionsWithDataId } from "../../Services/GetCompositionBulk";
+import { GetCompositionFromConnectionsWithDataId, GetCompositionFromConnectionsWithDataIdIndex } from "../../Services/GetCompositionBulk";
 import { GetTheConceptLocal } from "../../Services/Local/GetTheConceptLocal";
 import { GetLinkListener } from "../../WrapperFunctions/GetLinkObservable";
 
@@ -37,6 +40,10 @@ export const getActions: Actions = {
     const data = await GetCompositionById(payload.id);
     return { success: true, data };
   },
+  GetCompositionWithId: async (payload: any) => {
+    const data = await GetCompositionWithId(payload.id);
+    return { success: true, data };
+  },
   GetConnectionBulk: async (payload) => {
     const data = await GetConnectionBulk(payload.connectionIds);
     return { success: true, data };
@@ -57,10 +64,22 @@ export const getActions: Actions = {
     const data = await GetCompositionFromConnectionsWithDataId(payload.conceptIds, payload.connectionIds)
     return { success: true, data }
   },
+  GetCompositionFromConnectionsWithDataIdIndex: async (payload) => {
+    const data = await GetCompositionFromConnectionsWithDataIdIndex(payload.conceptIds, payload.connectionIds)
+    return { success: true, data }
+  },
   
   // memory
   GetCompositionWithIdFromMemory: async (payload) => {
     const data = await GetCompositionWithIdFromMemory(payload.id)
+    return { success: true, data };
+  },
+  GetCompositionWithIdAndDateFromMemory: async (payload) => {
+    const data = await GetCompositionWithIdAndDateFromMemory(payload.id)
+    return { success: true, data };
+  },
+  GetCompositionFromMemory: async (payload) => {
+    const data = await GetCompositionFromMemory(payload.id)
     return { success: true, data };
   },
 
