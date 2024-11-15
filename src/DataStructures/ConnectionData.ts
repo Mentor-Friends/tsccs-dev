@@ -188,11 +188,6 @@ export class ConnectionData {
         connections.push(conn.value);
       }
     }
-    console.log(
-      "these are the connections from the local",
-      connections,
-      connectionIds
-    );
     return connections;
     //let node = await ConnectionTypeTree.getNodeFromTree(id);
     // if(node?.value){

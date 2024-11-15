@@ -106,7 +106,7 @@ export {FilterSearch} from './DataStructures/FilterSearch';
 export {SearchStructure} from './DataStructures/Search/SearchStructure';
 export {LocalConceptsData} from './DataStructures/Local/LocalConceptData';
 import {GetConnectionsFromIndexDb,GetConnectionsFromIndexDbLocal} from './Services/GetDataFromIndexDb';
-import CreateLocalBinaryTreeFromIndexDb from './Services/Local/CreateLocalBinaryTreeFromData';
+import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConnectionToMemory } from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
@@ -217,7 +217,8 @@ async function init(
            navigator.serviceWorker
              .register("./serviceWorker.bundle.js", {
                type: "module",
-               scope: "/mftsccs-browser",
+              //  scope: "/mftsccs-browser",
+               scope: "/",
              })
              .then(async (registration) => {
                console.log(
@@ -453,7 +454,9 @@ async function initConceptConnection(
   TokenStorage.BearerAccessToken = accessToken;
   let randomizer = Math.floor(Math.random() * 100000000);
   // BaseUrl.BASE_RANDOMIZER = randomizer;
-  BaseUrl.BASE_RANDOMIZER = 999;
+  // BaseUrl.BASE_RANDOMIZER = 999;
+  
+  BaseUrl.setRandomizer(999)
   if (isTest) {
     IdentifierFlags.isDataLoaded = true;
     IdentifierFlags.isCharacterLoaded = true;
@@ -534,11 +537,7 @@ async function initConceptConnection(
    * is only valid for the browser that creates this. We have a translator in our node server.
    * This function does this process in initlization.
    */
-  // PopulateTheLocalSettingsToMemory().then(()=>{
-  // }).catch((event) => {
-  //    //console.log("This is the error in populating binary tree");
-  //   throw event;
-  // });
+  await PopulateTheLocalConnectionToMemory();
 
   /**
    * This process gets the connections from indexdb and loads it to the connections array which is inside of

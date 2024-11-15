@@ -7,7 +7,7 @@ import {
   GetConnectionsFromIndexDbLocal,
 } from "./Services/GetDataFromIndexDb";
 import InitializeSystem from "./Services/InitializeSystem";
-import CreateLocalBinaryTreeFromIndexDb from "./Services/Local/CreateLocalBinaryTreeFromData";
+import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConnectionToMemory } from "./Services/Local/CreateLocalBinaryTreeFromData";
 import { Actions, createActions, getActions, searchActions, syncActions, updateActions, connectionActions, deleteActions } from "./ServiceWorker/actions";
 
 // Install Service Worker
@@ -102,7 +102,9 @@ async function init(
   BaseUrl.BASE_APPLICATION = applicationName;
   TokenStorage.BearerAccessToken = accessToken;
   let randomizer = Math.floor(Math.random() * 100000000);
-  BaseUrl.BASE_RANDOMIZER = randomizer;
+  // BaseUrl.BASE_RANDOMIZER = randomizer;
+  
+  BaseUrl.setRandomizer(randomizer)
   if (isTest) {
     IdentifierFlags.isDataLoaded = true;
     IdentifierFlags.isCharacterLoaded = true;
@@ -183,11 +185,7 @@ async function init(
    * is only valid for the browser that creates this. We have a translator in our node server.
    * This function does this process in initlization.
    */
-  // PopulateTheLocalSettingsToMemory().then(()=>{
-  // }).catch((event) => {
-  //    //console.log("This is the error in populating binary tree");
-  //   throw event;
-  // });
+  await PopulateTheLocalConnectionToMemory();
 
   /**
    * This process gets the connections from indexdb and loads it to the connections array which is inside of

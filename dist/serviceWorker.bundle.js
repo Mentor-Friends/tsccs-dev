@@ -238,7 +238,8 @@ function CreateTheGhostConceptApi(conceptData, connectionData) {
             myHeaders.set("Content-Type", "application/json");
             myHeaders.set('Authorization', "Bearer " + _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken);
             myHeaders.set('Accept', 'application/json');
-            myHeaders.set('Randomizer', _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.BASE_RANDOMIZER.toString());
+            //  myHeaders.set('Randomizer', BaseUrl.BASE_RANDOMIZER.toString());
+            myHeaders.set('Randomizer', _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.getRandomizer().toString());
             const response = yield fetch(_DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.CreateGhostConceptApiUrl(), {
                 method: 'POST',
                 headers: myHeaders,
@@ -3055,6 +3056,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   BaseUrl: () => (/* binding */ BaseUrl)
 /* harmony export */ });
 class BaseUrl {
+    static setRandomizer(id) {
+        console.log('set randomizer', id);
+        this.BASE_RANDOMIZER = id;
+    }
+    static getRandomizer() {
+        return this.BASE_RANDOMIZER;
+    }
     // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';
     static GetConceptUrl() {
         return this.BASE_URL + '/api/getConcept';
@@ -4065,7 +4073,8 @@ class Concept {
         this.isComposition = false;
         this.isTemp = false;
         this.isSynced = false;
-        this.applicationId = _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.BASE_RANDOMIZER;
+        // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+        this.applicationId = _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.getRandomizer();
         this.x = 0;
         this.y = 0;
         this.id = id;
@@ -4310,7 +4319,8 @@ class Connection {
         this.count = 0;
         this.isTemp = false;
         this.toUpdate = false;
-        this.applicationId = _BaseUrl__WEBPACK_IMPORTED_MODULE_1__.BaseUrl.BASE_RANDOMIZER;
+        // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+        this.applicationId = _BaseUrl__WEBPACK_IMPORTED_MODULE_1__.BaseUrl.getRandomizer();
         this.type = (0,_Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_0__.CreateDefaultConcept)();
         this.ofConcept = (0,_Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_0__.CreateDefaultConcept)();
         this.toConcept = (0,_Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_0__.CreateDefaultConcept)();
@@ -5520,7 +5530,6 @@ class ConnectionData {
                     connections.push(conn.value);
                 }
             }
-            console.log("these are the connections from the local", connections, connectionIds);
             return connections;
             //let node = await ConnectionTypeTree.getNodeFromTree(id);
             // if(node?.value){
@@ -5626,7 +5635,8 @@ class LConcept {
         this.isComposition = false;
         this.isTemp = false;
         this.isSynced = false;
-        this.applicationId = _BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.BASE_RANDOMIZER;
+        // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+        this.applicationId = _BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.getRandomizer();
         this.id = id;
         this.userId = userId;
         this.typeId = typeId;
@@ -5668,7 +5678,8 @@ __webpack_require__.r(__webpack_exports__);
 class LConnection {
     constructor(id, ofTheConceptId, toTheConceptId, typeId, orderId, accessId) {
         this.isTemp = false;
-        this.applicationId = _BaseUrl__WEBPACK_IMPORTED_MODULE_1__.BaseUrl.BASE_RANDOMIZER;
+        // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+        this.applicationId = _BaseUrl__WEBPACK_IMPORTED_MODULE_1__.BaseUrl.getRandomizer();
         this.type = (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateDefaultConcept)();
         this.id = id;
         this.ofTheConceptId = ofTheConceptId;
@@ -9157,7 +9168,8 @@ function openDatabase(databaseName) {
                     // which will enable us to identify this local database from others.
                     storeToDatabase(idDb, { "id": 0, "value": -100 });
                     storeToDatabase(idDb, { "id": 1, "value": -200 });
-                    storeToDatabase(idDb, { "id": 3, "value": _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.BASE_RANDOMIZER });
+                    // storeToDatabase(idDb,{"id":3, "value": BaseUrl.BASE_RANDOMIZER});
+                    storeToDatabase(idDb, { "id": 3, "value": _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.getRandomizer() });
                 };
             }
             resolve(db);
@@ -13841,7 +13853,8 @@ function PopulateTheLocalConceptsToMemory() {
                         }
                     }
                     if (idList[2]) {
-                        _app__WEBPACK_IMPORTED_MODULE_4__.BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                        // BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                        _app__WEBPACK_IMPORTED_MODULE_4__.BaseUrl.setRandomizer(idList[2].value);
                     }
                 }
             }));
@@ -13892,7 +13905,8 @@ function PopulateTheLocalConnectionToMemory() {
                         }
                     }
                     if (idList[2]) {
-                        _app__WEBPACK_IMPORTED_MODULE_4__.BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                        // BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                        _app__WEBPACK_IMPORTED_MODULE_4__.BaseUrl.setRandomizer(idList[2].value);
                     }
                 }
             }));
@@ -17957,7 +17971,8 @@ function init() {
                         navigator.serviceWorker
                             .register("./serviceWorker.bundle.js", {
                             type: "module",
-                            scope: "/mftsccs-browser",
+                            //  scope: "/mftsccs-browser",
+                            scope: "/",
                         })
                             .then((registration) => __awaiter(this, void 0, void 0, function* () {
                             console.log("Service Worker registered with scope:", registration.scope);
@@ -18158,7 +18173,8 @@ function initConceptConnection() {
         _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__.TokenStorage.BearerAccessToken = accessToken;
         let randomizer = Math.floor(Math.random() * 100000000);
         // BaseUrl.BASE_RANDOMIZER = randomizer;
-        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_RANDOMIZER = 999;
+        // BaseUrl.BASE_RANDOMIZER = 999;
+        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.setRandomizer(999);
         if (isTest) {
             _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isDataLoaded = true;
             _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isCharacterLoaded = true;
@@ -18234,11 +18250,7 @@ function initConceptConnection() {
          * is only valid for the browser that creates this. We have a translator in our node server.
          * This function does this process in initlization.
          */
-        // PopulateTheLocalSettingsToMemory().then(()=>{
-        // }).catch((event) => {
-        //    //console.log("This is the error in populating binary tree");
-        //   throw event;
-        // });
+        yield (0,_Services_Local_CreateLocalBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_96__.PopulateTheLocalConnectionToMemory)();
         /**
          * This process gets the connections from indexdb and loads it to the connections array which is inside of
          * a static class called ConnectionData.
@@ -18407,7 +18419,8 @@ function init() {
         _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.BASE_APPLICATION = applicationName;
         _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_2__.TokenStorage.BearerAccessToken = accessToken;
         let randomizer = Math.floor(Math.random() * 100000000);
-        _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.BASE_RANDOMIZER = randomizer;
+        // BaseUrl.BASE_RANDOMIZER = randomizer;
+        _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.setRandomizer(randomizer);
         if (isTest) {
             _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isDataLoaded = true;
             _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isCharacterLoaded = true;
@@ -18483,11 +18496,7 @@ function init() {
          * is only valid for the browser that creates this. We have a translator in our node server.
          * This function does this process in initlization.
          */
-        // PopulateTheLocalSettingsToMemory().then(()=>{
-        // }).catch((event) => {
-        //    //console.log("This is the error in populating binary tree");
-        //   throw event;
-        // });
+        yield (0,_Services_Local_CreateLocalBinaryTreeFromData__WEBPACK_IMPORTED_MODULE_6__.PopulateTheLocalConnectionToMemory)();
         /**
          * This process gets the connections from indexdb and loads it to the connections array which is inside of
          * a static class called ConnectionData.
