@@ -1,10 +1,31 @@
 import { Actions } from ".";
-import { CreateTheCompositionLocal } from "../../app";
+import { CreateTheCompositionLocal, MakeTheInstanceConcept, MakeTheTypeConcept } from "../../app";
 import CreateTheComposition from "../../Services/CreateTheComposition";
 import CreateTheConceptLocal from "../../Services/Local/CreateTheConceptLocal";
 import { MakeTheInstanceConceptLocal } from "../../Services/Local/MakeTheInstanceConceptLocal";
 
 export const createActions: Actions = {
+    MakeTheInstanceConcept: async (payload: any) => {
+        const data = await MakeTheInstanceConcept(
+            payload.type,
+            payload.referent,
+            payload.composition,
+            payload.userId,
+            payload.passedAccessId,
+            payload.passedSessionId,
+            payload.referentId
+        )
+        return { success: true, data }
+    },
+    MakeTheTypeConcept: async (payload: any) => {
+        const data = await MakeTheTypeConcept(
+            payload.typeString,
+            payload.sessionId,
+            payload.sessionUserId,
+            payload.userId,
+        )
+        return { success: true, data }
+    },
     CreateTheComposition: async (payload: any) => {
         const data = await CreateTheComposition(
             payload.json,
@@ -17,6 +38,8 @@ export const createActions: Actions = {
           );
         return { success: true, data }
     },
+    
+    // local
     MakeTheInstanceConceptLocal: async (payload: any) => {
         const data = await MakeTheInstanceConceptLocal(
             payload.type,
@@ -29,8 +52,6 @@ export const createActions: Actions = {
         )
         return { success: true, data }
     },
-
-    // local
     CreateTheConceptLocal: async (payload) => {
         const data = await CreateTheConceptLocal(
             payload.referent, 

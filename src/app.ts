@@ -135,6 +135,7 @@ function updateAccessToken(accessToken: string = "") {
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
+ * @param enableSW {activate: boolean, scope: 'string'} | undefined - This is for enabling service worker with its scope
  */
 async function init(
   url: string = "",
@@ -143,182 +144,162 @@ async function init(
   nodeUrl: string = "",
   enableAi: boolean = true,
   applicationName: string = "",
+  enableSW: {activate: boolean, scope: 'string'} | undefined = undefined,
   isTest: boolean = false,
-  setSW: boolean = false
 ) {
-  /**
-   * This process sets the initlizers in the static class BaseUrl that is used all over the system to access the urls
-   * Here we set the following variables.
-   * randomizer is created so that we can uniquely identify this initlization process but in the case that the BASE_RANDOMIZER has been alreay
-   * set in the indexdb this is replaced by the indexdb value.
-   */
   try {
     // await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
 
     listenBroadCastMessages()
 
-    console.log("setSW", setSW);
-    let alreadyRegistered = false;
-    // await initializeServiceWorker();
-    if ("serviceWorker" in navigator) {
+    if (
+      "serviceWorker" in navigator &&
+      enableSW &&
+      enableSW?.activate &&
+      enableSW?.scope
+    ) {
       try {
         console.log("service worker initialiing");
-        // navigator.serviceWorker.getRegistrations().then(async registrations => {
-        //    console.log('Service Workers registered:', registrations);
-        //    if (registrations.length > 0) {
-        //       // TODO:: check if mftsccs sw is available or not
-      //   registrations.forEach((registration, index) => {
-      //    console.log(`Service Worker ${index + 1}:`, registration);
-      //    if (registration.active) {
-      //        console.log('Status: Active');
-      //    } else if (registration.waiting) {
-      //        console.log('Status: Waiting');
-      //    } else {
-      //        console.log('Status: No active worker');
-      //    }
-   //   });
-        //       alreadyRegistered = true
-        //    } else {
+        // navigator.serviceWorker
+        //   .getRegistrations()
+        //   .then(async (registrations) => {
+        //     console.log("Service Workers registered:", registrations);
+        //     if (registrations.length > 0) {
+        //       // TODO:: check if the domain has our own service worker or others
+        //       registrations.forEach((registration, index) => {
+        //         console.log(`Service Worker ${index + 1}:`, registration);
+        //         if (registration.installing) {
+        //           console.log("Status: Installing");
+        //         } else if (registration.waiting) {
+        //           console.log("Status: Waiting");
+        //         } else if (registration.active) {
+        //           console.log("Status: Active");
+        //           serviceWorker = registration.active;
+        //           // sendMessage('init', {})
+        //         } else {
+        //           console.log("Status: No active worker", registration);
+        //         }
+        //       });
 
-        //       let customSelf = self as any
+        //       // // for now asuming its other
+        //       // await initConceptConnection(
+        //       //   url,
+        //       //   aiurl,
+        //       //   accessToken,
+        //       //   nodeUrl,
+        //       //   enableAi,
+        //       //   applicationName,
+        //       //   isTest
+        //       // );
+        //     } else {
+              await new Promise<void>((resolve, reject) => {
+                navigator.serviceWorker
+                  .register("./serviceWorker.bundle.js", {
+                    type: "module",
+                    scope: enableSW.scope ? enableSW.scope : "/",
+                  })
+                  .then(async (registration) => {
+                    console.log(
+                      "Service Worker registered:",
+                      registration
+                    );
+                    if (registration.active) {
+                      console.log("active sw");
+                      serviceWorker = registration.active;
 
-        // self.addEventListener('install', (event) => {
-        //    customSelf.skipWaiting()
-        // })
-
-        // self.addEventListener('activate', (event: any) => {
-        //    event.waitUntil(customSelf.clients.clain());
-        // })
-        // register new
-        // const registering = await navigator.serviceWorker.register(require('./ServiceWorker/index.ts'), {type: 'module', scope: '/'})
-        // const registering = await navigator.serviceWorker.register('./serviceWorker.bundle.js', {type: 'module', scope: '/'})
-
-        // const registering = await navigator.serviceWorker.register('/serviceWorker.bundle.js', { type: 'module', scope: '/' })
-        // // const registering = await navigator.serviceWorker.register('/node_modules/mftsccs-browser/dist/serviceWorker.bundle.js', {type: 'module', scope: '/node_modules/mftsccs-browser/dist/'})
-        // // const registering = await navigator.serviceWorker.register('/node_modules/mftsccs-browser/dist/serviceWorker.bundle.js', {type: 'module', scope: '/'})
-        // setTimeout(async () => {
-        //    if (registering.installing) {
-        //       console.log('installing sw')
-        //    } else if (registering.waiting) {
-        //       console.log('waiting sw activation')
-        //    } else if (registering.active) {
-        //       console.log('active sw')
-        //       sw = registering.active
-
-        //       // register()
-        //       // sendMessage('init', {})
-
-        //       await sendMessage('init', {name: 'check'})
-        //    } else {
-        //       console.log('sw check installation', registering)
-        //    }
-        // }, 1000)
-        await new Promise<void>((resolve, reject) => {
-           navigator.serviceWorker
-             .register("./serviceWorker.bundle.js", {
-               type: "module",
-              //  scope: "/mftsccs-browser",
-               scope: "/",
-             })
-             .then(async (registration) => {
-               console.log(
-                 "Service Worker registered with scope:",
-                 registration.scope
-               );
-               if (registration.active) {
-                 console.log("active sw");
-                 serviceWorker = registration.active;
-   
-                 // register()
-                 // sendMessage('init', {})
-                 await sendMessage("init", {
-                   url,
-                   aiurl,
-                   accessToken,
-                   nodeUrl,
-                   enableAi,
-                   applicationName,
-                   isTest,
-                 });
-                 resolve()
-               } else {
-                  let success = false
-                 // Listen for updates to the service worker
-                 console.log("updaet listen start");
-                 registration.onupdatefound = () => {
-                   const newWorker = registration.installing;
-                   console.log("new worker", newWorker);
-                   if (newWorker) {
-                     newWorker.onstatechange = async () => {
-                       console.log("on state change triggered");
-                       // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                       if (newWorker.state === "activated") {
-                         // && navigator.serviceWorker.controller) {
-                         console.log("New Service Worker is active", registration);
-                         serviceWorker = registration.active;
-                         // Send init message now that it's active
-                         await sendMessage("init", {
-                           url,
-                           aiurl,
-                           accessToken,
-                           nodeUrl,
-                           enableAi,
-                           applicationName,
-                           isTest,
-                         });
-                         success = true
-                         resolve()
-                       }
-                     };
-                   }
-                 };
-                 // Handle if on state change didn't trigger
-                 setTimeout(() => {if(!success) reject('Not Completed Initialization')}, 3000)
-               }
-               // if (registration.installing) {
-               //   console.log("installing sw");
-               // } else if (registration.waiting) {
-               //   console.log("waiting sw activation");
-               // } else if (registration.active) {
-               //   console.log("active sw");
-               //   serviceWorker = registration.active;
-   
-               //   // register()
-               //   // sendMessage('init', {})
-               //   await sendMessage("init", {
-               //     url,
-               //     aiurl,
-               //     accessToken,
-               //     nodeUrl,
-               //     enableAi,
-               //     applicationName,
-               //     isTest,
-               //   });
-               // } else {
-               //   console.log("sw check installation", registration);
-               // }
-             })
-             .catch(async (error) => {
-              
-              await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
-               reject(error)
-               console.error("Service Worker registration failed:", error);
-             });
-        })
-        // }
-        // }).catch(err => {
-        //    console.log('Unable to register', err)
-        // });
+                      await sendMessage("init", {
+                        url,
+                        aiurl,
+                        accessToken,
+                        nodeUrl,
+                        enableAi,
+                        applicationName,
+                        isTest,
+                      });
+                      resolve();
+                    } else {
+                      let success = false;
+                      // Listen for updates to the service worker
+                      console.log("updaet listen start");
+                      registration.onupdatefound = () => {
+                        const newWorker = registration.installing;
+                        console.log("new worker", newWorker);
+                        if (newWorker) {
+                          newWorker.onstatechange = async () => {
+                            console.log("on state change triggered");
+                            // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                            if (newWorker.state === "activated") {
+                              // && navigator.serviceWorker.controller) {
+                              console.log(
+                                "New Service Worker is active",
+                                registration
+                              );
+                              serviceWorker = registration.active;
+                              // Send init message now that it's active
+                              await sendMessage("init", {
+                                url,
+                                aiurl,
+                                accessToken,
+                                nodeUrl,
+                                enableAi,
+                                applicationName,
+                                isTest,
+                              });
+                              success = true;
+                              resolve();
+                            }
+                          };
+                        }
+                      };
+                      // Handle if on state change didn't trigger
+                      setTimeout(() => {
+                        if (!success) reject("Not Completed Initialization");
+                      }, 3000);
+                    }
+                  })
+                  .catch(async (error) => {
+                    await initConceptConnection(
+                      url,
+                      aiurl,
+                      accessToken,
+                      nodeUrl,
+                      enableAi,
+                      applicationName,
+                      isTest
+                    );
+                    reject(error);
+                    console.error("Service Worker registration failed:", error);
+                  });
+              });
+          //   }
+          // })
+          // .catch((err) => {
+          //   console.log("Unable to register", err);
+          // });
       } catch (error) {
+        await initConceptConnection(
+          url,
+          aiurl,
+          accessToken,
+          nodeUrl,
+          enableAi,
+          applicationName,
+          isTest
+        );
         console.error("Unable to start service worker", error);
       }
     } else {
-      await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
+      await initConceptConnection(
+        url,
+        aiurl,
+        accessToken,
+        nodeUrl,
+        enableAi,
+        applicationName,
+        isTest
+      );
       console.log("Service Worker not supported in this browser.");
     }
-
-    console.log("message sent");
-
     return true;
   } catch (error) {
     console.log("cannot initialize the system", error);
@@ -537,7 +518,10 @@ async function initConceptConnection(
    * is only valid for the browser that creates this. We have a translator in our node server.
    * This function does this process in initlization.
    */
-  await PopulateTheLocalConnectionToMemory();
+  await PopulateTheLocalConnectionToMemory().catch((event) => {
+    console.log("This is the error in populating binary tree");
+   throw event;
+ });;
 
   /**
    * This process gets the connections from indexdb and loads it to the connections array which is inside of

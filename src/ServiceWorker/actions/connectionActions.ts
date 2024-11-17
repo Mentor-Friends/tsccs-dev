@@ -1,14 +1,17 @@
 import { Actions } from ".";
-import { CreateTheConnectionLocal } from "../../app";
+import { CreateConnectionBetweenTwoConcepts, CreateTheConnectionLocal } from "../../app";
 import { CreateConnectionBetweenTwoConceptsLocal } from "../../Services/Local/CreateConnectionBetweenTwoConceptsLocal";
 
 export const connectionActions: Actions = {
+    CreateConnectionBetweenTwoConcepts: async (payload) => {
+        const data = await CreateConnectionBetweenTwoConcepts(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both)
+        return { success: true, data }
+    },
+    // local
     CreateConnectionBetweenTwoConceptsLocal: async (payload) => {
         const data = await CreateConnectionBetweenTwoConceptsLocal(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both)
         return {success: true, data}
     },
-    
-    // local
     CreateTheConnectionLocal: async (payload) => {
         const data = await CreateTheConnectionLocal(
             payload.ofTheConceptId, 

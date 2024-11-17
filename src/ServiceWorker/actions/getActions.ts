@@ -1,6 +1,6 @@
 import { Actions } from ".";
 import { GetConcept } from "../../Api/GetConcept";
-import { ConnectionData, GetAllConnectionsOfCompositionBulk, GetConceptByCharacterAndType, GetConnectionBulk, GetConnectionOfTheConcept, GetLink, GetTheConcept } from "../../app";
+import { ConnectionData, GetAllConnectionsOfCompositionBulk, GetCompositionList, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionListWithId, GetCompositionLocal, GetCompositionLocalWithId, GetConceptByCharacterAndCategoryLocal, GetConceptByCharacterAndType, GetConnectionBulk, GetConnectionById, GetConnectionOfTheConcept, GetLink, GetTheConcept } from "../../app";
 import { broadcastChannel } from "../../Constants/general.const";
 import {
   GetComposition,
@@ -23,6 +23,10 @@ export const getActions: Actions = {
     const data = await GetTheConcept(payload.id, payload.userId)
     return { success: true, data }
   },
+  GetConnectionById: async (payload) => {
+    const data = await GetConnectionById(payload.id)
+    return { success: true, data }
+  },
   GetLink: async (payload: any) => {
     const data = await GetLink(
       payload.id,
@@ -34,6 +38,14 @@ export const getActions: Actions = {
   },
   GetComposition: async (payload: any) => {
     const data = await GetComposition(payload.id);
+    return { success: true, data };
+  },
+  GetCompositionList: async (payload: any) => {
+    const data = await GetCompositionList(payload.compositionName, payload.userId, payload.inpage, payload.page);
+    return { success: true, data };
+  },
+  GetCompositionListWithId: async (payload: any) => {
+    const data = await GetCompositionListWithId(payload.compositionName, payload.userId, payload.inpage, payload.page);
     return { success: true, data };
   },
   GetCompositionById: async (payload: any) => {
@@ -87,6 +99,31 @@ export const getActions: Actions = {
   GetTheConceptLocal: async (payload: any) => {
     console.log("sync actions sw");
     const data = await GetTheConceptLocal(payload.id);
+    return { success: true, data };
+  },
+  GetCompositionLocal: async (payload: any) => {
+    console.log("sync actions sw");
+    const data = await GetCompositionLocal(payload.id);
+    return { success: true, data };
+  },
+  GetCompositionLocalWithId: async (payload: any) => {
+    console.log("sync actions sw");
+    const data = await GetCompositionLocalWithId(payload.id);
+    return { success: true, data };
+  },
+  GetCompositionListLocal: async (payload: any) => {
+    console.log("sync actions sw");
+    const data = await GetCompositionListLocal(payload.compositionName, payload.userId);
+    return { success: true, data };
+  },
+  GetCompositionListLocalWithId: async (payload: any) => {
+    console.log("sync actions sw");
+    const data = await GetCompositionListLocalWithId(payload.compositionName, payload.userId);
+    return { success: true, data };
+  },
+  GetConceptByCharacterAndCategoryLocal: async (payload: any) => {
+    console.log("sync actions sw");
+    const data = await GetConceptByCharacterAndCategoryLocal(payload.character);
     return { success: true, data };
   },
 

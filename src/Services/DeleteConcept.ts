@@ -5,10 +5,15 @@ import { BinaryTypeTree } from "../DataStructures/BinaryTypeTree";
 import { ConnectionOfNode } from "../DataStructures/ConnectionBinaryTree/ConnectionOfNode";
 import { ConnectionOfTheTree } from "../DataStructures/ConnectionBinaryTree/ConnectionOfTheTree";
 import { removeFromDatabase } from "../Database/indexeddb";
-import { LocalConceptsData } from "../app";
+import { LocalConceptsData, sendMessage, serviceWorker } from "../app";
 import GetTheConcept from "./GetTheConcept";
 
 export  async function DeleteConceptById(id:number){
+    if (serviceWorker) {
+        const res: any = await sendMessage('DeleteConceptById', { id })
+        console.log('data received from sw', res)
+        return res.data
+      }
     if(id > 0){
         var concept = await GetTheConcept(id);
 

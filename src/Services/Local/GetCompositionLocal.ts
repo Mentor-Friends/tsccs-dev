@@ -6,11 +6,18 @@ import { LConnection } from "../../DataStructures/Local/LConnection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { TranslateLocalToReal } from "../../Api/Translate/TranslateLocalToReal";
 import { GetComposition } from "../GetComposition";
+import { sendMessage, serviceWorker } from "../../app";
 
 
 
 export async function GetCompositionLocal(id:number){
     try{
+        if (serviceWorker) {
+            const res: any = await sendMessage('GetCompositionLocal', { id })
+            console.log('data received from sw', res)
+            return res.data
+          }
+
         let connectionList:LConnection[] = [];
         let returnOutput: any = {};
         connectionList = await LocalConnectionData.GetConnectionsOfCompositionLocal(id);
@@ -43,6 +50,12 @@ export async function GetCompositionLocal(id:number){
 
 export async function GetCompositionLocalWithId(id:number){
     try{
+        if (serviceWorker) {
+            const res: any = await sendMessage('GetCompositionLocalWithId', { id })
+            console.log('data received from sw', res)
+            return res.data
+          }
+
         let connectionList:LConnection[] = [];
         let returnOutput: any = {};
         let FinalReturn: any = {};

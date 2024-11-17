@@ -120,8 +120,12 @@ declare function updateAccessToken(accessToken?: string): void;
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
+ * @param enableSW {activate: boolean, scope: 'string'} | undefined - This is for enabling service worker with its scope
  */
-declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string, isTest?: boolean, setSW?: boolean): Promise<true | undefined>;
+declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string, enableSW?: {
+    activate: boolean;
+    scope: 'string';
+} | undefined, isTest?: boolean): Promise<true | undefined>;
 export declare function sendMessage(type: string, payload: any): Promise<unknown>;
 export declare function dispatchIdEvent(id: number | string, data?: any): void;
 type listeners = {
