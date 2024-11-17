@@ -7,6 +7,7 @@
   "types": "dist/types/app.d.ts",
   "files": [
     "dist",
+    "scripts",
     "LICENSE",
     "README.md",
     "package.json"
@@ -15,6 +16,7 @@
     "start": "npx webpack",
     "dev": "webpack --env NODE_ENV=development --mode development",
     "build": "webpack --config webpack.config.js",
+    "postinstall": "node ./scripts/postinstall.js",
     "test": "jest"
   },
   "devDependencies": {
@@ -44,5 +46,8 @@
   "bugs": {
     "url": "https://github.com/Mentor-Friends/tsccs-dev/issues"
   },
-  "homepage": "https://github.com/Mentor-Friends/tsccs-dev#readme"
+  "homepage": "https://github.com/Mentor-Friends/tsccs-dev#readme",
+  "dependencies": {
+    "ncp": "^2.0.0"
+  }
 }
