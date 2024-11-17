@@ -1,4 +1,4 @@
-import { Concept, Connection, GetAllConnectionsOfCompositionBulk, GetCompositionWithIdAndDateFromMemory, GetConceptByCharacterAndType, GetConnectionBulk, GetConnectionOfTheConcept, GetTheConcept } from "../app";
+import { Concept, Connection, ConnectionData, GetAllConnectionsOfCompositionBulk, GetCompositionWithIdAndDateFromMemory, GetConceptByCharacterAndType, GetConnectionBulk, GetConnectionOfTheConcept, GetTheConcept } from "../app";
 import { DATAID, DATAIDDATE, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
 import { GetComposition, GetCompositionFromMemory, GetCompositionWithIdFromMemory } from "../Services/GetComposition";
 import { DependencyObserver } from "./DepenedencyObserver";

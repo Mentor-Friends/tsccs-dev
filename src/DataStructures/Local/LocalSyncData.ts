@@ -269,6 +269,14 @@ export class LocalSyncData{
         }
      }
 
+     static RemoveConnectionById(connectionId: number){
+        for(var i=0; i<this.connectionSyncArray.length; i++){
+         if(this.connectionSyncArray[i].id == connectionId){
+             this.connectionSyncArray.splice(i, 1);
+         }
+        }
+     }
+
 
      static async syncDataLocalDb(){
         if(this.conceptsSyncArray.length > 0){

@@ -10,7 +10,7 @@ export class LocalId{
 
     static  AddConceptId(id:any){
         this.localId = id.value;
-        //UpdateToDatabase("localid", id);
+        UpdateToDatabase("localid", id);
     }
 
 
@@ -32,7 +32,7 @@ export class LocalId{
                         this.ReservedLocalId.push(localId);
                         finalLocalId = localId;
                     }
-                   // this.AddConceptId({"id":0, "value": finalLocalId})
+                    this.AddConceptId({"id":0, "value": finalLocalId})
     
                    }).catch((event)=> {
                         console.log(" getid: cannot get the id from indexdb");
@@ -59,7 +59,7 @@ export class LocalId{
                         this.ReservedLocalId.push(localId);
                         finalLocalId = localId;
                     }
-                    //this.AddConceptId({"id":0, "value": finalLocalId});
+                    this.AddConceptId({"id":0, "value": finalLocalId});
     
                    });
                    return this.getConceptId();
@@ -119,7 +119,7 @@ export class LocalId{
                         this.ReservedConnectionId.push(localConId);
                         finalLocalId = localConId;
                     }
-                    //this.AddConnectionId({"id":1, "value": finalLocalId})
+                    this.AddConnectionId({"id":1, "value": finalLocalId})
                 });
                 return this.getConnectionId();
             }
