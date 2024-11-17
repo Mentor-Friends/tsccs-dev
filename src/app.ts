@@ -144,7 +144,7 @@ async function init(
   nodeUrl: string = "",
   enableAi: boolean = true,
   applicationName: string = "",
-  enableSW: {activate: boolean, scope: 'string'} | undefined = undefined,
+  enableSW: {activate: boolean, scope: string} | undefined = undefined,
   isTest: boolean = false,
 ) {
   try {
