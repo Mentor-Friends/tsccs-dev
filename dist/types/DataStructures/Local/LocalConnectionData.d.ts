@@ -9,6 +9,7 @@ export declare class LocalConnectionData {
     static AddConnectionToMemory(connection: Connection): void;
     static AddToDictionary(connection: Connection): void;
     static RemoveConnection(connection: Connection): void;
+    static RemoveConnectionById(connectionId: number): void;
     static AddPermanentConnection(connection: Connection): void;
     static GetConnection(id: number): Connection | null;
     static waitForDataToLoad(): Promise<unknown>;

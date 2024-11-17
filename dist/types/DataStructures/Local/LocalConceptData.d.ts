@@ -6,6 +6,7 @@ export declare class LocalConceptsData {
     static AddConcept(concept: Concept): void;
     static AddPermanentConcept(concept: Concept): void;
     static RemoveConcept(concept: Concept): Promise<void>;
+    static RemoveConceptById(conceptId: number): Promise<void>;
     static AddConceptToMemory(concept: Concept): void;
     static GetConcept(id: number): Promise<Concept>;
     static UpdateConceptSyncStatus(id: number): Promise<void>;

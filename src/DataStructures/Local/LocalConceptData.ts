@@ -8,6 +8,7 @@ import { ConceptsData } from "../ConceptData";
 import { ConvertFromLConceptToConcept } from "../../Services/Local/ConvertFromLConceptToConcept";
 import { LocalGhostIdTree } from "./LocalGhostIdTree";
 import { LocalConnectionData } from "./LocalConnectionData";
+import { LocalSyncData } from "./LocalSyncData";
 export class LocalConceptsData{
 
     name: string;
@@ -47,6 +48,23 @@ export class LocalConceptsData{
                 LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
                 LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
                 await removeFromDatabase("localconcept", concept.ghostId);
+                }
+        }
+        catch(error){
+            throw error;
+        }
+
+    }
+
+    static async RemoveConceptById(conceptId: number){
+        try{
+            let concept = await LocalConceptsData.GetConcept(conceptId);
+            if(concept.id != 0){
+                LocalBinaryTree.removeNodeFromTree(conceptId);
+                LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
+                LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
+                LocalSyncData.RemoveConcept(concept);
+               // await removeFromDatabase("localconcept", concept.ghostId);
                 }
         }
         catch(error){

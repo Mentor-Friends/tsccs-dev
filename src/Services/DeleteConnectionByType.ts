@@ -18,4 +18,5 @@ export async function DeleteConnectionByType(id: number, linker: string){
     for(let i=0 ;i < toDelete.length; i++){
         DeleteConnectionById(toDelete[i].id);
     }
+
 }

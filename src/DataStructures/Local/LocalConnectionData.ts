@@ -4,6 +4,7 @@ import { ConvertFromLConnectionToConnection } from "../../Services/Local/Convert
 import { Connection } from "../Connection";
 import { ConnectionData } from "../ConnectionData";
 import { IdentifierFlags } from "../IdentifierFlags";
+import { LocalSyncData } from "./LocalSyncData";
 export class LocalConnectionData{
     
     name: string;
@@ -50,7 +51,6 @@ export class LocalConnectionData{
     }
 
     static RemoveConnection(connection: Connection){
-        console.log("this is removing", connection);
        for(var i=0; i<this.connectionArray.length; i++){
         if(this.connectionArray[i].id == connection.id){
             this.connectionArray.splice(i, 1);
@@ -60,6 +60,16 @@ export class LocalConnectionData{
       //  removeFromDatabase("connection",connection.id);
 
        }
+    }
+
+    static RemoveConnectionById(connectionId: number){
+       for(var i=0; i<this.connectionArray.length; i++){
+        if(this.connectionArray[i].id == connectionId){
+            this.connectionArray.splice(i, 1);
+        }
+       }
+
+       LocalSyncData.RemoveConnectionById(connectionId);
     }
 
     static AddPermanentConnection(connection: Connection){

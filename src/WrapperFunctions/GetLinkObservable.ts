@@ -1,4 +1,4 @@
-import { Concept, Connection, GetAllConnectionsOfCompositionBulk, GetCompositionWithIdAndDateFromMemory, GetConceptByCharacterAndType, GetConnectionOfTheConcept, GetTheConcept } from "../app";
+import { Concept, Connection, ConnectionData, GetAllConnectionsOfCompositionBulk, GetCompositionWithIdAndDateFromMemory, GetConceptByCharacterAndType, GetConnectionBulk, GetConnectionOfTheConcept, GetTheConcept } from "../app";
 import { DATAID, DATAIDDATE, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
 import { GetComposition, GetCompositionFromMemory, GetCompositionWithIdFromMemory } from "../Services/GetComposition";
 import { DependencyObserver } from "./DepenedencyObserver";
@@ -56,7 +56,7 @@ export class GetLinkObservable extends DependencyObserver
 
     async build(){
 
-        
+        this.connections = await GetConnectionBulk(this.linkers);
         for(var i=0; i<this.connections.length; i++){
             let toConceptId = this.connections[i].toTheConceptId;
             let toConcept = await GetTheConcept(toConceptId);

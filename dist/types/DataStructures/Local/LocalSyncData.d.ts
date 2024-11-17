@@ -16,5 +16,6 @@ export declare class LocalSyncData {
     static CheckIfTheConceptIdExists(id: number, conceptList?: Concept[]): Concept;
     static AddConnection(connection: Connection): void;
     static RemoveConnection(connection: Connection): void;
+    static RemoveConnectionById(connectionId: number): void;
     static syncDataLocalDb(): Promise<string>;
 }
