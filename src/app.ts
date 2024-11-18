@@ -195,7 +195,7 @@ async function init(
               await new Promise<void>((resolve, reject) => {
                 navigator.serviceWorker
                   .register("./serviceWorker.bundle.js", {
-                    type: "module",
+                    // type: "module",
                     scope: enableSW.scope ? enableSW.scope : "/",
                   })
                   .then(async (registration) => {

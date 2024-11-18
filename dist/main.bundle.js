@@ -1,6 +1,4 @@
-/******/ (() => { // webpackBootstrap
-/******/ 	"use strict";
-/******/ 	var __webpack_modules__ = ({
+/******/ var __webpack_modules__ = ({
 
 /***/ "./src/Api/Create/CreateTheCharacter.ts":
 /*!**********************************************!*\
@@ -17725,7 +17723,7 @@ function init() {
                     yield new Promise((resolve, reject) => {
                         navigator.serviceWorker
                             .register("./serviceWorker.bundle.js", {
-                            type: "module",
+                            // type: "module",
                             scope: enableSW.scope ? enableSW.scope : "/",
                         })
                             .then((registration) => __awaiter(this, void 0, void 0, function* () {
@@ -18011,71 +18009,209 @@ function initConceptConnection() {
 
 /***/ })
 
-/******/ 	});
+/******/ });
 /************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
+/******/ // The module cache
+/******/ var __webpack_module_cache__ = {};
+/******/ 
+/******/ // The require function
+/******/ function __webpack_require__(moduleId) {
+/******/ 	// Check if module is in cache
+/******/ 	var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 	if (cachedModule !== undefined) {
+/******/ 		return cachedModule.exports;
 /******/ 	}
-/******/ 	
+/******/ 	// Create a new module (and put it into the cache)
+/******/ 	var module = __webpack_module_cache__[moduleId] = {
+/******/ 		// no module.id needed
+/******/ 		// no module.loaded needed
+/******/ 		exports: {}
+/******/ 	};
+/******/ 
+/******/ 	// Execute the module function
+/******/ 	__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 
+/******/ 	// Return the exports of the module
+/******/ 	return module.exports;
+/******/ }
+/******/ 
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
+/******/ /* webpack/runtime/define property getters */
+/******/ (() => {
+/******/ 	// define getter functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
+/******/ 		}
+/******/ 	};
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/hasOwnProperty shorthand */
+/******/ (() => {
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/make namespace object */
+/******/ (() => {
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = (exports) => {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/ })();
+/******/ 
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/app.ts");
-/******/ 	var __webpack_export_target__ = exports;
-/******/ 	for(var i in __webpack_exports__) __webpack_export_target__[i] = __webpack_exports__[i];
-/******/ 	if(__webpack_exports__.__esModule) Object.defineProperty(__webpack_export_target__, "__esModule", { value: true });
-/******/ 	
-/******/ })()
-;
+/******/ 
+/******/ // startup
+/******/ // Load entry module and return exports
+/******/ // This entry module is referenced by other modules so it can't be inlined
+/******/ var __webpack_exports__ = __webpack_require__("./src/app.ts");
+/******/ var __webpack_exports__ADMIN = __webpack_exports__.ADMIN;
+/******/ var __webpack_exports__AddGhostConcept = __webpack_exports__.AddGhostConcept;
+/******/ var __webpack_exports__BaseUrl = __webpack_exports__.BaseUrl;
+/******/ var __webpack_exports__BinaryTree = __webpack_exports__.BinaryTree;
+/******/ var __webpack_exports__Composition = __webpack_exports__.Composition;
+/******/ var __webpack_exports__CompositionBinaryTree = __webpack_exports__.CompositionBinaryTree;
+/******/ var __webpack_exports__CompositionNode = __webpack_exports__.CompositionNode;
+/******/ var __webpack_exports__Concept = __webpack_exports__.Concept;
+/******/ var __webpack_exports__ConceptsData = __webpack_exports__.ConceptsData;
+/******/ var __webpack_exports__Connection = __webpack_exports__.Connection;
+/******/ var __webpack_exports__ConnectionData = __webpack_exports__.ConnectionData;
+/******/ var __webpack_exports__CreateComposition = __webpack_exports__.CreateComposition;
+/******/ var __webpack_exports__CreateConnectionBetweenTwoConcepts = __webpack_exports__.CreateConnectionBetweenTwoConcepts;
+/******/ var __webpack_exports__CreateConnectionBetweenTwoConceptsGeneral = __webpack_exports__.CreateConnectionBetweenTwoConceptsGeneral;
+/******/ var __webpack_exports__CreateConnectionBetweenTwoConceptsLocal = __webpack_exports__.CreateConnectionBetweenTwoConceptsLocal;
+/******/ var __webpack_exports__CreateDefaultConcept = __webpack_exports__.CreateDefaultConcept;
+/******/ var __webpack_exports__CreateDefaultLConcept = __webpack_exports__.CreateDefaultLConcept;
+/******/ var __webpack_exports__CreateSession = __webpack_exports__.CreateSession;
+/******/ var __webpack_exports__CreateSessionVisit = __webpack_exports__.CreateSessionVisit;
+/******/ var __webpack_exports__CreateTheCompositionLocal = __webpack_exports__.CreateTheCompositionLocal;
+/******/ var __webpack_exports__CreateTheCompositionWithCache = __webpack_exports__.CreateTheCompositionWithCache;
+/******/ var __webpack_exports__CreateTheConnection = __webpack_exports__.CreateTheConnection;
+/******/ var __webpack_exports__CreateTheConnectionGeneral = __webpack_exports__.CreateTheConnectionGeneral;
+/******/ var __webpack_exports__CreateTheConnectionLocal = __webpack_exports__.CreateTheConnectionLocal;
+/******/ var __webpack_exports__DATAID = __webpack_exports__.DATAID;
+/******/ var __webpack_exports__DATAIDDATE = __webpack_exports__.DATAIDDATE;
+/******/ var __webpack_exports__DelayFunctionExecution = __webpack_exports__.DelayFunctionExecution;
+/******/ var __webpack_exports__DeleteConceptById = __webpack_exports__.DeleteConceptById;
+/******/ var __webpack_exports__DeleteConceptLocal = __webpack_exports__.DeleteConceptLocal;
+/******/ var __webpack_exports__DeleteConnectionById = __webpack_exports__.DeleteConnectionById;
+/******/ var __webpack_exports__DeleteConnectionByType = __webpack_exports__.DeleteConnectionByType;
+/******/ var __webpack_exports__DependencyObserver = __webpack_exports__.DependencyObserver;
+/******/ var __webpack_exports__FilterSearch = __webpack_exports__.FilterSearch;
+/******/ var __webpack_exports__FormatFromConnections = __webpack_exports__.FormatFromConnections;
+/******/ var __webpack_exports__FormatFromConnectionsAltered = __webpack_exports__.FormatFromConnectionsAltered;
+/******/ var __webpack_exports__GetAllConnectionsOfComposition = __webpack_exports__.GetAllConnectionsOfComposition;
+/******/ var __webpack_exports__GetAllConnectionsOfCompositionBulk = __webpack_exports__.GetAllConnectionsOfCompositionBulk;
+/******/ var __webpack_exports__GetComposition = __webpack_exports__.GetComposition;
+/******/ var __webpack_exports__GetCompositionBulk = __webpack_exports__.GetCompositionBulk;
+/******/ var __webpack_exports__GetCompositionBulkWithDataId = __webpack_exports__.GetCompositionBulkWithDataId;
+/******/ var __webpack_exports__GetCompositionFromConnectionsWithDataId = __webpack_exports__.GetCompositionFromConnectionsWithDataId;
+/******/ var __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject = __webpack_exports__.GetCompositionFromConnectionsWithDataIdInObject;
+/******/ var __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex = __webpack_exports__.GetCompositionFromConnectionsWithDataIdIndex;
+/******/ var __webpack_exports__GetCompositionFromConnectionsWithIndex = __webpack_exports__.GetCompositionFromConnectionsWithIndex;
+/******/ var __webpack_exports__GetCompositionList = __webpack_exports__.GetCompositionList;
+/******/ var __webpack_exports__GetCompositionListAll = __webpack_exports__.GetCompositionListAll;
+/******/ var __webpack_exports__GetCompositionListAllWithId = __webpack_exports__.GetCompositionListAllWithId;
+/******/ var __webpack_exports__GetCompositionListListener = __webpack_exports__.GetCompositionListListener;
+/******/ var __webpack_exports__GetCompositionListLocal = __webpack_exports__.GetCompositionListLocal;
+/******/ var __webpack_exports__GetCompositionListLocalWithId = __webpack_exports__.GetCompositionListLocalWithId;
+/******/ var __webpack_exports__GetCompositionListWithId = __webpack_exports__.GetCompositionListWithId;
+/******/ var __webpack_exports__GetCompositionListWithIdUpdated = __webpack_exports__.GetCompositionListWithIdUpdated;
+/******/ var __webpack_exports__GetCompositionListener = __webpack_exports__.GetCompositionListener;
+/******/ var __webpack_exports__GetCompositionLocal = __webpack_exports__.GetCompositionLocal;
+/******/ var __webpack_exports__GetCompositionLocalWithId = __webpack_exports__.GetCompositionLocalWithId;
+/******/ var __webpack_exports__GetCompositionWithAllIds = __webpack_exports__.GetCompositionWithAllIds;
+/******/ var __webpack_exports__GetCompositionWithCache = __webpack_exports__.GetCompositionWithCache;
+/******/ var __webpack_exports__GetCompositionWithDataIdBulk = __webpack_exports__.GetCompositionWithDataIdBulk;
+/******/ var __webpack_exports__GetCompositionWithDataIdWithCache = __webpack_exports__.GetCompositionWithDataIdWithCache;
+/******/ var __webpack_exports__GetCompositionWithId = __webpack_exports__.GetCompositionWithId;
+/******/ var __webpack_exports__GetCompositionWithIdAndDateFromMemory = __webpack_exports__.GetCompositionWithIdAndDateFromMemory;
+/******/ var __webpack_exports__GetConceptBulk = __webpack_exports__.GetConceptBulk;
+/******/ var __webpack_exports__GetConceptByCharacter = __webpack_exports__.GetConceptByCharacter;
+/******/ var __webpack_exports__GetConceptByCharacterAndCategoryLocal = __webpack_exports__.GetConceptByCharacterAndCategoryLocal;
+/******/ var __webpack_exports__GetConceptByCharacterAndType = __webpack_exports__.GetConceptByCharacterAndType;
+/******/ var __webpack_exports__GetConnectionBetweenTwoConceptsLinker = __webpack_exports__.GetConnectionBetweenTwoConceptsLinker;
+/******/ var __webpack_exports__GetConnectionBulk = __webpack_exports__.GetConnectionBulk;
+/******/ var __webpack_exports__GetConnectionById = __webpack_exports__.GetConnectionById;
+/******/ var __webpack_exports__GetConnectionDataPrefetch = __webpack_exports__.GetConnectionDataPrefetch;
+/******/ var __webpack_exports__GetConnectionOfTheConcept = __webpack_exports__.GetConnectionOfTheConcept;
+/******/ var __webpack_exports__GetLink = __webpack_exports__.GetLink;
+/******/ var __webpack_exports__GetLinkListListener = __webpack_exports__.GetLinkListListener;
+/******/ var __webpack_exports__GetLinkListener = __webpack_exports__.GetLinkListener;
+/******/ var __webpack_exports__GetLinkRaw = __webpack_exports__.GetLinkRaw;
+/******/ var __webpack_exports__GetLinkerConnectionFromConcepts = __webpack_exports__.GetLinkerConnectionFromConcepts;
+/******/ var __webpack_exports__GetLinkerConnectionToConcepts = __webpack_exports__.GetLinkerConnectionToConcepts;
+/******/ var __webpack_exports__GetRelation = __webpack_exports__.GetRelation;
+/******/ var __webpack_exports__GetRelationLocal = __webpack_exports__.GetRelationLocal;
+/******/ var __webpack_exports__GetRelationRaw = __webpack_exports__.GetRelationRaw;
+/******/ var __webpack_exports__GetTheConcept = __webpack_exports__.GetTheConcept;
+/******/ var __webpack_exports__GetTheConceptLocal = __webpack_exports__.GetTheConceptLocal;
+/******/ var __webpack_exports__GetUserGhostId = __webpack_exports__.GetUserGhostId;
+/******/ var __webpack_exports__JUSTDATA = __webpack_exports__.JUSTDATA;
+/******/ var __webpack_exports__LConcept = __webpack_exports__.LConcept;
+/******/ var __webpack_exports__LConnection = __webpack_exports__.LConnection;
+/******/ var __webpack_exports__LocalConceptsData = __webpack_exports__.LocalConceptsData;
+/******/ var __webpack_exports__LocalSyncData = __webpack_exports__.LocalSyncData;
+/******/ var __webpack_exports__LoginToBackend = __webpack_exports__.LoginToBackend;
+/******/ var __webpack_exports__MakeTheInstanceConcept = __webpack_exports__.MakeTheInstanceConcept;
+/******/ var __webpack_exports__MakeTheInstanceConceptLocal = __webpack_exports__.MakeTheInstanceConceptLocal;
+/******/ var __webpack_exports__MakeTheTimestamp = __webpack_exports__.MakeTheTimestamp;
+/******/ var __webpack_exports__MakeTheTypeConcept = __webpack_exports__.MakeTheTypeConcept;
+/******/ var __webpack_exports__MakeTheTypeConceptApi = __webpack_exports__.MakeTheTypeConceptApi;
+/******/ var __webpack_exports__MakeTheTypeConceptLocal = __webpack_exports__.MakeTheTypeConceptLocal;
+/******/ var __webpack_exports__NORMAL = __webpack_exports__.NORMAL;
+/******/ var __webpack_exports__PRIVATE = __webpack_exports__.PRIVATE;
+/******/ var __webpack_exports__PUBLIC = __webpack_exports__.PUBLIC;
+/******/ var __webpack_exports__PatcherStructure = __webpack_exports__.PatcherStructure;
+/******/ var __webpack_exports__RAW = __webpack_exports__.RAW;
+/******/ var __webpack_exports__RecursiveSearchApi = __webpack_exports__.RecursiveSearchApi;
+/******/ var __webpack_exports__RecursiveSearchApiNewRawFullLinker = __webpack_exports__.RecursiveSearchApiNewRawFullLinker;
+/******/ var __webpack_exports__RecursiveSearchApiRaw = __webpack_exports__.RecursiveSearchApiRaw;
+/******/ var __webpack_exports__RecursiveSearchApiRawFullLinker = __webpack_exports__.RecursiveSearchApiRawFullLinker;
+/******/ var __webpack_exports__RecursiveSearchListener = __webpack_exports__.RecursiveSearchListener;
+/******/ var __webpack_exports__SearchAllConcepts = __webpack_exports__.SearchAllConcepts;
+/******/ var __webpack_exports__SearchLinkInternal = __webpack_exports__.SearchLinkInternal;
+/******/ var __webpack_exports__SearchLinkInternalAll = __webpack_exports__.SearchLinkInternalAll;
+/******/ var __webpack_exports__SearchLinkMultipleAll = __webpack_exports__.SearchLinkMultipleAll;
+/******/ var __webpack_exports__SearchLinkMultipleAllObservable = __webpack_exports__.SearchLinkMultipleAllObservable;
+/******/ var __webpack_exports__SearchLinkMultipleApi = __webpack_exports__.SearchLinkMultipleApi;
+/******/ var __webpack_exports__SearchQuery = __webpack_exports__.SearchQuery;
+/******/ var __webpack_exports__SearchStructure = __webpack_exports__.SearchStructure;
+/******/ var __webpack_exports__SearchWithLinker = __webpack_exports__.SearchWithLinker;
+/******/ var __webpack_exports__SearchWithTypeAndLinker = __webpack_exports__.SearchWithTypeAndLinker;
+/******/ var __webpack_exports__SearchWithTypeAndLinkerApi = __webpack_exports__.SearchWithTypeAndLinkerApi;
+/******/ var __webpack_exports__SessionData = __webpack_exports__.SessionData;
+/******/ var __webpack_exports__Signin = __webpack_exports__.Signin;
+/******/ var __webpack_exports__Signup = __webpack_exports__.Signup;
+/******/ var __webpack_exports__SplitStrings = __webpack_exports__.SplitStrings;
+/******/ var __webpack_exports__StatefulWidget = __webpack_exports__.StatefulWidget;
+/******/ var __webpack_exports__SyncData = __webpack_exports__.SyncData;
+/******/ var __webpack_exports__TrashTheConcept = __webpack_exports__.TrashTheConcept;
+/******/ var __webpack_exports__UpdateComposition = __webpack_exports__.UpdateComposition;
+/******/ var __webpack_exports__UpdateCompositionLocal = __webpack_exports__.UpdateCompositionLocal;
+/******/ var __webpack_exports__UserBinaryTree = __webpack_exports__.UserBinaryTree;
+/******/ var __webpack_exports__ViewInternalData = __webpack_exports__.ViewInternalData;
+/******/ var __webpack_exports__ViewInternalDataApi = __webpack_exports__.ViewInternalDataApi;
+/******/ var __webpack_exports__convertFromConceptToLConcept = __webpack_exports__.convertFromConceptToLConcept;
+/******/ var __webpack_exports__convertFromLConceptToConcept = __webpack_exports__.convertFromLConceptToConcept;
+/******/ var __webpack_exports__dispatchIdEvent = __webpack_exports__.dispatchIdEvent;
+/******/ var __webpack_exports__getFromDatabaseWithType = __webpack_exports__.getFromDatabaseWithType;
+/******/ var __webpack_exports__getObjectsFromIndexDb = __webpack_exports__.getObjectsFromIndexDb;
+/******/ var __webpack_exports__init = __webpack_exports__.init;
+/******/ var __webpack_exports__recursiveFetch = __webpack_exports__.recursiveFetch;
+/******/ var __webpack_exports__recursiveFetchNew = __webpack_exports__.recursiveFetchNew;
+/******/ var __webpack_exports__searchLinkMultipleListener = __webpack_exports__.searchLinkMultipleListener;
+/******/ var __webpack_exports__sendMessage = __webpack_exports__.sendMessage;
+/******/ var __webpack_exports__serviceWorker = __webpack_exports__.serviceWorker;
+/******/ var __webpack_exports__storeToDatabase = __webpack_exports__.storeToDatabase;
+/******/ var __webpack_exports__subscribedListeners = __webpack_exports__.subscribedListeners;
+/******/ var __webpack_exports__updateAccessToken = __webpack_exports__.updateAccessToken;
+/******/ export { __webpack_exports__ADMIN as ADMIN, __webpack_exports__AddGhostConcept as AddGhostConcept, __webpack_exports__BaseUrl as BaseUrl, __webpack_exports__BinaryTree as BinaryTree, __webpack_exports__Composition as Composition, __webpack_exports__CompositionBinaryTree as CompositionBinaryTree, __webpack_exports__CompositionNode as CompositionNode, __webpack_exports__Concept as Concept, __webpack_exports__ConceptsData as ConceptsData, __webpack_exports__Connection as Connection, __webpack_exports__ConnectionData as ConnectionData, __webpack_exports__CreateComposition as CreateComposition, __webpack_exports__CreateConnectionBetweenTwoConcepts as CreateConnectionBetweenTwoConcepts, __webpack_exports__CreateConnectionBetweenTwoConceptsGeneral as CreateConnectionBetweenTwoConceptsGeneral, __webpack_exports__CreateConnectionBetweenTwoConceptsLocal as CreateConnectionBetweenTwoConceptsLocal, __webpack_exports__CreateDefaultConcept as CreateDefaultConcept, __webpack_exports__CreateDefaultLConcept as CreateDefaultLConcept, __webpack_exports__CreateSession as CreateSession, __webpack_exports__CreateSessionVisit as CreateSessionVisit, __webpack_exports__CreateTheCompositionLocal as CreateTheCompositionLocal, __webpack_exports__CreateTheCompositionWithCache as CreateTheCompositionWithCache, __webpack_exports__CreateTheConnection as CreateTheConnection, __webpack_exports__CreateTheConnectionGeneral as CreateTheConnectionGeneral, __webpack_exports__CreateTheConnectionLocal as CreateTheConnectionLocal, __webpack_exports__DATAID as DATAID, __webpack_exports__DATAIDDATE as DATAIDDATE, __webpack_exports__DelayFunctionExecution as DelayFunctionExecution, __webpack_exports__DeleteConceptById as DeleteConceptById, __webpack_exports__DeleteConceptLocal as DeleteConceptLocal, __webpack_exports__DeleteConnectionById as DeleteConnectionById, __webpack_exports__DeleteConnectionByType as DeleteConnectionByType, __webpack_exports__DependencyObserver as DependencyObserver, __webpack_exports__FilterSearch as FilterSearch, __webpack_exports__FormatFromConnections as FormatFromConnections, __webpack_exports__FormatFromConnectionsAltered as FormatFromConnectionsAltered, __webpack_exports__GetAllConnectionsOfComposition as GetAllConnectionsOfComposition, __webpack_exports__GetAllConnectionsOfCompositionBulk as GetAllConnectionsOfCompositionBulk, __webpack_exports__GetComposition as GetComposition, __webpack_exports__GetCompositionBulk as GetCompositionBulk, __webpack_exports__GetCompositionBulkWithDataId as GetCompositionBulkWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataId as GetCompositionFromConnectionsWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject as GetCompositionFromConnectionsWithDataIdInObject, __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex as GetCompositionFromConnectionsWithDataIdIndex, __webpack_exports__GetCompositionFromConnectionsWithIndex as GetCompositionFromConnectionsWithIndex, __webpack_exports__GetCompositionList as GetCompositionList, __webpack_exports__GetCompositionListAll as GetCompositionListAll, __webpack_exports__GetCompositionListAllWithId as GetCompositionListAllWithId, __webpack_exports__GetCompositionListListener as GetCompositionListListener, __webpack_exports__GetCompositionListLocal as GetCompositionListLocal, __webpack_exports__GetCompositionListLocalWithId as GetCompositionListLocalWithId, __webpack_exports__GetCompositionListWithId as GetCompositionListWithId, __webpack_exports__GetCompositionListWithIdUpdated as GetCompositionListWithIdUpdated, __webpack_exports__GetCompositionListener as GetCompositionListener, __webpack_exports__GetCompositionLocal as GetCompositionLocal, __webpack_exports__GetCompositionLocalWithId as GetCompositionLocalWithId, __webpack_exports__GetCompositionWithAllIds as GetCompositionWithAllIds, __webpack_exports__GetCompositionWithCache as GetCompositionWithCache, __webpack_exports__GetCompositionWithDataIdBulk as GetCompositionWithDataIdBulk, __webpack_exports__GetCompositionWithDataIdWithCache as GetCompositionWithDataIdWithCache, __webpack_exports__GetCompositionWithId as GetCompositionWithId, __webpack_exports__GetCompositionWithIdAndDateFromMemory as GetCompositionWithIdAndDateFromMemory, __webpack_exports__GetConceptBulk as GetConceptBulk, __webpack_exports__GetConceptByCharacter as GetConceptByCharacter, __webpack_exports__GetConceptByCharacterAndCategoryLocal as GetConceptByCharacterAndCategoryLocal, __webpack_exports__GetConceptByCharacterAndType as GetConceptByCharacterAndType, __webpack_exports__GetConnectionBetweenTwoConceptsLinker as GetConnectionBetweenTwoConceptsLinker, __webpack_exports__GetConnectionBulk as GetConnectionBulk, __webpack_exports__GetConnectionById as GetConnectionById, __webpack_exports__GetConnectionDataPrefetch as GetConnectionDataPrefetch, __webpack_exports__GetConnectionOfTheConcept as GetConnectionOfTheConcept, __webpack_exports__GetLink as GetLink, __webpack_exports__GetLinkListListener as GetLinkListListener, __webpack_exports__GetLinkListener as GetLinkListener, __webpack_exports__GetLinkRaw as GetLinkRaw, __webpack_exports__GetLinkerConnectionFromConcepts as GetLinkerConnectionFromConcepts, __webpack_exports__GetLinkerConnectionToConcepts as GetLinkerConnectionToConcepts, __webpack_exports__GetRelation as GetRelation, __webpack_exports__GetRelationLocal as GetRelationLocal, __webpack_exports__GetRelationRaw as GetRelationRaw, __webpack_exports__GetTheConcept as GetTheConcept, __webpack_exports__GetTheConceptLocal as GetTheConceptLocal, __webpack_exports__GetUserGhostId as GetUserGhostId, __webpack_exports__JUSTDATA as JUSTDATA, __webpack_exports__LConcept as LConcept, __webpack_exports__LConnection as LConnection, __webpack_exports__LocalConceptsData as LocalConceptsData, __webpack_exports__LocalSyncData as LocalSyncData, __webpack_exports__LoginToBackend as LoginToBackend, __webpack_exports__MakeTheInstanceConcept as MakeTheInstanceConcept, __webpack_exports__MakeTheInstanceConceptLocal as MakeTheInstanceConceptLocal, __webpack_exports__MakeTheTimestamp as MakeTheTimestamp, __webpack_exports__MakeTheTypeConcept as MakeTheTypeConcept, __webpack_exports__MakeTheTypeConceptApi as MakeTheTypeConceptApi, __webpack_exports__MakeTheTypeConceptLocal as MakeTheTypeConceptLocal, __webpack_exports__NORMAL as NORMAL, __webpack_exports__PRIVATE as PRIVATE, __webpack_exports__PUBLIC as PUBLIC, __webpack_exports__PatcherStructure as PatcherStructure, __webpack_exports__RAW as RAW, __webpack_exports__RecursiveSearchApi as RecursiveSearchApi, __webpack_exports__RecursiveSearchApiNewRawFullLinker as RecursiveSearchApiNewRawFullLinker, __webpack_exports__RecursiveSearchApiRaw as RecursiveSearchApiRaw, __webpack_exports__RecursiveSearchApiRawFullLinker as RecursiveSearchApiRawFullLinker, __webpack_exports__RecursiveSearchListener as RecursiveSearchListener, __webpack_exports__SearchAllConcepts as SearchAllConcepts, __webpack_exports__SearchLinkInternal as SearchLinkInternal, __webpack_exports__SearchLinkInternalAll as SearchLinkInternalAll, __webpack_exports__SearchLinkMultipleAll as SearchLinkMultipleAll, __webpack_exports__SearchLinkMultipleAllObservable as SearchLinkMultipleAllObservable, __webpack_exports__SearchLinkMultipleApi as SearchLinkMultipleApi, __webpack_exports__SearchQuery as SearchQuery, __webpack_exports__SearchStructure as SearchStructure, __webpack_exports__SearchWithLinker as SearchWithLinker, __webpack_exports__SearchWithTypeAndLinker as SearchWithTypeAndLinker, __webpack_exports__SearchWithTypeAndLinkerApi as SearchWithTypeAndLinkerApi, __webpack_exports__SessionData as SessionData, __webpack_exports__Signin as Signin, __webpack_exports__Signup as Signup, __webpack_exports__SplitStrings as SplitStrings, __webpack_exports__StatefulWidget as StatefulWidget, __webpack_exports__SyncData as SyncData, __webpack_exports__TrashTheConcept as TrashTheConcept, __webpack_exports__UpdateComposition as UpdateComposition, __webpack_exports__UpdateCompositionLocal as UpdateCompositionLocal, __webpack_exports__UserBinaryTree as UserBinaryTree, __webpack_exports__ViewInternalData as ViewInternalData, __webpack_exports__ViewInternalDataApi as ViewInternalDataApi, __webpack_exports__convertFromConceptToLConcept as convertFromConceptToLConcept, __webpack_exports__convertFromLConceptToConcept as convertFromLConceptToConcept, __webpack_exports__dispatchIdEvent as dispatchIdEvent, __webpack_exports__getFromDatabaseWithType as getFromDatabaseWithType, __webpack_exports__getObjectsFromIndexDb as getObjectsFromIndexDb, __webpack_exports__init as init, __webpack_exports__recursiveFetch as recursiveFetch, __webpack_exports__recursiveFetchNew as recursiveFetchNew, __webpack_exports__searchLinkMultipleListener as searchLinkMultipleListener, __webpack_exports__sendMessage as sendMessage, __webpack_exports__serviceWorker as serviceWorker, __webpack_exports__storeToDatabase as storeToDatabase, __webpack_exports__subscribedListeners as subscribedListeners, __webpack_exports__updateAccessToken as updateAccessToken };
+/******/ 
+
 //# sourceMappingURL=main.bundle.js.map

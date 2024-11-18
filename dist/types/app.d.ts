@@ -124,7 +124,7 @@ declare function updateAccessToken(accessToken?: string): void;
  */
 declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string, enableSW?: {
     activate: boolean;
-    scope: 'string';
+    scope: string;
 } | undefined, isTest?: boolean): Promise<true | undefined>;
 export declare function sendMessage(type: string, payload: any): Promise<unknown>;
 export declare function dispatchIdEvent(id: number | string, data?: any): void;
