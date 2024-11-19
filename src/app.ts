@@ -307,7 +307,7 @@ async function init(
 }
 
 export async function sendMessage(type: string, payload: any) {
-  const messageId = Math.random().toString(36).substring(7); // Generate a unique message ID
+  const messageId = Math.random().toString(36).substring(5); // Generate a unique message ID
   payload.messageId = messageId
 
   return new Promise((resolve, reject) => {
