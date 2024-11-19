@@ -14,13 +14,14 @@ import { Actions, createActions, getActions, searchActions, syncActions, updateA
 self.addEventListener("install", (event: any) => {
   console.log("Service Worker installing... sw");
   // event.waitUntil();
-  (self as any).skipWaiting()
+  event.waitUntil((self as any).skipWaiting())
 });
 
 // Activate Service Worker
-self.addEventListener("activate", async (event) => {
+self.addEventListener("activate", async (event: any) => {
   console.log("Service Worker activating... sw");
   // await init();
+  event.waitUntil((self as any).clients.claim());
 });
 
 // For Caching gives the event when fetch request is triggered
@@ -40,11 +41,11 @@ const actions: Actions = {
         payload?.applicationName,
         payload?.isTest
       );
-    return {success: true, data: undefined}
+    return {success: true, data: undefined, name: 'init'}
   },
   updateAccessToken: async (payload) => {
     updateAccessToken(payload.accessToken)
-    return {success: true}
+    return {success: true, name: 'updateAccessToken'}
   },
   // imported actions
   ...getActions,
@@ -62,15 +63,21 @@ self.addEventListener("message", async (event: any) => {
   const { type, payload }: any = event.data;
   if (!type) return;
   console.log('has type', type)
-  let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
+  let responseData: {success: boolean, data?: any, messageId?: string} = {success: false, data: undefined}
 
   if (actions[type]) {
-    console.log('if type')
-    responseData = await actions[type](payload);
+    try {
+      console.log('if type', responseData)
+      responseData = await actions[type](payload);
+      console.log('end if type', responseData)
+    } catch (err) {
+      console.log('Error if', err)
+    }
   } else {
     console.log('else type')
     console.log(`Unable to handle "${type}" case in service worker`)
   }
+  responseData.messageId = payload.messageId
   
   event.source.postMessage(responseData)
 

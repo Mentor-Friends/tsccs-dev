@@ -18149,7 +18149,7 @@ function updateAccessToken(accessToken = "") {
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
- * @param enableSW {activate: boolean, scope: 'string'} | undefined - This is for enabling service worker with its scope
+ * @param enableSW {activate: boolean, scope: string} | undefined - This is for enabling service worker with its scope
  */
 function init() {
     return __awaiter(this, arguments, void 0, function* (url = "", aiurl = "", accessToken = "", nodeUrl = "", enableAi = true, applicationName = "", enableSW = undefined, isTest = false) {
@@ -18282,14 +18282,49 @@ function init() {
     });
 }
 function sendMessage(type, payload) {
-    // TODO:: add payload validator based on type of the message
-    return new Promise((resolve) => {
-        const responseHandler = (event) => {
-            resolve(event.data);
-            navigator.serviceWorker.removeEventListener("message", responseHandler);
-        };
-        navigator.serviceWorker.addEventListener("message", responseHandler);
-        serviceWorker === null || serviceWorker === void 0 ? void 0 : serviceWorker.postMessage({ type, payload });
+    return __awaiter(this, void 0, void 0, function* () {
+        const messageId = Math.random().toString(36).substring(7); // Generate a unique message ID
+        payload.messageId = messageId;
+        return new Promise((resolve, reject) => {
+            // navigator.serviceWorker.ready
+            //   .then((registration) => {
+            const responseHandler = (event) => {
+                var _a;
+                if (((_a = event === null || event === void 0 ? void 0 : event.data) === null || _a === void 0 ? void 0 : _a.messageId) == messageId) { // Check if the message ID matches
+                    console.log("after sending message", event, event.data);
+                    resolve(event.data);
+                    navigator.serviceWorker.removeEventListener("message", responseHandler);
+                }
+            };
+            navigator.serviceWorker.addEventListener("message", responseHandler);
+            console.log("before sending message", navigator.serviceWorker.controller);
+            // serviceWorker?.postMessage({ type, payload });
+            // Send the message to the service worker
+            if (navigator.serviceWorker.controller) {
+                serviceWorker.postMessage({ type, payload });
+                // navigator.serviceWorker.controller.postMessage({ type, payload });
+            }
+            else {
+                // wait one second before checking again
+                setTimeout(() => {
+                    if (navigator.serviceWorker.controller) {
+                        serviceWorker.postMessage({ type, payload });
+                        // navigator.serviceWorker.controller.postMessage({ type, payload });
+                    }
+                    else {
+                        reject("Service worker not ready");
+                    }
+                }, 1000);
+            }
+            // Timeout for waiting for the response (e.g., 5 seconds)
+            setTimeout(() => {
+                reject("No response from service worker after timeout");
+                navigator.serviceWorker.removeEventListener("message", responseHandler);
+            }, 5000);
+            // })
+            // .catch(err => reject(err))
+            // .finally(() => console.log('finally'))
+        });
     });
 }
 function dispatchIdEvent(id, data = {}) {
@@ -18572,12 +18607,13 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 self.addEventListener("install", (event) => {
     console.log("Service Worker installing... sw");
     // event.waitUntil();
-    self.skipWaiting();
+    event.waitUntil(self.skipWaiting());
 });
 // Activate Service Worker
 self.addEventListener("activate", (event) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Service Worker activating... sw");
     // await init();
+    event.waitUntil(self.clients.claim());
 }));
 // For Caching gives the event when fetch request is triggered
 // self.addEventListener('fetch', (event: any) => {
@@ -18586,10 +18622,10 @@ self.addEventListener("activate", (event) => __awaiter(void 0, void 0, void 0, f
 // Actions that can be performed in this service worker
 const actions = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ init: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         yield init(payload === null || payload === void 0 ? void 0 : payload.url, payload === null || payload === void 0 ? void 0 : payload.aiurl, payload === null || payload === void 0 ? void 0 : payload.accessToken, payload === null || payload === void 0 ? void 0 : payload.nodeUrl, payload === null || payload === void 0 ? void 0 : payload.enableAi, payload === null || payload === void 0 ? void 0 : payload.applicationName, payload === null || payload === void 0 ? void 0 : payload.isTest);
-        return { success: true, data: undefined };
+        return { success: true, data: undefined, name: 'init' };
     }), updateAccessToken: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         (0,_app__WEBPACK_IMPORTED_MODULE_0__.updateAccessToken)(payload.accessToken);
-        return { success: true };
+        return { success: true, name: 'updateAccessToken' };
     }) }, _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.getActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.searchActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.createActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.updateActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.connectionActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.deleteActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.syncActions);
 // Listen message received by service worker
 self.addEventListener("message", (event) => __awaiter(void 0, void 0, void 0, function* () {
@@ -18600,13 +18636,20 @@ self.addEventListener("message", (event) => __awaiter(void 0, void 0, void 0, fu
     console.log('has type', type);
     let responseData = { success: false, data: undefined };
     if (actions[type]) {
-        console.log('if type');
-        responseData = yield actions[type](payload);
+        try {
+            console.log('if type', responseData);
+            responseData = yield actions[type](payload);
+            console.log('end if type', responseData);
+        }
+        catch (err) {
+            console.log('Error if', err);
+        }
     }
     else {
         console.log('else type');
         console.log(`Unable to handle "${type}" case in service worker`);
     }
+    responseData.messageId = payload.messageId;
     event.source.postMessage(responseData);
 }));
 /**
