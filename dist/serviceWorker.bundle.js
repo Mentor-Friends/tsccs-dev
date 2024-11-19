@@ -16623,6 +16623,241 @@ function ViewInternalData(ids) {
 
 /***/ }),
 
+/***/ "./src/Validator/constant.ts":
+/*!***********************************!*\
+  !*** ./src/Validator/constant.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DATA_TYPES_RULES: () => (/* binding */ DATA_TYPES_RULES)
+/* harmony export */ });
+// Data Type Constants
+const DATA_TYPES_RULES = {
+    number: /^\d+(\.\d+)?$/, // Matches integers or decimals
+    text: /^[\s\S]*$/, // Matches any text
+    textOnly: /^[A-Za-z\s]+$/, // Matches only letters and spaces, no numbers or special characters
+    document: /\.(pdf|docx?|pptx?|xlsx?)$/i, // Matches common document file extensions
+    sound: /\.(mp3|wav|ogg|flac)$/i, // Matches common sound file extensions
+    image: /\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i, // Matches common image file extensions
+    video: /\.(mp4|avi|mov|mkv|flv|webm)$/i, // Matches common video file extensions
+    url: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/, // Matches standard URL format
+    date: /^\d{4}-\d{2}-\d{2}$/, // Matches dates in the format YYYY-MM-DD
+    time: /^(?:[01]\d|2[0-3]):[0-5]\d$/, // Matches 24-hour format times, HH:MM
+    password: /^.{6,}$/, // Matches passwords with at least 6 characters; you can customize as needed
+    ipaddress: /^(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)$|^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})$/, // Matches IPv4 or IPv6 formats
+    uuid: /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/, // Matches UUID format
+};
+
+
+/***/ }),
+
+/***/ "./src/Validator/utils.ts":
+/*!********************************!*\
+  !*** ./src/Validator/utils.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createFormFieldData: () => (/* binding */ createFormFieldData)
+/* harmony export */ });
+/**
+ * Utility function to get input field data and attributes
+ * @param fieldName - The Name of the form field.
+ * @returns - An object containing the field's value and constraints (type, maxLength, etc.).
+ */
+const createFormFieldData = (fieldName) => {
+    const inputElements = document.getElementsByName(fieldName);
+    const inputElement = inputElements[0];
+    // Check if the element exists
+    if (!inputElement) {
+        console.warn(`Element with NAME "${fieldName}" not found.`);
+        return {
+            value: null,
+            dataType: null,
+            conceptType: null,
+            maxLength: null,
+            minLength: null,
+            minValue: null,
+            maxValue: null,
+            accept: null,
+            required: false,
+            isUnique: true
+        };
+    }
+    // Check for the `required` and `isUnique` attribute
+    const required = inputElement.hasAttribute('required') || inputElement.getAttribute('data-required') === 'true';
+    const isUnique = inputElement.hasAttribute('isUnique') && inputElement.getAttribute('isUnique') === 'true';
+    // Proceed to gather data if the element exists
+    const data = {
+        value: inputElement.value,
+        dataType: inputElement.getAttribute('data-type'),
+        conceptType: inputElement.getAttribute('concept-type'),
+        maxLength: inputElement.getAttribute('data-maxlength') ? parseInt(inputElement.getAttribute('data-maxlength')) : null,
+        minLength: inputElement.getAttribute('data-minlength') ? parseInt(inputElement.getAttribute('data-minlength')) : null,
+        minValue: inputElement.getAttribute('data-min') ? parseInt(inputElement.getAttribute('data-min')) : null,
+        maxValue: inputElement.getAttribute('data-max') ? parseInt(inputElement.getAttribute('data-max')) : null,
+        accept: inputElement.getAttribute('accept') || null,
+        required: required,
+        isUnique: isUnique
+    };
+    return data;
+};
+
+
+/***/ }),
+
+/***/ "./src/Validator/validator.ts":
+/*!************************************!*\
+  !*** ./src/Validator/validator.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Validator: () => (/* binding */ Validator)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constant */ "./src/Validator/constant.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+class Validator {
+    /**
+     * Checks if a concept with the given type and value is unique.
+     * @param type concept type where to check
+     * @param value value to check
+     * @returns boolean indicating uniqueness
+     */
+    checkUniqueness(type, value) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Ensure 'the_' is at the start of the type
+            if (!type.startsWith('the_')) {
+                type = 'the_' + type;
+            }
+            const sessionId = 999;
+            const sessionUserId = 999;
+            const userId = 999;
+            // Create the type concept based on session data
+            let type_concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheTypeConcept)(type, sessionId, sessionUserId, userId);
+            let type_concept_id = type_concept.id;
+            // Check if the concept exists for the provided value and type_concept_id
+            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterAndType)(value, type_concept_id);
+            if (!concept || !concept.id) {
+                return true;
+            }
+            return false;
+        });
+    }
+    /**
+     * Validates a single form field based on its data type, constraints, and uniqueness.
+     * @param fieldName - The name of the field being validated (e.g., "email", "phone").
+     * @param dataType - The expected data type for the field (e.g., "text", "number").
+     * @param value - The value of the field to validate.
+     * @param conceptType - The concept type used for uniqueness check.
+     * @param maxLength - The maximum allowed length for the field value.
+     * @param minLength - The minimum allowed length for the field value.
+     * @param minValue - The minimum allowed value for the field (for numeric fields).
+     * @param maxValue - The maximum allowed value for the field (for numeric fields).
+     * @param accept - The 'accept' attribute value for file inputs.
+     * @param file - The file input (if any), used for file type validation.
+     * @param required - Whether the field is required.
+     * @param isUnique - Whether the field value should be unique.
+     * @returns An array of error messages if validation fails, or an empty array if the field is valid.
+     */
+    validateField(fieldName_1, dataType_1, value_1, conceptType_1, maxLength_1, minLength_1, minValue_1, maxValue_1, accept_1, file_1, required_1) {
+        return __awaiter(this, arguments, void 0, function* (fieldName, dataType, value, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique = false // Optional parameter for uniqueness check
+        ) {
+            var _a;
+            const errors = [];
+            // 1. Validate required field (must not be empty)
+            if (required && (value === null || value === '')) {
+                errors.push(`${fieldName} is required`);
+            }
+            // 2. Validate using regex pattern for the data type
+            if (dataType && value) {
+                const pattern = _constant__WEBPACK_IMPORTED_MODULE_1__.DATA_TYPES_RULES[dataType];
+                if (pattern && value !== '' && !pattern.test(value)) {
+                    errors.push(`Invalid format for ${dataType} in ${fieldName}`);
+                }
+            }
+            // 3. Validate maxLength
+            if (value && maxLength !== null && value.length > maxLength) {
+                errors.push(`${fieldName} exceeds the maximum length of ${maxLength}`);
+            }
+            // 4. Validate minLength
+            if (value && minLength !== null && value.length < minLength) {
+                errors.push(`${fieldName} must be at least ${minLength} characters long`);
+            }
+            // 5. Validate minValue (only for numeric fields)
+            if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
+                errors.push(`${fieldName} must be greater than or equal to ${minValue}`);
+            }
+            // 6. Validate maxValue (only for numeric fields)
+            if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
+                errors.push(`${fieldName} must be less than or equal to ${maxValue}`);
+            }
+            // 7. File validation: Check if this is a file input
+            if (dataType === 'file' && file) {
+                if (accept) {
+                    const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
+                    const fileExtension = (_a = file.name.split('.').pop()) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+                    if (fileExtension && !acceptedTypes.includes(fileExtension)) {
+                        errors.push(`${fieldName} must be a valid file type: ${acceptedTypes.join(', ')}`);
+                    }
+                }
+            }
+            // 8. Check if the field needs to be unique and perform uniqueness validation
+            if (conceptType && isUnique && value) {
+                const isUniqueValue = yield this.checkUniqueness(conceptType, value);
+                if (!isUniqueValue) {
+                    errors.push(`${fieldName} is not unique`);
+                }
+            }
+            return errors;
+        });
+    }
+    /**
+     * Validates all form fields by iterating over the provided form data.
+     * It checks each field's value, data type, and constraints, collecting errors where necessary.
+     *
+     * @param formData - An object representing the form data, where each key is a field name
+     *                   and each value is an object containing the `value`, `dataType`, and constraints (e.g., `maxLength`, `minLength`).
+     *
+     * @returns An object containing validation errors for fields that failed validation.
+     *          If no errors exist, the object will be empty.
+     */
+    validateForm(formData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const validationErrors = {};
+            // Iterate through the fields in the form data
+            for (const fieldName in formData) {
+                const { value, dataType, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
+                // Call the validateField function to validate each field
+                const fieldErrors = yield this.validateField(fieldName, dataType, value, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique);
+                // If there are errors, add them to the errors object
+                if (fieldErrors.length > 0) {
+                    validationErrors[fieldName] = fieldErrors;
+                }
+            }
+            return validationErrors;
+        });
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/Widgets/BaseObserver.ts":
 /*!*************************************!*\
   !*** ./src/Widgets/BaseObserver.ts ***!
@@ -17795,7 +18030,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   DeleteConceptById: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__.DeleteConceptById),
 /* harmony export */   DeleteConceptLocal: () => (/* reexport safe */ _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_61__.DeleteConceptLocal),
 /* harmony export */   DeleteConnectionById: () => (/* reexport safe */ _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_25__.DeleteConnectionById),
-/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_102__.DeleteConnectionByType),
+/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_104__.DeleteConnectionByType),
 /* harmony export */   DependencyObserver: () => (/* reexport safe */ _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_68__.DependencyObserver),
 /* harmony export */   FilterSearch: () => (/* reexport safe */ _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_92__.FilterSearch),
 /* harmony export */   FormatFromConnections: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnections),
@@ -17884,16 +18119,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Signin: () => (/* reexport safe */ _Api_Signin__WEBPACK_IMPORTED_MODULE_37__["default"]),
 /* harmony export */   Signup: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_36__["default"]),
 /* harmony export */   SplitStrings: () => (/* reexport safe */ _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_3__.SplitStrings),
-/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_101__.StatefulWidget),
+/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_103__.StatefulWidget),
 /* harmony export */   SyncData: () => (/* reexport safe */ _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_76__.SyncData),
 /* harmony export */   TrashTheConcept: () => (/* reexport safe */ _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_26__.TrashTheConcept),
 /* harmony export */   UpdateComposition: () => (/* reexport safe */ _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_38__["default"]),
 /* harmony export */   UpdateCompositionLocal: () => (/* reexport safe */ _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_53__.UpdateCompositionLocal),
 /* harmony export */   UserBinaryTree: () => (/* reexport safe */ _DataStructures_User_UserBinaryTree__WEBPACK_IMPORTED_MODULE_91__.UserBinaryTree),
+/* harmony export */   Validator: () => (/* reexport safe */ _Validator_validator__WEBPACK_IMPORTED_MODULE_101__.Validator),
 /* harmony export */   ViewInternalData: () => (/* reexport safe */ _Services_View_ViewInternalData__WEBPACK_IMPORTED_MODULE_56__.ViewInternalData),
 /* harmony export */   ViewInternalDataApi: () => (/* reexport safe */ _Api_View_ViewInternalDataApi__WEBPACK_IMPORTED_MODULE_57__.ViewInternalDataApi),
 /* harmony export */   convertFromConceptToLConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromConceptToLConcept),
 /* harmony export */   convertFromLConceptToConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromLConceptToConcept),
+/* harmony export */   createFormFieldData: () => (/* reexport safe */ _Validator_utils__WEBPACK_IMPORTED_MODULE_102__.createFormFieldData),
 /* harmony export */   dispatchIdEvent: () => (/* binding */ dispatchIdEvent),
 /* harmony export */   getFromDatabaseWithType: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getFromDatabaseWithType),
 /* harmony export */   getObjectsFromIndexDb: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getObjectsFromIndexDb),
@@ -18008,8 +18245,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__ = __webpack_require__(/*! ./DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
 /* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__ = __webpack_require__(/*! ./DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
 /* harmony import */ var _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__ = __webpack_require__(/*! ./Constants/general.const */ "./src/Constants/general.const.ts");
-/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
-/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
+/* harmony import */ var _Validator_validator__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Validator/validator */ "./src/Validator/validator.ts");
+/* harmony import */ var _Validator_utils__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Validator/utils */ "./src/Validator/utils.ts");
+/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
+/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -18129,7 +18368,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
+
 var serviceWorker;
+console.log("Start from logging...");
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.

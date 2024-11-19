@@ -111,11 +111,14 @@ import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
+export { Validator } from "./Validator/validator";
+export { createFormFieldData } from "./Validator/utils";
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
 
 export var serviceWorker: any;
+console.log("Start from logging...");
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
