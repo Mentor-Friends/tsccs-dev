@@ -110,6 +110,7 @@ import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConceptsToMemory, Pop
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+export { Anomaly } from './Anomaly/anomaly';
 export { Validator } from './Validator/validator';
 export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';

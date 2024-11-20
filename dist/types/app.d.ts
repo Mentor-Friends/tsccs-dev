@@ -101,6 +101,7 @@ export { UserBinaryTree } from './DataStructures/User/UserBinaryTree';
 export { FilterSearch } from './DataStructures/FilterSearch';
 export { SearchStructure } from './DataStructures/Search/SearchStructure';
 export { LocalConceptsData } from './DataStructures/Local/LocalConceptData';
+export { Anomaly } from './Anomaly/anomaly';
 export { Validator } from './Validator/validator';
 export { createFormFieldData } from './Validator/utils';
 export { BaseUrl } from './DataStructures/BaseUrl';
