@@ -78,7 +78,7 @@ export class LocalSyncData{
         try{
             console.log('sw triggered')
             if (serviceWorker) {
-                const res: any = await sendMessage('LocalSyncData_SyncDataOnline', {})
+                const res: any = await sendMessage('LocalSyncData__SyncDataOnline', {})
                 return res.data
             }
             let conceptsArray = this.conceptsSyncArray.slice();
@@ -118,31 +118,6 @@ export class LocalSyncData{
         }
 
      }
-
-    //  static async  SyncDataOnline(){
-        
-    //     if(this.conceptsSyncArray.length > 0){
-    //         let conceptsArray = this.conceptsSyncArray.slice();
-    //         this.conceptsSyncArray = [];
-    //         let concepts = await CreateTheGhostConceptApi(conceptsArray);
-    //         for(let i =0 ; i< concepts.length; i++){
-    //             LocalSyncData.ghostIdMap.set(concepts[i].ghostId,concepts[i].id);
-    //             LocalConceptsData.AddPermanentConcept(concepts[i]);
-    //         }
-    //     }
-    //      if(this.connectionSyncArray.length > 0){
-    //         // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
-    //         //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
-    //         // }
-    //         let connectionsArray = this.connectionSyncArray.slice();
-    //         this.ConvertGhostIdsInConnections(connectionsArray);
-
-    //         this.connectionSyncArray = [];
-    //         await CreateTheGhostConnectionApi(connectionsArray);
-    //     }
-    //     return "done";
-
-    //  }
 
     static ConvertGhostIdsInConnections(connectionArray: Connection[]){
         for(let i= 0 ;i < connectionArray.length; i++){

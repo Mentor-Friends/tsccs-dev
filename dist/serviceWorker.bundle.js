@@ -7251,7 +7251,7 @@ class LocalSyncData {
             try {
                 console.log('sw triggered');
                 if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
-                    const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData_SyncDataOnline', {});
+                    const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData__SyncDataOnline', {});
                     return res.data;
                 }
                 let conceptsArray = this.conceptsSyncArray.slice();
@@ -7285,27 +7285,6 @@ class LocalSyncData {
             }
         });
     }
-    //  static async  SyncDataOnline(){
-    //     if(this.conceptsSyncArray.length > 0){
-    //         let conceptsArray = this.conceptsSyncArray.slice();
-    //         this.conceptsSyncArray = [];
-    //         let concepts = await CreateTheGhostConceptApi(conceptsArray);
-    //         for(let i =0 ; i< concepts.length; i++){
-    //             LocalSyncData.ghostIdMap.set(concepts[i].ghostId,concepts[i].id);
-    //             LocalConceptsData.AddPermanentConcept(concepts[i]);
-    //         }
-    //     }
-    //      if(this.connectionSyncArray.length > 0){
-    //         // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
-    //         //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
-    //         // }
-    //         let connectionsArray = this.connectionSyncArray.slice();
-    //         this.ConvertGhostIdsInConnections(connectionsArray);
-    //         this.connectionSyncArray = [];
-    //         await CreateTheGhostConnectionApi(connectionsArray);
-    //     }
-    //     return "done";
-    //  }
     static ConvertGhostIdsInConnections(connectionArray) {
         var _a, _b, _c;
         for (let i = 0; i < connectionArray.length; i++) {
@@ -8477,7 +8456,7 @@ class SyncData {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('sw triggered');
             if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('SyncData_SyncDataOnline', {});
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('SyncData__SyncDataOnline', {});
                 return res.data;
             }
             for (let i = 0; i < this.conceptsSyncArray.length; i++) {
@@ -10375,12 +10354,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 const syncActions = {
-    SyncData_SyncDataOnline: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    SyncData__SyncDataOnline: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('sync actions sw');
         const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.SyncData.SyncDataOnline();
         return { success: true, data };
     }),
-    LocalSyncData_SyncDataOnline: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    LocalSyncData__SyncDataOnline: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('sync actions sw');
         const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.SyncDataOnline();
         return { success: true, data };
