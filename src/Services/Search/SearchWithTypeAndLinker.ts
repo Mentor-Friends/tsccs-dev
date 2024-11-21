@@ -1,5 +1,7 @@
+import { GetConcept } from '../../Api/GetConcept';
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi} from '../../app';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
+import { FormatConceptsAndConnectionsNormalList, FormatFromConnectionsAlteredArrayExternal } from './FormatData';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
 
 /**
@@ -75,3 +77,38 @@ export async function formatDataArrayNormal(linkers: number[], conceptIds: numbe
     let output:any =  await FormatConceptsAndConnections(prefetchConnections, concepts, mainCompositionIds, reverse);
     return output;
 }
+
+
+
+/**
+ * ## Format Normal ##
+ * @param linkers 
+ * @param conceptIds 
+ * @param connections 
+ * @param mainCompositionIds 
+ * @param reverse 
+ * @returns 
+ */
+export async function formatLinkersNormal(linkers: number[], conceptIds: number[], connections: number[], mainCompositionIds: number[], reverse: number[] ){
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let concepts = await GetCompositionFromConnectionsInObjectNormal(conceptIds, connections);
+    let output:any =  await FormatConceptsAndConnections(prefetchConnections, concepts, mainCompositionIds, reverse);
+    return output;
+}
+
+
+export async function formatConnections(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[]){
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let compositionData: any [] = [];
+    let output:any  = await FormatConceptsAndConnectionsNormalList(prefetchConnections, compositionData, mainCompositionIds, reverse );
+    return output;
+}
+
+
+export async function formatConnectionsDataId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[]){
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let compositionData: any [] = [];
+    let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData, mainCompositionIds, reverse );
+    return output;
+}
+

@@ -31,7 +31,6 @@ export class DependencyObserver{
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
-                console.log("listening to event type", event);
                 setTimeout( async function(){
                     let myEvent = event as CustomEvent;
                     if(!that.compositionIds.includes(myEvent?.detail)){
@@ -61,7 +60,6 @@ export class DependencyObserver{
     listenToEvent(id: number) {
         console.log('listening to id: ', id)
         window.addEventListener(`${id}`, (event) => {
-            console.log("this is listening after the event is fired", id, event);
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
@@ -107,6 +105,64 @@ export class DependencyObserver{
 
         });
     }
+
+
+        /**
+     * This is the of the concept id that needs to be listened . If this is called. All the connections that are
+     * created with of the concepts id with this passed id then the event is fired.
+     * 
+     * @param id Of the concept id that needs to be listened.
+     */
+        listenToEventConnectionType(id: number, connectionType: number) {
+            window.addEventListener(`${id}`, (event) => {
+                if(!this.isUpdating){
+                    this.isUpdating = true;
+                    let that = this;
+    
+                    setTimeout( async function(){
+                        let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+                        for(let i=0 ;i< newConnection.length; i++){
+                            
+                            if(newConnection.typeId == connectionType){
+                                await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
+                                    if(conn.typeId == that.mainConcept){
+                                        if(!that.internalConnections.includes(conn.id)){
+                                            that.internalConnections.push(conn.id);
+                                        }
+                                    }
+                                    else{
+                                        if(!that.linkers.includes(conn.id)){
+                                            that.linkers.push(conn.id);
+                                        }
+                                        
+
+                                    }
+                                    if(!that.conceptIds.includes(conn.toTheConceptId)){
+                                        that.conceptIds.push(conn.toTheConceptId);
+                                    }
+                                    if(!that.compositionIds.includes(conn.ofTheConceptId)){
+                                        that.compositionIds.push(conn.ofTheConceptId);
+                                    }
+
+                                });
+                        }
+
+                                
+    
+                        }
+                        that.isUpdating = false;
+                        await that.bind();
+                        that.notify();
+    
+    
+                    }, 200);
+                }
+                else{
+                    console.log("rejected this");
+                }
+    
+            });
+        }
 
 
     /**

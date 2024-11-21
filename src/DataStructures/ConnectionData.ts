@@ -203,24 +203,23 @@ export class ConnectionData {
     //return connections;
   }
 
-  static async GetConnectionsOfConcept(id: number) {
-    let connectionIds: number[] = [];
-    let connections: Connection[] = [];
-    connectionIds = await ConnectionData.GetConnectionByOfTheConceptAndType(
-      id,
-      id
-    );
-    for (let i = 0; i < connectionIds.length; i++) {
-      let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
-      if (conn) {
-        connections.push(conn.value);
-      }
+
+    static async GetConnectionsOfConcept(id: number){
+        let connectionIds: number [] = [];
+        let connections: Connection[] = [];
+        connectionIds = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+
+        for(let i=0; i< connectionIds.length; i++){
+            let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+            if(conn){
+                connections.push(conn.value);
+            }   
+        }
+
+        return connections;
+    } 
+
+    getName(){
+        return this.name;
     }
-
-    return connections;
-  }
-
-  getName() {
-    return this.name;
-  }
 }

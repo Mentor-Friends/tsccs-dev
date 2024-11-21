@@ -72,7 +72,7 @@ export {GetCompositionWithIdAndDateFromMemory} from './Services/GetComposition';
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
-export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW} from './Constants/FormatConstants';
+export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL} from './Constants/FormatConstants';
 export {PRIVATE , PUBLIC , ADMIN} from './Constants/AccessConstants';
 export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
 export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
@@ -114,6 +114,9 @@ import { broadcastChannel } from "./Constants/general.const";
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
+export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
+export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
+export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 
 export var serviceWorker: any;
 
