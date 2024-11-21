@@ -14,5 +14,6 @@ export class SearchQuery{
      doFilter: boolean = false;
      filterSearches:FilterSearch[]  = [];
      selectors: string[] = [];
+     ofCompositions: number[] = [];
 
 }

@@ -234,5 +234,13 @@ export class BaseUrl{
 
 
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR FREESCHEMA QUERY //////////////////////
+    static FreeschemaQueryUrl(){
+        return this.BASE_URL + '/api/freeschema-query';
+    }
+
+
+
 
 }
