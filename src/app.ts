@@ -111,6 +111,8 @@ import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
+export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
+export { InnerActions } from "./Constants/general.const";
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
@@ -312,25 +314,35 @@ async function init(
 export async function sendMessage(type: string, payload: any) {
   const messageId = Math.random().toString(36).substring(5); // Generate a unique message ID
   payload.messageId = messageId
+  // let actions = payload.actions
+
+  const newPayload = JSON.parse(JSON.stringify(payload))
 
   return new Promise((resolve, reject) => {
     // navigator.serviceWorker.ready
     //   .then((registration) => {
         const responseHandler = (event: any) => {
           if (event?.data?.messageId == messageId) { // Check if the message ID matches
-            console.log("after sending message", event, event.data);
+            console.log("after sending message", type, event.data);
+            if (event.data?.actions) {
+              console.log('actions reveived if', payload, type, event.data)
+              payload.actions = JSON.parse(JSON.stringify(event.data.actions))
+              console.log('actions reveived if 2', payload, type, event.data)
+            } else {
+              console.log('actions reveived else', payload, type, event.data)
+            }
             resolve(event.data);
             navigator.serviceWorker.removeEventListener("message", responseHandler);
           }
         };
     
         navigator.serviceWorker.addEventListener("message", responseHandler);
-        console.log("before sending message", navigator.serviceWorker.controller);
+        console.log("before sending message", type, 'new', newPayload);
         // serviceWorker?.postMessage({ type, payload });
     
         // Send the message to the service worker
         if (navigator.serviceWorker.controller) {
-          serviceWorker.postMessage({ type, payload });
+          serviceWorker.postMessage({ type, payload: newPayload });
           // navigator.serviceWorker.controller.postMessage({ type, payload });
         } else {
           // wait one second before checking again
@@ -396,7 +408,6 @@ const broadcastActions: any = {
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
       let event = new Event(payload.id || '');
-      console.log("broadcast dispatched evenet found", event);
       dispatchEvent(event);
     }
     // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
@@ -413,7 +424,6 @@ function listenBroadCastMessages() {
   // broadcast event can be listened through both the service worker and other tabs
   broadcastChannel.addEventListener('message', async (event) => {
     const { type, payload }: any = event.data;
-    console.log('Received in Main Thread:', type, event, event.data);
       if (!type) return;
       let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
     
@@ -425,23 +435,6 @@ function listenBroadCastMessages() {
       }
     
   });
-}
-
-// Utility function to handle service worker or fallback logic
-async function handleServiceWorkerRequest<T>(
-  serviceWorkerMethod: string, 
-  params: any, 
-  fallbackFunction: Function
-): Promise<T> {
-  if (serviceWorker) {
-    console.log('Data receiving');
-    const res: any = await sendMessage(serviceWorkerMethod, params);
-    console.log('Data received from SW', res);
-    return res.data;
-  } else {
-    console.log('Used old BT');
-    return await fallbackFunction(...params);
-  }
 }
 
 /**

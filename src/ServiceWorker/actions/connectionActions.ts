@@ -7,10 +7,12 @@ export const connectionActions: Actions = {
         const data = await CreateConnectionBetweenTwoConcepts(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both)
         return { success: true, data }
     },
+
+    
     // local
     CreateConnectionBetweenTwoConceptsLocal: async (payload) => {
-        const data = await CreateConnectionBetweenTwoConceptsLocal(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both)
-        return {success: true, data}
+        const data = await CreateConnectionBetweenTwoConceptsLocal(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both, payload.actions)
+        return {success: true, data, actions: payload.actions}
     },
     CreateTheConnectionLocal: async (payload) => {
         const data = await CreateTheConnectionLocal(
@@ -19,9 +21,10 @@ export const connectionActions: Actions = {
             payload.typeId, 
             payload.orderId, 
             payload.typeString, 
-            payload.userId
+            payload.userId,
+            payload.actions
         )
-        return {success: true, data}
+        return {success: true, data, actions: payload.actions}
     },
     
 }

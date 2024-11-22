@@ -41,7 +41,6 @@ export class ConnectionData {
     //     this.connectionArray.push(connection);
     // if(!connection.isTemp){
     //UpdateToDatabase("connection", connection);
-    console.log('testing add connection', connection)
     ConnectionBinaryTree.addConnectionToTree(connection);
     ConnectionTypeTree.addConnectionToTree(connection);
     ConnectionOfTheTree.addConnection(connection);

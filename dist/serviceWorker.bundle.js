@@ -2283,6 +2283,62 @@ function GetConceptByCharacterAndCategoryDirectApi(characterValue, category_id) 
 
 /***/ }),
 
+/***/ "./src/Api/Search/FreeschemaQueryApi.ts":
+/*!**********************************************!*\
+  !*** ./src/Api/Search/FreeschemaQueryApi.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FreeschemaQueryApi: () => (/* binding */ FreeschemaQueryApi)
+/* harmony export */ });
+/* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
+/* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../Services/Security/GetRequestHeader */ "./src/Services/Security/GetRequestHeader.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+function FreeschemaQueryApi(query_1) {
+    return __awaiter(this, arguments, void 0, function* (query, token = "") {
+        var header = (0,_Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_2__.GetRequestHeaderWithAuthorization)("application/json", token);
+        const queryUrl = _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.FreeschemaQueryUrl();
+        const body = JSON.stringify(query);
+        try {
+            const response = yield fetch(queryUrl, {
+                method: 'POST',
+                headers: header,
+                body: body
+            });
+            if (response.ok) {
+                let result = yield response.json();
+                return result;
+            }
+            else {
+                (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_1__.HandleHttpError)(response);
+                console.log("This is the freeschema query error", response.status);
+                return [];
+            }
+        }
+        catch (ex) {
+            console.log("This is the freeschema query error others", ex);
+            (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_1__.HandleInternalError)(ex, queryUrl);
+        }
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/Api/Search/Search.ts":
 /*!**********************************!*\
   !*** ./src/Api/Search/Search.ts ***!
@@ -3012,9 +3068,11 @@ const PUBLIC = 5;
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ALLID: () => (/* binding */ ALLID),
 /* harmony export */   DATAID: () => (/* binding */ DATAID),
 /* harmony export */   DATAIDDATE: () => (/* binding */ DATAIDDATE),
 /* harmony export */   JUSTDATA: () => (/* binding */ JUSTDATA),
+/* harmony export */   LISTNORMAL: () => (/* binding */ LISTNORMAL),
 /* harmony export */   NORMAL: () => (/* binding */ NORMAL),
 /* harmony export */   RAW: () => (/* binding */ RAW)
 /* harmony export */ });
@@ -3023,6 +3081,8 @@ const DATAID = 2;
 const JUSTDATA = 3;
 const DATAIDDATE = 4;
 const RAW = 5;
+const ALLID = 6;
+const LISTNORMAL = 7;
 
 
 /***/ }),
@@ -3213,6 +3273,11 @@ class BaseUrl {
     /////////////////////API FOR Deleting Connection //////////////////////
     static DeleteTheConnectionUrl() {
         return this.BASE_URL + '/api/delete_connection';
+    }
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR FREESCHEMA QUERY //////////////////////
+    static FreeschemaQueryUrl() {
+        return this.BASE_URL + '/api/freeschema-query';
     }
 }
 BaseUrl.BASE_URL = "https://localhost:7053/";
@@ -4968,10 +5033,8 @@ class ConnectionOfTheTree {
     static addConnection(connection) {
         if (connection.id > 0) {
             let key = this.CreateCompositionKey(connection.ofTheConceptId, connection.typeId);
-            console.log('key this.node', key, this.node);
             if (this.node) {
                 let existingNode = this.node.getFromNode(key, this.node);
-                console.log(existingNode, 'existing node');
                 if (existingNode) {
                     let connectionList = existingNode === null || existingNode === void 0 ? void 0 : existingNode.value;
                     if (connectionList.length == 0) {
@@ -5412,7 +5475,6 @@ class ConnectionData {
         //     this.connectionArray.push(connection);
         // if(!connection.isTemp){
         //UpdateToDatabase("connection", connection);
-        console.log('testing add connection', connection);
         _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.addConnectionToTree(connection);
         _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.addConnectionToTree(connection);
         _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.addConnection(connection);
@@ -5584,6 +5646,8 @@ class FilterSearch {
         this.logicoperator = "=";
         this.index = 0;
         this.composition = true;
+        this.name = "";
+        this.operateon = "";
     }
 }
 
@@ -7246,16 +7310,33 @@ class LocalSyncData {
             }
         }
     }
-    static SyncDataOnline() {
+    static SyncDataOnline(transactionId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log('sw triggered');
                 if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
-                    const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData__SyncDataOnline', {});
+                    const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData__SyncDataOnline', { transactionId });
                     return res.data;
                 }
-                let conceptsArray = this.conceptsSyncArray.slice();
-                let connectionsArray = this.connectionSyncArray.slice();
+                let conceptsArray = [];
+                let connectionsArray = [];
+                if (transactionId && this.transactionCollections.some(tran => tran.id == transactionId)) {
+                    const transaction = this.transactionCollections.find(tran => tran.id == transactionId);
+                    console.log('sync if condition', transaction);
+                    // remove current transaction from list
+                    this.transactionCollections = this.transactionCollections.filter(tran => tran.id != transactionId);
+                    // remove old query actions older than 15 days
+                    this.transactionCollections = this.transactionCollections.filter(tran => new Date(tran.createdDate).getTime() > (new Date().getTime() - 604800000));
+                    if (!transaction)
+                        return;
+                    conceptsArray = transaction.data.concepts.slice();
+                    connectionsArray = transaction.data.connections.slice();
+                }
+                else {
+                    console.log('sync else condition', transactionId, this.transactionCollections);
+                    conceptsArray = this.conceptsSyncArray.slice();
+                    connectionsArray = this.connectionSyncArray.slice();
+                }
                 this.connectionSyncArray = [];
                 this.conceptsSyncArray = [];
                 let toSyncConcepts = [];
@@ -7416,10 +7497,61 @@ class LocalSyncData {
             return "done";
         });
     }
+    static initializeTransaction(transactionId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('sw triggered');
+            if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData__initializeTransaction', { transactionId });
+                return res.data;
+            }
+            if (this.transactionCollections.some(item => item.id == transactionId))
+                return;
+            this.transactionCollections.push({
+                id: transactionId,
+                data: { concepts: [], connections: [] },
+                createdDate: new Date().toISOString()
+            });
+        });
+    }
+    static markTransactionActions(transactionId, actions) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // remove marked 
+            console.log('sw triggered');
+            if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData__markTransactionActions', { transactionId, actions });
+                return res.data;
+            }
+            console.log('marking data 1', this.conceptsSyncArray, this.conceptsSyncArray, this.transactionCollections, actions);
+            this.transactionCollections = this.transactionCollections.map(tran => {
+                if (tran.id == transactionId) {
+                    console.log(' the transaction found', tran, actions, Object.assign(Object.assign({}, tran), { data: JSON.parse(JSON.stringify(actions)) }));
+                    return Object.assign(Object.assign({}, tran), { data: JSON.parse(JSON.stringify(actions)) });
+                }
+                else
+                    return tran;
+            });
+            this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => !actions.concepts.some(con => con.id == concept.id || con.ghostId == concept.id));
+            this.connectionSyncArray = this.connectionSyncArray.filter(connection => !actions.connections.some(con => con.id == connection.id || con.ghostId == connection.id));
+            console.log('marking data 2', this.conceptsSyncArray, this.conceptsSyncArray, this.transactionCollections, actions);
+        });
+    }
+    static rollbackTransaction(transactionId, actions) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('sw triggered');
+            if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData__rollbackTransaction', { transactionId, actions });
+                return res.data;
+            }
+            if (this.transactionCollections.some(item => item.id == transactionId))
+                return;
+            this.transactionCollections = this.transactionCollections.filter(tran => tran.id != transactionId);
+        });
+    }
 }
 LocalSyncData.conceptsSyncArray = [];
 LocalSyncData.connectionSyncArray = [];
 LocalSyncData.ghostIdMap = new Map();
+LocalSyncData.transactionCollections = [];
 
 
 /***/ }),
@@ -8249,6 +8381,38 @@ class SearchQuery {
         this.doFilter = false;
         this.filterSearches = [];
         this.selectors = [];
+        this.ofCompositions = [];
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/DataStructures/Search/FreeschemaQuery.ts":
+/*!******************************************************!*\
+  !*** ./src/DataStructures/Search/FreeschemaQuery.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FreeschemaQuery: () => (/* binding */ FreeschemaQuery)
+/* harmony export */ });
+/* harmony import */ var _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Constants/FormatConstants */ "./src/Constants/FormatConstants.ts");
+
+class FreeschemaQuery {
+    constructor() {
+        this.type = "";
+        this.inpage = 10;
+        this.page = 1;
+        this.concepts = [];
+        this.selectors = [];
+        this.freeschemaQueries = [];
+        this.filters = [];
+        this.filterLogic = "";
+        this.typeConnection = "";
+        this.outputFormat = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_0__.NORMAL;
+        this.name = "";
     }
 }
 
@@ -9957,12 +10121,12 @@ const connectionActions = {
     }),
     // local
     CreateConnectionBetweenTwoConceptsLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_1__.CreateConnectionBetweenTwoConceptsLocal)(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both);
-        return { success: true, data };
+        const data = yield (0,_Services_Local_CreateConnectionBetweenTwoConceptsLocal__WEBPACK_IMPORTED_MODULE_1__.CreateConnectionBetweenTwoConceptsLocal)(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both, payload.actions);
+        return { success: true, data, actions: payload.actions };
     }),
     CreateTheConnectionLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(payload.ofTheConceptId, payload.toTheConceptId, payload.typeId, payload.orderId, payload.typeString, payload.userId);
-        return { success: true, data };
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(payload.ofTheConceptId, payload.toTheConceptId, payload.typeId, payload.orderId, payload.typeString, payload.userId, payload.actions);
+        return { success: true, data, actions: payload.actions };
     }),
 };
 
@@ -9982,7 +10146,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
 /* harmony import */ var _Services_CreateTheComposition__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Services/CreateTheComposition */ "./src/Services/CreateTheComposition.ts");
 /* harmony import */ var _Services_Local_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../Services/Local/CreateTheConceptLocal */ "./src/Services/Local/CreateTheConceptLocal.ts");
-/* harmony import */ var _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../Services/Local/MakeTheInstanceConceptLocal */ "./src/Services/Local/MakeTheInstanceConceptLocal.ts");
+/* harmony import */ var _Services_Local_MakeTheConceptLocal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../Services/Local/MakeTheConceptLocal */ "./src/Services/Local/MakeTheConceptLocal.ts");
+/* harmony import */ var _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../Services/Local/MakeTheInstanceConceptLocal */ "./src/Services/Local/MakeTheInstanceConceptLocal.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9996,9 +10161,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 const createActions = {
     MakeTheInstanceConcept: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheInstanceConcept)(payload.type, payload.referent, payload.composition, payload.userId, payload.passedAccessId, payload.passedSessionId, payload.referentId);
+        return { success: true, data };
+    }),
+    MakeTheConceptLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_Services_Local_MakeTheConceptLocal__WEBPACK_IMPORTED_MODULE_3__["default"])(payload.referent, payload.typeCharacter, payload.userId, payload.categoryId, payload.typeId, payload.actions);
         return { success: true, data };
     }),
     MakeTheTypeConcept: (payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -10011,20 +10181,20 @@ const createActions = {
     }),
     // local
     MakeTheInstanceConceptLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(payload.type, payload.referent, payload.composition, payload.userId, payload.accessId, payload.sessionInformationId, payload.referentId);
-        return { success: true, data };
+        const data = yield (0,_Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_4__.MakeTheInstanceConceptLocal)(payload.type, payload.referent, payload.composition, payload.userId, payload.accessId, payload.sessionInformationId, payload.referentId, payload.actions);
+        return { success: true, data, actions: payload.actions };
     }),
     MakeTheTypeConceptLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheTypeConceptLocal)(payload.typeString, payload.sessionId, payload.sessionUserId, payload.userId);
-        return { success: true, data };
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheTypeConceptLocal)(payload.typeString, payload.sessionId, payload.sessionUserId, payload.userId, payload.actions);
+        return { success: true, data, actions: payload.actions };
     }),
     CreateTheConceptLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_Services_Local_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__["default"])(payload.referent, payload.typecharacter, payload.userId, payload.categoryId, payload.typeId, payload.accessId, payload.isComposition, payload.referentId);
-        return { success: true, data };
+        const data = yield (0,_Services_Local_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__["default"])(payload.referent, payload.typecharacter, payload.userId, payload.categoryId, payload.typeId, payload.accessId, payload.isComposition, payload.referentId, payload.actions);
+        return { success: true, data, actions: payload.actions };
     }),
     CreateTheCompositionLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheCompositionLocal)(payload.json, payload.ofTheConceptId, payload.ofTheConceptUserId, payload.mainKey, payload.userId, payload.accessId, payload.sessionInformationId, payload.automaticSync);
-        return { success: true, data };
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheCompositionLocal)(payload.json, payload.ofTheConceptId, payload.ofTheConceptUserId, payload.mainKey, payload.userId, payload.accessId, payload.sessionInformationId, payload.automaticSync, payload.actions);
+        return { success: true, data, actions: payload.actions };
     })
 };
 
@@ -10359,11 +10529,27 @@ const syncActions = {
         const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.SyncData.SyncDataOnline();
         return { success: true, data };
     }),
+    // local
     LocalSyncData__SyncDataOnline: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('sync actions sw');
-        const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.SyncDataOnline();
+        const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.SyncDataOnline(payload.transactionId);
         return { success: true, data };
-    })
+    }),
+    LocalSyncData__initializeTransaction: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log('sync actions sw');
+        const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.initializeTransaction(payload.transactionId);
+        return { success: true, data };
+    }),
+    LocalSyncData__markTransactionActions: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log('sync actions sw');
+        const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.markTransactionActions(payload.transactionId, payload.actions);
+        return { success: true, data, actions: payload.actions };
+    }),
+    LocalSyncData__rollbackTransaction: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log('sync actions sw');
+        const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.rollbackTransaction(payload.transactionId, payload.actions);
+        return { success: true, data, actions: payload.actions };
+    }),
 };
 
 
@@ -13813,34 +13999,37 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1, linker_1) {
-    return __awaiter(this, arguments, void 0, function* (ofTheConcept, toTheConcept, linker, both = false) {
-        var _a, _b;
+    return __awaiter(this, arguments, void 0, function* (ofTheConcept, toTheConcept, linker, both = false, actions = { concepts: [], connections: [] }) {
+        var _a, _b, _c, _d, _e, _f;
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateConnectionBetweenTwoConceptsLocal', { ofTheConcept, toTheConcept, linker, both });
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateConnectionBetweenTwoConceptsLocal', { ofTheConcept, toTheConcept, linker, both, actions });
                 console.log('data received from sw', res);
+                if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
+                    actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
+                    actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
                 return res.data;
             }
-            console.log('of THe', ofTheConcept, 'to the', toTheConcept);
             var userId = ofTheConcept.userId;
             if (both) {
-                let prefix1 = ((_a = toTheConcept.type) === null || _a === void 0 ? void 0 : _a.characterValue) + "_s";
+                let prefix1 = ((_e = toTheConcept.type) === null || _e === void 0 ? void 0 : _e.characterValue) + "_s";
                 let linkerAdd1 = linker + "_by";
                 let backwardLinker = prefix1 + "_" + linkerAdd1;
                 // if(count){
                 //    await CountRelationship(linkerAdd1, toTheConcept, userId);
                 //   }
-                var connectionConceptReverse = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheInstanceConceptLocal)("connection", backwardLinker, false, 999, 999, 999);
-                let pewCon = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(toTheConcept.id, ofTheConcept.id, connectionConceptReverse.id, 1000);
+                var connectionConceptReverse = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheInstanceConceptLocal)("connection", backwardLinker, false, 999, 999, 999, 0, actions);
+                let pewCon = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(toTheConcept.id, ofTheConcept.id, connectionConceptReverse.id, 1000, undefined, undefined, actions);
             }
-            let prefix = ((_b = ofTheConcept.type) === null || _b === void 0 ? void 0 : _b.characterValue) + "_s";
+            let prefix = ((_f = ofTheConcept.type) === null || _f === void 0 ? void 0 : _f.characterValue) + "_s";
             let linkerAdd = linker + "_s";
             let forwardLinker = prefix + "_" + linkerAdd;
             // if(count){
             // // await CountRelationship(linkerAdd, ofTheConcept, userId);
             // }
-            var connectionConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheInstanceConceptLocal)("connection", forwardLinker, false, 999, 999, 999);
-            let newConnection = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000);
+            var connectionConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheInstanceConceptLocal)("connection", forwardLinker, false, 999, 999, 999, undefined, actions);
+            let newConnection = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000, undefined, undefined, actions);
             return newConnection;
         }
         catch (ex) {
@@ -14089,10 +14278,15 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  * @returns the main concept of this composition.
  */
 function CreateTheCompositionLocal(json_1) {
-    return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null, automaticSync = false) {
+    return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null, automaticSync = false, actions = { concepts: [], connections: [] }) {
+        var _a, _b, _c, _d;
         if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheCompositionLocal', { json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId });
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheCompositionLocal', { json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, actions });
             console.log('data received from sw', res);
+            if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
+                actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
+                actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data;
         }
         let localUserId = userId !== null && userId !== void 0 ? userId : 999;
@@ -14104,30 +14298,30 @@ function CreateTheCompositionLocal(json_1) {
             if (typeof json[key] != 'string' && typeof json[key] != 'number') {
                 if (ofTheConceptId == null && ofTheConceptUserId == null) {
                     let localMainKey = MainKeyLocal;
-                    let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, "", true, localUserId, localAccessId, localSessionId);
+                    let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, "", true, localUserId, localAccessId, localSessionId, undefined, actions);
                     let concept = conceptString;
                     MainConcept = concept;
                     localMainKey = concept.id;
                     MainKeyLocal = concept.id;
-                    yield CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId);
+                    yield CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId, undefined, actions);
                 }
                 else {
                     let ofThe = ofTheConceptId !== null && ofTheConceptId !== void 0 ? ofTheConceptId : 999;
                     let ofTheUser = ofTheConceptUserId !== null && ofTheConceptUserId !== void 0 ? ofTheConceptUserId : 999;
                     let localMainKey = MainKeyLocal;
-                    let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, "", true, localUserId, localAccessId, localSessionId);
+                    let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, "", true, localUserId, localAccessId, localSessionId, undefined, actions);
                     let concept = conceptString;
-                    yield (0,_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_2__.CreateTheConnectionLocal)(ofThe, concept.id, localMainKey);
-                    yield CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId);
+                    yield (0,_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_2__.CreateTheConnectionLocal)(ofThe, concept.id, localMainKey, undefined, undefined, undefined, actions);
+                    yield CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId, undefined, actions);
                 }
             }
             else {
                 let ofThe = ofTheConceptId !== null && ofTheConceptId !== void 0 ? ofTheConceptId : 999;
                 let ofTheUser = ofTheConceptUserId !== null && ofTheConceptUserId !== void 0 ? ofTheConceptUserId : 999;
                 let localMainKey = MainKeyLocal;
-                let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
+                let conceptString = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_3__.MakeTheInstanceConceptLocal)(key, json[key].toString(), false, localUserId, localAccessId, localSessionId, undefined, actions);
                 let concept = conceptString;
-                yield (0,_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_2__.CreateTheConnectionLocal)(ofThe, concept.id, localMainKey);
+                yield (0,_CreateTheConnectionLocal__WEBPACK_IMPORTED_MODULE_2__.CreateTheConnectionLocal)(ofThe, concept.id, localMainKey, undefined, undefined, undefined, actions);
             }
         }
         return MainConcept;
@@ -14185,11 +14379,16 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  * @returns
  */
 function CreateTheConceptLocal(referent_1, typecharacter_1, userId_1, categoryId_1, typeId_1, accessId_1) {
-    return __awaiter(this, arguments, void 0, function* (referent, typecharacter, userId, categoryId, typeId, accessId, isComposition = false, referentId = 0) {
+    return __awaiter(this, arguments, void 0, function* (referent, typecharacter, userId, categoryId, typeId, accessId, isComposition = false, referentId = 0, actions = { concepts: [], connections: [] }) {
+        var _a, _b, _c, _d;
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId });
                 console.log('data received from sw', res);
+                if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
+                    actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
+                    actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
                 return res.data;
             }
             //let id = -Math.floor(Math.random() * 100000000);
@@ -14206,6 +14405,7 @@ function CreateTheConceptLocal(referent_1, typecharacter_1, userId_1, categoryId
             concept.isTemp = true;
             concept.isComposition = isComposition;
             _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_2__.LocalConceptsData.AddConcept(concept);
+            actions.concepts.push(concept);
             //storeToDatabase("localconcept",concept);
             return concept;
         }
@@ -14259,10 +14459,15 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  * @returns a connection that is created and stored in the local system.
  */
 function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) {
-    return __awaiter(this, arguments, void 0, function* (ofTheConceptId, toTheConceptId, typeId, orderId = 1, typeString = "", userId = 999) {
+    return __awaiter(this, arguments, void 0, function* (ofTheConceptId, toTheConceptId, typeId, orderId = 1, typeString = "", userId = 999, actions = { concepts: [], connections: [] }) {
+        var _a, _b, _c, _d;
         if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId });
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions });
             console.log('data received from sw', res);
+            if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
+                actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
+                actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data;
         }
         try {
@@ -14282,6 +14487,7 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
                 connection.typeCharacter = typeString;
                 yield _app__WEBPACK_IMPORTED_MODULE_3__.LocalSyncData.AddConnection(connection);
                 _DataStructures_Local_LocalConnectionData__WEBPACK_IMPORTED_MODULE_1__.LocalConnectionData.AddConnection(connection);
+                actions.connections.push(connection);
                 //storeToDatabase("localconnection", connection);
             }
             return connection;
@@ -14852,8 +15058,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ MakeTheConceptLocal)
 /* harmony export */ });
-/* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
-/* harmony import */ var _CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CreateTheConceptLocal */ "./src/Services/Local/CreateTheConceptLocal.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
+/* harmony import */ var _CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CreateTheConceptLocal */ "./src/Services/Local/CreateTheConceptLocal.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14865,16 +15072,29 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-function MakeTheConceptLocal(referent, typeCharacter, userId, categoryId, typeId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let conceptString = yield _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_0__.LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent, typeId);
+
+function MakeTheConceptLocal(referent_1, typeCharacter_1, userId_1, categoryId_1, typeId_1) {
+    return __awaiter(this, arguments, void 0, function* (referent, typeCharacter, userId, categoryId, typeId, actions = { concepts: [], connections: [] }) {
+        var _a, _b, _c, _d;
+        if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("MakeTheConceptLocal", {
+                referent, typeCharacter, userId, categoryId, typeId, actions
+            });
+            console.log("data received from sw", res);
+            if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
+                actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
+                actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+            return res.data;
+        }
+        let conceptString = yield _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_1__.LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent, typeId);
         let concept = conceptString;
         let accessId = 4;
         if (typeCharacter == "the") {
             categoryId = 1;
         }
         if (concept.id == 0) {
-            conceptString = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_1__["default"])(referent, typeCharacter, userId, categoryId, typeId, accessId);
+            conceptString = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__["default"])(referent, typeCharacter, userId, categoryId, typeId, accessId, undefined, undefined, actions);
             concept = conceptString;
         }
         return concept;
@@ -14924,13 +15144,19 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  * @param accessId this is the accessId of the creator. By default should be 4.
  * @param sessionInformationId this is the session that is created by the system.
  * @param referentId In case we need this concept to refer to any other concept.
+ * @param actions InnerActions Array for capturing concepts and connection
  * @returns a concept which is either newly created or an older concept that already exists.
  */
 function MakeTheInstanceConceptLocal(type_1, referent_1) {
-    return __awaiter(this, arguments, void 0, function* (type, referent, composition = false, userId, accessId, sessionInformationId = 999, referentId = 0) {
+    return __awaiter(this, arguments, void 0, function* (type, referent, composition = false, userId, accessId, sessionInformationId = 999, referentId = 0, actions = { concepts: [], connections: [] }) {
+        var _a, _b, _c, _d;
         if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('MakeTheInstanceConceptLocal', { type, referent, composition, userId, accessId, sessionInformationId, referentId });
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('MakeTheInstanceConceptLocal', { type, referent, composition, userId, accessId, sessionInformationId, referentId, actions });
             console.log('data received from sw', res);
+            if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
+                actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
+                actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data;
         }
         try {
@@ -14951,30 +15177,31 @@ function MakeTheInstanceConceptLocal(type_1, referent_1) {
                 stringToCheck = "the_" + type;
             }
             if (composition) {
-                let typeConceptString = yield (0,_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptLocal)(type, sessionInformationId, userId, userId);
+                let typeConceptString = yield (0,_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptLocal)(type, sessionInformationId, userId, userId, actions);
                 typeConcept = typeConceptString;
-                let conceptString = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_0__["default"])(referent, type, userId, categoryId, typeConcept.id, accessId, true, referentId);
+                let conceptString = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_0__["default"])(referent, type, userId, categoryId, typeConcept.id, accessId, true, referentId, actions);
                 concept = conceptString;
             }
             else if (stringLength > 255) {
-                let typeConceptString = yield (0,_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptLocal)(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
+                let typeConceptString = yield (0,_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptLocal)(stringToCheck, sessionInformationId, sessionInformationUserId, userId, actions);
                 typeConcept = typeConceptString;
-                let conceptString = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_0__["default"])(referent, stringToCheck, userId, categoryId, typeConcept.id, accessId);
+                let conceptString = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_0__["default"])(referent, stringToCheck, userId, categoryId, typeConcept.id, accessId, undefined, undefined, actions);
                 concept = conceptString;
             }
             else {
-                let typeConceptString = yield (0,_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptLocal)(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
+                let typeConceptString = yield (0,_MakeTheTypeLocal__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptLocal)(stringToCheck, sessionInformationId, sessionInformationUserId, userId, actions);
                 typeConcept = typeConceptString;
                 let conceptByCharTypeString = yield _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_2__.LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent, typeConcept.id);
                 let conceptTypeCharacter = conceptByCharTypeString;
                 concept = conceptTypeCharacter;
                 if (conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0) {
-                    let conceptString = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_0__["default"])(referent, stringToCheck, userId, categoryId, typeConcept.id, accessId);
+                    let conceptString = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_0__["default"])(referent, stringToCheck, userId, categoryId, typeConcept.id, accessId, undefined, undefined, actions);
                     concept = conceptString;
                 }
             }
             concept.type = typeConcept;
             _app__WEBPACK_IMPORTED_MODULE_3__.LocalSyncData.AddConcept(concept);
+            actions.concepts.push(concept);
             return concept;
         }
         catch (error) {
@@ -15025,15 +15252,21 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  * @param sessionId SessionId of the user
  * @param sessionUserId Not required pass 999
  * @param userId UserId of the user creating this concept
+ * @param actions InnerActions|undefined actions to collect
  * @returns
  */
-function MakeTheTypeConceptLocal(typeString, sessionId, sessionUserId, userId) {
-    return __awaiter(this, void 0, void 0, function* () {
+function MakeTheTypeConceptLocal(typeString_1, sessionId_1, sessionUserId_1, userId_1) {
+    return __awaiter(this, arguments, void 0, function* (typeString, sessionId, sessionUserId, userId, actions = { concepts: [], connections: [] }) {
+        var _a, _b, _c, _d;
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)("MakeTheTypeConceptLocal", {
-                typeString, sessionId, sessionUserId, userId
+                typeString, sessionId, sessionUserId, userId, actions
             });
             console.log("data received from sw", res);
+            if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
+                actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
+                actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data;
         }
         let accessId = 4;
@@ -15042,16 +15275,16 @@ function MakeTheTypeConceptLocal(typeString, sessionId, sessionUserId, userId) {
             if (existingConcept.id == 0 || existingConcept.userId == 0) {
                 let splittedStringArray = (0,_SplitStrings__WEBPACK_IMPORTED_MODULE_2__.SplitStrings)(typeString);
                 if (splittedStringArray[0] == typeString) {
-                    let concept = yield (0,_MakeTheConceptLocal__WEBPACK_IMPORTED_MODULE_3__["default"])(typeString, "the", userId, 1, 51);
+                    let concept = yield (0,_MakeTheConceptLocal__WEBPACK_IMPORTED_MODULE_3__["default"])(typeString, "the", userId, 1, 51, actions);
                     existingConcept = concept;
                 }
                 else {
                     // var categoryConcept = await MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
                     // var typeConcept = await MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId );
                     // if(typeConcept){
-                    let categoryConcept = yield MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId);
-                    let typeConcept = yield MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId);
-                    let concept = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_0__["default"])(typeString, splittedStringArray[1], userId, categoryConcept.id, typeConcept.id, accessId);
+                    let categoryConcept = yield MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId, actions);
+                    let typeConcept = yield MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId, actions);
+                    let concept = yield (0,_CreateTheConceptLocal__WEBPACK_IMPORTED_MODULE_0__["default"])(typeString, splittedStringArray[1], userId, categoryConcept.id, typeConcept.id, accessId, undefined, undefined, actions);
                     existingConcept = concept;
                     //   }
                 }
@@ -15608,6 +15841,243 @@ function publishMessage(topic, message) {
 
 /***/ }),
 
+/***/ "./src/Services/Search/FormatData.ts":
+/*!*******************************************!*\
+  !*** ./src/Services/Search/FormatData.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FormatConceptsAndConnectionsNormalList: () => (/* binding */ FormatConceptsAndConnectionsNormalList),
+/* harmony export */   FormatFromConnectionsAlteredArrayExternal: () => (/* binding */ FormatFromConnectionsAlteredArrayExternal)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+/**
+ * ######### Format is normal ######### used for listing. This only provides type connections.
+ * This is helpful in building a format that has multiple mainCompositions i.e. in the context of the list
+ * The list format is helpful because you do not have to go over each individual query.
+ * @param connections the type connections that need (external connections) to be passed
+ * @param compositionData  this is a dictionary type of format that has all the build compositions {id: { actual data}}
+ * @param mainComposition this is list of  ids of the main composition that builds the tree
+ * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
+ * @returns
+ */
+function FormatConceptsAndConnectionsNormalList(connections_1, compositionData_1, mainComposition_1) {
+    return __awaiter(this, arguments, void 0, function* (connections, compositionData, mainComposition, reverse = []) {
+        var _a, _b, _c, _d;
+        let mainData = [];
+        let myConcepts = [];
+        for (let i = 0; i < connections.length; i++) {
+            myConcepts.push(connections[i].toTheConceptId);
+            myConcepts.push(connections[i].ofTheConceptId);
+            myConcepts.push(connections[i].typeId);
+        }
+        connections.sort(function (x, y) {
+            return y.id - x.id;
+        });
+        for (let i = 0; i < connections.length; i++) {
+            let reverseFlag = false;
+            if (reverse.includes(connections[i].id)) {
+                reverseFlag = true;
+            }
+            let ofTheConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].ofTheConceptId);
+            let toTheConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].toTheConceptId);
+            if (reverseFlag == true) {
+                if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
+                    let newData;
+                    let key = (_b = (_a = toTheConcept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "self";
+                    if (connections[i].toTheConceptId in compositionData) {
+                        newData = compositionData[connections[i].toTheConceptId];
+                    }
+                    else {
+                        newData = {};
+                        newData[key] = {};
+                        compositionData[connections[i].toTheConceptId] = newData;
+                    }
+                    let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
+                    try {
+                        let reverseCharater = linkerConcept.characterValue + "_reverse";
+                        if (Array.isArray(newData[key][reverseCharater])) {
+                            newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
+                        }
+                        else {
+                            if (linkerConcept.characterValue.includes("_s_")) {
+                                newData[key][linkerConcept.characterValue] = [];
+                                newData[key][linkerConcept.characterValue].push(ofTheConcept.characterValue);
+                            }
+                            else {
+                                newData[key][linkerConcept.characterValue] = ofTheConcept.characterValue;
+                            }
+                        }
+                    }
+                    catch (ex) {
+                        console.log("this is error", ex);
+                    }
+                }
+            }
+            else {
+                if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
+                    let newData;
+                    let key = (_d = (_c = ofTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "self";
+                    if (connections[i].ofTheConceptId in compositionData) {
+                        newData = compositionData[connections[i].ofTheConceptId];
+                    }
+                    else {
+                        newData = {};
+                        newData[key] = {};
+                        compositionData[connections[i].ofTheConceptId] = newData;
+                    }
+                    let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
+                    try {
+                        if (Array.isArray(newData[key][linkerConcept.characterValue])) {
+                            newData[key][linkerConcept.characterValue].push(toTheConcept.characterValue);
+                        }
+                        else {
+                            if (linkerConcept.characterValue.includes("_s_")) {
+                                newData[key][linkerConcept.characterValue] = [];
+                                newData[key][linkerConcept.characterValue].push(toTheConcept.characterValue);
+                            }
+                            else {
+                                newData[key][linkerConcept.characterValue] = toTheConcept.characterValue;
+                            }
+                        }
+                    }
+                    catch (ex) {
+                        console.log("this is error", ex);
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < mainComposition.length; i++) {
+            let mymainData = compositionData[mainComposition[i]];
+            console.log(mainData, mymainData);
+            mainData.push(mymainData);
+        }
+        return mainData;
+    });
+}
+/**
+ * ############ Format is data-id and is used for list. ############
+ * This is helpful in building a format that has multiple mainCompositions i.e. in the context of the list
+ * The list format is helpful because you do not have to go over each individual query.
+ * @param connections the type connections that need (external connections) to be passed
+ * @param compositionData  this is a dictionary type of format that has all the build compositions {id: { actual data}}
+ * @param mainComposition this is list of  ids of the main composition that builds the tree
+ * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
+ * @returns
+ */
+function FormatFromConnectionsAlteredArrayExternal(connections_1, compositionData_1, mainComposition_1) {
+    return __awaiter(this, arguments, void 0, function* (connections, compositionData, mainComposition, reverse = []) {
+        var _a, _b, _c, _d;
+        let startTime = new Date().getTime();
+        let mainData = [];
+        let myConcepts = [];
+        for (let i = 0; i < connections.length; i++) {
+            myConcepts.push(connections[i].toTheConceptId);
+            myConcepts.push(connections[i].ofTheConceptId);
+            myConcepts.push(connections[i].typeId);
+        }
+        connections.sort(function (x, y) {
+            return y.id - x.id;
+        });
+        for (let i = 0; i < connections.length; i++) {
+            let reverseFlag = false;
+            let ofTheConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].ofTheConceptId);
+            let toTheConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].toTheConceptId);
+            if (reverse.includes(connections[i].id)) {
+                reverseFlag = true;
+            }
+            if (reverseFlag == true) {
+                if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
+                    let mydata = compositionData[connections[i].toTheConceptId];
+                    let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
+                    let newData = mydata === null || mydata === void 0 ? void 0 : mydata.data;
+                    let key = Object.keys(newData)[0];
+                    try {
+                        let reverseCharater = linkerConcept.characterValue + "_reverse";
+                        if (typeof newData === "string") {
+                            newData = {};
+                        }
+                        if (Array.isArray(newData[key][reverseCharater])) {
+                            newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
+                        }
+                        else {
+                            if (typeof newData[key] === "string") {
+                                newData[key] = {};
+                            }
+                            newData[key][reverseCharater] = [];
+                            newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
+                        }
+                    }
+                    catch (ex) {
+                        console.log("this is error", ex);
+                    }
+                }
+            }
+            else {
+                if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
+                    let newData;
+                    let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
+                    let key = (_b = (_a = ofTheConcept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "self";
+                    if (connections[i].ofTheConceptId in compositionData) {
+                        newData = compositionData[connections[i].ofTheConceptId];
+                    }
+                    else {
+                        newData = {};
+                        newData[key] = {};
+                        compositionData[connections[i].ofTheConceptId] = newData;
+                    }
+                    try {
+                        if (Array.isArray(newData[key][linkerConcept.characterValue])) {
+                            newData[key][linkerConcept.characterValue].push(compositionData[connections[i].toTheConceptId]);
+                        }
+                        else {
+                            let type = (_d = (_c = toTheConcept === null || toTheConcept === void 0 ? void 0 : toTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "none";
+                            let value = toTheConcept.characterValue;
+                            let data = {
+                                "id": toTheConcept.id,
+                                "data": {
+                                    type: value
+                                }
+                            };
+                            if (linkerConcept.characterValue.includes("_s_")) {
+                                newData[key][linkerConcept.characterValue] = [];
+                                newData[key][linkerConcept.characterValue].push(data);
+                            }
+                            else {
+                                newData[key][linkerConcept.characterValue] = data;
+                            }
+                        }
+                    }
+                    catch (ex) {
+                        console.log("this is error", ex);
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < mainComposition.length; i++) {
+            let mymainData = compositionData[mainComposition[i]];
+            console.log(mainData, mymainData);
+            mainData.push(mymainData);
+        }
+        return mainData;
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/Services/Search/SearchLinkInternal.ts":
 /*!***************************************************!*\
   !*** ./src/Services/Search/SearchLinkInternal.ts ***!
@@ -15679,6 +16149,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Constants/FormatConstants */ "./src/Constants/FormatConstants.ts");
 /* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
 /* harmony import */ var _GetCompositionBulk__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../GetCompositionBulk */ "./src/Services/GetCompositionBulk.ts");
+/* harmony import */ var _SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./SearchWithTypeAndLinker */ "./src/Services/Search/SearchWithTypeAndLinker.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15688,6 +16159,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -15734,7 +16206,7 @@ function SearchLinkMultipleAll(searchQuery_1) {
                 linkers = result.linkers;
                 reverse = result.reverse;
             }
-            let out = yield DataIdBuildLayer(linkers, conceptIds, connections, reverse, mainCompositionId, format);
+            let out = yield DataIdBuildLayer(linkers, conceptIds, connections, reverse, mainCompositionId, searchQuery[0], format);
             return out;
         }
         catch (e) {
@@ -15752,8 +16224,8 @@ function SearchLinkMultipleAll(searchQuery_1) {
  * @param mainCompositionId this is the main centre point of this data.
  * @returns
  */
-function DataIdBuildLayer(linkers_1, conceptIds_1, connections_1, reverse_1, mainCompositionId_1) {
-    return __awaiter(this, arguments, void 0, function* (linkers, conceptIds, connections, reverse, mainCompositionId, format = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.DATAID) {
+function DataIdBuildLayer(linkers_1, conceptIds_1, connections_1, reverse_1, mainCompositionId_1, searchQuery_1) {
+    return __awaiter(this, arguments, void 0, function* (linkers, conceptIds, connections, reverse, mainCompositionId, searchQuery, format = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.DATAID) {
         let startTime = new Date().getTime();
         let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_3__.GetConnectionDataPrefetch)(linkers);
         let concepts;
@@ -15769,6 +16241,9 @@ function DataIdBuildLayer(linkers_1, conceptIds_1, connections_1, reverse_1, mai
         else if (format == 100) {
             concepts = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_3__.GetCompositionFromConnectionsWithDataIdInObjectNew)(conceptIds, connections);
             out = yield FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
+        }
+        else if (format == _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.LISTNORMAL) {
+            out = yield (0,_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_4__.formatDataArrayNormal)(linkers, conceptIds, connections, searchQuery.ofCompositions, reverse);
         }
         else {
             concepts = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_3__.GetCompositionFromConnectionsWithDataIdInObject)(conceptIds, connections);
@@ -15944,7 +16419,6 @@ function FormatConceptsAndConnections(connections_1, compositionData_1, mainComp
         }
         for (let i = 0; i < mainComposition.length; i++) {
             let mymainData = compositionData[mainComposition[i]];
-            console.log(mainData, mymainData);
             mainData.push(mymainData);
         }
         return mainData;
@@ -16034,7 +16508,6 @@ function FormatFromConnectionsAlteredArray(connections_1, compositionData_1, con
         }
         for (let i = 0; i < mainComposition.length; i++) {
             let mymainData = compositionData[mainComposition[i]];
-            console.log(mainData, mymainData);
             mainData.push(mymainData);
         }
         return mainData;
@@ -16140,12 +16613,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   SearchWithTypeAndLinker: () => (/* binding */ SearchWithTypeAndLinker),
 /* harmony export */   SearchWithTypeAndLinkerDataId: () => (/* binding */ SearchWithTypeAndLinkerDataId),
+/* harmony export */   formatConnections: () => (/* binding */ formatConnections),
+/* harmony export */   formatConnectionsDataId: () => (/* binding */ formatConnectionsDataId),
 /* harmony export */   formatDataArrayDataId: () => (/* binding */ formatDataArrayDataId),
-/* harmony export */   formatDataArrayNormal: () => (/* binding */ formatDataArrayNormal)
+/* harmony export */   formatDataArrayNormal: () => (/* binding */ formatDataArrayNormal),
+/* harmony export */   formatLinkersNormal: () => (/* binding */ formatLinkersNormal)
 /* harmony export */ });
 /* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
 /* harmony import */ var _GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../GetCompositionBulk */ "./src/Services/GetCompositionBulk.ts");
-/* harmony import */ var _SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SearchLinkMultiple */ "./src/Services/Search/SearchLinkMultiple.ts");
+/* harmony import */ var _FormatData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FormatData */ "./src/Services/Search/FormatData.ts");
+/* harmony import */ var _SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./SearchLinkMultiple */ "./src/Services/Search/SearchLinkMultiple.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16155,6 +16632,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -16175,7 +16653,7 @@ function SearchWithTypeAndLinkerDataId(searchStructure_1, searchQuery_1) {
         let mainCompositionIds = result.mainCompositionIds;
         let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionDataPrefetch)(linkers);
         let concepts = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetCompositionFromConnectionsWithDataIdInObject)(conceptIds, connections);
-        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_2__.FormatFromConnectionsAlteredArray)(prefetchConnections, concepts, conceptIds, mainCompositionIds, reverse);
+        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_3__.FormatFromConnectionsAlteredArray)(prefetchConnections, concepts, conceptIds, mainCompositionIds, reverse);
         return output;
     });
 }
@@ -16196,7 +16674,7 @@ function SearchWithTypeAndLinker(searchStructure_1, searchQuery_1) {
         let mainCompositionIds = result.mainCompositionIds;
         let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionDataPrefetch)(linkers);
         let concepts = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetCompositionFromConnectionsInObject)(conceptIds, connections);
-        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_2__.FormatConceptsAndConnections)(prefetchConnections, concepts, mainCompositionIds, reverse);
+        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_3__.FormatConceptsAndConnections)(prefetchConnections, concepts, mainCompositionIds, reverse);
         return output;
     });
 }
@@ -16213,7 +16691,7 @@ function formatDataArrayDataId(linkers, conceptIds, connections, mainComposition
     return __awaiter(this, void 0, void 0, function* () {
         let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionDataPrefetch)(linkers);
         let concepts = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetCompositionFromConnectionsWithDataIdInObject)(conceptIds, connections);
-        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_2__.FormatFromConnectionsAlteredArray)(prefetchConnections, concepts, conceptIds, mainCompositionIds, reverse);
+        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_3__.FormatFromConnectionsAlteredArray)(prefetchConnections, concepts, conceptIds, mainCompositionIds, reverse);
         return output;
     });
 }
@@ -16230,7 +16708,40 @@ function formatDataArrayNormal(linkers, conceptIds, connections, mainComposition
     return __awaiter(this, void 0, void 0, function* () {
         let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionDataPrefetch)(linkers);
         let concepts = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetCompositionFromConnectionsInObjectNormal)(conceptIds, connections);
-        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_2__.FormatConceptsAndConnections)(prefetchConnections, concepts, mainCompositionIds, reverse);
+        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_3__.FormatConceptsAndConnections)(prefetchConnections, concepts, mainCompositionIds, reverse);
+        return output;
+    });
+}
+/**
+ * ## Format Normal ##
+ * @param linkers
+ * @param conceptIds
+ * @param connections
+ * @param mainCompositionIds
+ * @param reverse
+ * @returns
+ */
+function formatLinkersNormal(linkers, conceptIds, connections, mainCompositionIds, reverse) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionDataPrefetch)(linkers);
+        let concepts = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetCompositionFromConnectionsInObjectNormal)(conceptIds, connections);
+        let output = yield (0,_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_3__.FormatConceptsAndConnections)(prefetchConnections, concepts, mainCompositionIds, reverse);
+        return output;
+    });
+}
+function formatConnections(linkers, conceptIds, mainCompositionIds, reverse) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionDataPrefetch)(linkers);
+        let compositionData = [];
+        let output = yield (0,_FormatData__WEBPACK_IMPORTED_MODULE_2__.FormatConceptsAndConnectionsNormalList)(prefetchConnections, compositionData, mainCompositionIds, reverse);
+        return output;
+    });
+}
+function formatConnectionsDataId(linkers, conceptIds, mainCompositionIds, reverse) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionDataPrefetch)(linkers);
+        let compositionData = [];
+        let output = yield (0,_FormatData__WEBPACK_IMPORTED_MODULE_2__.FormatFromConnectionsAlteredArrayExternal)(prefetchConnections, compositionData, mainCompositionIds, reverse);
         return output;
     });
 }
@@ -16303,6 +16814,177 @@ function SplitStrings(typeString) {
         SplittedStrings = [typeString];
     }
     return SplittedStrings;
+}
+
+
+/***/ }),
+
+/***/ "./src/Services/Transaction/LocalTransaction.ts":
+/*!******************************************************!*\
+  !*** ./src/Services/Transaction/LocalTransaction.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   LocalTransaction: () => (/* binding */ LocalTransaction)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+class LocalTransaction {
+    constructor() {
+        this.actions = {
+            concepts: [],
+            connections: []
+        };
+        this.success = true;
+        this.transactionId = Math.random().toString().substring(5);
+    }
+    /**
+     * Method to initialize the transactions for specified transaction
+     */
+    initialize() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.initializeTransaction(this.transactionId);
+        });
+    }
+    /**
+     * Method to commi the created Transactions
+     */
+    commitTransaction() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Save the data
+            if (!this.success)
+                throw Error('Query Transaction Expired');
+            console.log('sync 1', this.actions);
+            yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.SyncDataOnline(this.transactionId);
+            this.actions = { concepts: [], connections: [] };
+            this.success = false;
+            console.log('sync 2', this.actions);
+        });
+    }
+    /**
+     * Method to rollback all the tranctions occured
+     */
+    rollbackTransaction() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // rollback all the changes
+            this.success = false;
+            this.actions = { concepts: [], connections: [] };
+            yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.rollbackTransaction(this.transactionId, this.actions);
+        });
+    }
+    /**
+     * Method to move concepts and connection to transaction collection
+     * @param concept Concept
+     */
+    markAction() {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('actions 1', this.actions);
+            yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.markTransactionActions(this.transactionId, this.actions);
+            console.log('actions 2', this.actions);
+        });
+    }
+    /**
+     * Concepts
+     */
+    MakeTheInstanceConceptLocal(type_1, referent_1) {
+        return __awaiter(this, arguments, void 0, function* (type, referent, composition = false, userId, accessId, sessionInformationId = 999, referentId = 0) {
+            try {
+                if (!this.success)
+                    throw Error('Query Transaction Expired');
+                const concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheInstanceConceptLocal)(type, referent, composition, userId, accessId, sessionInformationId, referentId, this.actions);
+                yield this.markAction();
+                return concept;
+            }
+            catch (err) {
+                console.log(err);
+                this.success = false;
+                throw err;
+            }
+        });
+    }
+    MakeTheTypeConceptLocal(typeString, sessionId, sessionUserId, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!this.success)
+                    throw Error('Query Transaction Expired');
+                const concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheTypeConceptLocal)(typeString, sessionId, sessionUserId, userId, this.actions);
+                yield this.markAction();
+                return concept;
+            }
+            catch (err) {
+                console.log(err);
+                this.success = false;
+                throw err;
+            }
+        });
+    }
+    /**
+     * Connections
+     */
+    CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1, linker_1) {
+        return __awaiter(this, arguments, void 0, function* (ofTheConcept, toTheConcept, linker, both = false) {
+            try {
+                if (!this.success)
+                    throw Error('Query Transaction Expired');
+                console.log('actions connection 1', this.actions);
+                const connection = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateConnectionBetweenTwoConceptsLocal)(ofTheConcept, toTheConcept, linker, both, this.actions);
+                console.log('actions connection 2', this.actions);
+                yield this.markAction();
+                return connection;
+            }
+            catch (err) {
+                console.log(err);
+                this.success = false;
+                throw err;
+            }
+        });
+    }
+    CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) {
+        return __awaiter(this, arguments, void 0, function* (ofTheConceptId, toTheConceptId, typeId, orderId = 1, typeString = "", userId = 999) {
+            try {
+                if (!this.success)
+                    throw Error('Query Transaction Expired');
+                const connection = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, this.actions);
+                yield this.markAction();
+                return connection;
+            }
+            catch (err) {
+                console.log(err);
+                this.success = false;
+                throw err;
+            }
+        });
+    }
+    /**
+     * Compositions
+     */
+    CreateTheCompositionLocal(json_1) {
+        return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null, automaticSync = false) {
+            try {
+                if (!this.success)
+                    throw Error('Query Transaction Expired');
+                const concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheCompositionLocal)(json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, automaticSync, this.actions);
+                yield this.markAction();
+                return concept;
+            }
+            catch (err) {
+                console.log(err);
+                this.success = false;
+                throw err;
+            }
+        });
+    }
 }
 
 
@@ -16912,7 +17594,6 @@ class DependencyObserver {
             if (!this.isUpdating) {
                 this.isUpdating = true;
                 let that = this;
-                console.log("listening to event type", event);
                 setTimeout(function () {
                     return __awaiter(this, void 0, void 0, function* () {
                         let myEvent = event;
@@ -16940,7 +17621,6 @@ class DependencyObserver {
     listenToEvent(id) {
         console.log('listening to id: ', id);
         window.addEventListener(`${id}`, (event) => {
-            console.log("this is listening after the event is fired", id, event);
             if (!this.isUpdating) {
                 this.isUpdating = true;
                 let that = this;
@@ -16966,6 +17646,53 @@ class DependencyObserver {
                                     that.compositionIds.push(conn.ofTheConceptId);
                                 }
                             });
+                        }
+                        that.isUpdating = false;
+                        yield that.bind();
+                        that.notify();
+                    });
+                }, 200);
+            }
+            else {
+                console.log("rejected this");
+            }
+        });
+    }
+    /**
+ * This is the of the concept id that needs to be listened . If this is called. All the connections that are
+ * created with of the concepts id with this passed id then the event is fired.
+ *
+ * @param id Of the concept id that needs to be listened.
+ */
+    listenToEventConnectionType(id, connectionType) {
+        window.addEventListener(`${id}`, (event) => {
+            if (!this.isUpdating) {
+                this.isUpdating = true;
+                let that = this;
+                setTimeout(function () {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        let newConnection = yield _app__WEBPACK_IMPORTED_MODULE_0__.ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+                        for (let i = 0; i < newConnection.length; i++) {
+                            if (newConnection.typeId == connectionType) {
+                                yield _app__WEBPACK_IMPORTED_MODULE_0__.ConnectionData.GetConnection(newConnection[i]).then((conn) => {
+                                    if (conn.typeId == that.mainConcept) {
+                                        if (!that.internalConnections.includes(conn.id)) {
+                                            that.internalConnections.push(conn.id);
+                                        }
+                                    }
+                                    else {
+                                        if (!that.linkers.includes(conn.id)) {
+                                            that.linkers.push(conn.id);
+                                        }
+                                    }
+                                    if (!that.conceptIds.includes(conn.toTheConceptId)) {
+                                        that.conceptIds.push(conn.toTheConceptId);
+                                    }
+                                    if (!that.compositionIds.includes(conn.ofTheConceptId)) {
+                                        that.compositionIds.push(conn.ofTheConceptId);
+                                    }
+                                });
+                            }
                         }
                         that.isUpdating = false;
                         yield that.bind();
@@ -17280,7 +18007,6 @@ class GetLinkListObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODUL
             if (!this.isUpdating) {
                 this.isUpdating = true;
                 let that = this;
-                console.log("listening to event type", event);
                 setTimeout(function () {
                     return __awaiter(this, void 0, void 0, function* () {
                         let myEvent = event;
@@ -17289,7 +18015,6 @@ class GetLinkListObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODUL
                             that.conceptIds.push(myEvent === null || myEvent === void 0 ? void 0 : myEvent.detail);
                             that.listenToEvent(myEvent === null || myEvent === void 0 ? void 0 : myEvent.detail);
                             _app__WEBPACK_IMPORTED_MODULE_0__.ConnectionData.GetConnectionsOfConcept(myEvent === null || myEvent === void 0 ? void 0 : myEvent.detail).then((connectionList) => {
-                                console.log("this is the update", connectionList);
                                 for (let i = 0; i < connectionList.length; i++) {
                                     that.linkers.push(connectionList[i].id);
                                 }
@@ -17327,6 +18052,7 @@ class GetLinkListObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODUL
     }
     build() {
         return __awaiter(this, void 0, void 0, function* () {
+            yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptBulk)(this.conceptIds);
             if (this.format == _app__WEBPACK_IMPORTED_MODULE_0__.DATAID) {
                 this.data = yield (0,_Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_2__.formatDataArrayDataId)(this.linkers, this.conceptIds, this.internalConnections, this.mainCompositionIds, this.reverse);
             }
@@ -17679,6 +18405,85 @@ function RecursiveSearchListener(id, linkers, searchText = "", format) {
 
 /***/ }),
 
+/***/ "./src/WrapperFunctions/SchemaQueryObservable.ts":
+/*!*******************************************************!*\
+  !*** ./src/WrapperFunctions/SchemaQueryObservable.ts ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SchemaQueryListener: () => (/* binding */ SchemaQueryListener),
+/* harmony export */   SearchLinkMultipleAllObservable: () => (/* binding */ SearchLinkMultipleAllObservable)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Constants/FormatConstants */ "./src/Constants/FormatConstants.ts");
+/* harmony import */ var _Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/Search/SearchWithTypeAndLinker */ "./src/Services/Search/SearchWithTypeAndLinker.ts");
+/* harmony import */ var _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./DepenedencyObserver */ "./src/WrapperFunctions/DepenedencyObserver.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+class SearchLinkMultipleAllObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3__.DependencyObserver {
+    constructor(query, token) {
+        super();
+        this.mainCompositionIds = [];
+        this.query = new _app__WEBPACK_IMPORTED_MODULE_0__.FreeschemaQuery();
+        this.query = query;
+        this.format = query.outputFormat;
+    }
+    bind() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.isDataLoaded) {
+                this.isDataLoaded = true;
+                this.query.outputFormat = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.ALLID;
+                let result = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.FreeschemaQueryApi)(this.query, "");
+                this.conceptIds = result.conceptIds;
+                this.internalConnections = result.internalConnections;
+                this.linkers = result.linkers;
+                this.reverse = result.reverse;
+                this.mainCompositionIds = result.mainCompositionIds;
+            }
+            return yield this.build();
+        });
+    }
+    build() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.format == _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.DATAID) {
+                this.data = yield (0,_Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_2__.formatConnectionsDataId)(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+            }
+            else {
+                this.data = yield (0,_Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_2__.formatConnections)(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+                //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
+            }
+            return this.data;
+        });
+    }
+}
+/**
+ *
+ * @param id this is the id whose links need to be found
+ * @param linker this is the type connection that is connected to the mainConcept(id)
+ * @param inpage number of outputs that has to be displayed
+ * @param page the page which needs to be displayed as per the inpage parameter
+ * @param format the format in which the output should be displayed (NORMAL, DATAID,JUSTDATA,DATAIDDATE)
+ */
+function SchemaQueryListener(query, token) {
+    return new SearchLinkMultipleAllObservable(query, token);
+}
+
+
+/***/ }),
+
 /***/ "./src/WrapperFunctions/SearchLinkMultipleAllObservable.ts":
 /*!*****************************************************************!*\
   !*** ./src/WrapperFunctions/SearchLinkMultipleAllObservable.ts ***!
@@ -17745,6 +18550,7 @@ function searchLinkMultipleListener(searchQueries, token, format = _Constants_Fo
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ADMIN: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__.ADMIN),
+/* harmony export */   ALLID: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.ALLID),
 /* harmony export */   AddGhostConcept: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_50__.AddGhostConcept),
 /* harmony export */   BaseUrl: () => (/* reexport safe */ _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl),
 /* harmony export */   BinaryTree: () => (/* reexport safe */ _DataStructures_BinaryTree__WEBPACK_IMPORTED_MODULE_83__.BinaryTree),
@@ -17774,11 +18580,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   DeleteConceptById: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__.DeleteConceptById),
 /* harmony export */   DeleteConceptLocal: () => (/* reexport safe */ _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_61__.DeleteConceptLocal),
 /* harmony export */   DeleteConnectionById: () => (/* reexport safe */ _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_25__.DeleteConnectionById),
-/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_102__.DeleteConnectionByType),
+/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_103__.DeleteConnectionByType),
 /* harmony export */   DependencyObserver: () => (/* reexport safe */ _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_68__.DependencyObserver),
 /* harmony export */   FilterSearch: () => (/* reexport safe */ _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_92__.FilterSearch),
 /* harmony export */   FormatFromConnections: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnections),
 /* harmony export */   FormatFromConnectionsAltered: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnectionsAltered),
+/* harmony export */   FreeschemaQuery: () => (/* reexport safe */ _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_104__.FreeschemaQuery),
+/* harmony export */   FreeschemaQueryApi: () => (/* reexport safe */ _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_105__.FreeschemaQueryApi),
 /* harmony export */   GetAllConnectionsOfComposition: () => (/* reexport safe */ _Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_6__.GetAllConnectionsOfComposition),
 /* harmony export */   GetAllConnectionsOfCompositionBulk: () => (/* reexport safe */ _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_33__.GetAllConnectionsOfCompositionBulk),
 /* harmony export */   GetComposition: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetComposition),
@@ -17829,8 +18637,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   JUSTDATA: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.JUSTDATA),
 /* harmony export */   LConcept: () => (/* reexport safe */ _DataStructures_Local_LConcept__WEBPACK_IMPORTED_MODULE_78__.LConcept),
 /* harmony export */   LConnection: () => (/* reexport safe */ _DataStructures_Local_LConnection__WEBPACK_IMPORTED_MODULE_79__.LConnection),
+/* harmony export */   LISTNORMAL: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.LISTNORMAL),
 /* harmony export */   LocalConceptsData: () => (/* reexport safe */ _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_94__.LocalConceptsData),
 /* harmony export */   LocalSyncData: () => (/* reexport safe */ _DataStructures_Local_LocalSyncData__WEBPACK_IMPORTED_MODULE_90__.LocalSyncData),
+/* harmony export */   LocalTransaction: () => (/* reexport safe */ _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_101__.LocalTransaction),
 /* harmony export */   LoginToBackend: () => (/* reexport safe */ _Api_Login__WEBPACK_IMPORTED_MODULE_34__.LoginToBackend),
 /* harmony export */   MakeTheInstanceConcept: () => (/* reexport safe */ _Services_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_13__["default"]),
 /* harmony export */   MakeTheInstanceConceptLocal: () => (/* reexport safe */ _Services_Local_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_14__.MakeTheInstanceConceptLocal),
@@ -17848,6 +18658,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   RecursiveSearchApiRaw: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRaw),
 /* harmony export */   RecursiveSearchApiRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRawFullLinker),
 /* harmony export */   RecursiveSearchListener: () => (/* reexport safe */ _WrapperFunctions_RecursiveSearchObservable__WEBPACK_IMPORTED_MODULE_74__.RecursiveSearchListener),
+/* harmony export */   SchemaQueryListener: () => (/* reexport safe */ _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_106__.SchemaQueryListener),
 /* harmony export */   SearchAllConcepts: () => (/* reexport safe */ _Api_Search_Search__WEBPACK_IMPORTED_MODULE_39__.SearchAllConcepts),
 /* harmony export */   SearchLinkInternal: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternal),
 /* harmony export */   SearchLinkInternalAll: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternalAll),
@@ -17863,7 +18674,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Signin: () => (/* reexport safe */ _Api_Signin__WEBPACK_IMPORTED_MODULE_37__["default"]),
 /* harmony export */   Signup: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_36__["default"]),
 /* harmony export */   SplitStrings: () => (/* reexport safe */ _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_3__.SplitStrings),
-/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_101__.StatefulWidget),
+/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_102__.StatefulWidget),
 /* harmony export */   SyncData: () => (/* reexport safe */ _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_76__.SyncData),
 /* harmony export */   TrashTheConcept: () => (/* reexport safe */ _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_26__.TrashTheConcept),
 /* harmony export */   UpdateComposition: () => (/* reexport safe */ _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_38__["default"]),
@@ -17987,8 +18798,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__ = __webpack_require__(/*! ./DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
 /* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__ = __webpack_require__(/*! ./DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
 /* harmony import */ var _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__ = __webpack_require__(/*! ./Constants/general.const */ "./src/Constants/general.const.ts");
-/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
-/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
+/* harmony import */ var _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Services/Transaction/LocalTransaction */ "./src/Services/Transaction/LocalTransaction.ts");
+/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
+/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
+/* harmony import */ var _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./DataStructures/Search/FreeschemaQuery */ "./src/DataStructures/Search/FreeschemaQuery.ts");
+/* harmony import */ var _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_105__ = __webpack_require__(/*! ./Api/Search/FreeschemaQueryApi */ "./src/Api/Search/FreeschemaQueryApi.ts");
+/* harmony import */ var _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_106__ = __webpack_require__(/*! ./WrapperFunctions/SchemaQueryObservable */ "./src/WrapperFunctions/SchemaQueryObservable.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -17998,6 +18813,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
+
+
+
 
 
 
@@ -18264,23 +19083,33 @@ function sendMessage(type, payload) {
     return __awaiter(this, void 0, void 0, function* () {
         const messageId = Math.random().toString(36).substring(5); // Generate a unique message ID
         payload.messageId = messageId;
+        // let actions = payload.actions
+        const newPayload = JSON.parse(JSON.stringify(payload));
         return new Promise((resolve, reject) => {
             // navigator.serviceWorker.ready
             //   .then((registration) => {
             const responseHandler = (event) => {
-                var _a;
+                var _a, _b;
                 if (((_a = event === null || event === void 0 ? void 0 : event.data) === null || _a === void 0 ? void 0 : _a.messageId) == messageId) { // Check if the message ID matches
-                    console.log("after sending message", event, event.data);
+                    console.log("after sending message", type, event.data);
+                    if ((_b = event.data) === null || _b === void 0 ? void 0 : _b.actions) {
+                        console.log('actions reveived if', payload, type, event.data);
+                        payload.actions = JSON.parse(JSON.stringify(event.data.actions));
+                        console.log('actions reveived if 2', payload, type, event.data);
+                    }
+                    else {
+                        console.log('actions reveived else', payload, type, event.data);
+                    }
                     resolve(event.data);
                     navigator.serviceWorker.removeEventListener("message", responseHandler);
                 }
             };
             navigator.serviceWorker.addEventListener("message", responseHandler);
-            console.log("before sending message", navigator.serviceWorker.controller);
+            console.log("before sending message", type, 'new', newPayload);
             // serviceWorker?.postMessage({ type, payload });
             // Send the message to the service worker
             if (navigator.serviceWorker.controller) {
-                serviceWorker.postMessage({ type, payload });
+                serviceWorker.postMessage({ type, payload: newPayload });
                 // navigator.serviceWorker.controller.postMessage({ type, payload });
             }
             else {
@@ -18329,7 +19158,6 @@ const broadcastActions = {
     dispatchEvent: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         if (serviceWorker) {
             let event = new Event(payload.id || '');
-            console.log("broadcast dispatched evenet found", event);
             dispatchEvent(event);
         }
         // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
@@ -18344,7 +19172,6 @@ function listenBroadCastMessages() {
     // broadcast event can be listened through both the service worker and other tabs
     _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__.broadcastChannel.addEventListener('message', (event) => __awaiter(this, void 0, void 0, function* () {
         const { type, payload } = event.data;
-        console.log('Received in Main Thread:', type, event, event.data);
         if (!type)
             return;
         let responseData = { success: false, data: undefined };
@@ -18356,21 +19183,6 @@ function listenBroadCastMessages() {
             console.log(`Unable to handle "${type}" case in service worker`);
         }
     }));
-}
-// Utility function to handle service worker or fallback logic
-function handleServiceWorkerRequest(serviceWorkerMethod, params, fallbackFunction) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (serviceWorker) {
-            console.log('Data receiving');
-            const res = yield sendMessage(serviceWorkerMethod, params);
-            console.log('Data received from SW', res);
-            return res.data;
-        }
-        else {
-            console.log('Used old BT');
-            return yield fallbackFunction(...params);
-        }
-    });
 }
 /**
  * Method to initialize the initial data
@@ -18614,6 +19426,7 @@ self.addEventListener("message", (event) => __awaiter(void 0, void 0, void 0, fu
         return;
     console.log('has type', type);
     let responseData = { success: false, data: undefined };
+    // if (!payload.actions) payload.actions = {concepts: [], connections: []}
     if (actions[type]) {
         try {
             console.log('if type', responseData);

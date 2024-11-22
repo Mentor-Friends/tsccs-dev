@@ -64,6 +64,7 @@ self.addEventListener("message", async (event: any) => {
   if (!type) return;
   console.log('has type', type)
   let responseData: {success: boolean, data?: any, messageId?: string} = {success: false, data: undefined}
+  // if (!payload.actions) payload.actions = {concepts: [], connections: []}
 
   if (actions[type]) {
     try {

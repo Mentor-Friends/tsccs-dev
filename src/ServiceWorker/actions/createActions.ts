@@ -2,6 +2,7 @@ import { Actions } from ".";
 import { CreateTheCompositionLocal, MakeTheInstanceConcept, MakeTheTypeConcept, MakeTheTypeConceptLocal } from "../../app";
 import CreateTheComposition from "../../Services/CreateTheComposition";
 import CreateTheConceptLocal from "../../Services/Local/CreateTheConceptLocal";
+import MakeTheConceptLocal from "../../Services/Local/MakeTheConceptLocal";
 import { MakeTheInstanceConceptLocal } from "../../Services/Local/MakeTheInstanceConceptLocal";
 
 export const createActions: Actions = {
@@ -14,6 +15,17 @@ export const createActions: Actions = {
             payload.passedAccessId,
             payload.passedSessionId,
             payload.referentId
+        )
+        return { success: true, data }
+    },
+    MakeTheConceptLocal: async (payload: any) => {
+        const data = await MakeTheConceptLocal(
+            payload.referent, 
+            payload.typeCharacter, 
+            payload.userId, 
+            payload.categoryId, 
+            payload.typeId, 
+            payload.actions
         )
         return { success: true, data }
     },
@@ -48,18 +60,20 @@ export const createActions: Actions = {
             payload.userId,
             payload.accessId,
             payload.sessionInformationId,
-            payload.referentId
+            payload.referentId,
+            payload.actions
         )
-        return { success: true, data }
+        return { success: true, data, actions: payload.actions }
     },
     MakeTheTypeConceptLocal: async (payload: any) => {
         const data = await MakeTheTypeConceptLocal(
             payload.typeString,
             payload.sessionId,
             payload.sessionUserId,
-            payload.userId
+            payload.userId,
+            payload.actions
         )
-        return { success: true, data }
+        return { success: true, data, actions: payload.actions }
     },
     CreateTheConceptLocal: async (payload) => {
         const data = await CreateTheConceptLocal(
@@ -70,9 +84,10 @@ export const createActions: Actions = {
             payload.typeId, 
             payload.accessId, 
             payload.isComposition, 
-            payload.referentId
+            payload.referentId,
+            payload.actions
         )
-        return { success: true, data }
+        return { success: true, data, actions: payload.actions }
     },
     CreateTheCompositionLocal: async (payload) => {
         const data = await CreateTheCompositionLocal(
@@ -83,8 +98,9 @@ export const createActions: Actions = {
             payload.userId,
             payload.accessId,
             payload.sessionInformationId,
-            payload.automaticSync
+            payload.automaticSync,
+            payload.actions
         )
-        return { success: true, data }
+        return { success: true, data, actions: payload.actions }
     }
 }

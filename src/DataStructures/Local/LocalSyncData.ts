@@ -5,15 +5,23 @@ import { UpdateToDatabase } from "../../Database/indexdblocal";
 import { ConceptsData } from "../ConceptData";
 import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "../Connection";
-import { CreateDefaultConcept, CreateDefaultLConcept, sendMessage, serviceWorker } from "../../app";
+import { CreateDefaultConcept, CreateDefaultLConcept, InnerActions, sendMessage, serviceWorker } from "../../app";
 import { LocalConnectionData } from "./LocalConnectionData";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+
+
+type syncContainer = {
+    id: string,
+    data: InnerActions
+    createdDate: string,
+}
 
 export class LocalSyncData{
     static  conceptsSyncArray:Concept[] = [];
     static  connectionSyncArray: Connection[] = [];
     static ghostIdMap = new Map();
+    static transactionCollections: syncContainer[] = []
     
 
     static  CheckContains(concept: Concept){
@@ -74,15 +82,32 @@ export class LocalSyncData{
         }
      }
 
-     static async SyncDataOnline(){
+     static async SyncDataOnline(transactionId?: string){
         try{
             console.log('sw triggered')
             if (serviceWorker) {
-                const res: any = await sendMessage('LocalSyncData__SyncDataOnline', {})
+                const res: any = await sendMessage('LocalSyncData__SyncDataOnline', {transactionId})
                 return res.data
             }
-            let conceptsArray = this.conceptsSyncArray.slice();
-            let connectionsArray = this.connectionSyncArray.slice();
+
+            let conceptsArray: Concept[] = [];
+            let connectionsArray: Connection[] = [];
+            if (transactionId && this.transactionCollections.some(tran => tran.id == transactionId)) {
+                const transaction = this.transactionCollections.find(tran => tran.id == transactionId)
+                console.log('sync if condition', transaction)
+                // remove current transaction from list
+                this.transactionCollections = this.transactionCollections.filter(tran => tran.id != transactionId)
+                // remove old query actions older than 15 days
+                this.transactionCollections = this.transactionCollections.filter(tran => new Date(tran.createdDate).getTime() > (new Date().getTime() - 604800000 ))
+                
+                if (!transaction) return
+                conceptsArray = transaction.data.concepts.slice();
+                connectionsArray = transaction.data.connections.slice();
+            } else {
+                console.log('sync else condition', transactionId, this.transactionCollections)
+                conceptsArray = this.conceptsSyncArray.slice();
+                connectionsArray = this.connectionSyncArray.slice();
+            }
     
             this.connectionSyncArray = [];
             this.conceptsSyncArray = [];
@@ -269,8 +294,59 @@ export class LocalSyncData{
         return "done";
      }
 
+     static async initializeTransaction(transactionId: string) {
+        console.log('sw triggered')
+        if (serviceWorker) {
+            const res: any = await sendMessage('LocalSyncData__initializeTransaction', {transactionId})
+            return res.data
+        }
 
+        if (this.transactionCollections.some(item => item.id == transactionId)) return
+
+        this.transactionCollections.push({
+            id: transactionId,
+            data: {concepts: [], connections: []},
+            createdDate: new Date().toISOString()
+        })
+     }
  
+     static async markTransactionActions(transactionId: string, actions: InnerActions) {
+        // remove marked 
+        console.log('sw triggered')
+        if (serviceWorker) {
+            const res: any = await sendMessage('LocalSyncData__markTransactionActions', {transactionId, actions})
+            return res.data
+        }
+        console.log('marking data 1', this.conceptsSyncArray, this.conceptsSyncArray, this.transactionCollections, actions)
+
+        this.transactionCollections = this.transactionCollections.map(tran => {
+            if (tran.id == transactionId) {
+                console.log(' the transaction found', tran, actions, {
+                    ...tran,
+                    data: JSON.parse(JSON.stringify(actions))
+                })
+                return {
+                    ...tran,
+                    data: JSON.parse(JSON.stringify(actions))
+                }
+            } else return tran
+        })
+        
+        this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => !actions.concepts.some(con => con.id == concept.id || con.ghostId == concept.id))
+        this.connectionSyncArray = this.connectionSyncArray.filter(connection => !actions.connections.some(con => con.id == connection.id || con.ghostId == connection.id))
+        
+        console.log('marking data 2', this.conceptsSyncArray, this.conceptsSyncArray, this.transactionCollections, actions)
+     }
+
+     static async rollbackTransaction(transactionId: string, actions: InnerActions) {
+        console.log('sw triggered')
+        if (serviceWorker) {
+            const res: any = await sendMessage('LocalSyncData__rollbackTransaction', {transactionId, actions})
+            return res.data
+        }
+        if (this.transactionCollections.some(item => item.id == transactionId)) return
+        this.transactionCollections = this.transactionCollections.filter(tran => tran.id != transactionId)
+     }
 
 
 }

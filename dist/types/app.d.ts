@@ -101,10 +101,20 @@ export { UserBinaryTree } from './DataStructures/User/UserBinaryTree';
 export { FilterSearch } from './DataStructures/FilterSearch';
 export { SearchStructure } from './DataStructures/Search/SearchStructure';
 export { LocalConceptsData } from './DataStructures/Local/LocalConceptData';
+export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
+export { InnerActions } from "./Constants/general.const";
 export { BaseUrl } from './DataStructures/BaseUrl';
 export { StatefulWidget } from './Widgets/StatefulWidget';
 export { DeleteConnectionByType } from './Services/DeleteConnectionByType';
+export { FreeschemaQuery } from './DataStructures/Search/FreeschemaQuery';
+export { FreeschemaQueryApi } from './Api/Search/FreeschemaQueryApi';
+export { SchemaQueryListener } from './WrapperFunctions/SchemaQueryObservable';
 export declare var serviceWorker: any;
+/**
+ * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
+ * Your concepts using this package.
+ * @param accessToken access token got from the sign in process
+ */
 declare function updateAccessToken(accessToken?: string): void;
 /**
  *

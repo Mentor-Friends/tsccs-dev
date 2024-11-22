@@ -1,3 +1,4 @@
+import { InnerActions } from "../../app";
 /**
  * This function creates a connection for the concept connection system. This connection will only be created in real sense
  * once the data is synced using LocalSyncData.SyncDataOnline()
@@ -11,4 +12,4 @@
  * @param typeString this is the typeString in the case of external connections.
  * @returns a connection that is created and stored in the local system.
  */
-export declare function CreateTheConnectionLocal(ofTheConceptId: number, toTheConceptId: number, typeId: number, orderId?: number, typeString?: string, userId?: number): Promise<any>;
+export declare function CreateTheConnectionLocal(ofTheConceptId: number, toTheConceptId: number, typeId: number, orderId?: number, typeString?: string, userId?: number, actions?: InnerActions): Promise<any>;
