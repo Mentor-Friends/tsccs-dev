@@ -1,5 +1,257 @@
 /******/ var __webpack_modules__ = ({
 
+/***/ "./src/Anomaly/anomaly.ts":
+/*!********************************!*\
+  !*** ./src/Anomaly/anomaly.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Anomaly: () => (/* binding */ Anomaly)
+/* harmony export */ });
+/* harmony import */ var _Validator_constant__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Validator/constant */ "./src/Validator/constant.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+/**
+ * Class representing the Anomaly detection logic for checking data validity based on predefined rules.
+ * This class contains methods for initializing, caching, and fetching anomaly parameters from an external API,
+ * as well as checking for anomalies in individual concepts and bulk data.
+ */
+class Anomaly {
+    /**
+     * Constructor that initializes anomaly parameters if the cache is not yet initialized.
+     * It ensures that the anomaly parameters are loaded and cached for use.
+     */
+    constructor() {
+        if (!Anomaly.cacheInitialized) {
+            Anomaly.initializeAnomalyParameters();
+        }
+    }
+    /**
+     * Initializes the anomaly parameters by fetching them from the API.
+     * This method is only run once on startup to ensure the cache is ready for use.
+     * It will fetch the parameters from the API and store them in a static cache.
+     *
+     * @returns {Promise<void>} - A promise that resolves once the parameters have been initialized.
+     */
+    static initializeAnomalyParameters() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Fetch anomaly parameters once on startup
+                const anomalyData = yield Anomaly.getAnomalyParameters();
+                // console.log('Anomaly parameters initialized:', anomalyData);
+                // Refresh the cache to ensure it's up-to-date
+                Anomaly.refreshCache();
+                Anomaly.cacheInitialized = true;
+            }
+            catch (error) {
+                console.error('Error during anomaly parameter initialization:', error);
+            }
+        });
+    }
+    /**
+     * Fetches the anomaly parameters.
+     * It first checks if the parameters are cached and whether the cache is still valid (not expired).
+     * If the cache is valid, it returns the cached data. If not, it fetches the data from the API.
+     *
+     * @returns {Promise<any>} - A promise that resolves to the anomaly parameters.
+     */
+    static getAnomalyParameters() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const currentTime = Date.now();
+            if (Anomaly.anomalyParamsCache && (currentTime - Anomaly.lastFetchedTime < Anomaly.cacheExpiryThreshold)) {
+                console.log('Returning cached anomaly parameters');
+                return Anomaly.anomalyParamsCache;
+            }
+            try {
+                // If data is not cached or expired, fetch it from the API
+                const data = yield Anomaly.fetchAnomalyParameters();
+                return data;
+            }
+            catch (error) {
+                console.error('Error fetching anomaly parameters:', error);
+                throw error;
+            }
+        });
+    }
+    /**
+     * Fetches anomaly parameters directly from the backend API.
+     * This method is used internally by `getAnomalyParameters` to retrieve fresh data.
+     *
+     * @returns {Promise<any>} - A promise that resolves to the fetched anomaly parameters.
+     */
+    static fetchAnomalyParameters() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Fetching anomaly parameters from the API...'
+            const url = `https://devai.freeschema.com/v1/get-frontend-anomaly-parameters`;
+            try {
+                const response = yield fetch(url, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                if (!response.ok) {
+                    throw new Error("Failed to fetch anomaly parameters");
+                }
+                const data = yield response.json();
+                // Cache the fetched data and update the timestamp
+                Anomaly.anomalyParamsCache = data.data;
+                Anomaly.lastFetchedTime = Date.now();
+                return data.data;
+            }
+            catch (error) {
+                console.error("API Fetch Error:", error);
+                throw error;
+            }
+        });
+    }
+    /**
+     * Refreshes the anomaly parameters cache if the cache has expired.
+     * If the cache expiry threshold has been surpassed, the method re-fetches the data from the API.
+     *
+     * @returns {Promise<void>} - A promise that resolves when the cache has been refreshed.
+     */
+    static refreshCache() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const currentTime = Date.now();
+                if (currentTime - Anomaly.lastFetchedTime > Anomaly.cacheExpiryThreshold) {
+                    // Cache expired, re-fetch the data
+                    yield Anomaly.getAnomalyParameters();
+                }
+            }
+            catch (error) {
+                console.error("Error refreshing anomaly parameters cache:", error);
+            }
+        });
+    }
+    /**
+     * Detects the data type of a given value based on predefined rules.
+     * It checks the value against the `DATA_TYPES_RULES` to find the matching data type.
+     *
+     * @param {string} value - The value to check.
+     * @returns {string | null} - The detected data type, or `null` if no match is found.
+     */
+    detectDataType(value) {
+        for (const [dataType, regex] of Object.entries(_Validator_constant__WEBPACK_IMPORTED_MODULE_0__.DATA_TYPES_RULES)) {
+            if (regex.test(value)) {
+                return dataType;
+            }
+        }
+        return null;
+    }
+    /**
+     * Checks whether a given concept and value pair contains an anomaly.
+     * An anomaly is detected based on the concept's length and type rules.
+     *
+     * @param {string} typeConcept - The concept type (e.g., `the_name`).
+     * @param {string} value - The value to check for anomalies.
+     * @returns {Promise<{ valid: boolean, warnings: string[] }>} - A promise that resolves to an object containing:
+     * - `valid`: A boolean indicating whether the value is valid according to the anomaly rules.
+     * - `warnings`: An array of warning messages related to the value's anomalies.
+     */
+    checkConceptAnomaly(typeConcept, value) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const warnings = [];
+            try {
+                if (!value) {
+                    warnings.push("Null value");
+                    return { valid: false, warnings };
+                }
+                const typeDetails = Anomaly.anomalyParamsCache;
+                if (!typeConcept.startsWith('the_')) {
+                    typeConcept = `the_${typeConcept}`;
+                }
+                const conceptDetails = typeDetails[typeConcept];
+                console.log("Concept Details : ", conceptDetails);
+                if (!conceptDetails) {
+                    console.warn(`No concept details found for type: ${typeConcept}`);
+                    warnings.push(`No concept details found for type: ${typeConcept}`);
+                    return { valid: false, warnings };
+                }
+                const length = value.length;
+                const { min_length, max_length, data_types } = conceptDetails;
+                const lengthValid = length >= min_length && length <= max_length;
+                const detectedType = this.detectDataType(value);
+                const typeValid = data_types.includes(detectedType);
+                if (!lengthValid) {
+                    warnings.push(`Length of '${value}' is outside the allowed range (min: ${min_length}, max: ${max_length}). Current length: ${length}.`);
+                }
+                if (!typeValid) {
+                    warnings.push(`Type mismatch for '${value}'. Expected types: ${data_types.join(', ')}, detected type: ${detectedType}.`);
+                }
+                if (lengthValid && typeValid) {
+                    warnings.push(`Concept ${typeConcept} is valid. Length: ${length}, Type: ${detectedType}`);
+                }
+                return { valid: lengthValid && typeValid, warnings };
+            }
+            catch (error) {
+                console.error(`Error checking anomaly for ${typeConcept} with value ${value}:`, error);
+                return { valid: false, warnings };
+            }
+        });
+    }
+    /**
+     * Checks anomalies for multiple concepts in bulk.
+     * Iterates over a record of concept-value pairs and detects anomalies.
+     *
+     * @param {Record<string, string>} instanceData - An object where each key is a concept type and each value is the corresponding data value.
+     * @returns {Promise<Record<string, { valid: boolean, warnings: string[] }>>} - A promise that resolves to an object where each key is a concept type
+     * and the value is an object containing `valid` (boolean) and `warnings` (array of warning messages).
+     */
+    static checkAnomalyInBulk(formData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!Anomaly.cacheInitialized) {
+                yield Anomaly.initializeAnomalyParameters();
+            }
+            try {
+                const anomalyResults = {};
+                for (const [typeConcept, instanceData] of Object.entries(formData)) {
+                    const instanceValue = instanceData.value;
+                    const { valid, warnings } = yield new Anomaly().checkConceptAnomaly(typeConcept, instanceValue);
+                    anomalyResults[typeConcept] = { valid, warnings };
+                }
+                return anomalyResults;
+            }
+            catch (error) {
+                console.error("Bulk Anomaly Check Error:", error);
+                throw error;
+            }
+        });
+    }
+}
+/**
+ * Static cache for storing fetched anomaly parameters.
+ * @type {any} - Stores the fetched anomaly parameters from the API.
+ */
+Anomaly.anomalyParamsCache = null;
+/**
+ * Flag indicating if the anomaly parameters cache has been initialized.
+ * @type {boolean} - `true` if the cache is initialized, `false` otherwise.
+ */
+Anomaly.cacheInitialized = false;
+/**
+ * Timestamp indicating the last time the anomaly parameters were fetched.
+ * @type {number} - Time in milliseconds.
+ */
+Anomaly.lastFetchedTime = 0;
+/**
+ * Cache expiry threshold, after which the data will be considered expired.
+ * @type {number} - Cache expiry threshold in milliseconds (default is 10 minutes).
+ */
+Anomaly.cacheExpiryThreshold = 10 * 60 * 1000;
+
+
+/***/ }),
+
 /***/ "./src/Api/Create/CreateTheCharacter.ts":
 /*!**********************************************!*\
   !*** ./src/Api/Create/CreateTheCharacter.ts ***!
@@ -15913,11 +16165,11 @@ function FormatConceptsAndConnectionsNormalList(connections_1, compositionData_1
                         }
                         else {
                             if (linkerConcept.characterValue.includes("_s_")) {
-                                newData[key][linkerConcept.characterValue] = [];
-                                newData[key][linkerConcept.characterValue].push(ofTheConcept.characterValue);
+                                newData[key][reverseCharater] = [];
+                                newData[key][reverseCharater].push(ofTheConcept.characterValue);
                             }
                             else {
-                                newData[key][linkerConcept.characterValue] = ofTheConcept.characterValue;
+                                newData[key][reverseCharater] = ofTheConcept.characterValue;
                             }
                         }
                     }
@@ -15979,7 +16231,7 @@ function FormatConceptsAndConnectionsNormalList(connections_1, compositionData_1
  */
 function FormatFromConnectionsAlteredArrayExternal(connections_1, compositionData_1, mainComposition_1) {
     return __awaiter(this, arguments, void 0, function* (connections, compositionData, mainComposition, reverse = []) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f, _g, _h;
         let startTime = new Date().getTime();
         let mainData = [];
         let myConcepts = [];
@@ -16000,24 +16252,33 @@ function FormatFromConnectionsAlteredArrayExternal(connections_1, compositionDat
             }
             if (reverseFlag == true) {
                 if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
-                    let mydata = compositionData[connections[i].toTheConceptId];
+                    let newData;
                     let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
-                    let newData = mydata === null || mydata === void 0 ? void 0 : mydata.data;
-                    let key = Object.keys(newData)[0];
+                    let key = (_b = (_a = ofTheConcept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "self";
+                    if (connections[i].ofTheConceptId in compositionData) {
+                        newData = compositionData[connections[i].ofTheConceptId];
+                    }
+                    else {
+                        newData = {};
+                        newData[key] = {};
+                        compositionData[connections[i].ofTheConceptId] = newData;
+                    }
                     try {
                         let reverseCharater = linkerConcept.characterValue + "_reverse";
-                        if (typeof newData === "string") {
-                            newData = {};
-                        }
                         if (Array.isArray(newData[key][reverseCharater])) {
                             newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
                         }
                         else {
-                            if (typeof newData[key] === "string") {
-                                newData[key] = {};
-                            }
+                            let mytype = (_d = (_c = ofTheConcept === null || ofTheConcept === void 0 ? void 0 : ofTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "none";
+                            let value = ofTheConcept.characterValue;
+                            let data = {
+                                "id": ofTheConcept.id,
+                                "data": {
+                                    [mytype]: value
+                                }
+                            };
                             newData[key][reverseCharater] = [];
-                            newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
+                            newData[key][reverseCharater].push(data);
                         }
                     }
                     catch (ex) {
@@ -16029,7 +16290,7 @@ function FormatFromConnectionsAlteredArrayExternal(connections_1, compositionDat
                 if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
                     let newData;
                     let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
-                    let key = (_b = (_a = ofTheConcept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "self";
+                    let key = (_f = (_e = ofTheConcept.type) === null || _e === void 0 ? void 0 : _e.characterValue) !== null && _f !== void 0 ? _f : "self";
                     if (connections[i].ofTheConceptId in compositionData) {
                         newData = compositionData[connections[i].ofTheConceptId];
                     }
@@ -16043,12 +16304,12 @@ function FormatFromConnectionsAlteredArrayExternal(connections_1, compositionDat
                             newData[key][linkerConcept.characterValue].push(compositionData[connections[i].toTheConceptId]);
                         }
                         else {
-                            let type = (_d = (_c = toTheConcept === null || toTheConcept === void 0 ? void 0 : toTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "none";
+                            let mytype = (_h = (_g = toTheConcept === null || toTheConcept === void 0 ? void 0 : toTheConcept.type) === null || _g === void 0 ? void 0 : _g.characterValue) !== null && _h !== void 0 ? _h : "none";
                             let value = toTheConcept.characterValue;
                             let data = {
                                 "id": toTheConcept.id,
                                 "data": {
-                                    type: value
+                                    [mytype]: value
                                 }
                             };
                             if (linkerConcept.characterValue.includes("_s_")) {
@@ -17279,6 +17540,242 @@ function ViewInternalData(ids) {
             throw err;
         }
     });
+}
+
+
+/***/ }),
+
+/***/ "./src/Validator/constant.ts":
+/*!***********************************!*\
+  !*** ./src/Validator/constant.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DATA_TYPES_RULES: () => (/* binding */ DATA_TYPES_RULES)
+/* harmony export */ });
+// Data Type Constants
+const DATA_TYPES_RULES = {
+    number: /^\d+(\.\d+)?$/, // Matches integers or decimals
+    text: /^[\s\S]*$/, // Matches any text
+    textOnly: /^[A-Za-z\s]+$/, // Matches only letters and spaces, no numbers or special characters
+    email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // Matches email
+    document: /\.(pdf|docx?|pptx?|xlsx?)$/i, // Matches common document file extensions
+    sound: /\.(mp3|wav|ogg|flac)$/i, // Matches common sound file extensions
+    image: /\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i, // Matches common image file extensions
+    video: /\.(mp4|avi|mov|mkv|flv|webm)$/i, // Matches common video file extensions
+    url: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/, // Matches standard URL format
+    date: /^\d{4}-\d{2}-\d{2}$/, // Matches dates in the format YYYY-MM-DD
+    time: /^(?:[01]\d|2[0-3]):[0-5]\d$/, // Matches 24-hour format times, HH:MM
+    password: /^.{6,}$/, // Matches passwords with at least 6 characters; you can customize as needed
+    ipaddress: /^(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)\.(25[0-5]|2[0-4]\d|[01]?\d\d?)$|^([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4})$/, // Matches IPv4 or IPv6 formats
+    uuid: /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/, // Matches UUID format
+};
+
+
+/***/ }),
+
+/***/ "./src/Validator/utils.ts":
+/*!********************************!*\
+  !*** ./src/Validator/utils.ts ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   createFormFieldData: () => (/* binding */ createFormFieldData)
+/* harmony export */ });
+/**
+ * Utility function to get input field data and attributes
+ * @param fieldName - The Name of the form field.
+ * @returns - An object containing the field's value and constraints (type, maxLength, etc.).
+ */
+const createFormFieldData = (fieldName) => {
+    const inputElements = document.getElementsByName(fieldName);
+    const inputElement = inputElements[0];
+    // Check if the element exists
+    if (!inputElement) {
+        console.warn(`Element with NAME "${fieldName}" not found.`);
+        return {
+            value: null,
+            dataType: null,
+            conceptType: null,
+            maxLength: null,
+            minLength: null,
+            minValue: null,
+            maxValue: null,
+            accept: null,
+            required: false,
+            isUnique: true
+        };
+    }
+    // Check for the `required` and `isUnique` attribute
+    const required = inputElement.hasAttribute('required') || inputElement.getAttribute('data-required') === 'true';
+    const isUnique = inputElement.hasAttribute('isUnique') && inputElement.getAttribute('isUnique') === 'true';
+    // Proceed to gather data if the element exists
+    const data = {
+        value: inputElement.value,
+        dataType: inputElement.getAttribute('data-type'),
+        conceptType: inputElement.getAttribute('concept-type'),
+        maxLength: inputElement.getAttribute('data-maxlength') ? parseInt(inputElement.getAttribute('data-maxlength')) : null,
+        minLength: inputElement.getAttribute('data-minlength') ? parseInt(inputElement.getAttribute('data-minlength')) : null,
+        minValue: inputElement.getAttribute('data-min') ? parseInt(inputElement.getAttribute('data-min')) : null,
+        maxValue: inputElement.getAttribute('data-max') ? parseInt(inputElement.getAttribute('data-max')) : null,
+        accept: inputElement.getAttribute('accept') || null,
+        required: required,
+        isUnique: isUnique
+    };
+    return data;
+};
+
+
+/***/ }),
+
+/***/ "./src/Validator/validator.ts":
+/*!************************************!*\
+  !*** ./src/Validator/validator.ts ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Validator: () => (/* binding */ Validator)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constant */ "./src/Validator/constant.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+class Validator {
+    /**
+     * Checks if a concept with the given type and value is unique.
+     * @param type concept type where to check
+     * @param value value to check
+     * @returns boolean indicating uniqueness
+     */
+    checkUniqueness(type, value) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Ensure 'the_' is at the start of the type
+            if (!type.startsWith('the_')) {
+                type = 'the_' + type;
+            }
+            const sessionId = 999;
+            const sessionUserId = 999;
+            const userId = 999;
+            // Create the type concept based on session data
+            let type_concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheTypeConcept)(type, sessionId, sessionUserId, userId);
+            let type_concept_id = type_concept.id;
+            // Check if the concept exists for the provided value and type_concept_id
+            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterAndType)(value, type_concept_id);
+            if (!concept || !concept.id) {
+                return true;
+            }
+            return false;
+        });
+    }
+    /**
+     * Validates a single form field based on its data type, constraints, and uniqueness.
+     * @param fieldName - The name of the field being validated (e.g., "email", "phone").
+     * @param dataType - The expected data type for the field (e.g., "text", "number").
+     * @param value - The value of the field to validate.
+     * @param conceptType - The concept type used for uniqueness check.
+     * @param maxLength - The maximum allowed length for the field value.
+     * @param minLength - The minimum allowed length for the field value.
+     * @param minValue - The minimum allowed value for the field (for numeric fields).
+     * @param maxValue - The maximum allowed value for the field (for numeric fields).
+     * @param accept - The 'accept' attribute value for file inputs.
+     * @param file - The file input (if any), used for file type validation.
+     * @param required - Whether the field is required.
+     * @param isUnique - Whether the field value should be unique.
+     * @returns An array of error messages if validation fails, or an empty array if the field is valid.
+     */
+    validateField(fieldName_1, dataType_1, value_1, conceptType_1, maxLength_1, minLength_1, minValue_1, maxValue_1, accept_1, file_1, required_1) {
+        return __awaiter(this, arguments, void 0, function* (fieldName, dataType, value, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique = false // Optional parameter for uniqueness check
+        ) {
+            var _a;
+            const errors = [];
+            // 1. Validate required field (must not be empty)
+            if (required && (value === null || value === '')) {
+                errors.push(`${fieldName} is required`);
+            }
+            // 2. Validate using regex pattern for the data type
+            if (dataType && value) {
+                const pattern = _constant__WEBPACK_IMPORTED_MODULE_1__.DATA_TYPES_RULES[dataType];
+                if (pattern && value !== '' && !pattern.test(value)) {
+                    errors.push(`Invalid format for ${dataType} in ${fieldName}`);
+                }
+            }
+            // 3. Validate maxLength
+            if (value && maxLength !== null && value.length > maxLength) {
+                errors.push(`${fieldName} exceeds the maximum length of ${maxLength}`);
+            }
+            // 4. Validate minLength
+            if (value && minLength !== null && value.length < minLength) {
+                errors.push(`${fieldName} must be at least ${minLength} characters long`);
+            }
+            // 5. Validate minValue (only for numeric fields)
+            if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
+                errors.push(`${fieldName} must be greater than or equal to ${minValue}`);
+            }
+            // 6. Validate maxValue (only for numeric fields)
+            if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
+                errors.push(`${fieldName} must be less than or equal to ${maxValue}`);
+            }
+            // 7. File validation: Check if this is a file input
+            if (dataType === 'file' && file) {
+                if (accept) {
+                    const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
+                    const fileExtension = (_a = file.name.split('.').pop()) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+                    if (fileExtension && !acceptedTypes.includes(fileExtension)) {
+                        errors.push(`${fieldName} must be a valid file type: ${acceptedTypes.join(', ')}`);
+                    }
+                }
+            }
+            // 8. Check if the field needs to be unique and perform uniqueness validation
+            if (conceptType && isUnique && value) {
+                const isUniqueValue = yield this.checkUniqueness(conceptType, value);
+                if (!isUniqueValue) {
+                    errors.push(`${fieldName} is not unique`);
+                }
+            }
+            return errors;
+        });
+    }
+    /**
+     * Validates all form fields by iterating over the provided form data.
+     * It checks each field's value, data type, and constraints, collecting errors where necessary.
+     *
+     * @param formData - An object representing the form data, where each key is a field name
+     *                   and each value is an object containing the `value`, `dataType`, and constraints (e.g., `maxLength`, `minLength`).
+     *
+     * @returns An object containing validation errors for fields that failed validation.
+     *          If no errors exist, the object will be empty.
+     */
+    validateForm(formData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const validationErrors = {};
+            // Iterate through the fields in the form data
+            for (const fieldName in formData) {
+                const { value, dataType, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
+                // Call the validateField function to validate each field
+                const fieldErrors = yield this.validateField(fieldName, dataType, value, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique);
+                // If there are errors, add them to the errors object
+                if (fieldErrors.length > 0) {
+                    validationErrors[fieldName] = fieldErrors;
+                }
+            }
+            return validationErrors;
+        });
+    }
 }
 
 
@@ -18552,6 +19049,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ADMIN: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__.ADMIN),
 /* harmony export */   ALLID: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.ALLID),
 /* harmony export */   AddGhostConcept: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_50__.AddGhostConcept),
+/* harmony export */   Anomaly: () => (/* reexport safe */ _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_102__.Anomaly),
 /* harmony export */   BaseUrl: () => (/* reexport safe */ _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl),
 /* harmony export */   BinaryTree: () => (/* reexport safe */ _DataStructures_BinaryTree__WEBPACK_IMPORTED_MODULE_83__.BinaryTree),
 /* harmony export */   Composition: () => (/* reexport safe */ _DataStructures_Composition_Composition__WEBPACK_IMPORTED_MODULE_87__.Composition),
@@ -18580,13 +19078,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   DeleteConceptById: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__.DeleteConceptById),
 /* harmony export */   DeleteConceptLocal: () => (/* reexport safe */ _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_61__.DeleteConceptLocal),
 /* harmony export */   DeleteConnectionById: () => (/* reexport safe */ _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_25__.DeleteConnectionById),
-/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_103__.DeleteConnectionByType),
+/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_106__.DeleteConnectionByType),
 /* harmony export */   DependencyObserver: () => (/* reexport safe */ _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_68__.DependencyObserver),
 /* harmony export */   FilterSearch: () => (/* reexport safe */ _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_92__.FilterSearch),
 /* harmony export */   FormatFromConnections: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnections),
 /* harmony export */   FormatFromConnectionsAltered: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnectionsAltered),
-/* harmony export */   FreeschemaQuery: () => (/* reexport safe */ _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_104__.FreeschemaQuery),
-/* harmony export */   FreeschemaQueryApi: () => (/* reexport safe */ _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_105__.FreeschemaQueryApi),
+/* harmony export */   FreeschemaQuery: () => (/* reexport safe */ _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_107__.FreeschemaQuery),
+/* harmony export */   FreeschemaQueryApi: () => (/* reexport safe */ _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_108__.FreeschemaQueryApi),
 /* harmony export */   GetAllConnectionsOfComposition: () => (/* reexport safe */ _Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_6__.GetAllConnectionsOfComposition),
 /* harmony export */   GetAllConnectionsOfCompositionBulk: () => (/* reexport safe */ _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_33__.GetAllConnectionsOfCompositionBulk),
 /* harmony export */   GetComposition: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetComposition),
@@ -18658,7 +19156,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   RecursiveSearchApiRaw: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRaw),
 /* harmony export */   RecursiveSearchApiRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRawFullLinker),
 /* harmony export */   RecursiveSearchListener: () => (/* reexport safe */ _WrapperFunctions_RecursiveSearchObservable__WEBPACK_IMPORTED_MODULE_74__.RecursiveSearchListener),
-/* harmony export */   SchemaQueryListener: () => (/* reexport safe */ _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_106__.SchemaQueryListener),
+/* harmony export */   SchemaQueryListener: () => (/* reexport safe */ _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_109__.SchemaQueryListener),
 /* harmony export */   SearchAllConcepts: () => (/* reexport safe */ _Api_Search_Search__WEBPACK_IMPORTED_MODULE_39__.SearchAllConcepts),
 /* harmony export */   SearchLinkInternal: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternal),
 /* harmony export */   SearchLinkInternalAll: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternalAll),
@@ -18674,16 +19172,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Signin: () => (/* reexport safe */ _Api_Signin__WEBPACK_IMPORTED_MODULE_37__["default"]),
 /* harmony export */   Signup: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_36__["default"]),
 /* harmony export */   SplitStrings: () => (/* reexport safe */ _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_3__.SplitStrings),
-/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_102__.StatefulWidget),
+/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_105__.StatefulWidget),
 /* harmony export */   SyncData: () => (/* reexport safe */ _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_76__.SyncData),
 /* harmony export */   TrashTheConcept: () => (/* reexport safe */ _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_26__.TrashTheConcept),
 /* harmony export */   UpdateComposition: () => (/* reexport safe */ _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_38__["default"]),
 /* harmony export */   UpdateCompositionLocal: () => (/* reexport safe */ _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_53__.UpdateCompositionLocal),
 /* harmony export */   UserBinaryTree: () => (/* reexport safe */ _DataStructures_User_UserBinaryTree__WEBPACK_IMPORTED_MODULE_91__.UserBinaryTree),
+/* harmony export */   Validator: () => (/* reexport safe */ _Validator_validator__WEBPACK_IMPORTED_MODULE_103__.Validator),
 /* harmony export */   ViewInternalData: () => (/* reexport safe */ _Services_View_ViewInternalData__WEBPACK_IMPORTED_MODULE_56__.ViewInternalData),
 /* harmony export */   ViewInternalDataApi: () => (/* reexport safe */ _Api_View_ViewInternalDataApi__WEBPACK_IMPORTED_MODULE_57__.ViewInternalDataApi),
 /* harmony export */   convertFromConceptToLConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromConceptToLConcept),
 /* harmony export */   convertFromLConceptToConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromLConceptToConcept),
+/* harmony export */   createFormFieldData: () => (/* reexport safe */ _Validator_utils__WEBPACK_IMPORTED_MODULE_104__.createFormFieldData),
 /* harmony export */   dispatchIdEvent: () => (/* binding */ dispatchIdEvent),
 /* harmony export */   getFromDatabaseWithType: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getFromDatabaseWithType),
 /* harmony export */   getObjectsFromIndexDb: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getObjectsFromIndexDb),
@@ -18799,11 +19299,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__ = __webpack_require__(/*! ./DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
 /* harmony import */ var _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__ = __webpack_require__(/*! ./Constants/general.const */ "./src/Constants/general.const.ts");
 /* harmony import */ var _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Services/Transaction/LocalTransaction */ "./src/Services/Transaction/LocalTransaction.ts");
-/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
-/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
-/* harmony import */ var _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./DataStructures/Search/FreeschemaQuery */ "./src/DataStructures/Search/FreeschemaQuery.ts");
-/* harmony import */ var _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_105__ = __webpack_require__(/*! ./Api/Search/FreeschemaQueryApi */ "./src/Api/Search/FreeschemaQueryApi.ts");
-/* harmony import */ var _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_106__ = __webpack_require__(/*! ./WrapperFunctions/SchemaQueryObservable */ "./src/WrapperFunctions/SchemaQueryObservable.ts");
+/* harmony import */ var _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Anomaly/anomaly */ "./src/Anomaly/anomaly.ts");
+/* harmony import */ var _Validator_validator__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Validator/validator */ "./src/Validator/validator.ts");
+/* harmony import */ var _Validator_utils__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./Validator/utils */ "./src/Validator/utils.ts");
+/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_105__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
+/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_106__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
+/* harmony import */ var _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_107__ = __webpack_require__(/*! ./DataStructures/Search/FreeschemaQuery */ "./src/DataStructures/Search/FreeschemaQuery.ts");
+/* harmony import */ var _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_108__ = __webpack_require__(/*! ./Api/Search/FreeschemaQueryApi */ "./src/Api/Search/FreeschemaQueryApi.ts");
+/* harmony import */ var _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_109__ = __webpack_require__(/*! ./WrapperFunctions/SchemaQueryObservable */ "./src/WrapperFunctions/SchemaQueryObservable.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -18813,6 +19316,9 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
+
+
 
 
 

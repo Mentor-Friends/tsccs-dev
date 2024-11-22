@@ -35,6 +35,7 @@ export {GetCompositionBulkWithDataId,GetCompositionBulk,GetCompositionFromConnec
 export { GetConceptBulk } from './Api/GetConceptBulk';
 export { GetConnectionBulk } from './Api/GetConnectionBulk';
 export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
+
 export { LoginToBackend } from './Api/Login';
 export {GetConnectionOfTheConcept} from './Api/GetConnectionOfTheConcept';
 export  {default as Signup} from  './Api/Signup';
@@ -113,6 +114,9 @@ import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
+export { Anomaly } from './Anomaly/anomaly';
+export { Validator } from './Validator/validator';
+export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
