@@ -1,6 +1,0 @@
-import { Concept } from "../../DataStructures/Concept";
-import { Connection } from "../../app";
-export declare function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[]): Promise<{
-    concepts: never[];
-    connections: never[];
-}>;

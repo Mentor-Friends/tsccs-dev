@@ -53,11 +53,11 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
               }
               else{
                 if(linkerConcept.characterValue.includes("_s_")){
-                  newData[key][linkerConcept.characterValue] = [];
-                  newData[key][linkerConcept.characterValue].push(ofTheConcept.characterValue);
+                  newData[key][reverseCharater] = [];
+                  newData[key][reverseCharater].push(ofTheConcept.characterValue);
                 }
                 else{
-                  newData[key][linkerConcept.characterValue] = ofTheConcept.characterValue;
+                  newData[key][reverseCharater] = ofTheConcept.characterValue;
                 }
               }
   
@@ -154,25 +154,36 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       if(reverseFlag == true){
   
         if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-          let mydata = compositionData[connections[i].toTheConceptId];
+          let newData: any;
           let linkerConcept = await GetTheConcept(connections[i].typeId);
-          let newData = mydata?.data;
-          let key = Object.keys(newData)[0];
+          let key = ofTheConcept.type?.characterValue ?? "self";
+  
+          if(connections[i].ofTheConceptId in compositionData){
+            newData = compositionData[connections[i].ofTheConceptId]
+          }
+          else{
+            newData = {};
+            newData[key] = {};
+            compositionData[connections[i].ofTheConceptId] = newData;
+          }
           try{
             let reverseCharater = linkerConcept.characterValue + "_reverse";
-            if(typeof newData === "string"){
-              newData = {};
-            }
               if(Array.isArray(newData[key][reverseCharater])){
                 newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
               }
               else{
-                if(typeof newData[key] === "string"){
-                  
-                  newData[key] = {};
+                let mytype = ofTheConcept?.type?.characterValue ?? "none";
+                let value = ofTheConcept.characterValue;
+                let data = {
+                    "id": ofTheConcept.id,
+                    "data": {
+                        [mytype] : value
+                    }
                 }
                 newData[key][reverseCharater] = [];
-                newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
+                newData[key][reverseCharater].push(data);
+
+
               }
   
     
@@ -203,12 +214,12 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
                 newData[key][linkerConcept.characterValue].push(compositionData[connections[i].toTheConceptId]);
               }
               else{
-                let type = toTheConcept?.type?.characterValue ?? "none";
+                let mytype = toTheConcept?.type?.characterValue ?? "none";
                 let value = toTheConcept.characterValue;
                 let data = {
                     "id": toTheConcept.id,
                     "data": {
-                        type : value
+                        [mytype] : value
                     }
                 }
                 if(linkerConcept.characterValue.includes("_s_")){

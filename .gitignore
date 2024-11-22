@@ -1,7 +1,8 @@
 node_modules/
 
 dist/bundle.js
-dist/types
+dist/bundle.js.map
+dist/types/
 .vscode
 .env
 .env.development
