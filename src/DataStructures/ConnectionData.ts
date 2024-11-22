@@ -168,7 +168,6 @@ export class ConnectionData{
         let connectionIds: number [] = [];
         let connections: Connection[] = [];
         connectionIds = ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
-        console.log("this is the id", connectionIds);
 
         for(let i=0; i< connectionIds.length; i++){
             let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);

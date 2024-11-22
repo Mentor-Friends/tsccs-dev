@@ -72,7 +72,7 @@ export {GetCompositionWithIdAndDateFromMemory} from './Services/GetComposition';
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
-export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW} from './Constants/FormatConstants';
+export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL} from './Constants/FormatConstants';
 export {PRIVATE , PUBLIC , ADMIN} from './Constants/AccessConstants';
 export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
 export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
@@ -116,7 +116,9 @@ export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
-
+export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
+export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
+export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.

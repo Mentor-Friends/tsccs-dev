@@ -1,4 +1,4 @@
-import { Connection, ConnectionData, DATAID, GetConceptByCharacter, NORMAL, SearchQuery, SearchStructure, SearchWithTypeAndLinker, SearchWithTypeAndLinkerApi } from "../app";
+import { Connection, ConnectionData, DATAID, GetConceptBulk, GetConceptByCharacter, NORMAL, SearchQuery, SearchStructure, SearchWithTypeAndLinker, SearchWithTypeAndLinkerApi } from "../app";
 import { ConnectionOfNode } from "../DataStructures/ConnectionBinaryTree/ConnectionOfNode";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 import { formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
@@ -32,7 +32,6 @@ export class GetLinkListObservable extends DependencyObserver{
                 if(!this.isUpdating){
                     this.isUpdating = true;
                     let that = this;
-                    console.log("listening to event type", event);
                     setTimeout( async function(){
                         let myEvent = event as CustomEvent;
                         if(!that.mainCompositionIds.includes(myEvent?.detail)){
@@ -40,7 +39,6 @@ export class GetLinkListObservable extends DependencyObserver{
                             that.conceptIds.push(myEvent?.detail);
                             that.listenToEvent(myEvent?.detail);
                             ConnectionData.GetConnectionsOfConcept(myEvent?.detail).then((connectionList: Connection[])=>{
-                                console.log("this is the update", connectionList);
                                 for(let i=0;i < connectionList.length; i++){
                                     that.linkers.push(connectionList[i].id);
                                 }
@@ -82,6 +80,8 @@ export class GetLinkListObservable extends DependencyObserver{
 
 
     async build(){
+    await GetConceptBulk(this.conceptIds);
+
         if(this.format == DATAID){
             this.data = await formatDataArrayDataId(this.linkers, this.conceptIds, this.internalConnections, this.mainCompositionIds, this.reverse);
         }
