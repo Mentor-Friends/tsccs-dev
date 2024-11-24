@@ -1,20 +1,33 @@
 import { GetAiData } from "../Api/GetAiData";
-import { GetAllPrefetchConnections } from "../Api/GetAllPrefetchConnections";
-import { BinaryTree } from "../DataStructures/BinaryTree";
 import { SettingData } from "../DataStructures/SettingData";
 import { Settings } from "../DataStructures/Settings";
-import { AiUpdateFlag, GetStatsFromDatabase } from "../Database/indexeddb";
+import { AiUpdateFlag, GetLastSettingsFromDatabase, openDatabase } from "../Database/indexeddb";
+import { openDatabase as localopenDb} from '../Database/indexdblocal';
 
-export default async function InitializeSystem(){
-    var statsData = await GetStatsFromDatabase();
-    var settings = statsData as SettingData;
-    if(!settings.isOnlineSync){
-        console.log("prefetching");
-       // await GetAllPrefetchConnections(10267,2000);
-        await GetAiData();
-        console.log("this is the binary data", BinaryTree.root);
+export default async function InitializeSystem(enableAi: boolean = true){
+    try{
+        await openDatabase("concepts");
+        await localopenDb("concepts");
+        if(enableAi){
+            var statsData = await GetLastSettingsFromDatabase();
+            var settings = statsData as SettingData;
+            if(settings.isOnlineSync){
+                return true;
+            }
+            await GetAiData();
+    
+        }
+
+        return true;
     }
-    else{
+    catch(error){
+        let errorObject = {
+            "message" : "cannot initlize the AI system",
+            "ok": false,
+            "status": 400,
+            "data": error
+        }
+        console.log(errorObject);
         return true;
     }
 

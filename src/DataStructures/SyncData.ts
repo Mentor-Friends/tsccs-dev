@@ -24,7 +24,6 @@ export class SyncData{
     static SyncDataDelete(id:number){
         for(var i=0; i< this.conceptsSyncArray.length;i++){
             if(id == this.conceptsSyncArray[i].id){
-                console.log("this is the deleting of ", this.conceptsSyncArray[i]);
                 this.conceptsSyncArray.splice(i, 1);
             }
         }
@@ -76,7 +75,6 @@ export class SyncData{
      }
 
      static async  SyncDataOnline(){
-
         for(let i=0;i<this.conceptsSyncArray.length;i++){
             ConceptsData.AddConcept(this.conceptsSyncArray[i]);
         }
@@ -86,13 +84,18 @@ export class SyncData{
         }
         
         if(this.conceptsSyncArray.length > 0){
-             CreateTheConceptApi(this.conceptsSyncArray);
+            let conceptsArray = this.conceptsSyncArray.slice();
             this.conceptsSyncArray = [];
+            CreateTheConceptApi(conceptsArray);
         }
          if(this.connectionSyncArray.length > 0){
 
-            await CreateTheConnectionApi(this.connectionSyncArray);
+            // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
+            //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
+            // }
+            let connectionsArray = this.connectionSyncArray.slice();
             this.connectionSyncArray = [];
+            await CreateTheConnectionApi(connectionsArray);
         }
         return "done";
 
@@ -110,7 +113,6 @@ export class SyncData{
                 storeToDatabase("localconnection",this.connectionSyncArray[i]);
             }
          this.connectionSyncArray = [];
-         console.log(this.connectionSyncArray);
         }
         return "done";
      }

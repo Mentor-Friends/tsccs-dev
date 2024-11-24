@@ -4,7 +4,10 @@ import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { CreateDefaultConcept } from "../../app";
+import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheConceptApi(conceptData: any){
+  let result = CreateDefaultConcept();
     try{
             var header = GetRequestHeader();
             const response = await fetch(BaseUrl.CreateTheConceptUrl(),{
@@ -13,20 +16,20 @@ export async function CreateTheConceptApi(conceptData: any){
                 body: JSON.stringify(conceptData),
             });
             if(!response.ok){
+                HandleHttpError(response);
                 throw new Error(`Error! status: ${response.status}`);
             }
              const resultString = await response.json();
-            const result = resultString as Concept;
+            result = resultString as Concept;
 
             return result;
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Create the concept api error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('Create the concept api unexpected error: ', error);
         }
+        HandleInternalError(error, BaseUrl.CreateTheConceptUrl());
       }
 }

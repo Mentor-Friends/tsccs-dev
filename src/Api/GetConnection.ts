@@ -3,27 +3,32 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { Connection } from "../DataStructures/Connection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 export async function GetConnection(id: number){
-    try{
-        var connectionUse :Connection= await ConnectionData.GetConnection(id);
-        if(connectionUse.id != 0){
+    let result :Connection= await ConnectionData.GetConnection(id);
 
-            return connectionUse;
+    try{
+        if(result.id != 0){
+
+            return result;
         }
         else{
-            var header = GetRequestHeader('application/x-www-form-urlencoded')
+            let header = GetRequestHeader('application/x-www-form-urlencoded')
+            const formdata = new FormData();
+            formdata.append("id", id.toString());
             const response = await fetch(BaseUrl.GetConnectionUrl(),{
                 method: 'POST',
                 headers: header,
-                body: `id=${id}`
+                body: formdata
             });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
+            if(response.ok){
+                result = await response.json() as Connection;
+                ConnectionData.AddConnection(result);
             }
-
-            const result = await response.json() as Connection;
-            ConnectionData.AddConnection(result);
-            console.log("this is the connection added", result);
+            else{
+                HandleHttpError(response);
+                console.log("Get Connection Error", response.status);
+            }
             return result;
             
 
@@ -31,11 +36,10 @@ export async function GetConnection(id: number){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Get Connection error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('Get Connection unexpected error: ', error);
         }
+        HandleInternalError(error, BaseUrl.GetConnectionUrl());
       }
 }

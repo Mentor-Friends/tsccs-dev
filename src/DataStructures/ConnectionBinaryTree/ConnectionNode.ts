@@ -17,6 +17,8 @@ export class ConnectionNode{
         this.currentNode = null;
     }
 
+
+
     public addCurrentNode(passedNode:ConnectionNode, node:ConnectionNode|null){
         if(node == null){
             node = passedNode;
@@ -33,7 +35,10 @@ export class ConnectionNode{
             node = passedNode;
             return node;
         }
-        var contains = false;
+        let contains = false;
+        if(passedNode.value.id == node.value.id){
+            contains = true;
+        }
         for(let i=0; i<node.variants.length; i++){
             if(node.variants[i].value.id == passedNode.value.id){
                 contains = true;
@@ -52,8 +57,8 @@ export class ConnectionNode{
             return node;
         }
 
-        var LeftNode = node.leftNode;
-        var RightNode = node.rightNode;
+        let LeftNode = node.leftNode;
+        let RightNode = node.rightNode;
 
         if(node.key > passedNode.key){
             node.leftNode = this.addNode(passedNode,LeftNode,height);
@@ -103,7 +108,7 @@ export class ConnectionNode{
 
 
     public addTypeNode(passedNode:ConnectionNode, node:ConnectionNode|null, height:number){
-        var debugFlag = false;
+        let debugFlag = false;
         if(passedNode.value.typeId != 0){
 
             // if(passedNode.value.characterValue == "Default"){
@@ -119,8 +124,8 @@ export class ConnectionNode{
             return node;
         }
 
-        var LeftNode = node.leftNode;
-        var RightNode = node.rightNode;
+        let LeftNode = node.leftNode;
+        let RightNode = node.rightNode;
 
         if(node.key > passedNode.key){
             if(debugFlag){
@@ -158,7 +163,7 @@ export class ConnectionNode{
         if(balancingFactor > 1){
             if(node.leftNode){
                 if(passedNode.key < node.leftNode.key){
-                   var returner =  this.rightRotate(node);
+                    let returner =  this.rightRotate(node);
                    if(debugFlag){
                     console.log("returning here 1 ",returner);
                    }
@@ -166,7 +171,7 @@ export class ConnectionNode{
                 }
                 else if(passedNode.key > node.leftNode.key){
                     node.leftNode = this.leftRotate(node.leftNode);
-                    var returner =  this.rightRotate(node);
+                    let returner =  this.rightRotate(node);
                     if(debugFlag){
                         console.log("returning here 2 ",returner);
                     }
@@ -180,7 +185,7 @@ export class ConnectionNode{
             if(node.rightNode){
                 if(passedNode.key > node.rightNode.key){
 
-                    var returner =  this.leftRotate(node);
+                    let returner =  this.leftRotate(node);
                     if(debugFlag){
                         console.log("returning here 3 ",returner);
                     }
@@ -188,7 +193,7 @@ export class ConnectionNode{
                 }
                 else if (passedNode.key < node.rightNode.key){
                     node.rightNode = this.rightRotate(node.rightNode);
-                    var returner = this.leftRotate(node);
+                    let returner = this.leftRotate(node);
                     if(debugFlag){
                         console.log("returning here4 ",returner, node);
 
@@ -267,6 +272,12 @@ export class ConnectionNode{
     public getFromNode(id: number, node: ConnectionNode | null) :ConnectionNode | null{
         if(node){
             if(id == node.key){
+                if(node.value.count){
+                    node.value.count++ ;
+                }
+                else{
+                    node.value.count = 1;
+                }
                 return node;
             }
             else if(id < node.key){
@@ -298,6 +309,42 @@ export class ConnectionNode{
 
     }
 
+    public checkIfIdsInNode(node: ConnectionNode | null, ids: number[], connectionArray: Connection[], remainingIds: any){
+        if(node){
+            if(ids.includes(node.key)){
+                connectionArray.push(node.value);
+                //remainingIds[node.key] = true;
+                let index = ids.indexOf(node.key);
+                ids.splice(index, 1);
+
+            }
+            if(node.leftNode){
+                this.checkIfIdsInNode(node.leftNode, ids, connectionArray, remainingIds);
+
+            }
+            if(node.rightNode){
+                this.checkIfIdsInNode(node.rightNode, ids, connectionArray, remainingIds);
+
+            }
+        }
+    }
+
+    public traverse(node: ConnectionNode|null){
+        let count = 0;
+        if(node){
+            count = count + 1;
+            if(node?.leftNode){
+              count +=  this.traverse(node.leftNode);
+            }
+            if(node.rightNode){
+              count +=  this.traverse(node.rightNode);
+            }
+
+        }
+        return count ;
+
+    }
+
 
     public removeNode(passedNode:ConnectionNode|null,id:number){
         if(passedNode == null){
@@ -316,7 +363,7 @@ export class ConnectionNode{
         //     if(passedNode.value.id == id ){
 
         //     }
-        //     var newNode = passedNode.variants[0];
+        //     let newNode = passedNode.variants[0];
         //     if(newNode){
         //         passedNode.value = newNode.value;
         //         passedNode.key = newNode.key;
@@ -325,7 +372,11 @@ export class ConnectionNode{
 
         //     }
         // }
-
+        /**
+         * This is dispatched incase the connection is deleted and others are listening
+         */
+        let event = new Event(`${passedNode.value.ofTheConceptId}`);
+        dispatchEvent(event);
         if(passedNode.leftNode == null){
             let temp = passedNode.rightNode;
             passedNode = null;
@@ -338,7 +389,7 @@ export class ConnectionNode{
         }
         else{                
             // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
-            var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
+            let immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
             passedNode.value = immediateSuccessor.value;
             passedNode.key = immediateSuccessor.key;
             passedNode.variants = immediateSuccessor.variants;
@@ -364,10 +415,9 @@ public removeNodeWithVariants(passedNode:ConnectionNode|null,typeIdentifier:any,
     }
 
     if(passedNode.variants.length > 0){
-
         //condition if the main node is equal to the value
         if(passedNode.value.id == conceptId ){
-            var newNode = passedNode.variants[0];
+            let newNode = passedNode.variants[0];
             if(newNode){
                 passedNode.value = newNode.value;
                 passedNode.key = newNode.key;
@@ -402,7 +452,7 @@ public removeNodeWithVariants(passedNode:ConnectionNode|null,typeIdentifier:any,
     }
     else{                
         // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
-        var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
+        let immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
         passedNode.value = immediateSuccessor.value;
         passedNode.key = immediateSuccessor.key;
         passedNode.variants = immediateSuccessor.variants;

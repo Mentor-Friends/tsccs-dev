@@ -1,288 +1,275 @@
 export {init, updateAccessToken};
 
-import { SyncData } from './DataStructures/SyncData';
-import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
-import {CreateCharacterBinaryTreeFromData} from './Services/CreateCharacterBinaryTreeFromData';
+import CreateConceptBinaryTreeFromIndexDb from './Services/CreateBinaryTreeFromData';
 
 import { IdentifierFlags } from './DataStructures/IdentifierFlags';
-
+export {SearchLinkMultipleApi} from './Api/Search/SearchLinkMultipleApi';
 export { SplitStrings} from './Services/SplitStrings'; 
 export { GetCompositionList,GetCompositionListWithId }  from './Services/GetCompositionList';
 export { GetCompositionListLocal, GetCompositionListLocalWithId} from './Services/Local/GetCompositionListLocal';
 export {GetAllConnectionsOfComposition} from './Api/GetAllConnectionsOfComposition';
-export {GetComposition,GetCompositionWithId} from './Services/GetComposition';
+export {GetComposition,GetCompositionWithId, recursiveFetch,GetCompositionWithAllIds} from './Services/GetComposition';
 export {GetCompositionLocal, GetCompositionLocalWithId} from './Services/Local/GetCompositionLocal';
 export {default as CreateComposition} from './Services/CreateTheComposition';
 export { CreateTheCompositionLocal } from './Services/Local/CreateTheCompositionLocal';
-export {CreateConnectionBetweenTwoConcepts} from './Services/CreateConnectionBetweenTwoConcepts';
+export {CreateConnectionBetweenTwoConcepts,CreateConnectionBetweenTwoConceptsGeneral} from './Services/CreateConnectionBetweenTwoConcepts';
 export { default as GetTheConcept} from './Services/GetTheConcept';
 export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
 export { MakeTheInstanceConceptLocal} from './Services/Local/MakeTheInstanceConceptLocal';
-export { storeToDatabase,getFromDatabaseWithType,getFromDatabaseWithTypeOld } from './Database/indexeddb';
-export {default as CreateTheConnection} from './Services/CreateTheConnection';
+export { storeToDatabase,getFromDatabaseWithType,getObjectsFromIndexDb } from './Database/NoIndexDb';
+export { createTheConnection as CreateTheConnection} from './Services/CreateTheConnection';
 export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
-export { GetLink } from './Services/GetLink';
-export { GetLinkerConnectionFromConcepts} from './Services/GetLinkerConnectionFromConcept';
+export { GetLink,GetLinkRaw } from './Services/GetLink';
+export {CreateDefaultConcept} from './Services/CreateDefaultConcept';
+export { MakeTheTypeConceptLocal} from './Services/Local/MakeTheTypeLocal';
+export {MakeTheTypeConcept} from './Services/MakeTheTypeConcept';
+export {MakeTheTypeConceptApi} from './Api/MakeTheTypeConceptApi';
+export { GetLinkerConnectionFromConcepts, GetLinkerConnectionToConcepts} from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
 export { DeleteConnectionById } from './Services/DeleteConnection';
+export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend'
 export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
-export {RecursiveSearchApi} from './Api/RecursiveSearch';
-export {GetCompositionBulkWithDataId,GetCompositionBulk} from './Services/GetCompositionBulk';
-export {GetConceptBulk} from './Api/GetConceptBulk';
+export {RecursiveSearchApi, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker,RecursiveSearchApiNewRawFullLinker} from './Api/RecursiveSearch';
+export {GetCompositionBulkWithDataId,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
+export { GetConceptBulk } from './Api/GetConceptBulk';
+export { GetConnectionBulk } from './Api/GetConnectionBulk';
+export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
 
 export { LoginToBackend } from './Api/Login';
-
+export {GetConnectionOfTheConcept} from './Api/GetConnectionOfTheConcept';
+export  {default as Signup} from  './Api/Signup';
+export { default as Signin} from './Api/Signin';
+export { default as UpdateComposition} from './Services/UpdateComposition';
+export {SearchAllConcepts} from './Api/Search/Search';
+export {SearchWithLinker} from './Api/Search/SearchWithLinker';
+export {GetCompositionWithCache, GetCompositionWithDataIdWithCache, GetCompositionWithDataIdBulk} from './Services/Composition/CompositionCache';
+export {CreateSession} from './Api/Session/CreateSession';
+export {CreateSessionVisit} from './Api/Session/CreateSessionVisit';
 export {  } from './Api/GetConceptByCharacterAndType';
-
+export {GetRelation, GetRelationRaw} from './Services/GetRelation';
+export { recursiveFetchNew} from './Services/Composition/BuildComposition'
+export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
+export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
+export { CreateTheConnectionGeneral} from './Services/CreateTheConnectionGeneral';
+export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLocal';
+export { GetCompositionListAll, GetCompositionListAllWithId,GetCompositionListWithIdUpdated } from './Services/GetCompositionList';
+export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
+export {SearchLinkMultipleAll,FormatFromConnections} from './Services/Search/SearchLinkMultiple';
+export {GetTheConceptLocal} from './Services/Local/GetTheConceptLocal';
+export {UpdateCompositionLocal} from './Services/Local/UpdateCompositionLocal';
+export {GetCompositionFromConnectionsWithDataIdInObject,GetCompositionFromConnectionsWithIndex,GetCompositionFromConnectionsWithDataIdIndex} from './Services/GetCompositionBulk';
+export {GetRelationLocal} from './Services/Local/GetRelationLocal';
+export {GetConceptByCharacterAndCategoryLocal} from './Services/Local/GetConceptByCharacterLocal'; 
+export {ViewInternalData} from './Services/View/ViewInternalData';
+export {ViewInternalDataApi} from './Api/View/ViewInternalDataApi';
+export {convertFromLConceptToConcept, convertFromConceptToLConcept} from './Services/Conversion/ConvertConcepts';
+export {SearchLinkInternal,SearchLinkInternalAll} from './Services/Search/SearchLinkInternal';
+export {CreateConnectionBetweenTwoConceptsLocal} from './Services/Local/CreateConnectionBetweenTwoConceptsLocal';
+export {DeleteConceptLocal} from './Services/Local/DeleteConceptLocal';
+export {GetConnectionBetweenTwoConceptsLinker} from './Services/GetConnectionBetweenTwoConceptsLinker';
+export {DelayFunctionExecution} from './Services/Common/DelayFunction';
+export {GetCompositionWithIdAndDateFromMemory} from './Services/GetComposition';
+export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
+export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
+export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
+export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL} from './Constants/FormatConstants';
+export {PRIVATE , PUBLIC , ADMIN} from './Constants/AccessConstants';
+export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
+export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
+export {SearchLinkMultipleAllObservable, searchLinkMultipleListener} from './WrapperFunctions/SearchLinkMultipleAllObservable';
+export {GetCompositionListener} from './WrapperFunctions/GetCompositionObservable';
+export {GetCompositionListListener} from './WrapperFunctions/GetCompositionListObservable';
+export {SearchWithTypeAndLinker} from './Services/Search/SearchWithTypeAndLinker';
+export {GetLinkListener} from './WrapperFunctions/GetLinkObservable';
+export {RecursiveSearchListener} from './WrapperFunctions/RecursiveSearchObservable'
+export {GetLinkListListener} from './WrapperFunctions/GetLinkListObservable';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
+export {LConcept} from './DataStructures/Local/LConcept';
+export {LConnection} from './DataStructures/Local/LConnection';
+export {Connection} from './DataStructures/Connection';
 export {ConceptsData} from './DataStructures/ConceptData';
 export { ConnectionData } from './DataStructures/ConnectionData';
-
-import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
-import { BinaryTree } from './DataStructures/BinaryTree';
-import { BinaryCharacterTree } from './DataStructures/BinaryCharacterTree';
-import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';
-import { LocalBinaryTree } from './DataStructures/Local/LocalBinaryTree';
-import { CreateTypeTreeFromData } from './Services/CreateTypeTreeFromData';
-import { BinaryTypeTree } from './DataStructures/BinaryTypeTree';
-import { CreateLocalCharacterBinaryTreeFromData } from './Services/Local/CreateLocalCharacterBinaryTree';
-import { CreateLocalBinaryTypeTreeFromData } from './Services/Local/CreateLocalBinaryTypeTreeFromData';
-import { GetAiData } from './Api/GetAiData';
-import { GetStatsFromDatabase } from './Database/indexeddb';
+export {BinaryTree} from './DataStructures/BinaryTree';
+export {SearchQuery} from './DataStructures/SearchQuery';
+export {SignupModel} from './DataStructures/SignupModel';
+export {SigninModel} from './DataStructures/SigninModel';
+export {FreeschemaResponse} from './DataStructures/Responses/StandardResponses'
+export {PatcherStructure} from './DataStructures/PatcherStructure';
+export {SessionData} from './DataStructures/Session/SessionData';
+export {Composition} from './DataStructures/Composition/Composition';
+export {CompositionBinaryTree} from './DataStructures/Composition/CompositionBinaryTree';
+export {CompositionNode} from './DataStructures/Composition/CompositionNode';
+export {LocalSyncData} from './DataStructures/Local/LocalSyncData';
+export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
+export {FilterSearch} from './DataStructures/FilterSearch';
+export {SearchStructure} from './DataStructures/Search/SearchStructure';
+export {LocalConceptsData} from './DataStructures/Local/LocalConceptData';
+import {GetConnectionsFromIndexDb,GetConnectionsFromIndexDbLocal} from './Services/GetDataFromIndexDb';
+import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConceptsToMemory, PopulateTheLocalConnectionToMemory } from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+export { Anomaly } from './Anomaly/anomaly';
+export { Validator } from './Validator/validator';
+export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';
-
+export {StatefulWidget} from './Widgets/StatefulWidget';
+export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
+export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
+export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
+export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
+/**
+ * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
+ * Your concepts using this package.
+ * @param accessToken access token got from the sign in process
+ */
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
-
-function init(url:string = "", aiurl:string="", accessToken:string = ""){
+/**
+ * 
+ * @param url This is the url for the backend c# system or our main data fabric server
+ * @param aiurl This is the AI url that pulls in the data using our AI system . If you do not enter this then also disable the enableAi flag.
+ * @param accessToken This is the JWT token that needs to be passed (But since you have just initilized the system). There is no way we can get access token
+ * So this access token can be empty string. You can set it afterwards with another function UpdateAccessToken();
+ * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
+ * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
+ * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
+ */
+async function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string="", isTest: boolean = false){
+   /**
+    * This process sets the initlizers in the static class BaseUrl that is used all over the system to access the urls
+    * Here we set the following variables.
+    * randomizer is created so that we can uniquely identify this initlization process but in the case that the BASE_RANDOMIZER has been alreay
+    * set in the indexdb this is replaced by the indexdb value.
+    */
+   try{
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
+   BaseUrl.NODE_URL = nodeUrl;
+   BaseUrl.BASE_APPLICATION= applicationName;
    TokenStorage.BearerAccessToken = accessToken;
-   InitializeSystem().then(()=>{
-      const start = new Date().getTime();
-      CreateBinaryTreeFromData().then(()=>{
+   let randomizer = Math.floor(Math.random() * 100000000);
+   BaseUrl.BASE_RANDOMIZER = randomizer;
+   if(isTest){
          IdentifierFlags.isDataLoaded= true;
-         IdentifierFlags.isCharacterLoaded= true;
-         IdentifierFlags.isTypeLoaded= true;
-         let elapsed = new Date().getTime() - start;
-         console.log("The time taken to prepare concept  data is  ", elapsed);
-      });
+   IdentifierFlags.isCharacterLoaded= true;
+   IdentifierFlags.isTypeLoaded= true;
+      IdentifierFlags.isLocalDataLoaded = true;
+   IdentifierFlags.isLocalTypeLoaded = true;
+   IdentifierFlags.isLocalCharacterLoaded = true;
+   IdentifierFlags.isConnectionLoaded = true;
+   IdentifierFlags.isConnectionTypeLoaded = true;
+   IdentifierFlags.isLocalConnectionLoaded = true;
+      return true;
+   }
+   console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
 
-      
-      // CreateCharacterBinaryTreeFromData().then(()=>{
-      //    IdentifierFlags.isCharacterLoaded= true;
-      //    let elapsed = new Date().getTime() - start;
-      //    console.log("The time taken to prepare character data is  ", elapsed);
-      // });
-      
-      // CreateTypeTreeFromData().then(()=>{
-      //    IdentifierFlags.isTypeLoaded= true;
-      //    let elapsed = new Date().getTime() - start;
-      //    console.log("The time taken to prepare data is ", elapsed);
-      // });
-      
-      CreateLocalBinaryTreeFromData().then(()=>{
-         IdentifierFlags.isLocalDataLoaded = true;
-         IdentifierFlags.isLocalTypeLoaded = true;
-         IdentifierFlags.isLocalCharacterLoaded = true;
-         let elapsed = new Date().getTime() - start;
-         console.log("The time taken to prepare local concept  ", elapsed);
-      });
-      
-      // CreateLocalCharacterBinaryTreeFromData().then(()=>{
-      //    IdentifierFlags.isLocalCharacterLoaded = true;
-      // });
-      
-      // CreateLocalBinaryTypeTreeFromData().then(()=>{
-      //    IdentifierFlags.isLocalTypeLoaded = true;
-      //    console.log("type",IdentifierFlags.isLocalTypeLoaded);
-      // });
-      
-      GetDataFromIndexDbLocal().then(()=>{
-         IdentifierFlags.isLocalConnectionLoaded = true;
-      });
-      GetDataFromIndexDb().then(()=>{
-         IdentifierFlags.isConnectionLoaded = true;
-         IdentifierFlags.isConnectionTypeLoaded = true;
-         let elapsed = new Date().getTime() - start;
-         console.log("The time taken to prepare connections  ", elapsed);
-      });
+/**
+    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
+    * We use some sort of AI algorithm to initilize these concepts with the most used concept.
+    * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
+    * If the developer does not want to use this feature then they can just set enableAi to false.
+    */
+await InitializeSystem(enableAi);
+const start = new Date().getTime();
+
+/**
+ * This  will create a binary tree in the memory from the indexdb.
+ * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
+ * and that the type binary tree has been loaded.
+ * These trees are helpful in caching concepts and connections for the data fabric.
+ */
+await   CreateConceptBinaryTreeFromIndexDb().then(()=>{
+   // IdentifierFlags.isDataLoaded= true;
+   // IdentifierFlags.isCharacterLoaded= true;
+   // IdentifierFlags.isTypeLoaded= true;
+   let elapsed = new Date().getTime() - start;
+   console.log("The time taken to prepare concept  data is  ", elapsed);
+}).catch((event) => {
+  // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
+   throw event;
+});
 
 
-   });
+
+/**
+ * This will create a binary tree of local concepts that is saved from the indexdb.
+ * This process after finishing creating a binary tree of local concepts then set flag to denote that
+ * LocalBinaryTree has been created from the concepts in indexdb
+ * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
+ * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
+ */
+await CreateLocalBinaryTreeFromIndexDb().then(()=>{
+   // IdentifierFlags.isLocalDataLoaded = true;
+   // IdentifierFlags.isLocalTypeLoaded = true;
+   // IdentifierFlags.isLocalCharacterLoaded = true;
+   let elapsed = new Date().getTime() - start;
+   console.log("The time taken to prepare local concept  ", elapsed);
+}).catch((event) => {
+  throw event;
+});
+
+
+
+/**
+ * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
+ * a static class called LocalConnectionData. 
+ * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+ */
+await GetConnectionsFromIndexDbLocal().then(()=>{
+   IdentifierFlags.isLocalConnectionLoaded = true;
+}).catch((event) => {
+   //console.log("This is the error in creating local connections binary tree");
+   throw event;
+});
+
+/**
+ * We have designed our system to use local concepts and connections with its own local ids(negative ids) that 
+ * is only valid for the browser that creates this. We have a translator in our node server.
+ * This function does this process in initlization.
+ */
+PopulateTheLocalConceptsToMemory().then(()=>{
+}).catch((event) => {
+   console.log("This is the error in populating binary tree");
+  throw event;
+});
+
+// PopulateTheLocalConnectionToMemory().then(()=>{
+// }).catch((event) => {
+//    console.log("This is the error in populating binary tree");
+//   throw event;
+// });
+
+
+
+/**
+ * This process gets the connections from indexdb and loads it to the connections array which is inside of
+ * a static class called ConnectionData. 
+ * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+ */
+await GetConnectionsFromIndexDb().then(()=>{
+   IdentifierFlags.isConnectionLoaded = true;
+   IdentifierFlags.isConnectionTypeLoaded = true;
+   let elapsed = new Date().getTime() - start;
+   console.log("The time taken to prepare connections  ", elapsed);
+}).catch((event) => {
+   //console.log("This is the error in creating connections tree");
+   throw event;
+});
+
+return true;
+}
+catch(error){
+   console.log("cannot initialize the system", error);
+}
+   
+
 }
 
 
 
 
 
-//  GetDataFromIndexDb(); 
- 
-
-// const form = document.querySelector('#myForm') as HTMLFormElement;
-// //const form2 = document.querySelector('#userForm') as HTMLFormElement;
-// const form3 = document.querySelector('#compositionForm') as HTMLFormElement;
-// const jsonForm = document.querySelector('#jsonForm') as HTMLFormElement;
-// const nameForm = document.querySelector('#nameform') as HTMLFormElement;
-// const getname = document.querySelector('#getname') as HTMLFormElement;
-
-
-// var json = {
-//     "asdgsaddff": {
-//         "adgasdfsdf": {
-//             "asdg": "tame",
-//             "briderarr": ["hello", "tre"]
-//         }
-//     }
-// };
-
-
-
-// setInterval(function(){
-//     console.log("syncing");
-//     SyncData.SyncDataOnline()
-
-// }, 5000);
-
-
-
-// form.addEventListener('submit', (event) => {
-//    event.preventDefault();
-//    const conceptIdElement = document.querySelector('#conceptid') as HTMLInputElement;
-//    const conceptId = conceptIdElement.value;
-//    GetComposition(Number(conceptId)).then(output=>{
-//     const jsonElemnt = document.querySelector('#jsonoutput') as HTMLInputElement;
-//     var json = JSON.stringify(output);
-//     console.log(json);
-
-//     jsonElemnt.innerHTML = json;
-
-
-//    });
-// });
-
-
-// getname.addEventListener('submit', (event) => {
-//     event.preventDefault();
-//     const conceptIdElement = document.querySelector('#nameconceptid') as HTMLInputElement;
-//     const conceptId = conceptIdElement.value;
-//     GetComposition(Number(conceptId)).then(output=>{
-//         const firstNameElement = document.querySelector('#firstname') as HTMLInputElement;
-//         const lastNameElement = document.querySelector('#lastname') as HTMLInputElement;
-//         console.log(output);
-//         firstNameElement.value = output.namedata.firstname;
-//         lastNameElement.value = output.namedata.lastname;
- 
-//     });
-//  });
-
-// nameForm.addEventListener('submit', (event) => {
-//     event.preventDefault();
-//     const firstNameElement = document.querySelector('#firstname') as HTMLInputElement;
-//     const firstname = firstNameElement.value;
-//     const lastNameElement = document.querySelector('#lastname') as HTMLInputElement;
-//     const lastname = lastNameElement.value;
-//     var json = {
-//         "namedata":{
-//             "firstname": firstname,
-//             "lastname": lastname
-//         }
-
-//     }
-//     console.log(json);
-
-//     CreateTheComposition(json).then((value)=>{
-//         const outputid = document.querySelector('#outputid') as HTMLInputElement;
-//         var concept = value as Concept;
-//         outputid.innerHTML = concept.id.toString();
-//         console.log('this is the test for final');
-//         console.log(value);
-//     });
- 
- 
-//     });
-
-// jsonForm.addEventListener('submit', (event) =>{
-//     event.preventDefault();
-//     const compositionNameElement = document.querySelector("#jsondata") as HTMLInputElement;
-//     const compositionName = compositionNameElement.value;
-//     console.log("this is the composition name");
-//     console.log(compositionName);
-//     var jon = JSON.parse(compositionName);
-//     CreateTheComposition(jon).then((value)=>{
-//         const outputid = document.querySelector('#outputid') as HTMLInputElement;
-//         var concept = value as Concept;
-//         outputid.innerHTML = concept.id.toString();
-//         console.log('this is the test for final');
-//         console.log(value);
-//     });
-// });
-
-// form3.addEventListener('submit', (event) => {
-//     event.preventDefault();
-//     const compositionNameElement = document.querySelector("#composition_name") as HTMLInputElement;
-//     const compositionName = compositionNameElement.value;
-//     GetCompositionList(compositionName).then(output=>{
-//         const jsonElemnt = document.querySelector('#jsonoutput') as HTMLInputElement;
-//         var json = JSON.stringify(output);
-//         console.log(json);
-    
-//         jsonElemnt.innerHTML = JSON.stringify(json);
-//     });
-// });
-
-
-
-// // form2.addEventListener('submit', (event) => {
-// //     event.preventDefault();
-// //     const userIdElement = document.querySelector("#userid") as HTMLInputElement;
-// //     const userId = userIdElement.value;
-// //     GetAllUserConcepts(Number(userId));
-// //     GetAllUserConnections(Number(userId)).then(()=>{
-// //         console.log("got all the data");
-// //     });
-
-// //  });
-
-// window.onmousedown = (ev: MouseEvent): any => {
-//     var isMouseDown = true;
-//     var canvas = document.querySelector('#myCanvas') as HTMLCanvasElement;
-//     var ctx = canvas.getContext('2d') as CanvasRenderingContext2D ;
-//     var _difference_from_window = canvas.getBoundingClientRect();
-//     var width_difference = 0;
-//     var height_difference = 0;
-//     //Update mouse position at time of down
-//     var mouse_x_coordinate = ev.x - _difference_from_window.left + window.scrollX;
-//     var mouse_y_coordinate = ev.y - _difference_from_window.top + window.scrollY;
-
-//     var selected_concept_object = selectConceptObject(mouse_x_coordinate, mouse_y_coordinate);
-//     window.onmousemove = (ev: MouseEvent): any => {
-//         var previous_mouse_x = mouse_x_coordinate;
-//         var previous_mouse_y = mouse_y_coordinate;
-//         var new_mouse_x_coordinate = ev.x - _difference_from_window.left + window.scrollX;
-//         var new_mouse_y_coordinate = ev.y - _difference_from_window.top + window.scrollY;
-//         //how much did the mouse move
-//         var mouse_x_difference = new_mouse_x_coordinate - previous_mouse_x;
-//         var mouse_y_difference = new_mouse_y_coordinate - previous_mouse_y;
-
-//         if(selected_concept_object){
-//             if(isMouseDown){
-//                 selected_concept_object.x = new_mouse_x_coordinate;
-//                 selected_concept_object.y = new_mouse_y_coordinate;
-//             }
-//         }
-//     }
-
-//     window.onmouseup = (ev: MouseEvent): any => {
-//         isMouseDown = false;
-//         selected_concept_object  = null;
-//     }
-
-
-//}

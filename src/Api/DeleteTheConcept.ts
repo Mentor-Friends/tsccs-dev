@@ -1,16 +1,22 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Concept } from "../DataStructures/Concept";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { GetOnlyTokenHeader, GetRequestHeader, GetRequestHeaderWithAuthorization } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConcept(id:number){
     try{
-           var headers = GetRequestHeader();
+           
+           const formdata = new FormData();
+           formdata.append("id", id.toString());
+           let header = GetOnlyTokenHeader();
             const response = await fetch(BaseUrl.DeleteConceptUrl(),{
                 method: 'POST',
-                headers: headers,
-                body: `id=${id}`
+                headers: header,
+                body: formdata
             });
             if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
+               // throw new Error(`Error! status: ${response.status}`);
+               console.log("Delete concept error", response.status);
+                HandleHttpError(response);
             }
 
 
@@ -18,11 +24,10 @@ export default async function DeleteTheConcept(id:number){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Delete concept error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('Delete concept unexpected error: ', error);
         }
+        HandleInternalError(error, BaseUrl.DeleteConceptUrl());
       }
 }

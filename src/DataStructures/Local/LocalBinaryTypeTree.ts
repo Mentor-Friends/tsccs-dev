@@ -1,11 +1,11 @@
 import { Concept } from "../../DataStructures/Concept";
 import { IdentifierFlags } from "./../IdentifierFlags";
-import { Node } from "./../Node";
+import { LNode } from "./LNode";
 
 export class LocalBinaryTypeTree{
-    static LocalTypeRoot: Node | null = null;
+    static LocalTypeRoot: LNode | null = null;
 
-    static async addNodeToTree(node:Node){
+    static async addNodeToTree(node:LNode){
         if(this.LocalTypeRoot == null){
             this.LocalTypeRoot = node;
             return this.LocalTypeRoot;
@@ -18,7 +18,7 @@ export class LocalBinaryTypeTree{
 
     static addConceptToTree(concept:Concept){
         if(concept.typeId != 0){
-            var node: Node = new Node(concept.typeId, concept, null, null);
+            var node: LNode = new LNode(concept.typeId, concept, null, null);
             this.addNodeToTree(node);
         }
 
@@ -88,11 +88,12 @@ export class LocalBinaryTypeTree{
             var Node = this.getNodeFromTree(typeId);
     
             if(Node){
-                if(Node.value.userId == userId ){
+                console.log("this is the node to type", Node);
+                if(Node.value.userId == userId || Node.value.userId == 999){
                     concepts.push(Node?.value);
                 }
                 for(let i=0; i< Node.variants.length; i++){
-                    if(Node.variants[i].value.userId == userId ){
+                    if(Node.variants[i].value.userId == userId || Node.value.userId == 999 ){
                         concepts.push(Node.variants[i].value);
                     }
                 }

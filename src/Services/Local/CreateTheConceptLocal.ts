@@ -1,21 +1,53 @@
-import { CreateTheConceptApi } from "../../Api/Create/CreateTheConceptApi";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
-import { ReservedIds } from "../../DataStructures/ReservedIds";
-import { SyncData } from "../../DataStructures/SyncData";
-import { storeToDatabase } from "../../Database/indexdblocal";
+import { LocalId } from "../../DataStructures/Local/LocalId";
 
-export default async function CreateTheConceptLocal(referent:string, userId:number, categoryId:number, categoryUserId:number,
-typeId:number, typeUserId:number,referentId:number, referentUserId:number,securityId:number, securityUserId:number,
-accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number){
+/**
+ * This function creates the concept in the local system (Local memory and IndexDb) but not in the backend database
+ * To create this concept in the backend database you need to sync the local data to the backend by LocalSyncData class.
+ * 
+ * This function creates a id and ghost id which are equal to each other. 
+ * These id and ghostId are negative which means that they are virtual concepts. After these concepts have been synced with the backend
+ * they are converted to real id. After returning from the backend the id changes to positive(+) and real id while the ghostId remains the same
+ * 
+ * The system then saves this relation between -ve id and real id in the backend server and also in the local memory.
+ * 
+ * @param referent This is the string that is the actual value of the concept.
+ * @param typecharacter The string that defines the type of the concept.
+ * @param userId This is the userId of the creator.
+ * @param categoryId This is the category Id of the concept.
+ * @param typeId This is the type Id of the concept that relates to the typecharacter passed above.
+ * @param accessId This is the accessId of the concept(most probably is the accessId of the user)
+ * @param isComposition This is set in the case that the composition needs to be created.
+ * @param referentId if this concept refers to any other concept then this needs to be passed.
+ * @returns 
+ */
+export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, 
+typeId:number, 
+accessId:number, isComposition: boolean = false, referentId:number = 0){
+    try{
+        //let id = -Math.floor(Math.random() * 100000000);
+        let id = await LocalId.getConceptId();
+        console.log("this is the getting id type connection", id);
 
-var id = Math.floor(Math.random() * 100000000);
-var isNew: boolean = true;
-var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
-    securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
-concept.isTemp = true;
-LocalConceptsData.AddConcept(concept);
-storeToDatabase("localconcept",concept);
-return concept;
+        let isNew: boolean = true;
+        let created_on:Date = new Date();
+        let updated_on:Date = new Date();
+        if(referent == "the"){
+            let concept = new Concept(1,999,5,5, referentId, referent, accessId, isNew,created_on,updated_on,typecharacter);
+            return concept;
+        }
+
+        let concept = new Concept(id,userId,typeId,categoryId,referentId, referent, accessId, isNew,created_on,updated_on,typecharacter );
+        concept.isTemp = true;
+        concept.isComposition = isComposition;
+        LocalConceptsData.AddConcept(concept);
+        //storeToDatabase("localconcept",concept);
+        return concept;
+    }
+    catch(error){
+        throw error;
+    }
+
 
 }

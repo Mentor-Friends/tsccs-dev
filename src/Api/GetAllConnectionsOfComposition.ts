@@ -1,15 +1,14 @@
 import { Connection } from '../DataStructures/Connection';
 import { ConnectionData } from '../DataStructures/ConnectionData';
-import { GetMaximumConnectionSyncTime } from '../Services/GetMaximumConnectionSyncTime';
-import { GetAllConnectionsOfCompositionUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { ConnectionBinaryTree } from '../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
-        connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
+        //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
+        connectionList = await ConnectionData.GetConnectionsOfConcept(composition_id);
         if(connectionList.length == 0){
           var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_id);
           connectionList = connectionListString as Connection[];
@@ -26,34 +25,37 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_id: number){
+  var connectionList: Connection[] = [];
+
   try{
-      var connectionList: Connection[] = [];
-      var header = GetRequestHeader('application/x-www-form-urlencoded');
+      var header = GetRequestHeader('application/json');
+      const myHeaders = new Headers();
+      const formdata = new FormData();
+      formdata.append("composition_id", composition_id.toString());
       const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
-        headers: header,
-        body: `composition_id=${composition_id}`
+        headers: myHeaders,
+        body: formdata
       });
+      console.log("this is getting connection from online", BaseUrl.GetAllConnectionsOfCompositionUrl(), composition_id);
       if(!response.ok){
+          HandleHttpError(response);
           throw new Error(`Error! status: ${response.status}`);
       }
-      console.log("waiting and watching");
       const result = await response.json();
       for(var i=0; i< result.length; i++){
           ConnectionData.AddConnection(result[i]);
-          // ConnectionData.AddToDictionary(result[i]);
           connectionList.push(result[i]);
       }
-
+      
       return connectionList;
     }
     catch (error) {
       if (error instanceof Error) {
-        console.log('error message: ', error.message);
-        return error.message;
+        console.log('Get all connection of composition error : ', error.message);
       } else {
-        console.log('unexpected error: ', error);
-        return 'An unexpected error occurred';
+        console.log('Get all connection of composition error : ', error);
       }
+      HandleInternalError(error, BaseUrl.GetAllConnectionsOfCompositionUrl());
     }
 }

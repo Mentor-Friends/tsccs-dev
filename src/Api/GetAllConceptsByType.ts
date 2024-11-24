@@ -2,6 +2,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetAllConceptsByTypeUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 export async function GetAllConceptsByType(type:string,userId: number){
     try{
             var urlencoded = new URLSearchParams();
@@ -14,22 +15,25 @@ export async function GetAllConceptsByType(type:string,userId: number){
                 headers: header,
                 body: urlencoded
             });
-            if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
+            if(response.ok){
+              const result = await response.json();
+              for(var i=0; i< result.length; i++){
+                  ConceptsData.AddConcept(result[i]);
+              }
             }
-             const result = await response.json();
-            for(var i=0; i< result.length; i++){
-                ConceptsData.AddConcept(result[i]);
+            else{
+              console.log("GetAllConceptsByType error", response.status);
+              HandleHttpError(response);
             }
-            console.log("added");
+
+
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('GetAllConceptsByType error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log('GetAllConceptsByType unexpected error: ', error);
         }
+        HandleInternalError(error, BaseUrl.GetAllConceptsByTypeUrl());
       }
 }

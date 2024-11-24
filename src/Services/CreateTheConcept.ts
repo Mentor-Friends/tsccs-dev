@@ -4,41 +4,53 @@ import { ReservedIds } from "../DataStructures/ReservedIds";
 import { SyncData } from "../DataStructures/SyncData";
 import { ConceptsData } from "../app";
 
-export default async function CreateTheConcept(referent:string, userId:number, categoryId:number, categoryUserId:number,
-typeId:number, typeUserId:number,referentId:number, referentUserId:number,securityId:number, securityUserId:number,
-accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number){
+export default async function CreateTheConcept(referent:string, userId:number, categoryId:number,
+typeId:number,referentId:number,
+accessId:number, typeCharacter:string){
 
-var id = await ReservedIds.getId();
-var isNew: boolean = true;
-var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
-    securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
-concept.isTemp = false;
+let id = await ReservedIds.getId();
+let isNew: boolean = true;
+let created_on:Date = new Date();
+let updated_on:Date = new Date();
+// let concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
+    // securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on,updated_on);
+let concept = new Concept(id, userId, typeId, categoryId, referentId, referent, accessId, isNew, created_on, updated_on, typeCharacter);
+
+    concept.isTemp = false;
 SyncData.AddConcept(concept);
 return concept;
 
 }
 
-export  async function CreateTheConceptTemporary(referent:string, userId:number, categoryId:number, categoryUserId:number,
-    typeId:number, typeUserId:number,referentId:number, referentUserId:number,securityId:number, securityUserId:number,
-    accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number){
+export  async function CreateTheConceptTemporary(referent:string, userId:number, categoryId:number,
+    typeId:number, referentId:number,
+    accessId:number, typeCharacter:string){
     
-    var id = await ReservedIds.getId();
-    var isNew: boolean = true;
-    var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
-        securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
+    let id = await ReservedIds.getId();
+    let isNew: boolean = true;
+    let created_on:Date = new Date();
+    let updated_on:Date = new Date();
+    // let concept = new Concept(id,userId,typeId,typeUserId,categoryId,referentId, referent,
+    //     accessId,isNew,created_on, updated_on);
+    let concept = new Concept(id, userId, typeId, categoryId, referentId, referent, accessId, isNew, created_on, updated_on, typeCharacter);
     concept.isTemp = true;
     return concept;
     
 }
 
-export  async function CreateTheConceptImmediate(referent:string, userId:number, categoryId:number, categoryUserId:number,
-    typeId:number, typeUserId:number,referentId:number, referentUserId:number,securityId:number, securityUserId:number,
-    accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number){
+export  async function CreateTheConceptImmediate(referent:string, userId:number, categoryId:number,
+    typeId:number,referentId:number,
+    accessId:number, typeCharacter:string){
     
-    var id = await ReservedIds.getId();
-    var isNew: boolean = false;
-    var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
-        securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew);
+    let id = await ReservedIds.getId();
+    let isNew: boolean = false;
+    let created_on:Date = new Date();
+let updated_on:Date = new Date();
+    // let concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
+    //     securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on, updated_on);
+    
+    let concept = new Concept(id, userId, typeId, categoryId, referentId, referent, accessId, isNew, created_on, updated_on, typeCharacter);
+    
     ConceptsData.AddConcept(concept);
     
     CreateTheConceptApi([concept]);

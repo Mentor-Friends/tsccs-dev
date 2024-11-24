@@ -1,6 +1,10 @@
-import {storeToDatabase } from "../../Database/indexdblocal";
+import {UpdateToDatabase } from "../../Database/indexdblocal";
+import { removeFromDatabase } from "../../Database/indexdblocal";
+import { ConvertFromLConnectionToConnection } from "../../Services/Local/ConvertFromLConnectionToConnection";
+import { Connection } from "../Connection";
+import { ConnectionData } from "../ConnectionData";
 import { IdentifierFlags } from "../IdentifierFlags";
-import { Connection } from "./../Connection";
+import { LocalSyncData } from "./LocalSyncData";
 export class LocalConnectionData{
     
     name: string;
@@ -27,12 +31,20 @@ export class LocalConnectionData{
         if(contains){
             this.RemoveConnection(connection);
         }
-        if(connection.id != 0 || connection.isTemp){
+        if(connection.id != 0){
 
-            storeToDatabase("localconnection",connection);
+            UpdateToDatabase("localconnection",connection);
         }
         this.connectionArray.push(connection);
     }
+
+    static AddConnectionToMemory(connection: Connection){
+        var contains = this.CheckContains(connection);
+         if(contains){
+             this.RemoveConnection(connection);
+         }
+         this.connectionArray.push(connection);
+     }
 
     static AddToDictionary(connection: Connection){
         this.connectionDictionary[connection.id] = connection;
@@ -48,6 +60,24 @@ export class LocalConnectionData{
       //  removeFromDatabase("connection",connection.id);
 
        }
+    }
+
+    static RemoveConnectionById(connectionId: number){
+       for(var i=0; i<this.connectionArray.length; i++){
+        if(this.connectionArray[i].id == connectionId){
+            this.connectionArray.splice(i, 1);
+        }
+       }
+
+       LocalSyncData.RemoveConnectionById(connectionId);
+    }
+
+    static AddPermanentConnection(connection: Connection){
+        if(connection.id > 0){
+
+            removeFromDatabase("localconnection", connection.ghostId);
+            ConnectionData.AddConnection(ConvertFromLConnectionToConnection(connection));
+        }
     }
 
     static GetConnection(id: number){
@@ -89,6 +119,24 @@ export class LocalConnectionData{
 
         for(var i=0; i<this.connectionArray.length; i++){
             if(this.connectionArray[i].typeId == id){
+                connectionList.push(this.connectionArray[i]);
+            }
+        }
+        return connectionList;
+    }
+    catch(exception){
+        return connectionList;
+    }
+    }
+
+    static async GetConnectionOfCompositionAndTypeLocal(typeId: number, ofTheConceptId: number){
+        var connectionList:Connection[] = [];
+
+        try{
+            var data = await this.waitForDataToLoad();
+            console.log("this is the connections", this.connectionArray, typeId, ofTheConceptId);
+        for(var i=0; i<this.connectionArray.length; i++){
+            if(this.connectionArray[i].typeId == typeId && this.connectionArray[i].ofTheConceptId == ofTheConceptId){
                 connectionList.push(this.connectionArray[i]);
             }
         }

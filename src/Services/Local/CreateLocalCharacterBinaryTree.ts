@@ -1,19 +1,28 @@
 import { LocalBinaryCharacterTree } from "../../DataStructures/Local/LocalBinaryCharacterTree";
-import { Node } from "../../DataStructures/Node";
-import { getAllFromLocalDb } from "../../Database/indexdblocal";
+import { LNode } from "../../DataStructures/Local/LNode";
+import { getObjectsFromLocalIndexDb } from "../../Database/indexdblocal";
 
 export  async function CreateLocalCharacterBinaryTreeFromData(){
-    var startTime = new Date().getTime();
-    var conceptList = await getAllFromLocalDb("localconcept");
+    try{
+        let conceptList = await getObjectsFromLocalIndexDb("localconcept");
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
-                let node = new Node(concept.characterValue, concept, null, null);
+                let node = new LNode(concept.characterValue, concept, null, null);
                 LocalBinaryCharacterTree.addNodeToTree(node);
             }
 
         }
-    var endTime = new Date().getTime();
-    var time = endTime - startTime;
+    }
+    catch(error){
+        let errorObject = {
+            "message": "Cannot create local binary character tree from IndexDb",
+            "data": error,
+            "ok": false,
+            "status": 400
+        };
+        throw errorObject;
+    }
+
 
 }

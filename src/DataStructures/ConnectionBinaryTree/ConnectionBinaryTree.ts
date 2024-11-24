@@ -16,9 +16,14 @@ export class ConnectionBinaryTree{
     }
 
     static addConnectionToTree(connection:Connection){
-        var node: ConnectionNode = new ConnectionNode(connection.id, connection, null, null);
+        let node: ConnectionNode = new ConnectionNode(connection.id, connection, null, null);
         this.addNodeToTree(node);
     }
+
+    static traverse(){
+        return this.connectionroot?.traverse(this.connectionroot);
+    }
+
 
     static async waitForDataToLoad(){
         return new Promise((resolve,reject) => {
@@ -49,17 +54,17 @@ export class ConnectionBinaryTree{
 
 
     static async getNodeFromTree(id:number){
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
         if(this.connectionroot){
-            var Node = this.connectionroot.getFromNode(id, this.connectionroot);
+            let Node = this.connectionroot.getFromNode(id, this.connectionroot);
             return Node;
         }
         return this.connectionroot;
+    }
+
+    static async getConnectionListFromIds(ids: number[], connectionArray: Connection [], remainingIds: any){
+        if(this.connectionroot){
+            this.connectionroot.checkIfIdsInNode(this.connectionroot, ids, connectionArray, remainingIds);
+        }
     }
 
 

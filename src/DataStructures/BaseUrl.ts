@@ -1,7 +1,22 @@
+import { CompositionBinaryTree } from './Composition/CompositionBinaryTree';
+
+
 export class BaseUrl{
-    static BASE_URL: string  = "";
+    static BASE_URL: string  = "https://localhost:7053/";
 
     static AI_URL: string ="https://ai.freeschema.com";
+
+    static MQTT_URL: string = '192.168.1.249';
+
+    static NODE_URL: string = "http://localhost:5001";
+
+    static MQTT_CONNECTION:any ;
+
+    static BASE_APPLICATION = "";
+
+    static BASE_RANDOMIZER = 999;
+
+
 
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';
 
@@ -46,6 +61,14 @@ export class BaseUrl{
         return this.BASE_URL + '/api/get_concept_by_character_and_type';
     }
 
+    static GetConceptByCharacterAndCategoryUrl(){
+        return this.BASE_URL + '/api/get_concept_by_character_and_category';
+    }
+
+    static GetConceptByCharacterAndCategoryDirectUrl(){
+        return this.BASE_URL + '/api/get_concept_by_character_and_category_direct';
+    }
+
     static GetCharacterByCharacterUrl(){
         return this.BASE_URL + '/api/get_character_by_character';
     }
@@ -59,7 +82,8 @@ export class BaseUrl{
     }
     
     static GetAllAiData(){
-        return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=500';
+        return this.BASE_URL + '/api/get-preloaded-concepts';
+       // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
 
     static GetAllPrefetchConnectionsUrl(){
@@ -67,6 +91,10 @@ export class BaseUrl{
     }
     static GetAllLinkerConnectionOfConceptUrl(){
         return this.BASE_URL + '/api/get-all-linkers-from-concept';
+    }
+
+    static GetAllLinkerConnectionToConceptUrl(){
+        return this.BASE_URL + '/api/get-all-linkers-to-concept';
     }
 
     static DeleteConceptUrl(){
@@ -77,19 +105,81 @@ export class BaseUrl{
         return this.BASE_URL + '/api/recursivesearch-concept-connection';
     }
 
+    static SearchLinkMultipleAllApiUrl(){
+        return this.BASE_URL + '/api/Connection/search-link-multiple-all-ccs';
+    }
+
     static MakeTheNameInBackendUrl(){
         return this.BASE_URL + '/api/make-name-from-frontend';
+    }
+
+    static SearchAllTypeWithLinker(auth: boolean = true){
+        if(auth){
+            return this.BASE_URL + '/api/search-all-with-linker-ccs';
+
+        }
+        else{
+            return this.BASE_URL + '/api-search-compositions-internal-clean-ccs';
+        }
     }
 
     static LoginUrl(){
         return this.BASE_URL + '/api/auth/login';
     }
 
+    static SignupUrl(){
+        return this.BASE_URL + '/api/auth/signup';
+    }
+
     static GetCompositionConnectionBetweenTwoConceptsUrl(){
         return this.BASE_URL + '/api/get-composition-connection-between-two-concepts';
     }
 
+    static  SearchCompositionsUrl(){
+        return this.BASE_URL + '/api/search-compositions';
+    }
 
+    static SearchLinkMultipleAll(){
+        return this.BASE_URL + '/api/Connection/search-link-multiple-all';
+    }
+
+    static CreateSessionId(){
+        return this.BASE_URL + '/api/create-session-id-remote'
+    }
+
+    static CreateSessionVisitUrl(){
+        return this.BASE_URL + '/api/create-remote-session-visit'
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    /////////////////////Api for viewing internal data //////////////////////////
+
+    static ViewInternalDataUrl(){
+        return this.BASE_URL + '/api/view-api-internal-data-ccs-id-bulk'
+    }
+
+    static SearchInternalWithAuthenticatedCcsUrl(){
+        return this.BASE_URL + '/api/search-composition-internal-authenticated-ccs';
+    }
+
+    static SearchInternalWithCcsUrl(){
+        return this.BASE_URL + '/api-search-compositions-internal-clean-ccs';
+    }
+
+
+
+    static CreateGhostConceptApiUrl(){
+        return BaseUrl.NODE_URL + '/api/v1/local-concepts'
+    }
+
+    static CreateGhostConnectionApiUrl(){
+        return BaseUrl.NODE_URL + '/api/v1/local-connections';
+    }
+
+    static GetRealConceptById(){
+        return BaseUrl.NODE_URL + '/api/v1/local-concepts-translate';
+    }
 
 
     //////////////////////////////////////////////////////////////////////////////
@@ -97,6 +187,10 @@ export class BaseUrl{
 
     static GetReservedIdUrl(){
         return this.BASE_URL + '/api/get_reserved_ids';
+    }
+
+    static GetReservedConnectionIdUrl(){
+        return this.BASE_URL + '/api/get_reserved_connection_ids';
     }
 
 
@@ -120,6 +214,31 @@ export class BaseUrl{
         return this.BASE_URL + '/api/create_the_connection';
     }
 
+
+    static CreateTheConnectionNewUrl(){
+        return this.BASE_URL + '/api/create_the_connection_new';
+    }
+
+    static MakeTheTypeConceptUrl(){
+        return this.BASE_URL + '/api/make_the_type_concept';
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////
+    /////////////////////API FOR Deleting Connection //////////////////////
+
+    static DeleteTheConnectionUrl(){
+        return this.BASE_URL + '/api/delete_connection';
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR FREESCHEMA QUERY //////////////////////
+    static FreeschemaQueryUrl(){
+        return this.BASE_URL + '/api/freeschema-query';
+    }
 
 
 

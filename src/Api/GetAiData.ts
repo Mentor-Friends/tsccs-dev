@@ -1,25 +1,27 @@
 import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
+import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
-import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { GetRequestHeader, GetRequestHeaderWithAuthorization } from '../Services/Security/GetRequestHeader';
+import { BinaryTree } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAiData(){
     try{
       const start = new Date().getTime();
-        var header = GetRequestHeader('application/x-www-form-urlencoded');
+        var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
         const response = await fetch(BaseUrl.GetAllAiData(),{
             method: 'GET',
             headers: header,
         });
         if(!response.ok){
-            throw new Error(`Error! status: ${response.status}`);
+          console.log('Ai Error Message: ', "Cannot get response");
+          HandleHttpError(response);
         }
-         const result = await response.json();
+        const result = await response.json();
         for(var i=0; i< result.length; i++){
-            ConceptsData.AddConceptToStorage(result[i]);
+            ConceptsData.AddConcept(result[i]);
         }
-        console.log("got all the concepts data from ai");
         PurgatoryDatabaseUpdated();
         let elapsed = new Date().getTime() - start;
         console.log("The time taken is ", elapsed);
@@ -28,11 +30,10 @@ export async function GetAiData(){
 }
 catch (error) {
     if (error instanceof Error) {
-      console.log('error message: ', error.message);
-      return error.message;
+      console.log('Ai Error Message: ', error.message);
     } else {
-      console.log('unexpected error: ', error);
-      return 'An unexpected error occurred';
+      console.log('Ai Error Message: ', error);
     }
+    HandleInternalError(error, BaseUrl.GetAllAiData());
   }
 }

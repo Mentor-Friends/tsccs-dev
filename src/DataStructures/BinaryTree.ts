@@ -36,22 +36,15 @@ export class BinaryTree{
       };
 
     static addConceptToTree(concept:Concept){
-        var node: Node = new Node(concept.id, concept, null, null);
-        var characterNode: Node = new Node(concept.characterValue, concept, null,null);
+        let node: Node = new Node(concept.id, concept, null, null);
+        let characterNode: Node = new Node(concept.characterValue, concept, null,null);
         BinaryCharacterTree.addNodeToTree(characterNode);
         this.addNodeToTree(node);
     }
 
     static async getNodeFromTree(id:number){
-
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
         if(this.root){
-            var Node = this.root.getFromNode(id, this.root);
+            let Node = this.root.getFromNode(id, this.root);
             return Node;
         }
         return null;
@@ -60,10 +53,19 @@ export class BinaryTree{
 
     static async removeNodeFromTree(id:number){
         if(this.root){
+            let event = new Event(`${id}`);
+             console.log("this is the fired event after delete", event);
+             dispatchEvent(event);
             this.root = this.root.removeNode(this.root,id);
         }
     }
 
+
+    static async getConceptListFromIds(ids: number[], connectionArray: Concept [], remainingIds: any){
+        if(this.root){
+            this.root.checkIfIdsInNode(this.root, ids, connectionArray, remainingIds);
+        }
+    }
 
 
 
@@ -74,6 +76,7 @@ export class BinaryTree{
         }
         return 0;
     }
+
 
 
 

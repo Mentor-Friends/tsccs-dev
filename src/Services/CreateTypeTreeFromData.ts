@@ -1,19 +1,29 @@
 import { BinaryTypeTree } from "../DataStructures/BinaryTypeTree";
 import { Node } from "../DataStructures/Node";
-import { getFromDatabaseWithTypeOld } from "../Database/indexeddb";
+import { TypeNode } from "../DataStructures/TypeNode";
+import { getObjectsFromIndexDb } from "../Database/indexeddb";
 
 export  async function CreateTypeTreeFromData(){
-    var startTime = new Date().getTime();
-    var conceptList = await getFromDatabaseWithTypeOld("concept");
+    try{
+        let conceptList = await getObjectsFromIndexDb("concept");
         if(Array.isArray(conceptList)){
             for(var i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
-                let node = new Node(concept.typeId, concept, null, null);
-                 BinaryTypeTree.addNodeToTree(node);
+                let node = new TypeNode(concept.typeId, concept.id);
+                 BinaryTypeTree.addType(node);
             }
 
         }
-    var endTime = new Date().getTime();
-    var time = endTime - startTime;
+    }
+    catch(error){
+        let errorObject = {
+            "message": "Cannot create Type Binary Tree Concept",
+            "ok": false,
+            "status": 400,
+            "data": error
+        }
+        throw errorObject;
+    }
+
 
 }

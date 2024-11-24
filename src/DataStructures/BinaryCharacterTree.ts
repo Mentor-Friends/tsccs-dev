@@ -67,22 +67,47 @@ export class BinaryCharacterTree{
         return this.characterRoot;
     }
 
+    static getNodeFromTreeUpdated(value:string){
+        if(this.characterRoot){
+            var Node = this.characterRoot.getCharacterFromNode(value, this.characterRoot);
+            return Node;
+        }
+        return this.characterRoot;
+    }
+
     static async getCharacterAndTypeFromTree(value:string, typeId: number){
 
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return null;
+        // }
         if(this.characterRoot){
-            console.log("searching .................");
-            console.log(value);
             var Node = this.characterRoot.getFromNodeWithCharacterAndType(value, typeId,this.characterRoot);
             return Node;
         }   
         return this.characterRoot;
     }
+
+    static async getCharacterAndCategoryFromTree(value:string, categoryId: number){
+
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return null;
+        // }
+        if(this.characterRoot){
+            var Node = this.characterRoot.getFromNodeWithCharacterAndCategory(value, categoryId,this.characterRoot);
+            return Node;
+        }   
+        return this.characterRoot;
+    }
+
+
+    
+
 
     static removeConceptCharacter(id:number){
         if(this.characterRoot){

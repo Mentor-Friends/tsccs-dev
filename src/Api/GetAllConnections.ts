@@ -2,6 +2,7 @@ import { ConnectionData } from '../DataStructures/ConnectionData';
 import { GetAllConnectionsOfUserUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 export async function GetAllUserConnections(userId: number){
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
@@ -11,7 +12,8 @@ export async function GetAllUserConnections(userId: number){
                 body: `user_id=${userId}`
             });
             if(!response.ok){
-                throw new Error(`Error! status: ${response.status}`);
+              console.log(' Get all user Connections status error: ', response.status);
+              HandleHttpError(response);
             }
             const result = await response.json();
             for(var i=0; i< result.length; i++){
@@ -21,11 +23,10 @@ export async function GetAllUserConnections(userId: number){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('error message: ', error.message);
-          return error.message;
+          console.log('Get all user Connections error message: ', error.message);
         } else {
-          console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
+          console.log(' Get all user Connections unexpected error: ', error);
         }
+        HandleInternalError(error, BaseUrl.GetAllConnectionsOfUserUrl());
       }
 }
