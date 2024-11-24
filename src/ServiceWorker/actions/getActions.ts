@@ -1,6 +1,7 @@
 import { Actions } from ".";
+import { GetCompositionConnectionsBetweenTwoConcepts } from "../../Api/GetCompositionConnectionsBetweenTwoConcepts";
 import { GetConcept } from "../../Api/GetConcept";
-import { ConnectionData, GetAllConnectionsOfCompositionBulk, GetCompositionList, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionListWithId, GetCompositionLocal, GetCompositionLocalWithId, GetConceptByCharacterAndCategoryLocal, GetConceptByCharacterAndType, GetConnectionBulk, GetConnectionById, GetConnectionOfTheConcept, GetLink, GetTheConcept } from "../../app";
+import { ConnectionData, GetCompositionList, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionListWithId, GetCompositionLocal, GetCompositionLocalWithId, GetConceptByCharacterAndCategoryLocal, GetConceptByCharacterAndType, GetLink, GetTheConcept } from "../../app";
 import { broadcastChannel } from "../../Constants/general.const";
 import {
   GetComposition,
@@ -21,10 +22,6 @@ export const getActions: Actions = {
   },
   GetTheConcept: async (payload) => {
     const data = await GetTheConcept(payload.id, payload.userId)
-    return { success: true, data }
-  },
-  GetConnectionById: async (payload) => {
-    const data = await GetConnectionById(payload.id)
     return { success: true, data }
   },
   GetLink: async (payload: any) => {
@@ -56,21 +53,9 @@ export const getActions: Actions = {
     const data = await GetCompositionWithId(payload.id);
     return { success: true, data };
   },
-  GetConnectionBulk: async (payload) => {
-    const data = await GetConnectionBulk(payload.connectionIds);
-    return { success: true, data };
-  },
   GetConceptByCharacterAndType: async (payload) => {
     const data = await GetConceptByCharacterAndType(payload.characterValue, payload.typeId)
     return { success:true, data }
-  },
-  GetConnectionOfTheConcept: async (payload) => {
-    const data = await GetConnectionOfTheConcept(payload.typeId, payload.ofTheConceptId, payload.userId, payload.inpage, payload.page)
-    return { success:true, data }
-  },
-  GetAllConnectionsOfCompositionBulk: async (payload) => {
-    const data = await GetAllConnectionsOfCompositionBulk(payload.composition_ids)
-    return { success: true, data }
   },
   GetCompositionFromConnectionsWithDataId: async (payload) => {
     const data = await GetCompositionFromConnectionsWithDataId(payload.conceptIds, payload.connectionIds)
@@ -78,6 +63,10 @@ export const getActions: Actions = {
   },
   GetCompositionFromConnectionsWithDataIdIndex: async (payload) => {
     const data = await GetCompositionFromConnectionsWithDataIdIndex(payload.conceptIds, payload.connectionIds)
+    return { success: true, data }
+  },
+  GetCompositionConnectionsBetweenTwoConcepts: async (payload) => {
+    const data = await GetCompositionConnectionsBetweenTwoConcepts(payload.ofConceptId, payload.toConcept, payload.mainKey)
     return { success: true, data }
   },
   

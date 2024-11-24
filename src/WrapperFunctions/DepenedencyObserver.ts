@@ -58,7 +58,6 @@ export class DependencyObserver{
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id: number) {
-        console.log('listening to id: ', id)
         window.addEventListener(`${id}`, (event) => {
             if(!this.isUpdating){
                 this.isUpdating = true;

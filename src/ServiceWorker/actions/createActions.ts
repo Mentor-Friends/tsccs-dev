@@ -1,5 +1,5 @@
 import { Actions } from ".";
-import { CreateTheCompositionLocal, MakeTheInstanceConcept, MakeTheTypeConcept, MakeTheTypeConceptLocal } from "../../app";
+import { CreateTheCompositionLocal, MakeTheInstanceConcept, MakeTheTimestamp, MakeTheTypeConcept, MakeTheTypeConceptLocal } from "../../app";
 import CreateTheComposition from "../../Services/CreateTheComposition";
 import CreateTheConceptLocal from "../../Services/Local/CreateTheConceptLocal";
 import MakeTheConceptLocal from "../../Services/Local/MakeTheConceptLocal";
@@ -35,6 +35,16 @@ export const createActions: Actions = {
             payload.sessionId,
             payload.sessionUserId,
             payload.userId,
+        )
+        return { success: true, data }
+    },
+    MakeTheTimestamp: async (payload: any) => {
+        const data = await MakeTheTimestamp(
+            payload.type, 
+            payload.referent, 
+            payload.userId, 
+            payload.accessId, 
+            payload.sessionInformationId
         )
         return { success: true, data }
     },

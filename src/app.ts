@@ -124,8 +124,14 @@ export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 
+type listeners = {
+  listenerId: string | number
+  callback: any,
+  createdAt: number
+}
 export var serviceWorker: any;
 const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
+export let subscribedListeners: listeners[] = []
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
@@ -154,7 +160,7 @@ async function init(
   nodeUrl: string = "",
   enableAi: boolean = true,
   applicationName: string = "",
-  enableSW: {activate: boolean, scope: string} | undefined = undefined,
+  enableSW: {activate: boolean, scope?: string, pathToSW?: string} | undefined = undefined,
   isTest: boolean = false,
 ) {
   try {
@@ -202,11 +208,15 @@ async function init(
         //       //   isTest
         //       // );
         //     } else {
+              // let serviceWorkerPath = enableSW.path ? enableSW.path : './serviceWorker.bundle.js'
+              // if (enableSW.path && enableSW.path.slice(-1) == '/') serviceWorkerPath = enableSW.path + 'serviceWorker.bundle.js'
+              // else if (enableSW.path && enableSW.path.length > 2 && !enableSW.path.includes('serviceWorker.bundle.js')) serviceWorkerPath = enableSW.path + './serviceWorker.bundle.js'
+
               await new Promise<void>((resolve, reject) => {
                 navigator.serviceWorker
-                  .register("./serviceWorker.bundle.js", {
+                  .register(enableSW.pathToSW ?? "./serviceWorker.bundle.js", {
                     // type: "module",
-                    scope: enableSW.scope ? enableSW.scope : "/",
+                    scope: enableSW.scope ?? "/",
                   })
                   .then(async (registration) => {
                     console.log(
@@ -361,7 +371,7 @@ export async function sendMessage(type: string, payload: any) {
         setTimeout(() => {
           reject("No response from service worker after timeout");
           navigator.serviceWorker.removeEventListener("message", responseHandler);
-        }, 5000);
+        }, 10000);
       // })
       // .catch(err => reject(err))
       // .finally(() => console.log('finally'))
@@ -391,13 +401,6 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
 //      navigator.serviceWorker.controller?.postMessage({ type, payload });
 //    });
 //  }
-
-type listeners = {
-  listenerId: string | number
-  callback: any,
-  createdAt: number
-}
-export let subscribedListeners: listeners[] = []
 
 // actions for message received on broadcast channel (specially from service worker)
 const broadcastActions: any = {

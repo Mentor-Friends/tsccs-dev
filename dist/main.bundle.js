@@ -1196,6 +1196,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../DataStructures/ConnectionData */ "./src/DataStructures/ConnectionData.ts");
 /* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1208,8 +1209,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId, toConcept, mainKey) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('GetCompositionConnectionsBetweenTwoConcepts', { ofConceptId, toConcept, mainKey });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         var connectionList = [];
         try {
             var formdata = new FormData();
@@ -13201,6 +13208,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function GetConnectionBetweenTwoConceptsLinker(ofTheConcept_1, toTheConcept_1, linker_1, fullLinker_1) {
     return __awaiter(this, arguments, void 0, function* (ofTheConcept, toTheConcept, linker, fullLinker, forward = true) {
         var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetConnectionBetweenTwoConceptsLinker', { ofTheConcept, toTheConcept, linker, fullLinker, forward });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let typeConcept = (0,_app__WEBPACK_IMPORTED_MODULE_1__.CreateDefaultConcept)();
         if (linker != "") {
             let typeLinker = "";
@@ -13383,7 +13395,6 @@ function GetLink(id_1, linker_1) {
     return __awaiter(this, arguments, void 0, function* (id, linker, inpage = 10, page = 1) {
         var _a;
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
-            console.log('data receiving');
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetLink', { id, linker, inpage, page });
             console.log('data received from sw', res);
             return res.data;
@@ -15099,13 +15110,19 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 // function to update the cache composition
-function UpdateCompositionLocal(patcherStructure) {
-    return __awaiter(this, void 0, void 0, function* () {
+function UpdateCompositionLocal(patcherStructure_1) {
+    return __awaiter(this, arguments, void 0, function* (patcherStructure, actions = { concepts: [], connections: [] }) {
+        var _a, _b, _c, _d;
         if (_app__WEBPACK_IMPORTED_MODULE_7__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_7__.sendMessage)("UpdateCompositionLocal", {
                 patcherStructure,
+                actions
             });
             console.log("data received from sw", res);
+            if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
+                actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
+                actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data;
         }
         // get all the default userId, sessionId, accessId passed by the patcherStructure
@@ -15163,12 +15180,12 @@ function UpdateCompositionLocal(patcherStructure) {
                 localConcept = parentConcept;
             }
             if (Array.isArray(value) || typeof value == "object") {
-                insertingConcept = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_6__.MakeTheInstanceConceptLocal)(key, "", true, composition.userId, 4, 999);
-                yield (0,_CreateTheCompositionLocal__WEBPACK_IMPORTED_MODULE_5__.CreateTheCompositionLocal)(object[key], insertingConcept.id, insertingConcept.userId, composition.id, composition.userId, 4, 999);
+                insertingConcept = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_6__.MakeTheInstanceConceptLocal)(key, "", true, composition.userId, 4, 999, undefined, actions);
+                yield (0,_CreateTheCompositionLocal__WEBPACK_IMPORTED_MODULE_5__.CreateTheCompositionLocal)(object[key], insertingConcept.id, insertingConcept.userId, composition.id, composition.userId, 4, 999, undefined, actions);
             }
             else {
                 // make the new concept in the object
-                insertingConcept = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_6__.MakeTheInstanceConceptLocal)(key, value, false, userId, accessId, sessionId);
+                insertingConcept = yield (0,_MakeTheInstanceConceptLocal__WEBPACK_IMPORTED_MODULE_6__.MakeTheInstanceConceptLocal)(key, value, false, userId, accessId, sessionId, undefined, actions);
             }
             // check if the concept exists in the concept list because if it exists then we have to delete old connection
             const ExistingConcepts = (0,_Helpers_CheckIfExists__WEBPACK_IMPORTED_MODULE_1__.CheckIfTypeLConceptsExistsInArray)(conceptList, insertingConcept);
@@ -15181,7 +15198,7 @@ function UpdateCompositionLocal(patcherStructure) {
                 }
             }
             // create the connection between the new concept and the old composition
-            const connectionString = yield (0,_app__WEBPACK_IMPORTED_MODULE_7__.CreateTheConnectionLocal)(localConcept.id, insertingConcept.id, composition.id, 2);
+            const connectionString = yield (0,_app__WEBPACK_IMPORTED_MODULE_7__.CreateTheConnectionLocal)(localConcept.id, insertingConcept.id, composition.id, 2, undefined, undefined, actions);
             const connection = connectionString;
             conceptList.push(insertingConcept);
         }
@@ -15191,7 +15208,7 @@ function UpdateCompositionLocal(patcherStructure) {
             // delete the connection in the backend
             yield (0,_DeleteConnection__WEBPACK_IMPORTED_MODULE_4__.DeleteConnectionById)(toDeleteConnections[j].id);
         }
-        yield _app__WEBPACK_IMPORTED_MODULE_7__.LocalSyncData.SyncDataOnline();
+        yield _app__WEBPACK_IMPORTED_MODULE_7__.LocalSyncData.SyncDataOnline(undefined, actions);
     });
 }
 
@@ -15491,6 +15508,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function MakeTheTimestamp(type_1, referent_1, userId_1) {
     return __awaiter(this, arguments, void 0, function* (type, referent, userId, accessId = 4, sessionInformationId = 999) {
+        if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('MakeTheTimestamp', { type, referent, userId, accessId, sessionInformationId });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let categoryId = 4;
         let referentId = 0;
         // change this
@@ -16779,6 +16801,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_Composition_CompositionBinaryTree__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../DataStructures/Composition/CompositionBinaryTree */ "./src/DataStructures/Composition/CompositionBinaryTree.ts");
 /* harmony import */ var _DataStructures_Composition_Composition__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../DataStructures/Composition/Composition */ "./src/DataStructures/Composition/Composition.ts");
 /* harmony import */ var _Composition_CreateCompositionCache__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Composition/CreateCompositionCache */ "./src/Services/Composition/CreateCompositionCache.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16801,9 +16824,17 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 // function to update the cache composition
 function UpdateComposition(patcherStructure) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (_app__WEBPACK_IMPORTED_MODULE_13__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_13__.sendMessage)("UpdateComposition", {
+                patcherStructure,
+            });
+            console.log("data received from sw", res);
+            return res.data;
+        }
         // get all the default userId, sessionId, accessId passed by the patcherStructure
         const userId = patcherStructure.userId;
         const sessionId = patcherStructure.sessionId;
@@ -16869,7 +16900,7 @@ function UpdateComposition(patcherStructure) {
             if (parentConcept.id > 0) {
                 localConcept = parentConcept;
             }
-            if (Array.isArray(value) || typeof value == 'object') {
+            if (Array.isArray(value) || typeof value == "object") {
                 insertingConcept = yield (0,_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_6__["default"])(key, "", true, composition.userId, 4, 999);
                 compositionCache.subcompositions.push(insertingConcept.id);
                 // check if the concept exists in the concept list because if it exists then we have to delete old connection
@@ -17621,7 +17652,6 @@ class DependencyObserver {
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id) {
-        console.log('listening to id: ', id);
         window.addEventListener(`${id}`, (event) => {
             if (!this.isUpdating) {
                 this.isUpdating = true;
@@ -18298,9 +18328,8 @@ class RecursiveSearchObservable extends _app__WEBPACK_IMPORTED_MODULE_0__.Depend
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id) {
-        console.log("listening to id: ", id);
         window.addEventListener(`${id}`, (event) => {
-            console.log("this is listening after the event is fired", id, event);
+            // console.log("this is listening after the event is fired", id, event);
             if (!this.isUpdating) {
                 this.isUpdating = true;
                 let that = this;
@@ -18940,6 +18969,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 var serviceWorker;
 const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2);
+let subscribedListeners = [];
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.
@@ -19003,11 +19033,15 @@ function init() {
                     //       //   isTest
                     //       // );
                     //     } else {
+                    // let serviceWorkerPath = enableSW.path ? enableSW.path : './serviceWorker.bundle.js'
+                    // if (enableSW.path && enableSW.path.slice(-1) == '/') serviceWorkerPath = enableSW.path + 'serviceWorker.bundle.js'
+                    // else if (enableSW.path && enableSW.path.length > 2 && !enableSW.path.includes('serviceWorker.bundle.js')) serviceWorkerPath = enableSW.path + './serviceWorker.bundle.js'
                     yield new Promise((resolve, reject) => {
+                        var _a, _b;
                         navigator.serviceWorker
-                            .register("./serviceWorker.bundle.js", {
+                            .register((_a = enableSW.pathToSW) !== null && _a !== void 0 ? _a : "./serviceWorker.bundle.js", {
                             // type: "module",
-                            scope: enableSW.scope ? enableSW.scope : "/",
+                            scope: (_b = enableSW.scope) !== null && _b !== void 0 ? _b : "/",
                         })
                             .then((registration) => __awaiter(this, void 0, void 0, function* () {
                             console.log("Service Worker registered:", registration);
@@ -19135,7 +19169,7 @@ function sendMessage(type, payload) {
             setTimeout(() => {
                 reject("No response from service worker after timeout");
                 navigator.serviceWorker.removeEventListener("message", responseHandler);
-            }, 5000);
+            }, 10000);
             // })
             // .catch(err => reject(err))
             // .finally(() => console.log('finally'))
@@ -19154,7 +19188,16 @@ function dispatchIdEvent(id, data = {}) {
         _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__.broadcastChannel.postMessage({ type: 'dispatchEvent', payload: { id } });
     }
 }
-let subscribedListeners = [];
+// export function sendMessage(type: string, payload: any) {
+//    return new Promise((resolve) => {
+//      const responseHandler = (event: any) => {
+//        resolve(event.data);
+//        navigator.serviceWorker.removeEventListener("message", responseHandler);
+//      };
+//      navigator.serviceWorker.addEventListener("message", responseHandler);
+//      navigator.serviceWorker.controller?.postMessage({ type, payload });
+//    });
+//  }
 // actions for message received on broadcast channel (specially from service worker)
 const broadcastActions = {
     GetLinkListener: (payload) => __awaiter(void 0, void 0, void 0, function* () {
