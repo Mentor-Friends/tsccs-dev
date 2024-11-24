@@ -1,4 +1,4 @@
-import { BaseUrl, updateAccessToken } from "./app";
+import { BaseUrl, InnerActions, LocalSyncData, updateAccessToken } from "./app";
 import { IdentifierFlags } from "./DataStructures/IdentifierFlags";
 import { TokenStorage } from "./DataStructures/Security/TokenStorage";
 import CreateConceptBinaryTreeFromIndexDb from "./Services/CreateBinaryTreeFromData";
@@ -9,6 +9,8 @@ import {
 import InitializeSystem from "./Services/InitializeSystem";
 import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConnectionToMemory } from "./Services/Local/CreateLocalBinaryTreeFromData";
 import { Actions, createActions, getActions, searchActions, syncActions, updateActions, connectionActions, deleteActions } from "./ServiceWorker/actions";
+
+let tabActionsMap: Map<string, InnerActions> = new Map()
 
 // Install Service Worker
 self.addEventListener("install", (event: any) => {
@@ -61,24 +63,63 @@ const actions: Actions = {
 self.addEventListener("message", async (event: any) => {
   console.log("message received sw", event);
   const { type, payload }: any = event.data;
-  if (!type) return;
-  console.log('has type', type)
-  let responseData: {success: boolean, data?: any, messageId?: string} = {success: false, data: undefined}
-  // if (!payload.actions) payload.actions = {concepts: [], connections: []}
+  const tabId = payload.TABID
+  let addedActions = false
+  
+  if (!type || !payload.TABID) return;
+  
+  if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})
 
-  if (actions[type]) {
+  console.log('has type', type)
+  let responseData: {success: boolean, data?: any, messageId?: string, actions?: InnerActions} = {success: false, data: undefined}
+  let tabData = tabActionsMap.get(tabId)
+  if (!Array.isArray(payload?.actions?.concepts) || !Array.isArray(payload?.actions?.connections)) {
+    payload.actions = {concepts: [], connections: []}
+    addedActions = true
+  }
+  
+  if (type == 'LocalSyncData__SyncDataOnline' && !payload.transactionId && tabData) {
+    // add all the transaction to sync for the curernt tab // little chance of error when syncing is before marking of query transaction on single tab 
+    // console.log('tab Data in local', tabData)
+    const data = await LocalSyncData.SyncDataOnline(undefined, JSON.parse(JSON.stringify(tabData)));
+
+    tabActionsMap.delete(tabId)
+    tabData = undefined
+    console.log('Syncing the tab here')
+
+    responseData = { success: true, data, actions: {concepts: [], connections: []} }
+  } else if (actions[type]) {
     try {
-      console.log('if type', responseData)
       responseData = await actions[type](payload);
-      console.log('end if type', responseData)
     } catch (err) {
-      console.log('Error if', err)
+      console.log('Error', err)
     }
   } else {
-    console.log('else type')
     console.log(`Unable to handle "${type}" case in service worker`)
   }
   responseData.messageId = payload.messageId
+  
+  // update the concepts for current actions
+  if (responseData.actions && tabData) {
+    let data = {
+      concepts: [...tabData.concepts, ...responseData.actions.concepts],
+      connections: [
+        ...tabData.connections,
+        ...responseData.actions.connections,
+      ],
+    }
+    // save unique concepts and connections
+    let data2 = {
+      concepts: Array.from(
+      new Map(data.concepts.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
+      connections: Array.from(
+      new Map(data.connections.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
+  }
+    tabActionsMap.set(tabId, JSON.parse(JSON.stringify(data2)));
+    
+  }
+
+  if (addedActions) delete responseData.actions
   
   event.source.postMessage(responseData)
 
@@ -125,7 +166,7 @@ async function init(
     IdentifierFlags.isLocalConnectionLoaded = true;
     return true;
   }
-  console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
+  console.log("This is the base url", BaseUrl.BASE_URL, randomizer);
 
   /**
    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used

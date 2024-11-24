@@ -7562,7 +7562,7 @@ class LocalSyncData {
             }
         }
     }
-    static SyncDataOnline(transactionId) {
+    static SyncDataOnline(transactionId, actions) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log('sw triggered');
@@ -7574,7 +7574,6 @@ class LocalSyncData {
                 let connectionsArray = [];
                 if (transactionId && this.transactionCollections.some(tran => tran.id == transactionId)) {
                     const transaction = this.transactionCollections.find(tran => tran.id == transactionId);
-                    console.log('sync if condition', transaction);
                     // remove current transaction from list
                     this.transactionCollections = this.transactionCollections.filter(tran => tran.id != transactionId);
                     // remove old query actions older than 15 days
@@ -7584,10 +7583,20 @@ class LocalSyncData {
                     conceptsArray = transaction.data.concepts.slice();
                     connectionsArray = transaction.data.connections.slice();
                 }
+                else if (Array.isArray(actions === null || actions === void 0 ? void 0 : actions.concepts) && Array.isArray(actions === null || actions === void 0 ? void 0 : actions.connections)) {
+                    // filter concepts from conceptsSyncArray and connectionSyncArray and sync only belonging to this tab
+                    conceptsArray = actions.concepts.filter(concept => this.conceptsSyncArray.some(con => concept.id == con.id || concept.ghostId == con.ghostId)).slice();
+                    connectionsArray = actions.connections.filter(connection => this.connectionSyncArray.some(conn => connection.id == conn.id || connection.ghostId == conn.ghostId)).slice();
+                    // remove the concepts and connections from the array that belongs to the actions/tab
+                    this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => !actions.concepts.some(con => concept.id == con.id || concept.ghostId == con.ghostId));
+                    this.connectionSyncArray = this.connectionSyncArray.filter(connection => !actions.connections.some(conn => connection.id == conn.id || connection.ghostId == conn.ghostId));
+                }
                 else {
-                    console.log('sync else condition', transactionId, this.transactionCollections);
+                    console.error('Syncing this way has been Depreceted in service worker.');
+                    console.info('Only if serive worker is not running');
                     conceptsArray = this.conceptsSyncArray.slice();
                     connectionsArray = this.connectionSyncArray.slice();
+                    return [];
                 }
                 this.connectionSyncArray = [];
                 this.conceptsSyncArray = [];
@@ -7773,10 +7782,8 @@ class LocalSyncData {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('LocalSyncData__markTransactionActions', { transactionId, actions });
                 return res.data;
             }
-            console.log('marking data 1', this.conceptsSyncArray, this.conceptsSyncArray, this.transactionCollections, actions);
             this.transactionCollections = this.transactionCollections.map(tran => {
                 if (tran.id == transactionId) {
-                    console.log(' the transaction found', tran, actions, Object.assign(Object.assign({}, tran), { data: JSON.parse(JSON.stringify(actions)) }));
                     return Object.assign(Object.assign({}, tran), { data: JSON.parse(JSON.stringify(actions)) });
                 }
                 else
@@ -7784,7 +7791,6 @@ class LocalSyncData {
             });
             this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => !actions.concepts.some(con => con.id == concept.id || con.ghostId == concept.id));
             this.connectionSyncArray = this.connectionSyncArray.filter(connection => !actions.connections.some(con => con.id == connection.id || con.ghostId == connection.id));
-            console.log('marking data 2', this.conceptsSyncArray, this.conceptsSyncArray, this.transactionCollections, actions);
         });
     }
     static rollbackTransaction(transactionId, actions) {
@@ -10606,32 +10612,26 @@ const getActions = {
     }),
     // locals
     GetTheConceptLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("sync actions sw");
         const data = yield (0,_Services_Local_GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_5__.GetTheConceptLocal)(payload.id);
         return { success: true, data };
     }),
     GetCompositionLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("sync actions sw");
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetCompositionLocal)(payload.id);
         return { success: true, data };
     }),
     GetCompositionLocalWithId: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("sync actions sw");
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetCompositionLocalWithId)(payload.id);
         return { success: true, data };
     }),
     GetCompositionListLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("sync actions sw");
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetCompositionListLocal)(payload.compositionName, payload.userId);
         return { success: true, data };
     }),
     GetCompositionListLocalWithId: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("sync actions sw");
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetCompositionListLocalWithId)(payload.compositionName, payload.userId);
         return { success: true, data };
     }),
     GetConceptByCharacterAndCategoryLocal: (payload) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("sync actions sw");
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConceptByCharacterAndCategoryLocal)(payload.character);
         return { success: true, data };
     }),
@@ -10655,7 +10655,6 @@ const getActions = {
             (0,_WrapperFunctions_GetLinkObservable__WEBPACK_IMPORTED_MODULE_6__.GetLinkListener)(payload.id, payload.linker, payload.inpage, payload.page, payload.format)
                 .subscribe((value) => {
                 var _a, _b;
-                console.log("get link listener vaue", value);
                 if (isSubscribed) {
                     console.log("isSubscribed", isSubscribed);
                     resolve({ success: true, data: value });
@@ -17126,11 +17125,9 @@ class LocalTransaction {
             // Save the data
             if (!this.success)
                 throw Error('Query Transaction Expired');
-            console.log('sync 1', this.actions);
             yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.SyncDataOnline(this.transactionId);
             this.actions = { concepts: [], connections: [] };
             this.success = false;
-            console.log('sync 2', this.actions);
         });
     }
     /**
@@ -17150,9 +17147,7 @@ class LocalTransaction {
      */
     markAction() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('actions 1', this.actions);
             yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.markTransactionActions(this.transactionId, this.actions);
-            console.log('actions 2', this.actions);
         });
     }
     /**
@@ -17198,9 +17193,7 @@ class LocalTransaction {
             try {
                 if (!this.success)
                     throw Error('Query Transaction Expired');
-                console.log('actions connection 1', this.actions);
                 const connection = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateConnectionBetweenTwoConceptsLocal)(ofTheConcept, toTheConcept, linker, both, this.actions);
-                console.log('actions connection 2', this.actions);
                 yield this.markAction();
                 return connection;
             }
@@ -19434,6 +19427,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 var serviceWorker;
+const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2);
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.
@@ -19522,7 +19516,7 @@ function init() {
                             else {
                                 let success = false;
                                 // Listen for updates to the service worker
-                                console.log("updaet listen start");
+                                console.log("update listen start");
                                 registration.onupdatefound = () => {
                                     const newWorker = registration.installing;
                                     console.log("new worker", newWorker);
@@ -19589,6 +19583,7 @@ function sendMessage(type, payload) {
     return __awaiter(this, void 0, void 0, function* () {
         const messageId = Math.random().toString(36).substring(5); // Generate a unique message ID
         payload.messageId = messageId;
+        payload.TABID = TABID;
         // let actions = payload.actions
         const newPayload = JSON.parse(JSON.stringify(payload));
         return new Promise((resolve, reject) => {
@@ -19597,21 +19592,15 @@ function sendMessage(type, payload) {
             const responseHandler = (event) => {
                 var _a, _b;
                 if (((_a = event === null || event === void 0 ? void 0 : event.data) === null || _a === void 0 ? void 0 : _a.messageId) == messageId) { // Check if the message ID matches
-                    console.log("after sending message", type, event.data);
                     if ((_b = event.data) === null || _b === void 0 ? void 0 : _b.actions) {
-                        console.log('actions reveived if', payload, type, event.data);
                         payload.actions = JSON.parse(JSON.stringify(event.data.actions));
-                        console.log('actions reveived if 2', payload, type, event.data);
-                    }
-                    else {
-                        console.log('actions reveived else', payload, type, event.data);
                     }
                     resolve(event.data);
                     navigator.serviceWorker.removeEventListener("message", responseHandler);
                 }
             };
             navigator.serviceWorker.addEventListener("message", responseHandler);
-            console.log("before sending message", type, 'new', newPayload);
+            // console.log("before sending message", type, 'new', newPayload);
             // serviceWorker?.postMessage({ type, payload });
             // Send the message to the service worker
             if (navigator.serviceWorker.controller) {
@@ -19642,7 +19631,7 @@ function sendMessage(type, payload) {
     });
 }
 function dispatchIdEvent(id, data = {}) {
-    console.log('id event dispatched', id);
+    // console.log('id event dispatched', id)
     if (serviceWorker) {
         // let event = new Event(`${id}`);
         let event = new CustomEvent(`${id}`, data);
@@ -19685,8 +19674,7 @@ function listenBroadCastMessages() {
             responseData = yield broadcastActions[type](payload);
         }
         else {
-            console.log('else bc type');
-            console.log(`Unable to handle "${type}" case in service worker`);
+            console.log(`Unable to handle "${type}" case in BC service worker`);
         }
     }));
 }
@@ -19724,7 +19712,6 @@ function initConceptConnection() {
             _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
             return true;
         }
-        console.log("This ist he base url", _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_URL, randomizer);
         /**
          * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
          * We use some sort of AI algorithm to initilize these concepts with the most used concept.
@@ -19900,6 +19887,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+let tabActionsMap = new Map();
 // Install Service Worker
 self.addEventListener("install", (event) => {
     console.log("Service Worker installing... sw");
@@ -19926,28 +19914,61 @@ const actions = Object.assign(Object.assign(Object.assign(Object.assign(Object.a
     }) }, _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.getActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.searchActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.createActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.updateActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.connectionActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.deleteActions), _ServiceWorker_actions__WEBPACK_IMPORTED_MODULE_7__.syncActions);
 // Listen message received by service worker
 self.addEventListener("message", (event) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     console.log("message received sw", event);
     const { type, payload } = event.data;
-    if (!type)
+    const tabId = payload.TABID;
+    let addedActions = false;
+    if (!type || !payload.TABID)
         return;
+    if (!tabActionsMap.has(tabId))
+        tabActionsMap.set(tabId, { concepts: [], connections: [] });
     console.log('has type', type);
     let responseData = { success: false, data: undefined };
-    // if (!payload.actions) payload.actions = {concepts: [], connections: []}
-    if (actions[type]) {
+    let tabData = tabActionsMap.get(tabId);
+    if (!Array.isArray((_a = payload === null || payload === void 0 ? void 0 : payload.actions) === null || _a === void 0 ? void 0 : _a.concepts) || !Array.isArray((_b = payload === null || payload === void 0 ? void 0 : payload.actions) === null || _b === void 0 ? void 0 : _b.connections)) {
+        payload.actions = { concepts: [], connections: [] };
+        addedActions = true;
+    }
+    if (type == 'LocalSyncData__SyncDataOnline' && !payload.transactionId && tabData) {
+        // add all the transaction to sync for the curernt tab // little chance of error when syncing is before marking of query transaction on single tab 
+        // console.log('tab Data in local', tabData)
+        const data = yield _app__WEBPACK_IMPORTED_MODULE_0__.LocalSyncData.SyncDataOnline(undefined, JSON.parse(JSON.stringify(tabData)));
+        tabActionsMap.delete(tabId);
+        tabData = undefined;
+        console.log('Syncing the tab here');
+        responseData = { success: true, data, actions: { concepts: [], connections: [] } };
+    }
+    else if (actions[type]) {
         try {
-            console.log('if type', responseData);
             responseData = yield actions[type](payload);
-            console.log('end if type', responseData);
         }
         catch (err) {
-            console.log('Error if', err);
+            console.log('Error', err);
         }
     }
     else {
-        console.log('else type');
         console.log(`Unable to handle "${type}" case in service worker`);
     }
     responseData.messageId = payload.messageId;
+    // update the concepts for current actions
+    if (responseData.actions && tabData) {
+        let data = {
+            concepts: [...tabData.concepts, ...responseData.actions.concepts],
+            connections: [
+                ...tabData.connections,
+                ...responseData.actions.connections,
+            ],
+        };
+        // save unique concepts and connections
+        let data2 = {
+            concepts: Array.from(new Map(data.concepts.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
+            connections: Array.from(new Map(data.connections.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
+        };
+        tabActionsMap.set(tabId, JSON.parse(JSON.stringify(data2)));
+    }
+    if (addedActions)
+        delete responseData.actions;
     event.source.postMessage(responseData);
 }));
 /**
@@ -19983,7 +20004,7 @@ function init() {
             _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
             return true;
         }
-        console.log("This ist he base url", _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.BASE_URL, randomizer);
+        console.log("This is the base url", _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.BASE_URL, randomizer);
         /**
          * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
          * We use some sort of AI algorithm to initilize these concepts with the most used concept.

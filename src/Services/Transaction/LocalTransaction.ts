@@ -26,12 +26,9 @@ export class LocalTransaction {
     // Save the data
     if (!this.success) throw Error('Query Transaction Expired');
 
-    console.log('sync 1', this.actions)
     await LocalSyncData.SyncDataOnline(this.transactionId) 
     this.actions = {concepts: [], connections: []}
     this.success = false
-    
-    console.log('sync 2', this.actions)
   }
 
   /**
@@ -50,9 +47,7 @@ export class LocalTransaction {
    * @param concept Concept
    */
   protected async markAction() {
-      console.log('actions 1', this.actions)
     await LocalSyncData.markTransactionActions(this.transactionId, this.actions)
-    console.log('actions 2', this.actions)
   }
 
 
@@ -116,9 +111,7 @@ export class LocalTransaction {
       try {
         if (!this.success) throw Error('Query Transaction Expired');
 
-        console.log('actions connection 1', this.actions)
         const connection = await CreateConnectionBetweenTwoConceptsLocal(ofTheConcept, toTheConcept, linker, both, this.actions)
-        console.log('actions connection 2', this.actions)
         await this.markAction();
     
         return connection

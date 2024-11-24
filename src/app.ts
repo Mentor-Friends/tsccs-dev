@@ -125,6 +125,7 @@ export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 
 export var serviceWorker: any;
+const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
@@ -229,7 +230,7 @@ async function init(
                     } else {
                       let success = false;
                       // Listen for updates to the service worker
-                      console.log("updaet listen start");
+                      console.log("update listen start");
                       registration.onupdatefound = () => {
                         const newWorker = registration.installing;
                         console.log("new worker", newWorker);
@@ -318,6 +319,7 @@ async function init(
 export async function sendMessage(type: string, payload: any) {
   const messageId = Math.random().toString(36).substring(5); // Generate a unique message ID
   payload.messageId = messageId
+  payload.TABID = TABID
   // let actions = payload.actions
 
   const newPayload = JSON.parse(JSON.stringify(payload))
@@ -327,13 +329,8 @@ export async function sendMessage(type: string, payload: any) {
     //   .then((registration) => {
         const responseHandler = (event: any) => {
           if (event?.data?.messageId == messageId) { // Check if the message ID matches
-            console.log("after sending message", type, event.data);
             if (event.data?.actions) {
-              console.log('actions reveived if', payload, type, event.data)
               payload.actions = JSON.parse(JSON.stringify(event.data.actions))
-              console.log('actions reveived if 2', payload, type, event.data)
-            } else {
-              console.log('actions reveived else', payload, type, event.data)
             }
             resolve(event.data);
             navigator.serviceWorker.removeEventListener("message", responseHandler);
@@ -341,7 +338,7 @@ export async function sendMessage(type: string, payload: any) {
         };
     
         navigator.serviceWorker.addEventListener("message", responseHandler);
-        console.log("before sending message", type, 'new', newPayload);
+        // console.log("before sending message", type, 'new', newPayload);
         // serviceWorker?.postMessage({ type, payload });
     
         // Send the message to the service worker
@@ -372,7 +369,7 @@ export async function sendMessage(type: string, payload: any) {
 }
 
 export function dispatchIdEvent(id: number|string, data:any = {}) {
-  console.log('id event dispatched', id)
+  // console.log('id event dispatched', id)
   if (serviceWorker) {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
@@ -434,8 +431,7 @@ function listenBroadCastMessages() {
       if (broadcastActions[type]) {
         responseData = await broadcastActions[type](payload);
       } else {
-        console.log('else bc type')
-        console.log(`Unable to handle "${type}" case in service worker`)
+        console.log(`Unable to handle "${type}" case in BC service worker`)
       }
     
   });
@@ -483,8 +479,7 @@ async function initConceptConnection(
     IdentifierFlags.isLocalConnectionLoaded = true;
     return true;
   }
-  console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
-
+  
   /**
    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
    * We use some sort of AI algorithm to initilize these concepts with the most used concept.

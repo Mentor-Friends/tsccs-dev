@@ -97,32 +97,26 @@ export const getActions: Actions = {
 
   // locals
   GetTheConceptLocal: async (payload: any) => {
-    console.log("sync actions sw");
     const data = await GetTheConceptLocal(payload.id);
     return { success: true, data };
   },
   GetCompositionLocal: async (payload: any) => {
-    console.log("sync actions sw");
     const data = await GetCompositionLocal(payload.id);
     return { success: true, data };
   },
   GetCompositionLocalWithId: async (payload: any) => {
-    console.log("sync actions sw");
     const data = await GetCompositionLocalWithId(payload.id);
     return { success: true, data };
   },
   GetCompositionListLocal: async (payload: any) => {
-    console.log("sync actions sw");
     const data = await GetCompositionListLocal(payload.compositionName, payload.userId);
     return { success: true, data };
   },
   GetCompositionListLocalWithId: async (payload: any) => {
-    console.log("sync actions sw");
     const data = await GetCompositionListLocalWithId(payload.compositionName, payload.userId);
     return { success: true, data };
   },
   GetConceptByCharacterAndCategoryLocal: async (payload: any) => {
-    console.log("sync actions sw");
     const data = await GetConceptByCharacterAndCategoryLocal(payload.character);
     return { success: true, data };
   },
@@ -153,7 +147,6 @@ export const getActions: Actions = {
         payload.format
       )
         .subscribe((value: any) => {
-          console.log("get link listener vaue", value);
           if (isSubscribed) {
             console.log("isSubscribed", isSubscribed);
             resolve({ success: true, data: value });

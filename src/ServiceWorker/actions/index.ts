@@ -1,4 +1,4 @@
-import { init } from "../../app";
+import { init, InnerActions } from "../../app";
 
 export {getActions} from '../actions/getActions'
 export {searchActions} from '../actions/searchActions'
@@ -10,5 +10,5 @@ export {syncActions} from '../actions/syncActions'
 
 // Define the type of syncActions object
 export interface Actions {
-  [key: string]: (payload: any) => Promise<{ success: boolean; data?: any }>;
+  [key: string]: (payload: any) => Promise<{ success: boolean; data?: any, actions?: InnerActions }>;
 }
