@@ -1,7 +1,7 @@
 import { GetConcept } from '../../Api/GetConcept';
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi} from '../../app';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
-import { FormatConceptsAndConnectionsNormalList, FormatFromConnectionsAlteredArrayExternal } from './FormatData';
+import { FormatConceptsAndConnectionsNormalList, FormatFromConnectionsAlteredArrayExternal, formatFunction } from './FormatData';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
 
 /**
@@ -100,6 +100,10 @@ export async function formatLinkersNormal(linkers: number[], conceptIds: number[
 export async function formatConnections(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[]){
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let compositionData: any [] = [];
+    // for(let i=0 ; i<mainCompositionIds.length; i++){
+    //     compositionData[mainCompositionIds[i]] = "";
+    // }
+    compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
     let output:any  = await FormatConceptsAndConnectionsNormalList(prefetchConnections, compositionData, mainCompositionIds, reverse );
     return output;
 }
@@ -108,6 +112,9 @@ export async function formatConnections(linkers: number[], conceptIds: number []
 export async function formatConnectionsDataId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[]){
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let compositionData: any [] = [];
+    // for(let i=0 ; i<mainCompositionIds.length; i++){
+    //     compositionData[mainCompositionIds[i]] = "";
+    // }
     let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData, mainCompositionIds, reverse );
     return output;
 }

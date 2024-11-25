@@ -18,6 +18,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
       myConcepts.push(connections[i].ofTheConceptId)
       myConcepts.push(connections[i].typeId);
     }
+    console.log("these are the reverse", reverse);
     connections.sort(function(x: Connection, y:Connection){
       return y.id - x.id;
     })
@@ -49,7 +50,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
           try{
             let reverseCharater = linkerConcept.characterValue + "_reverse";
               if(Array.isArray(newData[key][reverseCharater])){
-                newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
+                newData[key][reverseCharater].push(ofTheConcept.characterValue);
               }
               else{
                 if(linkerConcept.characterValue.includes("_s_")){
@@ -60,8 +61,6 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
                   newData[key][reverseCharater] = ofTheConcept.characterValue;
                 }
               }
-  
-    
           }
           catch(ex){
             console.log("this is error", ex);
@@ -109,13 +108,14 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
       }
   
     }
-  
     for(let i=0 ; i< mainComposition.length; i++){
       let mymainData = compositionData[mainComposition[i]];
       console.log(mainData, mymainData);
       mainData.push(mymainData);
       
     }
+    console.log("this is the main compositions", compositionData);
+
     return mainData;
   
   }
@@ -248,6 +248,111 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       
     }
     return mainData;
+  }
+
+
+  export async function formatFunction(connections: Connection[], compositionData: any, reverse: number[]){
+
+    let mainData: any[] = [] ;
+    let myConcepts: number[] = [];
+    for(let i=0 ; i< connections.length; i++){
+      myConcepts.push(connections[i].toTheConceptId);
+      myConcepts.push(connections[i].ofTheConceptId)
+      myConcepts.push(connections[i].typeId);
+    }
+    console.log("these are the reverse", reverse);
+    connections.sort(function(x: Connection, y:Connection){
+      return y.id - x.id;
+    })
+  
+    for(let i=0 ; i< connections.length; i++){
+      let reverseFlag = false;
+      if(reverse.includes(connections[i].id)){
+        reverseFlag = true;
+      }
+  
+      let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
+      let toTheConcept = await GetTheConcept(connections[i].toTheConceptId);
+      if(reverseFlag == true){
+  
+        if(ofTheConcept.id != 0 && toTheConcept.id != 0){
+          let newData: any;
+          let key = toTheConcept.type?.characterValue ?? "self";
+  
+          if(connections[i].toTheConceptId in compositionData){
+            newData = compositionData[connections[i].toTheConceptId]
+          }
+          else{
+            newData = {};
+            newData[key] = {};
+            compositionData[connections[i].toTheConceptId] = newData;
+  
+          }
+          let linkerConcept = await GetTheConcept(connections[i].typeId);
+          try{
+            let reverseCharater = linkerConcept.characterValue + "_reverse";
+              if(Array.isArray(newData[key][reverseCharater])){
+                newData[key][reverseCharater].push(ofTheConcept.characterValue);
+              }
+              else{
+                if(linkerConcept.characterValue.includes("_s_")){
+                  newData[key][reverseCharater] = [];
+                  newData[key][reverseCharater].push(ofTheConcept.characterValue);
+                }
+                else{
+                  newData[key][reverseCharater] = ofTheConcept.characterValue;
+                }
+              }
+          }
+          catch(ex){
+            console.log("this is error", ex);
+          }
+        }
+      }
+      else
+      {
+        if(ofTheConcept.id != 0 && toTheConcept.id != 0){
+          let newData: any;
+  
+          let key = ofTheConcept.type?.characterValue ?? "self";
+  
+          if(connections[i].ofTheConceptId in compositionData){
+            newData = compositionData[connections[i].ofTheConceptId]
+          }
+          else{
+            newData = {};
+            newData[key] = {};
+            compositionData[connections[i].ofTheConceptId] = newData;
+          }
+          let linkerConcept = await GetTheConcept(connections[i].typeId);
+          try{
+    
+              if(Array.isArray(newData[key][linkerConcept.characterValue])){
+                newData[key][linkerConcept.characterValue].push(toTheConcept.characterValue);
+              }
+              else{
+                if(linkerConcept.characterValue.includes("_s_")){
+                  newData[key][linkerConcept.characterValue] = [];
+                  newData[key][linkerConcept.characterValue].push(toTheConcept.characterValue);
+                }
+                else{
+                  newData[key][linkerConcept.characterValue] = toTheConcept.characterValue;
+                }
+  
+              }
+    
+          }
+          catch(ex){
+            console.log("this is error", ex);
+          }
+    
+        }
+      }
+  
+    }
+    console.log("this is the compositionData", compositionData);
+    return compositionData;
+
   }
   
   
