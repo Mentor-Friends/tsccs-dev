@@ -16,4 +16,5 @@ export class FreeschemaQuery{
     typeConnection: string = "";
     outputFormat: number = NORMAL;
     name: string = "";
+    reverse: boolean = false;
 }
