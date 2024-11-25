@@ -400,7 +400,7 @@ export async function sendMessage(type: string, payload: any) {
           console.log('timeout', type)
           reject("No response from service worker after timeout");
           navigator.serviceWorker.removeEventListener("message", responseHandler);
-        }, 10000);
+        }, 30000); // 30 sec
       // })
       // .catch(err => reject(err))
       // .finally(() => console.log('finally'))
