@@ -1,5 +1,5 @@
 import { Actions } from ".";
-import { RecursiveSearchApiRaw, SearchLinkMultipleAll } from "../../app";
+import { RecursiveSearchApi, RecursiveSearchApiNewRawFullLinker, RecursiveSearchApiRaw, RecursiveSearchApiRawFullLinker, SearchLinkMultipleAll } from "../../app";
 
 export const searchActions: Actions = {
     SearchLinkMultipleAll: async (payload: any) => {
@@ -11,6 +11,16 @@ export const searchActions: Actions = {
           );
         return { success: true, data }
     },
+
+    // Recursive Search
+    RecursiveSearchApi: async (payload: any) => {
+        const data = await RecursiveSearchApi(
+            payload.composition,
+            payload.listLinkers,
+            payload.textSearch
+        )
+        return { success: true, data }
+    },
     RecursiveSearchApiRaw: async (payload: any) => {
         const data = await RecursiveSearchApiRaw(
             payload.composition,
@@ -18,5 +28,22 @@ export const searchActions: Actions = {
             payload.textSearch
         )
         return { success: true, data }
-    }
+    },
+    RecursiveSearchApiRawFullLinker: async (payload: any) => {
+        const data = await RecursiveSearchApiRawFullLinker(
+            payload.composition,
+            payload.fullLinkers,
+            payload.textSearch
+        )
+        return { success: true, data }
+    },
+    RecursiveSearchApiNewRawFullLinker: async (payload: any) => {
+        const data = await RecursiveSearchApiNewRawFullLinker(
+            payload.composition,
+            payload.fullLinkers,
+            payload.textSearch
+        )
+        return { success: true, data }
+    },
+    
 }

@@ -11,6 +11,7 @@ import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConnectionToMemory } 
 import { Actions, createActions, getActions, searchActions, syncActions, updateActions, connectionActions, deleteActions } from "./ServiceWorker/actions";
 
 let tabActionsMap: Map<string, InnerActions> = new Map()
+let TSCCS_init = false
 
 // Install Service Worker
 self.addEventListener("install", (event: any) => {
@@ -34,6 +35,11 @@ self.addEventListener("activate", async (event: any) => {
 // Actions that can be performed in this service worker
 const actions: Actions = {
   init: async (payload: any) => {
+    if (TSCCS_init) {
+      console.warn('Already Initialized')
+      return {success: false, name: 'init'}
+    }
+    TSCCS_init = true
     await init(
         payload?.url,
         payload?.aiurl,

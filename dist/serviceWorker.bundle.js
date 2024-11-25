@@ -2305,6 +2305,15 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 function RecursiveSearchApi() {
     return __awaiter(this, arguments, void 0, function* (composition = 0, listLinkers = [], textSearch = "") {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)("RecursiveSearchApi", {
+                composition,
+                listLinkers,
+                textSearch,
+            });
+            console.log("data received from sw", res);
+            return res.data;
+        }
         let concepts = [];
         try {
             let searchQuery = new _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_1__.SearchQuery();
@@ -2315,9 +2324,9 @@ function RecursiveSearchApi() {
             let Connections = [];
             let myHeaders = (0,_Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_3__.GetRequestHeader)();
             const response = yield fetch(_DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl(), {
-                method: 'POST',
+                method: "POST",
                 headers: myHeaders,
-                body: raw
+                body: raw,
             });
             if (response.ok) {
                 const result = yield response.json();
@@ -2333,10 +2342,10 @@ function RecursiveSearchApi() {
         }
         catch (error) {
             if (error instanceof Error) {
-                console.log('recursive search error message: ', error.message);
+                console.log("recursive search error message: ", error.message);
             }
             else {
-                console.log('recursive search unexpected error: ', error);
+                console.log("recursive search unexpected error: ", error);
             }
             (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_4__.HandleInternalError)(error, _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl());
         }
@@ -2346,8 +2355,12 @@ function RecursiveSearchApi() {
 function RecursiveSearchApiRaw() {
     return __awaiter(this, arguments, void 0, function* (composition = 0, listLinkers = [], textSearch = "") {
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('RecursiveSearchApiRaw', { composition, listLinkers, textSearch });
-            console.log('data received from sw', res);
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)("RecursiveSearchApiRaw", {
+                composition,
+                listLinkers,
+                textSearch,
+            });
+            console.log("data received from sw", res);
             return res.data;
         }
         let concepts = [];
@@ -2390,6 +2403,15 @@ function RecursiveSearchApiRaw() {
 }
 function RecursiveSearchApiRawFullLinker() {
     return __awaiter(this, arguments, void 0, function* (composition = 0, fullLinkers = [], textSearch = "") {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)("RecursiveSearchApiRawFullLinker", {
+                composition,
+                fullLinkers,
+                textSearch,
+            });
+            console.log("data received from sw", res);
+            return res.data;
+        }
         let concepts = [];
         try {
             let searchQuery = new _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_1__.SearchQuery();
@@ -2400,9 +2422,9 @@ function RecursiveSearchApiRawFullLinker() {
             let Connections = [];
             let myHeaders = (0,_Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_3__.GetRequestHeader)();
             const response = yield fetch(_DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl(), {
-                method: 'POST',
+                method: "POST",
                 headers: myHeaders,
-                body: raw
+                body: raw,
             });
             if (response.ok) {
                 const result = yield response.json();
@@ -2419,10 +2441,10 @@ function RecursiveSearchApiRawFullLinker() {
         }
         catch (error) {
             if (error instanceof Error) {
-                console.log('recursive search error message: ', error.message);
+                console.log("recursive search error message: ", error.message);
             }
             else {
-                console.log('recursive search unexpected error: ', error);
+                console.log("recursive search unexpected error: ", error);
             }
             (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_4__.HandleInternalError)(error, _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl());
         }
@@ -2430,6 +2452,15 @@ function RecursiveSearchApiRawFullLinker() {
 }
 function RecursiveSearchApiNewRawFullLinker() {
     return __awaiter(this, arguments, void 0, function* (composition = 0, fullLinkers = [], textSearch = "") {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)("RecursiveSearchApiNewRawFullLinker", {
+                composition,
+                fullLinkers,
+                textSearch,
+            });
+            console.log("data received from sw", res);
+            return res.data;
+        }
         let concepts = [];
         try {
             let searchQuery = new _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_1__.SearchQuery();
@@ -2440,9 +2471,9 @@ function RecursiveSearchApiNewRawFullLinker() {
             let Connections = [];
             let myHeaders = (0,_Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_3__.GetRequestHeader)();
             const response = yield fetch(_DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl(), {
-                method: 'POST',
+                method: "POST",
                 headers: myHeaders,
-                body: raw
+                body: raw,
             });
             if (response.ok) {
                 const result = yield response.json();
@@ -2459,18 +2490,17 @@ function RecursiveSearchApiNewRawFullLinker() {
         }
         catch (error) {
             if (error instanceof Error) {
-                console.log('recursive search error message: ', error.message);
+                console.log("recursive search error message: ", error.message);
             }
             else {
-                console.log('recursive search unexpected error: ', error);
+                console.log("recursive search unexpected error: ", error);
             }
             (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_4__.HandleInternalError)(error, _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl());
         }
     });
 }
 function RecursiveSearchLocal(composition_1) {
-    return __awaiter(this, arguments, void 0, function* (composition, listLinkers = [], textSearch = "") {
-    });
+    return __awaiter(this, arguments, void 0, function* (composition, listLinkers = [], textSearch = "") { });
 }
 
 
@@ -10767,10 +10797,23 @@ const searchActions = {
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.SearchLinkMultipleAll)(payload.searchQuery, payload.token, payload.caller, payload.format);
         return { success: true, data };
     }),
+    // Recursive Search
+    RecursiveSearchApi: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.RecursiveSearchApi)(payload.composition, payload.listLinkers, payload.textSearch);
+        return { success: true, data };
+    }),
     RecursiveSearchApiRaw: (payload) => __awaiter(void 0, void 0, void 0, function* () {
         const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.RecursiveSearchApiRaw)(payload.composition, payload.listLinkers, payload.textSearch);
         return { success: true, data };
-    })
+    }),
+    RecursiveSearchApiRawFullLinker: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.RecursiveSearchApiRawFullLinker)(payload.composition, payload.fullLinkers, payload.textSearch);
+        return { success: true, data };
+    }),
+    RecursiveSearchApiNewRawFullLinker: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const data = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.RecursiveSearchApiNewRawFullLinker)(payload.composition, payload.fullLinkers, payload.textSearch);
+        return { success: true, data };
+    }),
 };
 
 
@@ -19495,17 +19538,65 @@ function updateAccessToken(accessToken = "") {
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
- * @param enableSW {activate: boolean, scope: string} | undefined - This is for enabling service worker with its scope
+ * @param enableSW {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined - This is for enabling service worker with its scope
  */
 function init() {
     return __awaiter(this, arguments, void 0, function* (url = "", aiurl = "", accessToken = "", nodeUrl = "", enableAi = true, applicationName = "", enableSW = undefined, isTest = false) {
         try {
-            // await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
+            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_URL = url;
+            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.AI_URL = aiurl;
+            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.NODE_URL = nodeUrl;
+            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_APPLICATION = applicationName;
+            _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__.TokenStorage.BearerAccessToken = accessToken;
+            let randomizer = Math.floor(Math.random() * 100000000);
+            // BaseUrl.BASE_RANDOMIZER = randomizer;
+            // BaseUrl.BASE_RANDOMIZER = 999;
+            _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.setRandomizer(randomizer);
+            if (isTest) {
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isDataLoaded = true;
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isCharacterLoaded = true;
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isTypeLoaded = true;
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalDataLoaded = true;
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalTypeLoaded = true;
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalCharacterLoaded = true;
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionLoaded = true;
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionTypeLoaded = true;
+                _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
+                return true;
+            }
+            if (!("serviceWorker" in navigator)) {
+                yield initConceptConnection();
+                console.warn("Service Worker not supported in this browser.");
+                return;
+            }
             listenBroadCastMessages();
-            if ("serviceWorker" in navigator &&
-                enableSW &&
-                (enableSW === null || enableSW === void 0 ? void 0 : enableSW.activate) &&
-                (enableSW === null || enableSW === void 0 ? void 0 : enableSW.scope)) {
+            if (enableSW && enableSW.activate && enableSW.manual) {
+                yield new Promise((resolve, reject) => {
+                    navigator.serviceWorker.ready
+                        .then((registration) => __awaiter(this, void 0, void 0, function* () {
+                        console.log('registraions ready', registration);
+                        serviceWorker = registration.active;
+                        yield sendMessage("init", {
+                            url,
+                            aiurl,
+                            accessToken,
+                            nodeUrl,
+                            enableAi,
+                            applicationName,
+                            isTest,
+                        });
+                        resolve('done');
+                    }))
+                        .catch(err => {
+                        console.error("Error: Ready service worker", err);
+                        reject(err);
+                    })
+                        .finally(() => console.log('Finally service worker ready done'));
+                    setTimeout(() => reject('Timeout ready'), 30000);
+                });
+            }
+            else if (enableSW &&
+                (enableSW === null || enableSW === void 0 ? void 0 : enableSW.activate)) {
                 try {
                     console.log("service worker initialiing");
                     // navigator.serviceWorker
@@ -19604,7 +19695,7 @@ function init() {
                             }
                         }))
                             .catch((error) => __awaiter(this, void 0, void 0, function* () {
-                            yield initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest);
+                            yield initConceptConnection();
                             reject(error);
                             console.error("Service Worker registration failed:", error);
                         }));
@@ -19616,18 +19707,19 @@ function init() {
                     // });
                 }
                 catch (error) {
-                    yield initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest);
+                    yield initConceptConnection();
                     console.error("Unable to start service worker", error);
                 }
             }
             else {
-                yield initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest);
-                console.log("Service Worker not supported in this browser.");
+                yield initConceptConnection();
+                console.warn('Service Worker not activated');
             }
             return true;
         }
         catch (error) {
-            console.log("cannot initialize the system", error);
+            yield initConceptConnection();
+            console.warn("Cannot initialize the system", error);
         }
     });
 }
@@ -19662,17 +19754,20 @@ function sendMessage(type, payload) {
             else {
                 // wait one second before checking again
                 setTimeout(() => {
-                    if (navigator.serviceWorker.controller) {
+                    // if (navigator.serviceWorker.controller) {
+                    if (serviceWorker) {
                         serviceWorker.postMessage({ type, payload });
                         // navigator.serviceWorker.controller.postMessage({ type, payload });
                     }
                     else {
+                        console.log('not ready', type);
                         reject("Service worker not ready");
                     }
-                }, 1000);
+                }, 30000); // 30 seconds
             }
             // Timeout for waiting for the response (e.g., 5 seconds)
             setTimeout(() => {
+                console.log('timeout', type);
                 reject("No response from service worker after timeout");
                 navigator.serviceWorker.removeEventListener("message", responseHandler);
             }, 10000);
@@ -19751,28 +19846,7 @@ function listenBroadCastMessages() {
  * @returns Promise<any>
  */
 function initConceptConnection() {
-    return __awaiter(this, arguments, void 0, function* (url = "", aiurl = "", accessToken = "", nodeUrl = "", enableAi = true, applicationName = "", isTest = false) {
-        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_URL = url;
-        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.AI_URL = aiurl;
-        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.NODE_URL = nodeUrl;
-        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_APPLICATION = applicationName;
-        _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__.TokenStorage.BearerAccessToken = accessToken;
-        let randomizer = Math.floor(Math.random() * 100000000);
-        // BaseUrl.BASE_RANDOMIZER = randomizer;
-        // BaseUrl.BASE_RANDOMIZER = 999;
-        _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.setRandomizer(999);
-        if (isTest) {
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isDataLoaded = true;
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isCharacterLoaded = true;
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isTypeLoaded = true;
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalDataLoaded = true;
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalTypeLoaded = true;
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalCharacterLoaded = true;
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionLoaded = true;
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionTypeLoaded = true;
-            _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
-            return true;
-        }
+    return __awaiter(this, void 0, void 0, function* () {
         /**
          * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
          * We use some sort of AI algorithm to initilize these concepts with the most used concept.
@@ -19949,6 +20023,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 let tabActionsMap = new Map();
+let TSCCS_init = false;
 // Install Service Worker
 self.addEventListener("install", (event) => {
     console.log("Service Worker installing... sw");
@@ -19967,6 +20042,11 @@ self.addEventListener("activate", (event) => __awaiter(void 0, void 0, void 0, f
 // });
 // Actions that can be performed in this service worker
 const actions = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ init: (payload) => __awaiter(void 0, void 0, void 0, function* () {
+        if (TSCCS_init) {
+            console.warn('Already Initialized');
+            return { success: false, name: 'init' };
+        }
+        TSCCS_init = true;
         yield init(payload === null || payload === void 0 ? void 0 : payload.url, payload === null || payload === void 0 ? void 0 : payload.aiurl, payload === null || payload === void 0 ? void 0 : payload.accessToken, payload === null || payload === void 0 ? void 0 : payload.nodeUrl, payload === null || payload === void 0 ? void 0 : payload.enableAi, payload === null || payload === void 0 ? void 0 : payload.applicationName, payload === null || payload === void 0 ? void 0 : payload.isTest);
         return { success: true, data: undefined, name: 'init' };
     }), updateAccessToken: (payload) => __awaiter(void 0, void 0, void 0, function* () {

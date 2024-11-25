@@ -151,7 +151,7 @@ function updateAccessToken(accessToken: string = "") {
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
- * @param enableSW {activate: boolean, scope: string} | undefined - This is for enabling service worker with its scope
+ * @param enableSW {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined - This is for enabling service worker with its scope
  */
 async function init(
   url: string = "",
@@ -160,19 +160,68 @@ async function init(
   nodeUrl: string = "",
   enableAi: boolean = true,
   applicationName: string = "",
-  enableSW: {activate: boolean, scope?: string, pathToSW?: string} | undefined = undefined,
+  enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
   isTest: boolean = false,
 ) {
   try {
-    // await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
+    BaseUrl.BASE_URL = url;
+    BaseUrl.AI_URL = aiurl;
+    BaseUrl.NODE_URL = nodeUrl;
+    BaseUrl.BASE_APPLICATION = applicationName;
+    TokenStorage.BearerAccessToken = accessToken;
+    let randomizer = Math.floor(Math.random() * 100000000);
+    // BaseUrl.BASE_RANDOMIZER = randomizer;
+    // BaseUrl.BASE_RANDOMIZER = 999;
+    
+    BaseUrl.setRandomizer(randomizer)
+    if (isTest) {
+      IdentifierFlags.isDataLoaded = true;
+      IdentifierFlags.isCharacterLoaded = true;
+      IdentifierFlags.isTypeLoaded = true;
+      IdentifierFlags.isLocalDataLoaded = true;
+      IdentifierFlags.isLocalTypeLoaded = true;
+      IdentifierFlags.isLocalCharacterLoaded = true;
+      IdentifierFlags.isConnectionLoaded = true;
+      IdentifierFlags.isConnectionTypeLoaded = true;
+      IdentifierFlags.isLocalConnectionLoaded = true;
+      return true;
+    }
+
+    if (!("serviceWorker" in navigator)) {
+      await initConceptConnection();
+      console.warn("Service Worker not supported in this browser.");
+      return
+    }
 
     listenBroadCastMessages()
+    if (enableSW && enableSW.activate && enableSW.manual) {
+      await new Promise((resolve, reject) => {
+        navigator.serviceWorker.ready
+        .then(async (registration) => {
+          console.log('registraions ready', registration)
+          serviceWorker = registration.active
+          await sendMessage("init", {
+            url,
+            aiurl,
+            accessToken,
+            nodeUrl,
+            enableAi,
+            applicationName,
+            isTest,
+          });
+          resolve('done')
+        })
+        .catch(err => {
+          console.error("Error: Ready service worker", err)
+          reject(err);
+        })
+        .finally(() => console.log('Finally service worker ready done'))
 
-    if (
-      "serviceWorker" in navigator &&
+        setTimeout(() => reject('Timeout ready'), 30000)
+      })
+    } else if (
       enableSW &&
-      enableSW?.activate &&
-      enableSW?.scope
+      enableSW?.activate
     ) {
       try {
         console.log("service worker initialiing");
@@ -278,15 +327,7 @@ async function init(
                     }
                   })
                   .catch(async (error) => {
-                    await initConceptConnection(
-                      url,
-                      aiurl,
-                      accessToken,
-                      nodeUrl,
-                      enableAi,
-                      applicationName,
-                      isTest
-                    );
+                    await initConceptConnection();
                     reject(error);
                     console.error("Service Worker registration failed:", error);
                   });
@@ -297,32 +338,17 @@ async function init(
           //   console.log("Unable to register", err);
           // });
       } catch (error) {
-        await initConceptConnection(
-          url,
-          aiurl,
-          accessToken,
-          nodeUrl,
-          enableAi,
-          applicationName,
-          isTest
-        );
+        await initConceptConnection();
         console.error("Unable to start service worker", error);
       }
     } else {
-      await initConceptConnection(
-        url,
-        aiurl,
-        accessToken,
-        nodeUrl,
-        enableAi,
-        applicationName,
-        isTest
-      );
-      console.log("Service Worker not supported in this browser.");
+      await initConceptConnection();
+      console.warn('Service Worker not activated')
     }
     return true;
   } catch (error) {
-    console.log("cannot initialize the system", error);
+    await initConceptConnection();
+    console.warn("Cannot initialize the system", error);
   }
 }
 
@@ -358,17 +384,20 @@ export async function sendMessage(type: string, payload: any) {
         } else {
           // wait one second before checking again
           setTimeout(() => {
-            if (navigator.serviceWorker.controller) {
+            // if (navigator.serviceWorker.controller) {
+            if (serviceWorker) {
               serviceWorker.postMessage({ type, payload });
               // navigator.serviceWorker.controller.postMessage({ type, payload });
             } else {
+              console.log('not ready', type)
               reject("Service worker not ready");
             }
-          }, 1000)
+          }, 30000) // 30 seconds
         }
     
         // Timeout for waiting for the response (e.g., 5 seconds)
         setTimeout(() => {
+          console.log('timeout', type)
           reject("No response from service worker after timeout");
           navigator.serviceWorker.removeEventListener("message", responseHandler);
         }, 10000);
@@ -451,37 +480,7 @@ function listenBroadCastMessages() {
  * @param isTest boolean
  * @returns Promise<any>
  */
-async function initConceptConnection(
-  url: string = "",
-  aiurl: string = "",
-  accessToken: string = "",
-  nodeUrl: string = "",
-  enableAi: boolean = true,
-  applicationName: string = "",
-  isTest: boolean = false
-) {
-  BaseUrl.BASE_URL = url;
-  BaseUrl.AI_URL = aiurl;
-  BaseUrl.NODE_URL = nodeUrl;
-  BaseUrl.BASE_APPLICATION = applicationName;
-  TokenStorage.BearerAccessToken = accessToken;
-  let randomizer = Math.floor(Math.random() * 100000000);
-  // BaseUrl.BASE_RANDOMIZER = randomizer;
-  // BaseUrl.BASE_RANDOMIZER = 999;
-  
-  BaseUrl.setRandomizer(999)
-  if (isTest) {
-    IdentifierFlags.isDataLoaded = true;
-    IdentifierFlags.isCharacterLoaded = true;
-    IdentifierFlags.isTypeLoaded = true;
-    IdentifierFlags.isLocalDataLoaded = true;
-    IdentifierFlags.isLocalTypeLoaded = true;
-    IdentifierFlags.isLocalCharacterLoaded = true;
-    IdentifierFlags.isConnectionLoaded = true;
-    IdentifierFlags.isConnectionTypeLoaded = true;
-    IdentifierFlags.isLocalConnectionLoaded = true;
-    return true;
-  }
+async function initConceptConnection() {
   
   /**
    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
