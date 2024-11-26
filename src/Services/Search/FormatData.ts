@@ -10,7 +10,7 @@ import { Connection, GetTheConcept } from "../../app";
  * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
  * @returns 
  */
-export async function FormatConceptsAndConnectionsNormalList(connections: Connection[],compositionData: any[],  mainComposition: number[], reverse: number [] = []){
+export async function FormatConceptsAndConnectionsNormalList(connections: Connection[],compositionData: any[],  mainComposition: number[], newCompositionData: any, reverse: number [] = []){
     let mainData: any[] = [] ;
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
@@ -18,7 +18,6 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
       myConcepts.push(connections[i].ofTheConceptId)
       myConcepts.push(connections[i].typeId);
     }
-    console.log("these are the reverse", reverse);
     connections.sort(function(x: Connection, y:Connection){
       return y.id - x.id;
     })
@@ -34,75 +33,88 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
       if(reverseFlag == true){
   
         if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-          let newData: any;
-          let key = toTheConcept.type?.characterValue ?? "self";
-  
-          if(connections[i].toTheConceptId in compositionData){
-            newData = compositionData[connections[i].toTheConceptId]
-          }
-          else{
-            newData = {};
-            newData[key] = {};
-            compositionData[connections[i].toTheConceptId] = newData;
-  
-          }
-          let linkerConcept = await GetTheConcept(connections[i].typeId);
-          try{
-            let reverseCharater = linkerConcept.characterValue + "_reverse";
-              if(Array.isArray(newData[key][reverseCharater])){
-                newData[key][reverseCharater].push(ofTheConcept.characterValue);
+          if(toTheConcept.id in compositionData){
+            let newData: any;
+            let key = toTheConcept.type?.characterValue ?? "self";
+            if(connections[i].toTheConceptId in compositionData){
+              newData = compositionData[connections[i].toTheConceptId]
+            }
+            else{
+              newData = {};
+              newData[key] = {};
+              compositionData[connections[i].toTheConceptId] = newData;
+            }
+            let linkerConcept = await GetTheConcept(connections[i].typeId);
+            try{
+              let reverseCharater = linkerConcept.characterValue + "_reverse";
+              let data = compositionData[connections[i].ofTheConceptId];
+              if(data){
+                if(Array.isArray(newData[key][reverseCharater])){
+                  newData[key][reverseCharater].push(data);
+
               }
               else{
                 if(linkerConcept.characterValue.includes("_s_")){
                   newData[key][reverseCharater] = [];
-                  newData[key][reverseCharater].push(ofTheConcept.characterValue);
+                    newData[key][reverseCharater].push(data);
+
                 }
                 else{
-                  newData[key][reverseCharater] = ofTheConcept.characterValue;
+                    newData[key][reverseCharater] = data;
                 }
               }
+              }
+
+            }
+            catch(ex){
+              console.log("this is error", ex);
+            }
           }
-          catch(ex){
-            console.log("this is error", ex);
-          }
+
         }
       }
       else
       {
         if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-          let newData: any;
+          if(ofTheConcept.id in compositionData){
+            let newData: any;
   
-          let key = ofTheConcept.type?.characterValue ?? "self";
-  
-          if(connections[i].ofTheConceptId in compositionData){
-            newData = compositionData[connections[i].ofTheConceptId]
-          }
-          else{
-            newData = {};
-            newData[key] = {};
-            compositionData[connections[i].ofTheConceptId] = newData;
-          }
-          let linkerConcept = await GetTheConcept(connections[i].typeId);
-          try{
-    
-              if(Array.isArray(newData[key][linkerConcept.characterValue])){
-                newData[key][linkerConcept.characterValue].push(toTheConcept.characterValue);
-              }
-              else{
-                if(linkerConcept.characterValue.includes("_s_")){
-                  newData[key][linkerConcept.characterValue] = [];
-                  newData[key][linkerConcept.characterValue].push(toTheConcept.characterValue);
+            let key = ofTheConcept.type?.characterValue ?? "self";
+            if(connections[i].ofTheConceptId in compositionData){
+              newData = compositionData[connections[i].ofTheConceptId]
+            }
+            else{
+              newData = {};
+              newData[key] = {};
+              compositionData[connections[i].ofTheConceptId] = newData;
+            }
+            let linkerConcept = await GetTheConcept(connections[i].typeId);
+            try{
+                let data = compositionData[connections[i].toTheConceptId]
+                if(data){
+                  if(Array.isArray(newData[key][linkerConcept.characterValue])){
+                    newData[key][linkerConcept.characterValue].push(data);
                 }
                 else{
-                  newData[key][linkerConcept.characterValue] = toTheConcept.characterValue;
-                }
+                  if(linkerConcept.characterValue.includes("_s_")){
+                    newData[key][linkerConcept.characterValue] = [];
+                      newData[key][linkerConcept.characterValue].push(data);
+                  }
+                  else{
+                      newData[key][linkerConcept.characterValue] = data;
   
-              }
+                  }
     
+                }
+                }
+
+      
+            }
+            catch(ex){
+              console.log("this is error", ex);
+            }
           }
-          catch(ex){
-            console.log("this is error", ex);
-          }
+
     
         }
       }
@@ -110,11 +122,10 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
     }
     for(let i=0 ; i< mainComposition.length; i++){
       let mymainData = compositionData[mainComposition[i]];
-      console.log(mainData, mymainData);
+      mymainData["id"] = mainComposition[i];
       mainData.push(mymainData);
       
     }
-    console.log("this is the main compositions", compositionData);
 
     return mainData;
   
@@ -132,7 +143,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
  * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
  * @returns 
  */
-export async function FormatFromConnectionsAlteredArrayExternal(connections:Connection[], compositionData: any[], mainComposition: number[], reverse: number [] = []){
+export async function FormatFromConnectionsAlteredArrayExternal(connections:Connection[], compositionData: any[], newCompositionData: any, mainComposition: number[], reverse: number [] = []){
     let startTime = new Date().getTime();
     let mainData: any[] = [] ;
     let myConcepts: number[] = [];
@@ -154,96 +165,129 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       if(reverseFlag == true){
   
         if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-          let newData: any;
-          let linkerConcept = await GetTheConcept(connections[i].typeId);
-          let key = ofTheConcept.type?.characterValue ?? "self";
-  
-          if(connections[i].ofTheConceptId in compositionData){
-            newData = compositionData[connections[i].ofTheConceptId]
-          }
-          else{
-            newData = {};
-            newData[key] = {};
-            compositionData[connections[i].ofTheConceptId] = newData;
-          }
-          try{
-            let reverseCharater = linkerConcept.characterValue + "_reverse";
-              if(Array.isArray(newData[key][reverseCharater])){
-                newData[key][reverseCharater].push(compositionData[connections[i].ofTheConceptId]);
-              }
-              else{
-                let mytype = ofTheConcept?.type?.characterValue ?? "none";
-                let value = ofTheConcept.characterValue;
+          if(toTheConcept.id in compositionData){
+            let newData: any;
+            let linkerConcept = await GetTheConcept(connections[i].typeId);
+            let key = toTheConcept.type?.characterValue ?? "self";
+            let flag: boolean = false;
+            if(connections[i].toTheConceptId in compositionData){
+              flag = true;
+
+            }
+            if(connections[i].toTheConceptId in newCompositionData){
+              newData = newCompositionData[connections[i].toTheConceptId]
+            }
+            else{
+              newData = {};
+              newData[key] = {};
+              newCompositionData[connections[i].toTheConceptId] = newData;
+            }
+            try{
+              let isComp = compositionData[connections[i].ofTheConceptId];
+              if(isComp){
                 let data = {
-                    "id": ofTheConcept.id,
-                    "data": {
-                        [mytype] : value
-                    }
+                  "id": ofTheConcept.id,
+                  "data": compositionData[connections[i].ofTheConceptId]
                 }
-                newData[key][reverseCharater] = [];
-                newData[key][reverseCharater].push(data);
-
-
-              }
-  
+              // let value = ofTheConcept.characterValue;
+              // if(flag){
+              //   value = compositionData[connections[i].ofTheConceptId];
+              // }
+                let reverseCharater = linkerConcept.characterValue + "_reverse";
+                  if(Array.isArray(newData[key][reverseCharater])){
+                    newData[key][reverseCharater].push(data);
+                  }
+                  else{
+                    let mytype = ofTheConcept?.type?.characterValue ?? "none";
     
-          }
-          catch(ex){
-            console.log("this is error", ex);
+    
+                    if(reverseCharater.includes("_s_")){
+                      newData[key][reverseCharater] = [];
+                      newData[key][reverseCharater].push(data);
+                  }
+                  else{
+                      newData[key][reverseCharater] = data;
+                  }
+    
+    
+                  }
+              }
+
+    
+      
+            }
+            catch(ex){
+              console.log("this is error", ex);
+            }
           }
         }
       }
       else
       {
         if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-          let newData: any;
-          let linkerConcept = await GetTheConcept(connections[i].typeId);
-          let key = ofTheConcept.type?.characterValue ?? "self";
+          if(ofTheConcept.id in compositionData){
+            let newData: any;
+            let linkerConcept = await GetTheConcept(connections[i].typeId);
+            let key = ofTheConcept.type?.characterValue ?? "self";
+            let flag: boolean = false;
+            if(connections[i].toTheConceptId in compositionData){
+              flag = true;
   
-          if(connections[i].ofTheConceptId in compositionData){
-            newData = compositionData[connections[i].ofTheConceptId]
-          }
-          else{
-            newData = {};
-            newData[key] = {};
-            compositionData[connections[i].ofTheConceptId] = newData;
-          }
-          try{
-    
-              if(Array.isArray(newData[key][linkerConcept.characterValue])){
-                newData[key][linkerConcept.characterValue].push(compositionData[connections[i].toTheConceptId]);
-              }
-              else{
-                let mytype = toTheConcept?.type?.characterValue ?? "none";
-                let value = toTheConcept.characterValue;
+            }
+            if(connections[i].ofTheConceptId in newCompositionData){
+              newData = newCompositionData[connections[i].ofTheConceptId]
+            }
+            else{
+              newData = {};
+              newData[key] = {};
+              newCompositionData[connections[i].ofTheConceptId] = newData;
+            }
+            try{
+              let isComp = compositionData[connections[i].toTheConceptId];
+              if(isComp){
                 let data = {
-                    "id": toTheConcept.id,
-                    "data": {
-                        [mytype] : value
-                    }
-                }
-                if(linkerConcept.characterValue.includes("_s_")){
-                    newData[key][linkerConcept.characterValue] = [];
-                    newData[key][linkerConcept.characterValue].push(data);
-                }
-                else{
-                    newData[key][linkerConcept.characterValue] = data;
-                }
-                
+                  "id": toTheConcept.id,
+                  "data": compositionData[connections[i].toTheConceptId]
               }
+        
+                  if(Array.isArray(newData[key][linkerConcept.characterValue])){
+                    newData[key][linkerConcept.characterValue].push(data);
+                  }
+                  else{
+                    let mytype = toTheConcept?.type?.characterValue ?? "none";
+                    let value = toTheConcept.characterValue;
     
+                    if(flag){
+                      value = compositionData[connections[i].toTheConceptId];
+                    }
+                    if(linkerConcept.characterValue.includes("_s_")){
+                        newData[key][linkerConcept.characterValue] = [];
+                        newData[key][linkerConcept.characterValue].push(data);
+                    }
+                    else{
+                        newData[key][linkerConcept.characterValue] = data;
+                    }
+                    
+                  }
+              }
+  
+      
+            }
+            catch(ex){
+              console.log("this is error", ex);
+            }
           }
-          catch(ex){
-            console.log("this is error", ex);
-          }
+          
     
         }
       }
   
     }
+
     for(let i=0 ; i< mainComposition.length; i++){
-      let mymainData = compositionData[mainComposition[i]];
-      console.log(mainData, mymainData);
+      let mymainData: any = {};
+      mymainData["id"] = mainComposition[i];
+      mymainData["data"] = newCompositionData[mainComposition[i]];
       mainData.push(mymainData);
       
     }
@@ -251,16 +295,20 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
   }
 
 
+  /**
+   * 
+   * ## Format Normal ##
+   * This function takes in the connections and then converts the connections to the single level objects for further processing
+   * This function is the builder of the arrays/ objects from the connections.
+   */
   export async function formatFunction(connections: Connection[], compositionData: any, reverse: number[]){
 
-    let mainData: any[] = [] ;
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
       myConcepts.push(connections[i].toTheConceptId);
       myConcepts.push(connections[i].ofTheConceptId)
       myConcepts.push(connections[i].typeId);
     }
-    console.log("these are the reverse", reverse);
     connections.sort(function(x: Connection, y:Connection){
       return y.id - x.id;
     })
@@ -290,17 +338,22 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
           }
           let linkerConcept = await GetTheConcept(connections[i].typeId);
           try{
+            let mytype = ofTheConcept?.type?.characterValue ?? "none";
+            let value = ofTheConcept.characterValue;
+            let data = {
+                  [mytype] : value
+          }
             let reverseCharater = linkerConcept.characterValue + "_reverse";
               if(Array.isArray(newData[key][reverseCharater])){
-                newData[key][reverseCharater].push(ofTheConcept.characterValue);
+                // newData[key][reverseCharater].push(data);
               }
               else{
                 if(linkerConcept.characterValue.includes("_s_")){
-                  newData[key][reverseCharater] = [];
-                  newData[key][reverseCharater].push(ofTheConcept.characterValue);
+                  // newData[key][reverseCharater] = [];
+                  // newData[key][reverseCharater].push(data);
                 }
                 else{
-                  newData[key][reverseCharater] = ofTheConcept.characterValue;
+                  newData[key][reverseCharater] = data;
                 }
               }
           }
@@ -326,17 +379,21 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
           }
           let linkerConcept = await GetTheConcept(connections[i].typeId);
           try{
-    
+            let mytype = toTheConcept?.type?.characterValue ?? "none";
+            let value = toTheConcept.characterValue;
+            let data = {
+                  [mytype] : value
+          }
               if(Array.isArray(newData[key][linkerConcept.characterValue])){
-                newData[key][linkerConcept.characterValue].push(toTheConcept.characterValue);
+                // newData[key][linkerConcept.characterValue].push(data);
               }
               else{
                 if(linkerConcept.characterValue.includes("_s_")){
-                  newData[key][linkerConcept.characterValue] = [];
-                  newData[key][linkerConcept.characterValue].push(toTheConcept.characterValue);
+                  // newData[key][linkerConcept.characterValue] = [];
+                  // newData[key][linkerConcept.characterValue].push(data);
                 }
                 else{
-                  newData[key][linkerConcept.characterValue] = toTheConcept.characterValue;
+                  newData[key][linkerConcept.characterValue] = data;
                 }
   
               }
@@ -350,9 +407,133 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       }
   
     }
-    console.log("this is the compositionData", compositionData);
     return compositionData;
 
   }
+
+
+  /**
+   * ## Format DATA-ID ##
+   * this function takes in connections and creates a single level objects so that all the data are added to its object/ array.
+   * This is then passed on further for stiching.
+   * @param connections 
+   * @param compositionData 
+   * @param reverse 
+   * @returns 
+   */
+  export async function FormatFunctionData(connections:Connection[], compositionData: any[], reverse: number [] = []){
+    let myConcepts: number[] = [];
+    for(let i=0 ; i< connections.length; i++){
+      myConcepts.push(connections[i].toTheConceptId);
+      myConcepts.push(connections[i].ofTheConceptId)
+      myConcepts.push(connections[i].typeId);
+    }
+    connections.sort(function(x: Connection, y:Connection){
+      return y.id - x.id;
+    })
+    for(let i=0 ; i< connections.length; i++){
+      let reverseFlag = false;
+      let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
+      let toTheConcept = await GetTheConcept(connections[i].toTheConceptId);
+      if(reverse.includes(connections[i].id)){
+        reverseFlag = true;
+      }
+      if(reverseFlag == true){
+  
+        if(ofTheConcept.id != 0 && toTheConcept.id != 0){
+          let newData: any;
+          let linkerConcept = await GetTheConcept(connections[i].typeId);
+          let key = toTheConcept.type?.characterValue ?? "self";
+          if(connections[i].toTheConceptId in compositionData){
+            newData = compositionData[connections[i].toTheConceptId]
+          }
+          else{
+            newData = {};
+            newData[key] = {};
+            compositionData[connections[i].toTheConceptId] = newData;
+          }
+          try{
+            let mytype = ofTheConcept?.type?.characterValue ?? "none";
+            let value = ofTheConcept.characterValue;
+            let data = {
+                "id": ofTheConcept.id,
+                "data": {
+                    [mytype] : value
+                }
+            }
+            let reverseCharater = linkerConcept.characterValue + "_reverse";
+              if(Array.isArray(newData[key][reverseCharater])){
+                // newData[key][reverseCharater].push(data);
+              }
+              else{
+
+                if(reverseCharater.includes("_s_")){
+                  // newData[key][reverseCharater] = [];
+                  // newData[key][reverseCharater].push(data);
+              }
+              else{
+                  newData[key][reverseCharater] = data;
+              }
+
+
+              }
+  
+    
+          }
+          catch(ex){
+            console.log("this is error", ex);
+          }
+        }
+      }
+      else
+      {
+        if(ofTheConcept.id != 0 && toTheConcept.id != 0){
+          let newData: any;
+          let linkerConcept = await GetTheConcept(connections[i].typeId);
+          let key = ofTheConcept.type?.characterValue ?? "self";
+          if(connections[i].ofTheConceptId in compositionData){
+            newData = compositionData[connections[i].ofTheConceptId]
+          }
+          else{
+            newData = {};
+            newData[key] = {};
+            compositionData[connections[i].ofTheConceptId] = newData;
+          }
+          try{
+            let mytype = toTheConcept?.type?.characterValue ?? "none";
+            let value = toTheConcept.characterValue;
+
+            let data = {
+              "id": toTheConcept.id,
+              "data": {
+                  [mytype] : value
+              }
+            }
+              if(Array.isArray(newData[key][linkerConcept.characterValue])){
+                // newData[key][linkerConcept.characterValue].push(data);
+              }
+              else{
+                if(linkerConcept.characterValue.includes("_s_")){
+                    // newData[key][linkerConcept.characterValue] = [];
+                    // newData[key][linkerConcept.characterValue].push(data);
+                }
+                else{
+                    newData[key][linkerConcept.characterValue] = data;
+                }
+                
+              }
+          }
+          catch(ex){
+            console.log("this is error", ex);
+          }
+    
+        }
+      }
+  
+    }
+    return compositionData;
+  }
+
+
   
   
