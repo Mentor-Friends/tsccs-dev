@@ -31,7 +31,7 @@ export default async function UpdateComposition(
     const res: any = await sendMessage("UpdateComposition", {
       patcherStructure,
     });
-    console.log("data received from sw", res);
+    // console.log("data received from sw", res);
     return res.data;
   }
   // get all the default userId, sessionId, accessId passed by the patcherStructure

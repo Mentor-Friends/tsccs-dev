@@ -22,7 +22,7 @@ export async function RecursiveSearchApi(
       listLinkers,
       textSearch,
     });
-    console.log("data received from sw", res);
+    // console.log("data received from sw", res);
     return res.data;
   }
 
@@ -76,7 +76,7 @@ export async function RecursiveSearchApiRaw(
       listLinkers,
       textSearch,
     });
-    console.log("data received from sw", res);
+    // console.log("data received from sw", res);
     return res.data;
   }
 
@@ -127,7 +127,7 @@ export async function RecursiveSearchApiRawFullLinker(
       fullLinkers,
       textSearch,
     });
-    console.log("data received from sw", res);
+    // console.log("data received from sw", res);
     return res.data;
   }
 
@@ -178,7 +178,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
       fullLinkers,
       textSearch,
     });
-    console.log("data received from sw", res);
+    // console.log("data received from sw", res);
     return res.data;
   }
   let concepts: any[] = [];

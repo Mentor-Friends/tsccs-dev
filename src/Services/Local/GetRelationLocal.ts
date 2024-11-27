@@ -7,7 +7,7 @@ export async function GetRelationLocal(id: number, relation:string, userId: numb
             const res: any = await sendMessage("GetRelationLocal", {
               id, relation, userId
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             return res.data;
           }
         let typeConcept:Concept =  await GetConceptByCharacterAndCategoryLocal(relation);

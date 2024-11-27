@@ -36,7 +36,7 @@ export async function UpdateCompositionLocal(
       patcherStructure,
       actions
     });
-    console.log("data received from sw", res);
+    // console.log("data received from sw", res);
     if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
     if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
     return res.data;

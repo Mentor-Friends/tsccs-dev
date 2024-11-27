@@ -2318,7 +2318,7 @@ function RecursiveSearchApi() {
                 listLinkers,
                 textSearch,
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             return res.data;
         }
         let concepts = [];
@@ -2367,7 +2367,7 @@ function RecursiveSearchApiRaw() {
                 listLinkers,
                 textSearch,
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             return res.data;
         }
         let concepts = [];
@@ -2416,7 +2416,7 @@ function RecursiveSearchApiRawFullLinker() {
                 fullLinkers,
                 textSearch,
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             return res.data;
         }
         let concepts = [];
@@ -2465,7 +2465,7 @@ function RecursiveSearchApiNewRawFullLinker() {
                 fullLinkers,
                 textSearch,
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             return res.data;
         }
         let concepts = [];
@@ -5822,7 +5822,7 @@ class ConnectionData {
         return __awaiter(this, void 0, void 0, function* () {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionByOfTheConceptAndType", { ofTheConceptId, typeId });
-                console.log("data received from sw", res);
+                // console.log("data received from sw", res);
                 return res.data;
             }
             let connections = _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
@@ -5891,7 +5891,7 @@ class ConnectionData {
         return __awaiter(this, void 0, void 0, function* () {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionsOfCompositionLocal", { id });
-                console.log("data received from sw", res);
+                // console.log("data received from sw", res);
                 return res.data;
             }
             let connections = [];
@@ -5922,7 +5922,7 @@ class ConnectionData {
         return __awaiter(this, void 0, void 0, function* () {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionsOfConcept", { id });
-                console.log("data received from sw", res);
+                // console.log("data received from sw", res);
                 return res.data;
             }
             let connectionIds = [];
@@ -13086,7 +13086,7 @@ function GetCompositionListAllWithId(compositionName_1, userId_1) {
     return __awaiter(this, arguments, void 0, function* (compositionName, userId, inpage = 10, page = 1) {
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionListAllWithId', { compositionName, userId, inpage, page });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let conceptLocal = yield (0,_Local_GetConceptByCharacterLocal__WEBPACK_IMPORTED_MODULE_7__["default"])(compositionName);
@@ -13639,7 +13639,7 @@ function GetRelation(id_1, relation_1) {
     return __awaiter(this, arguments, void 0, function* (id, relation, inpage = 10, page = 1) {
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetRelation', { id, relation, inpage, page });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let output = [];
@@ -13668,7 +13668,7 @@ function GetRelationRaw(id_1, relation_1) {
     return __awaiter(this, arguments, void 0, function* (id, relation, inpage = 10, page = 1) {
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetRelationRaw', { id, relation, inpage, page });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let output = [];
@@ -14838,7 +14838,7 @@ function GetRelationLocal(id, relation, userId) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("GetRelationLocal", {
                     id, relation, userId
                 });
-                console.log("data received from sw", res);
+                // console.log("data received from sw", res);
                 return res.data;
             }
             let typeConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterAndCategoryLocal)(relation);
@@ -14965,7 +14965,7 @@ function MakeTheConceptLocal(referent_1, typeCharacter_1, userId_1, categoryId_1
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("MakeTheConceptLocal", {
                 referent, typeCharacter, userId, categoryId, typeId, actions
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                 actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
@@ -15147,7 +15147,7 @@ function MakeTheTypeConceptLocal(typeString_1, sessionId_1, sessionUserId_1, use
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)("MakeTheTypeConceptLocal", {
                 typeString, sessionId, sessionUserId, userId, actions
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                 actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
@@ -15229,7 +15229,7 @@ function UpdateCompositionLocal(patcherStructure_1) {
                 patcherStructure,
                 actions
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                 actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
@@ -15521,7 +15521,7 @@ function MakeTheInstanceConcept(type_1, referent_1) {
                 passedSessionId,
                 referentId,
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             return res.data;
         }
         let sessionInformationId = passedSessionId;
@@ -16943,7 +16943,7 @@ function UpdateComposition(patcherStructure) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_13__.sendMessage)("UpdateComposition", {
                 patcherStructure,
             });
-            console.log("data received from sw", res);
+            // console.log("data received from sw", res);
             return res.data;
         }
         // get all the default userId, sessionId, accessId passed by the patcherStructure

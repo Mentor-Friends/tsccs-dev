@@ -93,7 +93,7 @@ export async function GetCompositionListAll(compositionName: string,userId:numbe
 export async function GetCompositionListAllWithId(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
    if (serviceWorker) {
       const res: any = await sendMessage('GetCompositionListAllWithId', {compositionName, userId, inpage, page})
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
    let conceptLocal = await GetConceptByCharacterLocal(compositionName);

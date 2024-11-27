@@ -40,7 +40,7 @@ export default async function MakeTheInstanceConcept(
       passedSessionId,
       referentId,
     });
-    console.log("data received from sw", res);
+    // console.log("data received from sw", res);
     return res.data;
   }
 

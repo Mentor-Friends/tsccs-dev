@@ -10,7 +10,7 @@ import { sendMessage, serviceWorker } from "../app";
 export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
   if (serviceWorker) {
     const res: any = await sendMessage('GetRelation', {id, relation, inpage, page})
-    console.log('data received from sw', res)
+    // console.log('data received from sw', res)
     return res.data
   }
     let output: any[] = [];
@@ -38,7 +38,7 @@ export async function GetRelation(id:number, relation:string, inpage:number=10, 
 export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1){
   if (serviceWorker) {
     const res: any = await sendMessage('GetRelationRaw', {id, relation, inpage, page})
-    console.log('data received from sw', res)
+    // console.log('data received from sw', res)
     return res.data
   }
   let output: Concept[] = [];

@@ -85,7 +85,7 @@ export class ConnectionData {
         "ConnectionData__GetConnectionByOfTheConceptAndType",
         { ofTheConceptId, typeId }
       );
-      console.log("data received from sw", res);
+      // console.log("data received from sw", res);
       return res.data;
     }
     
@@ -175,7 +175,7 @@ export class ConnectionData {
         "ConnectionData__GetConnectionsOfCompositionLocal",
         { id }
       );
-      console.log("data received from sw", res);
+      // console.log("data received from sw", res);
       return res.data;
     }
     let connections: Connection[] = [];
@@ -206,7 +206,7 @@ export class ConnectionData {
     static async GetConnectionsOfConcept(id: number){
       if (serviceWorker) {
         const res: any = await sendMessage("ConnectionData__GetConnectionsOfConcept", { id });
-        console.log("data received from sw", res);
+        // console.log("data received from sw", res);
         return res.data;
       }
         let connectionIds: number [] = [];
