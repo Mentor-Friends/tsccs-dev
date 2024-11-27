@@ -10,7 +10,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
   try{
     if (serviceWorker) {
       const res: any = await sendMessage('GetConceptByCharacterAndType', {characterValue, typeId})
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
       let concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);

@@ -13,7 +13,7 @@ export  async  function MakeTheTypeConcept(typeString: string, sessionId: number
 {
     if (serviceWorker) {
         const res: any = await sendMessage('MakeTheTypeConcept', { typeString, sessionId, sessionUserId, userId })
-        console.log('data received from sw', res)
+        // console.log('data received from sw', res)
         return res.data
       }
 

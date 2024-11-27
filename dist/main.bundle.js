@@ -1003,7 +1003,7 @@ function GetAllConnectionsOfCompositionBulk() {
     return __awaiter(this, arguments, void 0, function* (composition_ids = []) {
         if (_app__WEBPACK_IMPORTED_MODULE_7__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_7__.sendMessage)('GetAllConnectionsOfCompositionBulk', { composition_ids });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         var connectionList = [];
@@ -1214,7 +1214,7 @@ function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId, toConcept, mai
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('GetCompositionConnectionsBetweenTwoConcepts', { ofConceptId, toConcept, mainKey });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         var connectionList = [];
@@ -1295,7 +1295,7 @@ function GetConcept(id) {
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('GetConcept', { id });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 return res.data;
             }
             let result = (0,_app__WEBPACK_IMPORTED_MODULE_3__.CreateDefaultConcept)();
@@ -1359,6 +1359,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
 /* harmony import */ var _Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/Security/GetRequestHeader */ "./src/Services/Security/GetRequestHeader.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1372,6 +1373,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 /**
  * This function takes in a list of ids and returns a list of concepts . This uses local memory to find concepts
  * namely in the concept binary tree. If it could not find the concepts in local memory then it fetches those from
@@ -1381,6 +1383,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  */
 function GetConceptBulk(passedConcepts) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetConceptBulk', { passedConcepts });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
         let result = [];
         let setTime = new Date().getTime();
         // let conceptIds = passedConcepts.filter((value, index, self) => {
@@ -1527,7 +1534,7 @@ function GetConceptByCharacterAndType(characterValue, typeId) {
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetConceptByCharacterAndType', { characterValue, typeId });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 return res.data;
             }
             let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_0__.ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue, typeId);
@@ -1744,7 +1751,7 @@ function GetConnectionBulk() {
     return __awaiter(this, arguments, void 0, function* (connectionIds = []) {
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetConnectionBulk', { connectionIds });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connectionList = [];
@@ -1842,7 +1849,7 @@ function GetConnectionOfTheConcept(typeId_1, ofTheConceptId_1, userId_1) {
     return __awaiter(this, arguments, void 0, function* (typeId, ofTheConceptId, userId, inpage = 10, page = 1) {
         if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('GetConnectionOfTheConcept', { typeId, ofTheConceptId, userId, inpage, page });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connectionList = [];
@@ -4467,6 +4474,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _BinaryCharacterTree__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BinaryCharacterTree */ "./src/DataStructures/BinaryCharacterTree.ts");
 /* harmony import */ var _BinaryTypeTree__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./BinaryTypeTree */ "./src/DataStructures/BinaryTypeTree.ts");
 /* harmony import */ var _Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Services/CreateDefaultConcept */ "./src/Services/CreateDefaultConcept.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -4476,6 +4484,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -4519,6 +4528,11 @@ class ConceptsData {
         });
     }
     static AddConcept(concept) {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('AddConcept', { concept }); // is async function
+            // console.log('data received from sw', res)
+            // return res.data // remove comment when this function is async
+        }
         if (concept.id > 0) {
             // console.log("added the concept to the tree", concept);
             //var contains = this.CheckContains(concept);
@@ -4563,6 +4577,11 @@ class ConceptsData {
     }
     static GetConcept(id) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('ConceptsData__GetConcept', { id });
+                // console.log('data received from sw', res)
+                return res.data;
+            }
             var myConcept = (0,_Services_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_4__.CreateDefaultConcept)();
             var node = yield _BinaryTree__WEBPACK_IMPORTED_MODULE_1__.BinaryTree.getNodeFromTree(id);
             if (node === null || node === void 0 ? void 0 : node.value) {
@@ -4633,6 +4652,11 @@ class ConceptsData {
     }
     static GetConceptsByTypeIdAndUser(typeId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetConceptsByTypeIdAndUser', { typeId, userId });
+                // console.log('data received from sw', res)
+                return res.data;
+            }
             let ConceptList = [];
             ConceptList = yield _BinaryTypeTree__WEBPACK_IMPORTED_MODULE_3__.BinaryTypeTree.getTypeVariantsFromTreeWithUserIdNew(typeId, userId);
             return ConceptList;
@@ -5830,7 +5854,7 @@ class ConnectionData {
         return __awaiter(this, void 0, void 0, function* () {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('ConnectionData__GetConnection', { id });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 return res.data;
             }
             //    var  myConcept: Connection|null;
@@ -5896,6 +5920,11 @@ class ConnectionData {
     }
     static GetConnectionsOfConcept(id) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionsOfConcept", { id });
+                console.log("data received from sw", res);
+                return res.data;
+            }
             let connectionIds = [];
             let connections = [];
             connectionIds = yield ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
@@ -8708,6 +8737,7 @@ class FreeschemaQuery {
         this.typeConnection = "";
         this.outputFormat = _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_0__.NORMAL;
         this.name = "";
+        this.reverse = false;
     }
 }
 
@@ -11179,7 +11209,7 @@ function CreateConnectionBetweenTwoConcepts(ofTheConcept_1, toTheConcept_1, link
         var _a, _b;
         if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('CreateConnectionBetweenTwoConcepts', { ofTheConcept, toTheConcept, linker, both, count });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let userId = ofTheConcept.userId;
@@ -11331,7 +11361,7 @@ function CreateTheComposition(json_1) {
     return __awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null) {
         if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheComposition', { json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let localUserId = userId !== null && userId !== void 0 ? userId : 999;
@@ -11592,7 +11622,7 @@ function DeleteConceptById(id) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('DeleteConceptById', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         if (id > 0) {
@@ -11648,7 +11678,7 @@ function DeleteConnectionById(id) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('DeleteConnectionById', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         if (id > 0) {
@@ -11694,7 +11724,7 @@ function DeleteConnectionByType(id, linker) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('DeleteConnectionByType', { id, linker });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let externalConnections = yield (0,_Api_GetAllLinkerConnectionsFromTheConcept__WEBPACK_IMPORTED_MODULE_0__.GetAllLinkerConnectionsFromTheConcept)(id);
@@ -11773,7 +11803,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   FindConnectionsOfCompositionsBulkInMemory: () => (/* binding */ FindConnectionsOfCompositionsBulkInMemory)
 /* harmony export */ });
-/* harmony import */ var _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../DataStructures/ConnectionData */ "./src/DataStructures/ConnectionData.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/ConnectionData */ "./src/DataStructures/ConnectionData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11784,12 +11815,18 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
+
 function FindConnectionsOfCompositionsBulkInMemory() {
     return __awaiter(this, arguments, void 0, function* (composition_ids = []) {
+        if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('FindConnectionsOfCompositionsBulkInMemory', { composition_ids });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
         let FinalConnectionList = [];
         for (let i = 0; i < composition_ids.length; i++) {
             // let connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_ids[i]);
-            let connectionList = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_0__.ConnectionData.GetConnectionsOfConcept(composition_ids[i]);
+            let connectionList = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.GetConnectionsOfConcept(composition_ids[i]);
             FinalConnectionList.push(...connectionList);
         }
         return FinalConnectionList;
@@ -11849,7 +11886,7 @@ function GetCompositionById(id) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionById', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connectionList = [];
@@ -11952,7 +11989,7 @@ function GetComposition(id) {
         var _a, _b;
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetComposition', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connectionList = [];
@@ -12016,7 +12053,7 @@ function GetCompositionFromMemory(id) {
         var _a, _b;
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionFromMemory', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connectionList = [];
@@ -12052,6 +12089,11 @@ function GetCompositionFromMemory(id) {
 function GetCompositionFromMemoryNormal(id) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionFromMemoryNormal', { id });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
         let connectionList = [];
         let returnOutput = {};
         //connectionList = await ConnectionData.GetConnectionsOfConcept(id);
@@ -12085,7 +12127,7 @@ function GetCompositionWithIdFromMemory(id) {
         var _a, _b;
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionWithIdFromMemory', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connectionList = [];
@@ -12124,6 +12166,11 @@ function GetCompositionWithIdFromMemory(id) {
 function GetCompositionWithIdFromMemoryNew(id) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionWithIdFromMemoryNew', { id });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
         let connectionList = [];
         let returnOutput = {};
         //connectionList = await ConnectionData.GetConnectionsOfConcept(id);
@@ -12165,7 +12212,7 @@ function GetCompositionWithIdAndDateFromMemory(id) {
         var _a, _b;
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionWithIdAndDateFromMemory', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connectionList = [];
@@ -12229,7 +12276,7 @@ function GetCompositionWithId(id) {
         var _a, _b;
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionWithId', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connectionList = [];
@@ -12728,7 +12775,7 @@ function GetCompositionFromConnectionsWithDataId() {
     return __awaiter(this, arguments, void 0, function* (conceptIds = [], connectionIds = []) {
         if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetCompositionFromConnectionsWithDataId', { conceptIds, connectionIds });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let newConnections = yield (0,_Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(connectionIds);
@@ -12753,7 +12800,7 @@ function GetCompositionFromConnectionsWithDataIdIndex() {
     return __awaiter(this, arguments, void 0, function* (conceptIds = [], connectionIds = []) {
         if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetCompositionFromConnectionsWithDataIdIndex', { conceptIds, connectionIds });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let newConnections = yield (0,_Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(connectionIds);
@@ -12796,6 +12843,11 @@ function GetCompositionFromConnectionsWithIndex() {
  */
 function GetConnectionDataPrefetch(connectionIds) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetConnectionDataPrefetch', { connectionIds });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
         let remainingConnections = [];
         let connectionsAll = [];
         let remainingIds = {};
@@ -12962,7 +13014,7 @@ function GetCompositionList(compositionName_1, userId_1) {
     return __awaiter(this, arguments, void 0, function* (compositionName, userId, inpage = 10, page = 1) {
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionList', { compositionName, userId, inpage, page });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let concept = yield (0,_GetConceptByCharacter__WEBPACK_IMPORTED_MODULE_6__["default"])(compositionName);
@@ -13032,6 +13084,11 @@ function GetCompositionListAll(compositionName_1, userId_1) {
 // }
 function GetCompositionListAllWithId(compositionName_1, userId_1) {
     return __awaiter(this, arguments, void 0, function* (compositionName, userId, inpage = 10, page = 1) {
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionListAllWithId', { compositionName, userId, inpage, page });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let conceptLocal = yield (0,_Local_GetConceptByCharacterLocal__WEBPACK_IMPORTED_MODULE_7__["default"])(compositionName);
         let conceptOnline = yield (0,_GetConceptByCharacter__WEBPACK_IMPORTED_MODULE_6__["default"])(compositionName);
         let CompositionList = [];
@@ -13068,7 +13125,7 @@ function GetCompositionListWithId(compositionName_1, userId_1) {
     return __awaiter(this, arguments, void 0, function* (compositionName, userId, inpage = 10, page = 1) {
         if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionListWithId', { compositionName, userId, inpage, page });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let concept = yield (0,_GetConceptByCharacter__WEBPACK_IMPORTED_MODULE_6__["default"])(compositionName);
@@ -13160,7 +13217,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ GetConceptByCharacter)
 /* harmony export */ });
 /* harmony import */ var _Api_GetConceptByCharacterValue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetConceptByCharacterValue */ "./src/Api/GetConceptByCharacterValue.ts");
-/* harmony import */ var _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/ConceptData */ "./src/DataStructures/ConceptData.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../DataStructures/ConceptData */ "./src/DataStructures/ConceptData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13172,15 +13230,21 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
+
 function GetConceptByCharacter(characterValue) {
     return __awaiter(this, void 0, void 0, function* () {
-        let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_1__.ConceptsData.GetConceptByCharacter(characterValue);
+        if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetConceptByCharacter', { characterValue });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
+        let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConceptByCharacter(characterValue);
         let literalCharacter = `${characterValue}`;
         if ((concept == null || (concept === null || concept === void 0 ? void 0 : concept.id) == 0) && literalCharacter) {
             yield (0,_Api_GetConceptByCharacterValue__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterValue)(characterValue);
-            concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_1__.ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue, 51);
+            concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue, 51);
             if (concept.id == 0) {
-                concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_1__.ConceptsData.GetConceptByCharacter(characterValue);
+                concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConceptByCharacter(characterValue);
             }
         }
         return concept;
@@ -13188,11 +13252,16 @@ function GetConceptByCharacter(characterValue) {
 }
 function GetConceptByCharacterUpdated(characterValue) {
     return __awaiter(this, void 0, void 0, function* () {
-        let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_1__.ConceptsData.GetConceptByCharacter(characterValue);
+        if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetConceptByCharacterUpdated', { characterValue });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
+        let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConceptByCharacter(characterValue);
         let literalCharacter = `${characterValue}`;
         if ((concept == null || (concept === null || concept === void 0 ? void 0 : concept.id) == 0) && literalCharacter) {
             yield (0,_Api_GetConceptByCharacterValue__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterValue)(characterValue);
-            concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_1__.ConceptsData.GetConceptByCharacter(characterValue);
+            concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConceptByCharacter(characterValue);
         }
         return concept;
     });
@@ -13240,7 +13309,7 @@ function GetConnectionBetweenTwoConceptsLinker(ofTheConcept_1, toTheConcept_1, l
         var _a, _b;
         if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetConnectionBetweenTwoConceptsLinker', { ofTheConcept, toTheConcept, linker, fullLinker, forward });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let typeConcept = (0,_app__WEBPACK_IMPORTED_MODULE_1__.CreateDefaultConcept)();
@@ -13300,7 +13369,7 @@ function GetConnectionById(id) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetConnectionById', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let connection = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_2__.ConnectionData.GetConnection(id);
@@ -13426,7 +13495,7 @@ function GetLink(id_1, linker_1) {
         var _a;
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetLink', { id, linker, inpage, page });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let output = [];
@@ -13550,6 +13619,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _GetTheConcept__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./GetTheConcept */ "./src/Services/GetTheConcept.ts");
 /* harmony import */ var _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Api/GetAllConnectionsOfCompositionBulk */ "./src/Api/GetAllConnectionsOfCompositionBulk.ts");
 /* harmony import */ var _ConceptFinding_GetConceptByCharacterAndCategory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ConceptFinding/GetConceptByCharacterAndCategory */ "./src/Services/ConceptFinding/GetConceptByCharacterAndCategory.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13564,8 +13634,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function GetRelation(id_1, relation_1) {
     return __awaiter(this, arguments, void 0, function* (id, relation, inpage = 10, page = 1) {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetRelation', { id, relation, inpage, page });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let output = [];
         let concept = yield (0,_GetTheConcept__WEBPACK_IMPORTED_MODULE_2__["default"])(id);
         let relatedConceptString = yield (0,_ConceptFinding_GetConceptByCharacterAndCategory__WEBPACK_IMPORTED_MODULE_4__.GetConceptByCharacterAndCategory)(relation);
@@ -13590,6 +13666,11 @@ function GetRelation(id_1, relation_1) {
 }
 function GetRelationRaw(id_1, relation_1) {
     return __awaiter(this, arguments, void 0, function* (id, relation, inpage = 10, page = 1) {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetRelationRaw', { id, relation, inpage, page });
+            console.log('data received from sw', res);
+            return res.data;
+        }
         let output = [];
         let concept = yield (0,_GetTheConcept__WEBPACK_IMPORTED_MODULE_2__["default"])(id);
         let relatedConceptString = yield (0,_ConceptFinding_GetConceptByCharacterAndCategory__WEBPACK_IMPORTED_MODULE_4__.GetConceptByCharacterAndCategory)(relation);
@@ -13652,7 +13733,7 @@ function GetTheConcept(id_1) {
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetTheConcept', { id, userId });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 return res.data;
             }
             let concept = (0,_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_3__.CreateDefaultConcept)();
@@ -13808,7 +13889,7 @@ function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1,
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateConnectionBetweenTwoConceptsLocal', { ofTheConcept, toTheConcept, linker, both, actions });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                     actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
                 if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
@@ -14086,7 +14167,7 @@ function CreateTheCompositionLocal(json_1) {
         var _a, _b, _c, _d;
         if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheCompositionLocal', { json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, actions });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                 actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
@@ -14188,7 +14269,7 @@ function CreateTheConceptLocal(referent_1, typecharacter_1, userId_1, categoryId
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                     actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
                 if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
@@ -14267,7 +14348,7 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
         var _a, _b, _c, _d;
         if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                 actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
@@ -14334,7 +14415,7 @@ function DeleteConceptLocal(id) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('DeleteConceptLocal', { id });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let concept = yield (0,_GetTheConceptLocal__WEBPACK_IMPORTED_MODULE_2__.GetTheConceptLocal)(id);
@@ -14383,7 +14464,7 @@ function GetCompositionListLocal(compositionName, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('GetCompositionListLocal', { compositionName, userId });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         try {
@@ -14413,7 +14494,7 @@ function GetCompositionListLocalWithId(compositionName, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('GetCompositionListLocalWithId', { compositionName, userId });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         try {
@@ -14473,7 +14554,7 @@ function GetCompositionLocal(id) {
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionLocal', { id });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 return res.data;
             }
             let connectionList = [];
@@ -14509,7 +14590,7 @@ function GetCompositionLocalWithId(id) {
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionLocalWithId', { id });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 return res.data;
             }
             let connectionList = [];
@@ -14639,7 +14720,7 @@ function GetConceptByCharacterAndCategoryLocal(character) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetConceptByCharacterAndCategoryLocal', { character });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let lconcept = (0,_app__WEBPACK_IMPORTED_MODULE_2__.CreateDefaultLConcept)();
@@ -14821,7 +14902,7 @@ function GetTheConceptLocal(id) {
         try {
             if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetTheConceptLocal', { id });
-                console.log('data received from sw', res);
+                // console.log('data received from sw', res)
                 return res.data;
             }
             let lconcept = (0,_app__WEBPACK_IMPORTED_MODULE_2__.CreateDefaultLConcept)();
@@ -14956,7 +15037,7 @@ function MakeTheInstanceConceptLocal(type_1, referent_1) {
         var _a, _b, _c, _d;
         if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('MakeTheInstanceConceptLocal', { type, referent, composition, userId, accessId, sessionInformationId, referentId, actions });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                 actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if ((_d = (_c = res === null || res === void 0 ? void 0 : res.actions) === null || _c === void 0 ? void 0 : _c.connections) === null || _d === void 0 ? void 0 : _d.length)
@@ -15540,7 +15621,7 @@ function MakeTheTimestamp(type_1, referent_1, userId_1) {
     return __awaiter(this, arguments, void 0, function* (type, referent, userId, accessId = 4, sessionInformationId = 999) {
         if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('MakeTheTimestamp', { type, referent, userId, accessId, sessionInformationId });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let categoryId = 4;
@@ -15600,7 +15681,7 @@ function MakeTheTypeConcept(typeString, sessionId, sessionUserId, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('MakeTheTypeConcept', { typeString, sessionId, sessionUserId, userId });
-            console.log('data received from sw', res);
+            // console.log('data received from sw', res)
             return res.data;
         }
         let referentId = 999;
@@ -19248,10 +19329,9 @@ function sendMessage(type, payload) {
             }
             // Timeout for waiting for the response (e.g., 5 seconds)
             setTimeout(() => {
-                console.log('timeout', type);
                 reject("No response from service worker after timeout");
                 navigator.serviceWorker.removeEventListener("message", responseHandler);
-            }, 10000);
+            }, 30000); // 30 sec
             // })
             // .catch(err => reject(err))
             // .finally(() => console.log('finally'))

@@ -11,7 +11,7 @@ import { sendMessage, serviceWorker } from "../app";
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
   if (serviceWorker) {
     const res: any = await sendMessage('GetConnectionOfTheConcept', {typeId, ofTheConceptId, userId, inpage, page})
-    console.log('data received from sw', res)
+    // console.log('data received from sw', res)
     return res.data
   }
 

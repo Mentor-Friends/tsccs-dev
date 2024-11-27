@@ -15,7 +15,7 @@ export default async function GetConceptByCharacterLocal(characterValue: string)
 export async function GetConceptByCharacterAndCategoryLocal(character: string){
     if (serviceWorker) {
         const res: any = await sendMessage('GetConceptByCharacterAndCategoryLocal', { character })
-        console.log('data received from sw', res)
+        // console.log('data received from sw', res)
         return res.data
       }
 

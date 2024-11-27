@@ -133,7 +133,7 @@ export class ConnectionData {
   static async GetConnection(id: number) {
     if (serviceWorker) {
       const res: any = await sendMessage('ConnectionData__GetConnection', {id})
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
 
@@ -204,6 +204,11 @@ export class ConnectionData {
 
 
     static async GetConnectionsOfConcept(id: number){
+      if (serviceWorker) {
+        const res: any = await sendMessage("ConnectionData__GetConnectionsOfConcept", { id });
+        console.log("data received from sw", res);
+        return res.data;
+      }
         let connectionIds: number [] = [];
         let connections: Connection[] = [];
         connectionIds = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);

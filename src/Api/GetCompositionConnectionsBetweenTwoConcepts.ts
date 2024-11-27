@@ -8,7 +8,7 @@ import { sendMessage, serviceWorker } from "../app";
 export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:number, toConcept:number, mainKey:number){
     if (serviceWorker) {
       const res: any = await sendMessage('GetCompositionConnectionsBetweenTwoConcepts', {ofConceptId, toConcept, mainKey})
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
     

@@ -50,7 +50,7 @@ export async function GetCompositionBulkWithDataId(conceptIds:number[]=[]){
 export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[]=[], connectionIds:number[] = []){
     if (serviceWorker) {
         const res: any = await sendMessage('GetCompositionFromConnectionsWithDataId', {conceptIds, connectionIds})
-        console.log('data received from sw', res)
+        // console.log('data received from sw', res)
         return res.data
       }
       
@@ -76,7 +76,7 @@ export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[
 export async function GetCompositionFromConnectionsWithDataIdIndex(conceptIds:number[]=[], connectionIds:number[] = []){
     if (serviceWorker) {
         const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdIndex', {conceptIds, connectionIds})
-        console.log('data received from sw', res)
+        // console.log('data received from sw', res)
         return res.data
       }
 
@@ -119,6 +119,11 @@ export async function GetCompositionFromConnectionsWithIndex(conceptIds:number[]
  * @returns all the connections that are passed as ids.
  */
 export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise<Connection[]>{
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetConnectionDataPrefetch', {connectionIds})
+        // console.log('data received from sw', res)
+        return res.data
+      }
     let remainingConnections: number[] = [];
     let connectionsAll:Connection[] = [];
     let remainingIds: any = {};

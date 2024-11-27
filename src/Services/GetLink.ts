@@ -10,7 +10,7 @@ import { sendMessage, serviceWorker } from "../app";
 export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1){
   if (serviceWorker) {
     const res: any = await sendMessage('GetLink', {id, linker, inpage, page})
-    console.log('data received from sw', res)
+    // console.log('data received from sw', res)
     return res.data
   }
 

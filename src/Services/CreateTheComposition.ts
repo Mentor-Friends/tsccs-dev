@@ -9,7 +9,7 @@ export default async function CreateTheComposition(json: any, ofTheConceptId:num
 {
     if (serviceWorker) {
         const res: any = await sendMessage('CreateTheComposition', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId})
-        console.log('data received from sw', res)
+        // console.log('data received from sw', res)
         return res.data
       }
 

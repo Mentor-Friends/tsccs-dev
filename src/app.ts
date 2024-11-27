@@ -397,7 +397,6 @@ export async function sendMessage(type: string, payload: any) {
     
         // Timeout for waiting for the response (e.g., 5 seconds)
         setTimeout(() => {
-          console.log('timeout', type)
           reject("No response from service worker after timeout");
           navigator.serviceWorker.removeEventListener("message", responseHandler);
         }, 30000); // 30 sec

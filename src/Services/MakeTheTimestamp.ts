@@ -8,7 +8,7 @@ export async function MakeTheTimestamp(type:string, referent:string, userId: num
     accessId:number = 4, sessionInformationId: number=999){
         if (serviceWorker) {
             const res: any = await sendMessage('MakeTheTimestamp', {type, referent, userId, accessId, sessionInformationId})
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
             return res.data
           }
         let categoryId: number = 4;

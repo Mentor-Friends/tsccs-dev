@@ -67,7 +67,7 @@ const actions: Actions = {
 
 // Listen message received by service worker
 self.addEventListener("message", async (event: any) => {
-  console.log("message received sw", event);
+  // console.log("message received sw", event);
   const { type, payload }: any = event.data;
   const tabId = payload.TABID
   let addedActions = false

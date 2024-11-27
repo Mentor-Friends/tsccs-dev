@@ -25,7 +25,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
         if (serviceWorker) {
             const res: any = await sendMessage('MakeTheInstanceConceptLocal', {type, referent, composition, userId, accessId, sessionInformationId, referentId, actions})
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
             if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data

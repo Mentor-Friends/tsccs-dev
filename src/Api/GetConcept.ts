@@ -14,7 +14,7 @@ export async function GetConcept(id: number){
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('GetConcept', {id})
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
             return res.data
           }
         let result = CreateDefaultConcept();

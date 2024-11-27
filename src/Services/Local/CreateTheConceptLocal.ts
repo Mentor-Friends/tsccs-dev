@@ -29,7 +29,7 @@ accessId:number, isComposition: boolean = false, referentId:number = 0, actions:
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
             if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data

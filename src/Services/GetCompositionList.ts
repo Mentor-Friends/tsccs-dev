@@ -12,7 +12,7 @@ import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
 export  async function GetCompositionList(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
    if (serviceWorker) {
       const res: any = await sendMessage('GetCompositionList', { compositionName, userId, inpage, page })
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
 
@@ -91,6 +91,11 @@ export async function GetCompositionListAll(compositionName: string,userId:numbe
 
 
 export async function GetCompositionListAllWithId(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
+   if (serviceWorker) {
+      const res: any = await sendMessage('GetCompositionListAllWithId', {compositionName, userId, inpage, page})
+      console.log('data received from sw', res)
+      return res.data
+    }
    let conceptLocal = await GetConceptByCharacterLocal(compositionName);
    let conceptOnline = await GetConceptByCharacter(compositionName);
    let CompositionList :any = [];
@@ -131,7 +136,7 @@ export async function GetCompositionListAllWithId(compositionName: string,userId
 export  async function GetCompositionListWithId(compositionName: string, userId: number,  inpage:number = 10, page:number =1){
    if (serviceWorker) {
       const res: any = await sendMessage('GetCompositionListWithId', { compositionName, userId, inpage, page })
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
    let concept = await GetConceptByCharacter(compositionName);

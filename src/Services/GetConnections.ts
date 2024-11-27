@@ -8,7 +8,7 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 export  async function GetConnectionById(id:number){
    if (serviceWorker) {
       const res: any = await sendMessage('GetConnectionById', { id })
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
      let connection =   await ConnectionData.GetConnection(id);

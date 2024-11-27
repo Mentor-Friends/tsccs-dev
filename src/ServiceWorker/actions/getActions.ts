@@ -1,17 +1,21 @@
 import { Actions } from ".";
 import { GetCompositionConnectionsBetweenTwoConcepts } from "../../Api/GetCompositionConnectionsBetweenTwoConcepts";
 import { GetConcept } from "../../Api/GetConcept";
-import { ConnectionData, GetCompositionList, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionListWithId, GetCompositionLocal, GetCompositionLocalWithId, GetConceptByCharacterAndCategoryLocal, GetConceptByCharacterAndType, GetLink, GetTheConcept } from "../../app";
+import { ConceptsData, ConnectionData, GetCompositionList, GetCompositionListAllWithId, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionListWithId, GetCompositionLocal, GetCompositionLocalWithId, GetConceptBulk, GetConceptByCharacter, GetConceptByCharacterAndCategoryLocal, GetConceptByCharacterAndType, GetLink, GetRelation, GetRelationRaw, GetTheConcept } from "../../app";
 import { broadcastChannel } from "../../Constants/general.const";
+import { FindConnectionsOfCompositionsBulkInMemory } from "../../Services/FindConnectionsOfCompositionBulkInMemory";
 import {
   GetComposition,
   GetCompositionById,
   GetCompositionFromMemory,
+  GetCompositionFromMemoryNormal,
   GetCompositionWithId,
   GetCompositionWithIdAndDateFromMemory,
   GetCompositionWithIdFromMemory,
+  GetCompositionWithIdFromMemoryNew,
 } from "../../Services/GetComposition";
-import { GetCompositionFromConnectionsWithDataId, GetCompositionFromConnectionsWithDataIdIndex } from "../../Services/GetCompositionBulk";
+import { GetCompositionFromConnectionsWithDataId, GetCompositionFromConnectionsWithDataIdIndex, GetConnectionDataPrefetch } from "../../Services/GetCompositionBulk";
+import { GetConceptByCharacterUpdated } from "../../Services/GetConceptByCharacter";
 import { GetTheConceptLocal } from "../../Services/Local/GetTheConceptLocal";
 import { GetLinkListener } from "../../WrapperFunctions/GetLinkObservable";
 
@@ -24,10 +28,32 @@ export const getActions: Actions = {
     const data = await GetTheConcept(payload.id, payload.userId)
     return { success: true, data }
   },
+  GetConceptBulk: async (payload) => {
+    const data = await GetConceptBulk(payload.passedConcepts)
+    return { success: true, data }
+  },
   GetLink: async (payload: any) => {
     const data = await GetLink(
       payload.id,
       payload.linker,
+      payload.inpage,
+      payload.page
+    );
+    return { success: true, data };
+  },
+  GetRelation: async (payload: any) => {
+    const data = await GetRelation(
+      payload.id,
+      payload.relation,
+      payload.inpage,
+      payload.page
+    );
+    return { success: true, data };
+  },
+  GetRelationRaw: async (payload: any) => {
+    const data = await GetRelationRaw(
+      payload.id,
+      payload.relation,
       payload.inpage,
       payload.page
     );
@@ -53,6 +79,18 @@ export const getActions: Actions = {
     const data = await GetCompositionWithId(payload.id);
     return { success: true, data };
   },
+  GetCompositionListAllWithId: async (payload) => {
+    const data = await GetCompositionListAllWithId(payload.compositionName, payload.userId, payload.inpage, payload.page)
+    return { success: true, data }
+  },
+  GetConceptByCharacter: async (payload) => {
+    const data = await GetConceptByCharacter(payload.characterValue)
+    return { success:true, data }
+  },
+  GetConceptByCharacterUpdated: async (payload) => {
+    const data = await GetConceptByCharacterUpdated(payload.characterValue)
+    return { success:true, data }
+  },
   GetConceptByCharacterAndType: async (payload) => {
     const data = await GetConceptByCharacterAndType(payload.characterValue, payload.typeId)
     return { success:true, data }
@@ -69,6 +107,10 @@ export const getActions: Actions = {
     const data = await GetCompositionConnectionsBetweenTwoConcepts(payload.ofConceptId, payload.toConcept, payload.mainKey)
     return { success: true, data }
   },
+  GetConnectionDataPrefetch: async (payload) => {
+    const data = await GetConnectionDataPrefetch(payload.compositionIds)
+    return { success: true, data }
+  },
   
   // memory
   GetCompositionWithIdFromMemory: async (payload) => {
@@ -81,6 +123,18 @@ export const getActions: Actions = {
   },
   GetCompositionFromMemory: async (payload) => {
     const data = await GetCompositionFromMemory(payload.id)
+    return { success: true, data };
+  },
+  GetCompositionFromMemoryNormal: async (payload) => {
+    const data = await GetCompositionFromMemoryNormal(payload.id)
+    return { success: true, data };
+  },
+  GetCompositionWithIdFromMemoryNew: async (payload) => {
+    const data = await GetCompositionWithIdFromMemoryNew(payload.id)
+    return { success: true, data };
+  },
+  FindConnectionsOfCompositionsBulkInMemory: async (payload) => {
+    const data = await FindConnectionsOfCompositionsBulkInMemory(payload.composition_ids)
     return { success: true, data };
   },
 
@@ -110,6 +164,20 @@ export const getActions: Actions = {
     return { success: true, data };
   },
 
+  // Concept Data class methods
+  ConceptsData__AddConcept: async (payload) => {
+    const data = await ConceptsData.AddConcept(payload.concept)
+    return { success: true, data };
+  },
+  ConceptsData__GetConcept: async (payload) => {
+    const data = await ConceptsData.GetConcept(payload.id)
+    return { success: true, data };
+  },
+  ConceptsData__GetConceptsByTypeIdAndUser: async (payload) => {
+    const data = await ConceptsData.GetConceptsByTypeIdAndUser(payload.typeId, payload.userId)
+    return { success: true, data };
+  },
+
   // Connection Data class methods
   ConnectionData__GetConnectionByOfTheConceptAndType: async (payload) => {
     const data = await ConnectionData.GetConnectionByOfTheConceptAndType(payload.ofTheConceptId, payload.typeId)
@@ -121,6 +189,10 @@ export const getActions: Actions = {
   },
   ConnectionData__GetConnectionsOfCompositionLocal: async (payload) => {
     const data = await ConnectionData.GetConnection(payload.id)
+    return { success: true, data };
+  },
+  ConnectionData__GetConnectionsOfConcept: async (payload) => {
+    const data = await ConnectionData.GetConnectionsOfConcept(payload.id)
     return { success: true, data };
   },
 

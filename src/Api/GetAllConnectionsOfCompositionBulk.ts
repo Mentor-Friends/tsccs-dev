@@ -12,7 +12,7 @@ import { sendMessage, serviceWorker } from '../app';
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
   if (serviceWorker) {
     const res: any = await sendMessage('GetAllConnectionsOfCompositionBulk', {composition_ids})
-    console.log('data received from sw', res)
+    // console.log('data received from sw', res)
     return res.data
   }
       var connectionList: Connection[] = [];

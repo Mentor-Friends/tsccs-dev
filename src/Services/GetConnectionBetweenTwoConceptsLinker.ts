@@ -14,7 +14,7 @@ import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concept, toTheConcept: Concept, linker: string, fullLinker: string, forward: boolean = true){
     if (serviceWorker) {
         const res: any = await sendMessage('GetConnectionBetweenTwoConceptsLinker', {ofTheConcept, toTheConcept, linker, fullLinker, forward})
-        console.log('data received from sw', res)
+        // console.log('data received from sw', res)
         return res.data
       }
     let typeConcept: Concept = CreateDefaultConcept();
