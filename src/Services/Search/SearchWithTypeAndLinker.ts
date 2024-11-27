@@ -135,7 +135,7 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
     console.log("this is the format normal builders", compositionData);
 
-    // let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse );
-    // return output;
+     let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse );
+     return output;
 }
 

@@ -174,13 +174,13 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
               flag = true;
 
             }
-            if(connections[i].toTheConceptId in newCompositionData){
-              newData = newCompositionData[connections[i].toTheConceptId]
+            if(connections[i].toTheConceptId in compositionData){
+              newData = compositionData[connections[i].toTheConceptId]
             }
             else{
               newData = {};
               newData[key] = {};
-              newCompositionData[connections[i].toTheConceptId] = newData;
+              compositionData[connections[i].toTheConceptId] = newData;
             }
             try{
               let isComp = compositionData[connections[i].ofTheConceptId];
@@ -189,18 +189,11 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
                   "id": ofTheConcept.id,
                   "data": compositionData[connections[i].ofTheConceptId]
                 }
-              // let value = ofTheConcept.characterValue;
-              // if(flag){
-              //   value = compositionData[connections[i].ofTheConceptId];
-              // }
                 let reverseCharater = linkerConcept.characterValue + "_reverse";
                   if(Array.isArray(newData[key][reverseCharater])){
                     newData[key][reverseCharater].push(data);
                   }
                   else{
-                    let mytype = ofTheConcept?.type?.characterValue ?? "none";
-    
-    
                     if(reverseCharater.includes("_s_")){
                       newData[key][reverseCharater] = [];
                       newData[key][reverseCharater].push(data);
@@ -234,13 +227,13 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
               flag = true;
   
             }
-            if(connections[i].ofTheConceptId in newCompositionData){
-              newData = newCompositionData[connections[i].ofTheConceptId]
+            if(connections[i].ofTheConceptId in compositionData){
+              newData = compositionData[connections[i].ofTheConceptId]
             }
             else{
               newData = {};
               newData[key] = {};
-              newCompositionData[connections[i].ofTheConceptId] = newData;
+              compositionData[connections[i].ofTheConceptId] = newData;
             }
             try{
               let isComp = compositionData[connections[i].toTheConceptId];
@@ -254,12 +247,6 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
                     newData[key][linkerConcept.characterValue].push(data);
                   }
                   else{
-                    let mytype = toTheConcept?.type?.characterValue ?? "none";
-                    let value = toTheConcept.characterValue;
-    
-                    if(flag){
-                      value = compositionData[connections[i].toTheConceptId];
-                    }
                     if(linkerConcept.characterValue.includes("_s_")){
                         newData[key][linkerConcept.characterValue] = [];
                         newData[key][linkerConcept.characterValue].push(data);
@@ -283,11 +270,11 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       }
   
     }
-
+    console.log("these are the main datas", compositionData);
     for(let i=0 ; i< mainComposition.length; i++){
       let mymainData: any = {};
       mymainData["id"] = mainComposition[i];
-      mymainData["data"] = newCompositionData[mainComposition[i]];
+      mymainData["data"] = compositionData[mainComposition[i]];
       mainData.push(mymainData);
       
     }
@@ -349,7 +336,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
               }
               else{
                 if(linkerConcept.characterValue.includes("_s_")){
-                  // newData[key][reverseCharater] = [];
+                   newData[key][reverseCharater] = [];
                   // newData[key][reverseCharater].push(data);
                 }
                 else{
@@ -389,7 +376,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
               }
               else{
                 if(linkerConcept.characterValue.includes("_s_")){
-                  // newData[key][linkerConcept.characterValue] = [];
+                   newData[key][linkerConcept.characterValue] = [];
                   // newData[key][linkerConcept.characterValue].push(data);
                 }
                 else{
@@ -468,7 +455,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
               else{
 
                 if(reverseCharater.includes("_s_")){
-                  // newData[key][reverseCharater] = [];
+                   newData[key][reverseCharater] = [];
                   // newData[key][reverseCharater].push(data);
               }
               else{
@@ -514,7 +501,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
               }
               else{
                 if(linkerConcept.characterValue.includes("_s_")){
-                    // newData[key][linkerConcept.characterValue] = [];
+                     newData[key][linkerConcept.characterValue] = [];
                     // newData[key][linkerConcept.characterValue].push(data);
                 }
                 else{
