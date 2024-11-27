@@ -2,7 +2,7 @@ import { GetConcept } from '../../Api/GetConcept';
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept} from '../../app';
 import { recursiveFetchConceptSingleLoop } from '../GetComposition';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
-import { FormatConceptsAndConnectionsNormalList, FormatFromConnectionsAlteredArrayExternal, formatFunction, FormatFunctionData } from './FormatData';
+import { FormatConceptsAndConnectionsNormalList, FormatFromConnectionsAlteredArrayExternal, formatFunction, FormatFunctionData, FormatFunctionDataForData, formatFunctionForData } from './FormatData';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
 
 /**
@@ -113,6 +113,10 @@ export async function formatConnections(linkers: number[], conceptIds: number []
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
     compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
+    console.log("this is the format normal builders BEFORE", compositionData);
+    compositionData = await formatFunctionForData(prefetchConnections, compositionData, reverse);
+    console.log("this is the format normal builders", compositionData);
+
     let output:any  = await FormatConceptsAndConnectionsNormalList(prefetchConnections, compositionData, mainCompositionIds, newCompositionData, reverse );
     return output;
 }
@@ -133,7 +137,9 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
-    console.log("this is the format normal builders", compositionData);
+    console.log("this is the format data builders BEFORE", compositionData);
+    compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
+    console.log("this is the format data builders", compositionData);
 
      let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse );
      return output;
