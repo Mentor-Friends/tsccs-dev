@@ -125,7 +125,7 @@ async function postData(url = '', data = {}) {
    * };
    * @returns 
    */
-  export async function signupEntity(signupData: any) {
+  export async function SignupEntity(signupData: any) {
     const baseURL = BaseUrl.NODE_URL
     const response: any = await fetch(`${baseURL}/api/v1/entity/signup`, {
       method: "POST",

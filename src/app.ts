@@ -40,7 +40,7 @@ export { LoginToBackend } from './Api/Login';
 export {GetConnectionOfTheConcept} from './Api/GetConnectionOfTheConcept';
 export  {default as Signup} from  './Api/Signup';
 export { default as Signin} from './Api/Signin';
-export {signupEntity} from './Api/Signup';
+export {SignupEntity} from './Api/Signup';
 export { default as UpdateComposition} from './Services/UpdateComposition';
 export {SearchAllConcepts} from './Api/Search/Search';
 export {SearchWithLinker} from './Api/Search/SearchWithLinker';
