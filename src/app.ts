@@ -297,13 +297,14 @@ async function init(
                           newWorker.onstatechange = async () => {
                             console.log("on state change triggered");
                             // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                            if (newWorker.state === "activated") {
+                            if (newWorker.state === "activated" || newWorker.state === 'redundant') {
                               // && navigator.serviceWorker.controller) {
                               console.log(
                                 "New Service Worker is active",
                                 registration
                               );
-                              serviceWorker = registration.active;
+                              serviceWorker = newWorker;
+                              // serviceWorker = registration.active;
                               // Send init message now that it's active
                               await sendMessage("init", {
                                 url,
