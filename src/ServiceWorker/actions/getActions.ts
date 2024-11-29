@@ -108,7 +108,7 @@ export const getActions: Actions = {
     return { success: true, data }
   },
   GetConnectionDataPrefetch: async (payload) => {
-    const data = await GetConnectionDataPrefetch(payload.compositionIds)
+    const data = await GetConnectionDataPrefetch(payload.connectionIds)
     return { success: true, data }
   },
   
