@@ -2,6 +2,7 @@ import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Concept } from "../DataStructures/Concept";
 import { Node } from "./Node";
 import { IdentifierFlags } from "./IdentifierFlags";
+import { dispatchIdEvent } from "../app";
 
 export class BinaryTree{
     static root: Node | null = null;
@@ -55,7 +56,8 @@ export class BinaryTree{
         if(this.root){
             let event = new Event(`${id}`);
              console.log("this is the fired event after delete", event);
-             dispatchEvent(event);
+            //  dispatchEvent(event);
+             dispatchIdEvent(id)
             this.root = this.root.removeNode(this.root,id);
         }
     }

@@ -1,5 +1,6 @@
 import { CreateTextData } from "../Api/Create/CreateTheTextData";
 import { GetCharacterByCharacter } from "../Api/GetCharacterDataByCharacter";
+import { sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
@@ -10,6 +11,12 @@ import { SplitStrings } from "./SplitStrings";
 export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number,
     )
 {
+    if (serviceWorker) {
+        const res: any = await sendMessage('MakeTheTypeConcept', { typeString, sessionId, sessionUserId, userId })
+        // console.log('data received from sw', res)
+        return res.data
+      }
+
     let referentId: number = 999;
     let securityId: number = 999;
     let accessId: number = 999;

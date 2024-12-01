@@ -1,3 +1,4 @@
+import { sendMessage, serviceWorker } from "../../app";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { GetCompositionLocal, GetCompositionLocalWithId } from "./GetCompositionLocal";
 import GetConceptByCharacterLocal from "./GetConceptByCharacterLocal";
@@ -9,6 +10,12 @@ import GetConceptByCharacterLocal from "./GetConceptByCharacterLocal";
  * @returns list of compositions.
  */
 export  async function GetCompositionListLocal(compositionName: string,userId:number){
+   if (serviceWorker) {
+      const res: any = await sendMessage('GetCompositionListLocal', { compositionName, userId })
+      // console.log('data received from sw', res)
+      return res.data
+    }
+
    try{
       let concept = await GetConceptByCharacterLocal(compositionName);
       let CompositionList :any = [];
@@ -34,6 +41,12 @@ export  async function GetCompositionListLocal(compositionName: string,userId:nu
  * @returns list of compositions with data - id format.
  */
 export  async function GetCompositionListLocalWithId(compositionName: string, userId: number){
+   if (serviceWorker) {
+      const res: any = await sendMessage('GetCompositionListLocalWithId', { compositionName, userId })
+      // console.log('data received from sw', res)
+      return res.data
+    }
+
    try{
       let concept = await GetConceptByCharacterLocal(compositionName);
       let CompositionList :any = [];

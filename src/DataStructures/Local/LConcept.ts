@@ -19,7 +19,8 @@ export  class LConcept{
     isComposition: boolean = false;
     isTemp: boolean = false;
     isSynced : boolean = false;
-    applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    applicationId: number = BaseUrl.getRandomizer();
 
 
     constructor(id: number, userId: number, typeId:number, categoryId:number,accessId: number, characterValue:string, typeCharacter:string,

@@ -17,7 +17,8 @@ export class LConnection{
     typeCharacter: string;
     localSyncTime: Date;
     isTemp:boolean = false;
-    applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    applicationId: number = BaseUrl.getRandomizer();
     type: Concept = CreateDefaultConcept();
 
     constructor(id: number, ofTheConceptId: number, toTheConceptId: number,

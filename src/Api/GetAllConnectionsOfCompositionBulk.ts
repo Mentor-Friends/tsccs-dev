@@ -6,20 +6,27 @@ import { FindConnectionsOfCompositionsBulkInMemory } from '../Services/FindConne
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
-export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
-      
-        var connectionList: Connection[] = [];
-        var conceptList: number[] = [];
-        if(composition_ids.length <= 0){
-          return connectionList;
-        }
-        var oldConnectionList = await FindConnectionsOfCompositionsBulkInMemory(composition_ids);
-        var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_ids);
-        connectionList = connectionListString as Connection[];
+import { sendMessage, serviceWorker } from '../app';
 
-        CheckForConnectionDeletion(connectionList, oldConnectionList);
-        await FindConceptsFromConnections(connectionList);
+
+export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
+  if (serviceWorker) {
+    const res: any = await sendMessage('GetAllConnectionsOfCompositionBulk', {composition_ids})
+    // console.log('data received from sw', res)
+    return res.data
+  }
+      var connectionList: Connection[] = [];
+      var conceptList: number[] = [];
+      if(composition_ids.length <= 0){
         return connectionList;
+      }
+      var oldConnectionList = await FindConnectionsOfCompositionsBulkInMemory(composition_ids);
+      var connectionListString = await GetAllConnectionsOfCompositionOnline(composition_ids);
+      connectionList = connectionListString as Connection[];
+
+      CheckForConnectionDeletion(connectionList, oldConnectionList);
+      await FindConceptsFromConnections(connectionList);
+      return connectionList;
         
      
 }

@@ -1,33 +1,40 @@
 const path = require('path');
-//import * as path from 'path';
+
 module.exports = env => ({
-   entry: './src/app.ts',
-   mode: 'production',  // convert to production for production
-   devtool: 'source-map', // remove for production
+   entry: {
+      main: './src/app.ts',  // Main app entry point
+      serviceWorker: './src/service-worker.ts'  // Service worker entry point
+   },
+   mode: 'development',  // Set to 'production' for production
+   devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
    watch: true,
    output: {
-      filename: 'bundle.js',
+      filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
-       libraryTarget: 'commonjs', // remove this for window library
-      library: {
-         // name: 'tsccs-browser', // you then can access it via window: `window.youLib`
-         // type: 'umd', // add this for window library
-         // umdNamedDefine: true, // add this for window library
-         type: "module"  // remove this for window library
-       },
+      // Enable ES Module output
+      module: true,  // This tells Webpack to treat the output as ES modules
+      libraryTarget: 'module',  // Ensures it's treated as an ES module
    },
    resolve: {
       extensions: ['.tsx', '.ts', '.js'],
+      mainFields: ['module', 'browser', 'main'],  // Prefer ES module resolution
    },
    module: {
       rules: [
          {
             test: /\.ts$/,
-            use: 'ts-loader',
+            use: 'ts-loader',   // Use ts-loader for TypeScript files
             exclude: /node_modules/,
          },
       ],
    },
    plugins: [
-   ]
+   ],
+   optimization: {
+      minimize: false,  // Optional: Disable minimization for easier debugging
+   },
+   target: 'web',  // Ensure output is compatible with browsers
+   experiments: {
+      outputModule: true,  // Enable support for ES module output
+   },
 });

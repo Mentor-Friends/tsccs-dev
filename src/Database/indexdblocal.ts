@@ -97,7 +97,9 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
             // which will enable us to identify this local database from others.
             storeToDatabase(idDb,{"id":0, "value": -100});
             storeToDatabase(idDb,{"id":1, "value": -200});
-            storeToDatabase(idDb,{"id":3, "value": BaseUrl.BASE_RANDOMIZER});
+            // storeToDatabase(idDb,{"id":3, "value": BaseUrl.BASE_RANDOMIZER});
+            
+            storeToDatabase(idDb,{"id":3, "value": BaseUrl.getRandomizer()});
         }
       }
 

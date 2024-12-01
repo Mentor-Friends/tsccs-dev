@@ -19,7 +19,8 @@ export class Connection{
     localSyncTime: Date;
     isTemp:boolean = false;
     toUpdate:boolean = false;
-    applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    applicationId: number = BaseUrl.getRandomizer();
     type: Concept = CreateDefaultConcept();
     ofConcept: Concept = CreateDefaultConcept();
     toConcept: Concept = CreateDefaultConcept();

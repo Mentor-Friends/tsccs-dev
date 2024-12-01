@@ -22,7 +22,8 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
            myHeaders.set("Content-Type","application/json" );
            myHeaders.set('Authorization', "Bearer " + TokenStorage.BearerAccessToken)
            myHeaders.set('Accept',  'application/json');
-           myHeaders.set('Randomizer', BaseUrl.BASE_RANDOMIZER.toString());
+          //  myHeaders.set('Randomizer', BaseUrl.BASE_RANDOMIZER.toString());
+           myHeaders.set('Randomizer', BaseUrl.getRandomizer().toString());
             const response = await fetch(BaseUrl.CreateGhostConceptApiUrl(),{
                 method: 'POST',
                 headers: myHeaders,

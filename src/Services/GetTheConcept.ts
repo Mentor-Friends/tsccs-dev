@@ -1,5 +1,5 @@
 import { GetConcept } from "../Api/GetConcept";
-import { convertFromLConceptToConcept, GetUserGhostId } from "../app";
+import { convertFromLConceptToConcept, GetUserGhostId, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
@@ -12,6 +12,12 @@ import { CreateDefaultConcept } from "./CreateDefaultConcept";
  */
 export default async function GetTheConcept(id: number, userId: number = 999){
     try{
+        if (serviceWorker) {
+            const res: any = await sendMessage('GetTheConcept', {id, userId})
+            // console.log('data received from sw', res)
+            return res.data
+          }
+
         let concept = CreateDefaultConcept();
         if(id < 0){
            let lconcept:Concept =  await GetUserGhostId(userId, id);

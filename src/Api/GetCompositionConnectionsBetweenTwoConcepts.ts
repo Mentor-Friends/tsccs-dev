@@ -3,10 +3,16 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { sendMessage, serviceWorker } from "../app";
 
 export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:number, toConcept:number, mainKey:number){
-  var connectionList: Connection[] = [];
+    if (serviceWorker) {
+      const res: any = await sendMessage('GetCompositionConnectionsBetweenTwoConcepts', {ofConceptId, toConcept, mainKey})
+      // console.log('data received from sw', res)
+      return res.data
+    }
     
+    var connectionList: Connection[] = [];
     try{
 
         var formdata = new FormData();
