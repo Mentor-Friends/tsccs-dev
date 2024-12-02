@@ -79,9 +79,9 @@ export class BuilderStatefulWidget extends StatefulWidget {
       let dataFromLocalStorage: string = localStorage?.getItem("profile") || "";
       if (dataFromLocalStorage) {
         const profileData = JSON.parse(dataFromLocalStorage);
-        return profileData
+        resolve(profileData)
       } else {
-        return
+        resolve()
       }
     });
     const userId = profileData?.userId;
@@ -241,6 +241,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
    * @param parent This is the function that creates a new div and then mounts the html element to the parent.
    */
   async mount(parent: HTMLElement) {
+    console.log('mount parent',)
     if (parent) {
       this.element = document.createElement("div");
       const inputVal = document.querySelector(
@@ -292,30 +293,31 @@ export class BuilderStatefulWidget extends StatefulWidget {
       this.element.id = this.createRandomNumber().toString();
       this.element.className = "p-2";
       this.element.innerHTML = await this.getHtml();
+      console.log("This is the this html", this.getHtml());
       console.log("this.element ==>", this.element);
       parent.appendChild(this.element);
 
-      const elementParent: any = this.element.closest(
-        ".added-widget-container"
-      );
-      const elementDivParent: any = this.element.closest("div");
-      let typeValueOne: string = "";
-      if (elementParent) {
-        typeValueOne = elementParent?.getAttribute("data-type-value");
-      } else if (elementDivParent) {
-        typeValueOne = elementDivParent?.getAttribute("data-type-value");
-      }
-      if (typeValueOne) this.widgetType = typeValueOne;
+      // const elementParent: any = this.element.closest(
+      //   ".added-widget-container"
+      // );
+      // const elementDivParent: any = this.element.closest("div");
+      // let typeValueOne: string = "";
+      // if (elementParent) {
+      //   typeValueOne = elementParent?.getAttribute("data-type-value");
+      // } else if (elementDivParent) {
+      //   typeValueOne = elementDivParent?.getAttribute("data-type-value");
+      // }
+      // if (typeValueOne) this.widgetType = typeValueOne;
 
       this.parentElement = parent.id;
       if (this.componentMounted == false) {
         // Simulate componentDidMount by calling it after the component is inserted into the DOM
         this.componentDidMount();
+
         this.mountChildWidgets();
         this.componentMounted = true;
-      } else {
-        this.render();
-      }
+      } 
+      this.render();
     }
   }
 
@@ -346,13 +348,13 @@ export class BuilderStatefulWidget extends StatefulWidget {
   async getWidgetClassFunction(widgetId: number) {
     return new Promise(async (resolve: any) => {
       
-      const profileData: any = await new Promise((resolve: any) => {
+      const profileData: any = await new Promise((resolve2: any) => {
         let dataFromLocalStorage: string = localStorage?.getItem("profile") || "";
         if (dataFromLocalStorage) {
           const profileData = JSON.parse(dataFromLocalStorage);
-          return profileData
+          resolve2(profileData)
         } else {
-          return
+          resolve2()
         }
       });
       
