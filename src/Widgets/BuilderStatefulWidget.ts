@@ -176,7 +176,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
       freeschemaQuery.outputFormat = DATAID;
       SchemaQueryListener(freeschemaQuery, "")
         .subscribe((output: any) => {
-          console.log("This is the data received", output);
           if (output?.length) {
             const result = output?.map((item: any) => {
               const itemName =
@@ -224,8 +223,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
   async setProperty(widgetTypeName: any) {
     this.widgetType = widgetTypeName;
     this.getTypeValueList(this.widgetType).then(() => {
-      console.log("this =->", this);
-      console.log("this.element", this.element);
       this.element?.setAttribute("data-type-value", this.widgetType);
       this.element?.parentElement?.setAttribute(
         "data-type-value",
@@ -294,7 +291,8 @@ export class BuilderStatefulWidget extends StatefulWidget {
       this.element.className = "p-2";
       this.element.innerHTML = await this.getHtml();
       console.log("This is the this html", this.getHtml());
-      console.log("this.element ==>", this.element);
+      console.log("this.element ==>", this.element, parent);
+    
       parent.appendChild(this.element);
 
       // const elementParent: any = this.element.closest(
@@ -310,14 +308,19 @@ export class BuilderStatefulWidget extends StatefulWidget {
       // if (typeValueOne) this.widgetType = typeValueOne;
 
       this.parentElement = parent.id;
-      if (this.componentMounted == false) {
+      if (this.componentMounted == false || this.widgetMounted == false) {
         // Simulate componentDidMount by calling it after the component is inserted into the DOM
         this.componentDidMount();
-
         this.mountChildWidgets();
+        this.widgetMounted = true;
         this.componentMounted = true;
-      } 
-      this.render();
+      }
+      else{
+        this.render();
+
+      }
+
+
     }
   }
 
@@ -393,6 +396,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
       };
 
       const widgetInstance = new BuilderStatefulWidget();
+      widgetInstance.html = widgetData?.html;
       widgetInstance.componentDidMountFunction = widgetData?.onmount;
       widgetInstance.addEventFunction = widgetData?.addevent;
       widgetInstance.mountChildWidgetsFunction = widgetData?.mountChildWidgets;
