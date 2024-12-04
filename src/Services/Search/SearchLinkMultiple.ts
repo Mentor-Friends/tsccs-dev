@@ -1,8 +1,9 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
-import { DATAID, JUSTDATA, NORMAL } from "../../Constants/FormatConstants";
+import { DATAID, JUSTDATA, LISTNORMAL, NORMAL } from "../../Constants/FormatConstants";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
 import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept, sendMessage, serviceWorker } from "../../app";
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetCompositionFromConnectionsWithDataIdInObjectNew, GetConnectionDataPrefetch } from "../GetCompositionBulk";
+import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
   if (serviceWorker) {
@@ -34,6 +35,7 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
     }
     else{
         conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
+
         if(caller){
           caller.conceptIds = conceptsConnections.compositionIds?.slice();
           caller.internalConnections = conceptsConnections.internalConnections?.slice();
@@ -55,7 +57,7 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
 
 
       
-    let out = await DataIdBuildLayer(linkers, conceptIds, connections, reverse, mainCompositionId, format);
+    let out = await DataIdBuildLayer(linkers, conceptIds, connections, reverse, mainCompositionId, searchQuery[0], format );
     return out;
   }
   catch(e){
@@ -75,7 +77,7 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
  * @param mainCompositionId this is the main centre point of this data.
  * @returns 
  */
-export async function DataIdBuildLayer(linkers: number [], conceptIds: number[], connections: number[], reverse:number[], mainCompositionId: number, format: number = DATAID){
+export async function DataIdBuildLayer(linkers: number [], conceptIds: number[], connections: number[], reverse:number[], mainCompositionId: number, searchQuery: SearchQuery, format: number = DATAID){
   let startTime = new Date().getTime();
   let prefetchConnections = await GetConnectionDataPrefetch(linkers);
   let concepts: any;
@@ -94,6 +96,10 @@ export async function DataIdBuildLayer(linkers: number [], conceptIds: number[],
 
 
     out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
+  }
+  else if(format == LISTNORMAL){
+      out = await formatDataArrayNormal(linkers, conceptIds, connections, searchQuery.ofCompositions , reverse );
+
   }
   else{
     concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds, connections);
@@ -293,13 +299,14 @@ export async function FormatConceptsAndConnections(connections: Connection[], co
 
   for(let i=0 ; i< mainComposition.length; i++){
     let mymainData = compositionData[mainComposition[i]];
-    console.log(mainData, mymainData);
     mainData.push(mymainData);
     
   }
   return mainData;
 
 }
+
+
 
 
 
@@ -397,7 +404,6 @@ export async function FormatFromConnectionsAlteredArray(connections:Connection[]
   }
   for(let i=0 ; i< mainComposition.length; i++){
     let mymainData = compositionData[mainComposition[i]];
-    console.log(mainData, mymainData);
     mainData.push(mymainData);
     
   }

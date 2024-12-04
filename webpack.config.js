@@ -1,12 +1,18 @@
 const path = require('path');
 
 module.exports = env => ({
+<<<<<<< HEAD
    entry: {
       main: './src/app.ts',  // Main app entry point
       serviceWorker: './src/service-worker.ts'  // Service worker entry point
    },
    mode: 'development',  // Set to 'production' for production
    devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
+=======
+   entry: './src/app.ts',
+   mode: 'production',  // convert to production for production
+   devtool: 'source-map', // remove for production
+>>>>>>> 41960ca7e3c35616f1096ce5bba4beb7f0c191b2
    watch: true,
    output: {
       filename: '[name].bundle.js',

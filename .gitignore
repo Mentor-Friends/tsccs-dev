@@ -1,8 +1,14 @@
 node_modules/
 
 dist/bundle.js
+<<<<<<< HEAD
 dist/types
 dist/*
+=======
+dist/bundle.js.map
+dist/types/
+dist/
+>>>>>>> 41960ca7e3c35616f1096ce5bba4beb7f0c191b2
 .vscode
 .env
 .env.development

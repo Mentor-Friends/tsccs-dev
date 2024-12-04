@@ -220,7 +220,28 @@ export class ConnectionData {
     return connections;
   }
 
+<<<<<<< HEAD
   getName() {
     return this.name;
   }
+=======
+    static async GetConnectionsOfConcept(id: number){
+        let connectionIds: number [] = [];
+        let connections: Connection[] = [];
+        connectionIds = ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+
+        for(let i=0; i< connectionIds.length; i++){
+            let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+            if(conn){
+                connections.push(conn.value);
+            }   
+        }
+
+        return connections;
+    } 
+
+    getName(){
+        return this.name;
+    }
+>>>>>>> 41960ca7e3c35616f1096ce5bba4beb7f0c191b2
 }
