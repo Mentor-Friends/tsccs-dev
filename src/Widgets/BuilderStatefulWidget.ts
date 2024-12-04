@@ -332,7 +332,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   /**
    * This function will be called after the component mounts.
    */
-  componentDidMount(onmountVal: any = "") {
+  async componentDidMount() {
     //console.log("onmountVal", onmountVal);
 
     const AsyncFunction = Object.getPrototypeOf(
@@ -345,11 +345,21 @@ export class BuilderStatefulWidget extends StatefulWidget {
     renderOnmount.call(this, tsccs);
   }
 
-  addEvents() {
+  async addEvents() {
     const AsyncFunction = Object.getPrototypeOf(
       async function () {}
     ).constructor;
+    // const dynamicAsyncFunction = new Function("tsccs",`
+    //   return (async function() {
+    //     ${this.addEventFunction}
+    //   }).call(this);
+    // `).bind(this);
+    // console.log("This is the async function", dynamicAsyncFunction);
+
+    // dynamicAsyncFunction(tsccs);
+
     const renderOnmount = AsyncFunction("tsccs", this.addEventFunction);
+
     renderOnmount.call(this, tsccs);
   }
 
