@@ -161,7 +161,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    */
  export function UpdateToDatabase(databaseName:string, object:any){
   return new Promise(function(resolve, reject){
-    console.log("this is wriring to the database", object);
+    // console.log("this is wriring to the database", object);
   openDatabase(databaseName).then((db)=>{
     let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
     let objStore = transaction.objectStore(databaseName);
