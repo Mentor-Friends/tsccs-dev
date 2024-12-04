@@ -396,14 +396,14 @@ export async function sendMessage(type: string, payload: any) {
               console.log('not ready', type)
               reject("Service worker not ready");
             }
-          }, 30000) // 30 seconds
+          }, 60000) // 60 seconds
         }
     
         // Timeout for waiting for the response (e.g., 5 seconds)
         setTimeout(() => {
           reject("No response from service worker after timeout");
           navigator.serviceWorker.removeEventListener("message", responseHandler);
-        }, 30000); // 30 sec
+        }, 60000); // 60 sec
       // })
       // .catch(err => reject(err))
       // .finally(() => console.log('finally'))
