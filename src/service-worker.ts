@@ -76,7 +76,6 @@ self.addEventListener("message", async (event: any) => {
   
   if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})
 
-  console.log('has type', type)
   let responseData: {success: boolean, data?: any, messageId?: string, actions?: InnerActions} = {success: false, data: undefined}
   let tabData = tabActionsMap.get(tabId)
   if (!Array.isArray(payload?.actions?.concepts) || !Array.isArray(payload?.actions?.connections)) {
@@ -91,14 +90,14 @@ self.addEventListener("message", async (event: any) => {
 
     tabActionsMap.delete(tabId)
     tabData = undefined
-    console.log('Syncing the tab here')
+    console.log('Syncing the tab here', type)
 
     responseData = { success: true, data, actions: {concepts: [], connections: []} }
   } else if (actions[type]) {
     try {
       responseData = await actions[type](payload);
     } catch (err) {
-      console.log('Error', err)
+      console.log('Error: type -> ', type, err)
     }
   } else {
     console.log(`Unable to handle "${type}" case in service worker`)
