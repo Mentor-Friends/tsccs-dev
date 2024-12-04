@@ -265,6 +265,8 @@ async function init(
               // else if (enableSW.path && enableSW.path.length > 2 && !enableSW.path.includes('serviceWorker.bundle.js')) serviceWorkerPath = enableSW.path + './serviceWorker.bundle.js'
 
               await new Promise<void>((resolve, reject) => {
+                let success = false;
+
                 navigator.serviceWorker
                   .register(enableSW.pathToSW ?? "./serviceWorker.bundle.js", {
                     // type: "module",
@@ -290,45 +292,62 @@ async function init(
                       });
                       resolve();
                     } else {
-                      let success = false;
-                      // Listen for updates to the service worker
-                      console.log("update listen start");
-                      registration.onupdatefound = () => {
-                        const newWorker = registration.installing;
-                        console.log("new worker", newWorker);
-                        if (newWorker) {
-                          newWorker.onstatechange = async () => {
-                            console.log("on state change triggered");
-                            // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                            if (newWorker.state === "activated" || newWorker.state === 'redundant') {
-                              // && navigator.serviceWorker.controller) {
-                              console.log(
-                                "New Service Worker is active",
-                                registration
-                              );
-                              serviceWorker = newWorker;
-                              // serviceWorker = registration.active;
-                              // Send init message now that it's active
-                              await sendMessage("init", {
-                                url,
-                                aiurl,
-                                accessToken,
-                                nodeUrl,
-                                enableAi,
-                                applicationName,
-                                isTest,
-                              });
-                              success = true;
-                              resolve();
-                            }
-                          };
-                        }
-                      };
                       // Handle if on state change didn't trigger
                       setTimeout(() => {
                         if (!success) reject("Not Completed Initialization");
-                      }, 3000);
+                      }, 5000);
                     }
+                    // Listen for updates to the service worker
+                    console.log("update listen start");
+                    registration.onupdatefound = () => {
+                      const newWorker = registration.installing;
+                      console.log("new worker", newWorker);
+                      if (newWorker) {
+                        newWorker.onstatechange = async () => {
+                          console.log("on state change triggered");
+                          // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                          if ((newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
+                            // && navigator.serviceWorker.controller) {
+                            console.log(
+                              "New Service Worker is active",
+                              registration
+                            );
+                            serviceWorker = newWorker;
+                            // serviceWorker = registration.active;
+                            // Send init message now that it's active
+                            await sendMessage("init", {
+                              url,
+                              aiurl,
+                              accessToken,
+                              nodeUrl,
+                              enableAi,
+                              applicationName,
+                              isTest,
+                            });
+                            success = true;
+                            resolve();
+                          }
+                        };
+                      }
+                    };
+
+                    // Listen for the activation of the new service worker
+                    registration.addEventListener('controllerchange', async () => {
+                      if (navigator.serviceWorker.controller) {
+                        console.log('Service worker has been activated');
+                        await sendMessage("init", {
+                          url,
+                          aiurl,
+                          accessToken,
+                          nodeUrl,
+                          enableAi,
+                          applicationName,
+                          isTest,
+                        });
+                        // The new service worker is now controlling the page
+                        // You can reload the page if necessary or handle the update process here
+                      }
+                    });
                   })
                   .catch(async (error) => {
                     await initConceptConnection();
