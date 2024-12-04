@@ -33,6 +33,8 @@ export class BaseWidget extends BaseObserver{
       }
 
 
+
+
     /**
      * 
      * @returns random number that will be used to put into the main widget div so that we can uniqely identify 

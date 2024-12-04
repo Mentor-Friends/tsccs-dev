@@ -270,7 +270,6 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       }
   
     }
-    console.log("these are the main datas", compositionData);
     for(let i=0 ; i< mainComposition.length; i++){
       let mymainData: any = {};
       mymainData["id"] = mainComposition[i];

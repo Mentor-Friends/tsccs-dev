@@ -12,6 +12,8 @@ export class StatefulWidget extends BaseWidget{
      */
     childWidgets: any = [];
 
+    childWidgetElement: any = [];
+
 
     /**
      * This is the id of the parentElement of this widget.
@@ -23,6 +25,11 @@ export class StatefulWidget extends BaseWidget{
      * This is the element that is a copy of the element that is mounted.
      */
     protected element: HTMLElement | null = null;
+
+
+    getElement(){
+      return this.element;
+    }
   
     setTitle(title: string): void {
       document.title = title;
@@ -89,7 +96,9 @@ export class StatefulWidget extends BaseWidget{
    render(){
       if (this.element) {
           this.element.innerHTML =  this.getHtml();
+
         }
+      //console.log("added-widget-container",this.childWidgetElement);
       // addEvents is called after the element has been mounted.
       this.addEvents();
 
@@ -99,11 +108,23 @@ export class StatefulWidget extends BaseWidget{
       }
     }
 
+    getElementByClassName(identifier: string){
+      let element = this.getComponent();
+      if(element){
+
+         let myelement:NodeListOf<Element> =  element?.querySelectorAll('.'+identifier);
+         console.log("this is the element", element,myelement,identifier);
+          return myelement;
+      }
+      return [];
+
+    }
+
 
     /**
      * This is the function that needs to be called.
      */
-    mountChildWidgets(){
+    async mountChildWidgets(){
     }
   
     /**
@@ -119,7 +140,7 @@ export class StatefulWidget extends BaseWidget{
         this.element.id = this.createWidgetWrapperIdentifier();
 
         // then assign the html to the element.
-        this.element.innerHTML = await this.getHtml();
+        this.element.innerHTML = this.getHtml();
 
         // mount the div with unique identifier to the parent element.
         parent.appendChild(this.element);

@@ -25,8 +25,10 @@ export class BuilderStatefulWidget extends StatefulWidget {
   widgetType: string = "the_element_name";
   parentConceptList: any = [];
 
+
+
   async getWidgetCodeFromId(widgetId: number, token: string) {
-    console.log("getWidgetCodeFromId", widgetId, token);
+    //console.log("getWidgetCodeFromId", widgetId, token);
     return new Promise(async (resolve: any, reject: any) => {
       try {
         let searchFirst = new SearchQuery();
@@ -60,7 +62,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   
         const queryParams = [searchFirst, searchSecond];
         const output = await SearchLinkMultipleAll(queryParams, token);
-        console.log("getWidgetCodeFromId output ->", output);
+        //console.log("getWidgetCodeFromId output ->", output);
         resolve(output);
         return output;
       } catch (error: any) {
@@ -176,18 +178,21 @@ export class BuilderStatefulWidget extends StatefulWidget {
       freeschemaQuery.outputFormat = DATAID;
       SchemaQueryListener(freeschemaQuery, "")
         .subscribe((output: any) => {
+          console.log("thgis is the output",output);
+          console.log("this is the typeValuekey", typevalueKey, typeName, mainComposition);
+
           if (output?.length) {
             const result = output?.map((item: any) => {
               const itemName =
-                item[mainComposition]?.[typeName]?.data?.[typevalueKey];
-              const itemId = item[mainComposition]?.[typeName]?.id;
+                item.data?.[mainComposition]?.[typeName]?.data?.[typevalueKey];
+              const itemId = item.data?.[mainComposition]?.[typeName]?.id;
               return {
                 id: itemId,
                 name: itemName,
                 text: itemName,
               };
             });
-            console.log("result =>", result);
+            //console.log("result =>", result);
             this.typeValueList = result;
             resolve(this.typeValueList);
             return result;
@@ -233,79 +238,79 @@ export class BuilderStatefulWidget extends StatefulWidget {
     return this;
   }
 
+  createTypeEditor(event: any){
+    if(event){
+      const inputVal = document.querySelector(
+        "#widget-properties .flex-column"
+      );
+      console.log("This is the input val container", inputVal);
+      const existedInputEl: any = inputVal?.querySelectorAll("input");
+      existedInputEl?.forEach((inputItem: any) => {
+        inputItem?.remove();
+      });
+      // const elementParent = event.target?.closest(".added-widget-container");
+      // const elementDivParent = event.target?.closest("div");
+      let typeValue: string = this.widgetType;
+      // if (elementParent) {
+      //   typeValue = elementParent?.getAttribute("data-type-value");
+      // } else if (elementDivParent) {
+      //   typeValue = elementDivParent?.getAttribute("data-type-value");
+      // }
+
+      const inputEl = <HTMLInputElement>document.createElement("input");
+      inputEl.setAttribute("type", "text");
+      inputEl.setAttribute("name", "input-widgetTypeValue");
+      inputEl.setAttribute("of", this.elementIdentifier.toString());
+      inputEl.setAttribute("class", "form-control");
+      inputEl.setAttribute("id", "widgetTypeValue");
+      if (typeValue) {
+        inputEl.value = this.widgetType;
+      } else {
+        inputEl.setAttribute("placeholder", "e.g. the_entity_type");
+      }
+      let that = this;
+      inputEl.onchange = function (event: any) {
+        event.preventDefault();
+        event.stopPropagation();
+        //console.log("THAT ->", that);
+        const inputValue = event?.target?.value;
+        console.log("this is the input change", inputValue);
+        that.widgetType = inputValue;
+
+        //console.log("inputValue", inputValue);
+        //that.setProperty(inputValue);
+        that.componentDidMount();
+        that.mountChildWidgets();
+      };
+      inputVal?.appendChild(inputEl);
+    }
+
+  }
+
   /**
    *
    * @param parent This is the function that creates a new div and then mounts the html element to the parent.
    */
   async mount(parent: HTMLElement) {
-    console.log('mount parent',)
+    //console.log('mount parent',)
     if (parent) {
       this.element = document.createElement("div");
-      const inputVal = document.querySelector(
-        "#widget-properties .flex-column"
-      );
+
       let that = this;
       this.element.onclick = function (event: any) {
         event.preventDefault();
         event.stopPropagation();
-        const existedInputEl: any = inputVal?.querySelectorAll("input");
-        existedInputEl?.forEach((inputItem: any) => {
-          inputItem?.remove();
-        });
-
-        console.log("event.target", event.target);
-        const elementParent = event.target.closest(".added-widget-container");
-        const elementDivParent = event.target.closest("div");
-        let typeValue: string = "";
-        if (elementParent) {
-          typeValue = elementParent?.getAttribute("data-type-value");
-        } else if (elementDivParent) {
-          typeValue = elementDivParent?.getAttribute("data-type-value");
-        }
-        console.log("typeValue", typeValue);
-        that.widgetType = typeValue;
-
-        const inputEl = <HTMLInputElement>document.createElement("input");
-        inputEl.setAttribute("type", "text");
-        inputEl.setAttribute("name", "input-widgetTypeValue");
-        inputEl.setAttribute("class", "form-control");
-        inputEl.setAttribute("id", "widgetTypeValue");
-        if (typeValue) {
-          inputEl.value = typeValue;
-        } else {
-          inputEl.setAttribute("placeholder", "e.g. the_entity_type");
-        }
-
-        inputEl.onchange = function (event: any) {
-          event.preventDefault();
-          event.stopPropagation();
-          console.log("THAT ->", that);
-          const inputValue = event?.target?.value;
-          console.log("inputValue", inputValue);
-          that.setProperty(inputValue);
-        };
-        inputVal?.appendChild(inputEl);
+        that.createTypeEditor(event);
       };
 
-      this.element.id = this.createRandomNumber().toString();
+      this.element.id = this.createWidgetWrapperIdentifier();
       this.element.className = "p-2";
-      this.element.innerHTML = await this.getHtml();
-      console.log("This is the this html", this.getHtml());
-      console.log("this.element ==>", this.element, parent);
-    
+      this.element.innerHTML = this.getHtml();
+      
       parent.appendChild(this.element);
+      this.childWidgetElement = this.getElementByClassName("added-widget-container")
 
-      // const elementParent: any = this.element.closest(
-      //   ".added-widget-container"
-      // );
-      // const elementDivParent: any = this.element.closest("div");
-      // let typeValueOne: string = "";
-      // if (elementParent) {
-      //   typeValueOne = elementParent?.getAttribute("data-type-value");
-      // } else if (elementDivParent) {
-      //   typeValueOne = elementDivParent?.getAttribute("data-type-value");
-      // }
-      // if (typeValueOne) this.widgetType = typeValueOne;
+
 
       this.parentElement = parent.id;
       if (this.componentMounted == false || this.widgetMounted == false) {
@@ -328,7 +333,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
    * This function will be called after the component mounts.
    */
   componentDidMount(onmountVal: any = "") {
-    console.log("onmountVal", onmountVal);
+    //console.log("onmountVal", onmountVal);
 
     const AsyncFunction = Object.getPrototypeOf(
       async function () {}
