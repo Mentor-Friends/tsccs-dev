@@ -97,7 +97,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
       const match = typeName?.match(/^[a-z0-9]+_[a-z0-9]+/i);
       const mainComposition = match ? match[0] : "";
       // Output: "the_element"
-
       const nextMatch = typeName?.match(/^([a-z0-9]+).*_([a-z0-9]+)$/i);
       const typevalueKey = nextMatch ? `${nextMatch[1]}_${nextMatch[2]}` : "";
       // Output: "the_name"
@@ -178,8 +177,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
       freeschemaQuery.outputFormat = DATAID;
       SchemaQueryListener(freeschemaQuery, "")
         .subscribe((output: any) => {
-          console.log("thgis is the output",output);
-          console.log("this is the typeValuekey", typevalueKey, typeName, mainComposition);
 
           if (output?.length) {
             const result = output?.map((item: any) => {
@@ -215,14 +212,21 @@ export class BuilderStatefulWidget extends StatefulWidget {
   }
 
   async mountChildWidgets() {
-    const AsyncFunction = Object.getPrototypeOf(
-      async function () {}
-    ).constructor;
-    const renderOnmount = AsyncFunction(
-      "tsccs",
-      this.mountChildWidgetsFunction
-    );
-    renderOnmount.call(this, tsccs);
+
+    const dynamicAsyncFunction = new Function("tsccs",`
+      return (async function() {
+        ${this.mountChildWidgetsFunction}
+      }).call(this);
+    `).bind(this);
+    dynamicAsyncFunction(tsccs);
+    // const AsyncFunction = Object.getPrototypeOf(
+    //   async function () {}
+    // ).constructor;
+    // const renderOnmount = AsyncFunction(
+    //   "tsccs",
+    //   this.mountChildWidgetsFunction
+    // );
+    // renderOnmount.call(this, tsccs);
   }
 
   async setProperty(widgetTypeName: any) {
@@ -274,7 +278,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
         event.stopPropagation();
         //console.log("THAT ->", that);
         const inputValue = event?.target?.value;
-        console.log("this is the input change", inputValue);
         that.widgetType = inputValue;
 
         //console.log("inputValue", inputValue);
@@ -332,35 +335,40 @@ export class BuilderStatefulWidget extends StatefulWidget {
   /**
    * This function will be called after the component mounts.
    */
-  async componentDidMount() {
+  componentDidMount() {
     //console.log("onmountVal", onmountVal);
-
-    const AsyncFunction = Object.getPrototypeOf(
-      async function () {}
-    ).constructor;
-    const renderOnmount = AsyncFunction(
-      "tsccs",
-      this.componentDidMountFunction
-    );
-    renderOnmount.call(this, tsccs);
+    const dynamicAsyncFunction = new Function("tsccs",`
+      return (async function() {
+        ${this.componentDidMountFunction}
+      }).call(this);
+    `).bind(this);
+    dynamicAsyncFunction(tsccs);
+    // dynamicAsyncFunction(tsccs);
+    // const AsyncFunction = Object.getPrototypeOf(
+    //   async function () {}
+    // ).constructor;
+    // const renderOnmount = AsyncFunction(
+    //   "tsccs",
+    //   this.componentDidMountFunction
+    // );
+    // renderOnmount.call(this, tsccs);
   }
 
-  async addEvents() {
-    const AsyncFunction = Object.getPrototypeOf(
-      async function () {}
-    ).constructor;
-    // const dynamicAsyncFunction = new Function("tsccs",`
-    //   return (async function() {
-    //     ${this.addEventFunction}
-    //   }).call(this);
-    // `).bind(this);
-    // console.log("This is the async function", dynamicAsyncFunction);
+  addEvents() {
+    // const AsyncFunction = Object.getPrototypeOf(
+    //   async function () {}
+    // ).constructor;
+    const dynamicAsyncFunction = new Function("tsccs",`
+      return (async function() {
+        ${this.addEventFunction}
+      }).call(this);
+    `).bind(this);
 
-    // dynamicAsyncFunction(tsccs);
+    dynamicAsyncFunction(tsccs);
 
-    const renderOnmount = AsyncFunction("tsccs", this.addEventFunction);
+    // const renderOnmount = AsyncFunction("tsccs", this.addEventFunction);
 
-    renderOnmount.call(this, tsccs);
+    // renderOnmount.call(this, tsccs);
   }
 
   async getWidgetClassFunction(widgetId: number) {
