@@ -3,6 +3,7 @@ import { StatefulWidget } from "./StatefulWidget";
 import { Concept, CreateTheConnectionLocal, DATAID, FilterSearch, FreeschemaQuery, MakeTheTypeConceptLocal, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery } from "../app";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import * as tsccs from "../app";
+import { TypeEditor } from "./BuilderSpeceficFunctions";
 
 
 export class BuilderStatefulWidget extends StatefulWidget {
@@ -12,17 +13,18 @@ export class BuilderStatefulWidget extends StatefulWidget {
   parentElement: string = "";
   oldHtml: HTMLElement | null = null;
   // subscribers: any = [];
-  protected element: HTMLElement | null = null;
+  element: HTMLElement | null = null;
   onmountVal: any;
   addEventVal: any;
   phonebooks: any = [];
+  childrenData: any = [];
   html: string = "";
   addEventFunction: any;
   componentDidMountFunction: any;
   mountChildWidgetsFunction: any;
   childWidgets: any = [];
   typeValueList: any = [];
-  widgetType: string = "the_element_name";
+  public widgetType: string = "the_element_name";
   parentConceptList: any = [];
 
 
@@ -99,55 +101,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
       // Output: "the_element"
       const nextMatch = typeName?.match(/^([a-z0-9]+).*_([a-z0-9]+)$/i);
       const typevalueKey = nextMatch ? `${nextMatch[1]}_${nextMatch[2]}` : "";
-      // Output: "the_name"
-
-      // const profileData: any = await getLocalStorageProfileData();
-      // const token = profileData?.token;
-      // const userId = profileData?.userId;
-
-      // const compositionSerach: tsccs.SearchStructure = {
-      //   type: "",
-      //   search: "",
-      //   // composition: "the_element",
-      //   composition: mainComposition,
-      //   internalComposition: "",
-      //   userId: userId,
-      //   inpage: 100,
-      //   page: 1,
-      //   auth: true,
-      // };
-
-      // let searchFirst = new tsccs.SearchQuery();
-      // // searchFirst.type = "the_element_name";
-      // // searchFirst.fullLinkers = ["the_element_name"];
-      // searchFirst.type = typeName;
-      // searchFirst.fullLinkers = [typeName];
-      // searchFirst.inpage = 100;
-      // const queryParams = [searchFirst];
-
-      // tsccs
-      //   .GetLinkListListener(
-      //     compositionSerach,
-      //     queryParams,
-      //     token,
-      //     tsccs.NORMAL
-      //   )
-      //   .subscribe((output: any) => {
-      //     if (output?.length) {
-      //       const result = output?.map((item: any, index: number) => {
-      //         const itemName =
-      //           item[mainComposition][typeName]?.[0]?.[typevalueKey];
-      //         return {
-      //           id: index,
-      //           name: itemName,
-      //           text: itemName,
-      //         };
-      //       });
-      //       this.typeValueList = result;
-      //       resolve(this.typeValueList);
-      //       return result;
-      //     }
-      //   });
 
       // NEW SEARCH WITH FILTER
       // filters
@@ -219,14 +172,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
       }).call(this);
     `).bind(this);
     dynamicAsyncFunction(tsccs);
-    // const AsyncFunction = Object.getPrototypeOf(
-    //   async function () {}
-    // ).constructor;
-    // const renderOnmount = AsyncFunction(
-    //   "tsccs",
-    //   this.mountChildWidgetsFunction
-    // );
-    // renderOnmount.call(this, tsccs);
   }
 
   async setProperty(widgetTypeName: any) {
@@ -243,50 +188,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   }
 
   createTypeEditor(event: any){
-    if(event){
-      const inputVal = document.querySelector(
-        "#widget-properties .flex-column"
-      );
-      console.log("This is the input val container", inputVal);
-      const existedInputEl: any = inputVal?.querySelectorAll("input");
-      existedInputEl?.forEach((inputItem: any) => {
-        inputItem?.remove();
-      });
-      // const elementParent = event.target?.closest(".added-widget-container");
-      // const elementDivParent = event.target?.closest("div");
-      let typeValue: string = this.widgetType;
-      // if (elementParent) {
-      //   typeValue = elementParent?.getAttribute("data-type-value");
-      // } else if (elementDivParent) {
-      //   typeValue = elementDivParent?.getAttribute("data-type-value");
-      // }
-
-      const inputEl = <HTMLInputElement>document.createElement("input");
-      inputEl.setAttribute("type", "text");
-      inputEl.setAttribute("name", "input-widgetTypeValue");
-      inputEl.setAttribute("of", this.elementIdentifier.toString());
-      inputEl.setAttribute("class", "form-control");
-      inputEl.setAttribute("id", "widgetTypeValue");
-      if (typeValue) {
-        inputEl.value = this.widgetType;
-      } else {
-        inputEl.setAttribute("placeholder", "e.g. the_entity_type");
-      }
-      let that = this;
-      inputEl.onchange = function (event: any) {
-        event.preventDefault();
-        event.stopPropagation();
-        //console.log("THAT ->", that);
-        const inputValue = event?.target?.value;
-        that.widgetType = inputValue;
-
-        //console.log("inputValue", inputValue);
-        //that.setProperty(inputValue);
-        that.componentDidMount();
-        that.mountChildWidgets();
-      };
-      inputVal?.appendChild(inputEl);
-    }
+    TypeEditor(event, this);
 
   }
 
@@ -305,10 +207,10 @@ export class BuilderStatefulWidget extends StatefulWidget {
         event.stopPropagation();
         that.createTypeEditor(event);
       };
-
       this.element.id = this.createWidgetWrapperIdentifier();
-      this.element.className = "p-2";
+      this.element.className = "p-2 mftsccs-marking-element";
       this.element.innerHTML = this.getHtml();
+      parent?.setAttribute("data-type-value", that.widgetType);
       
       parent.appendChild(this.element);
       this.childWidgetElement = this.getElementByClassName("added-widget-container")
