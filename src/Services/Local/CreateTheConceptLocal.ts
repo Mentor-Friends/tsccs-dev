@@ -2,6 +2,7 @@ import { sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
+import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
 
 /**
  * This function creates the concept in the local system (Local memory and IndexDb) but not in the backend database
@@ -26,6 +27,7 @@ import { LocalId } from "../../DataStructures/Local/LocalId";
 export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, 
 typeId:number, 
 accessId:number, isComposition: boolean = false, referentId:number = 0){
+    let startTime = performance.now()
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
@@ -50,6 +52,30 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
         concept.isComposition = isComposition;
         LocalConceptsData.AddConcept(concept);
         //storeToDatabase("localconcept",concept);
+        /**
+             * Add to Logger
+             */
+        console.log("CreateTheConceptLocal...");
+            
+        let sessionId:string = getCookie('SessionId');
+        let logData:LogData= {
+            requestStatus: 200,
+            executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+            responseSize: `${JSON.stringify(concept).length}`,
+            sessionId: sessionId,
+            functionName: "CreateTheConceptLocal",
+            functionParameters : ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId']
+        }
+        Logger.log(
+            "INFO",
+            "From function CreateTheConceptLocal",
+            logData
+        )
+        // Send logs to the server
+        Logger.sendLogsToServer()
+        /**
+         * End of Logger
+         */
         return concept;
     }
     catch(error){

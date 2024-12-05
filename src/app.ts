@@ -112,28 +112,20 @@ import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConceptsToMemory, Pop
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
-<<<<<<< HEAD
 import { broadcastChannel } from "./Constants/general.const";
 export { Validator } from "./Validator/validator";
 export { createFormFieldData } from "./Validator/utils";
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
+export { Anomaly } from './Anomaly/anomaly';
+export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
+export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
+export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 
 export var serviceWorker: any;
 console.log("Start from logging...");
 
-=======
-export { Anomaly } from './Anomaly/anomaly';
-export { Validator } from './Validator/validator';
-export { createFormFieldData } from './Validator/utils';
-export {BaseUrl} from './DataStructures/BaseUrl';
-export {StatefulWidget} from './Widgets/StatefulWidget';
-export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
-export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
-export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
-export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
->>>>>>> 41960ca7e3c35616f1096ce5bba4beb7f0c191b2
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.

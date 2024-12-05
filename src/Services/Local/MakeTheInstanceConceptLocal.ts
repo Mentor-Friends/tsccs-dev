@@ -3,7 +3,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalSyncData, sendMessage, serviceWorker } from "../../app";
-
+import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
 
 /**
  * This is the basic function of the concept connection system. This function let's you create a concept within the constraints of the 
@@ -22,6 +22,7 @@ import { LocalSyncData, sendMessage, serviceWorker } from "../../app";
  */
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0){
+        let startTime = performance.now()
         if (serviceWorker) {
             const res: any = await sendMessage('MakeTheInstanceConceptLocal', {type, referent, composition, userId, accessId, sessionInformationId, referentId})
             console.log('data received from sw', res)
@@ -81,6 +82,30 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     
             concept.type = typeConcept;
             LocalSyncData.AddConcept(concept);
+            /**
+             * Add to Logger
+             */
+            console.log("MakeTheInstanceConceptLocal...");
+            
+            let sessionId:string = getCookie('SessionId');
+            let dataLog:LogData= {
+                requestStatus: 200,
+                executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+                responseSize: `${JSON.stringify(concept).length}`,
+                sessionId: sessionId,
+                functionName: "MakeTheInstanceConceptLocal",
+                functionParameters : ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId']
+            }
+            Logger.log(
+                "INFO",
+                "From function MakeTheInstanceConceptLocal",
+                dataLog
+            )
+            // Send logs to the server
+            Logger.sendLogsToServer()
+            /**
+             * End of Logger
+             */
             return concept;
         }
         catch(error){

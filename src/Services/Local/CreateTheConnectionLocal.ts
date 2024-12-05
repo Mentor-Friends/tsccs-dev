@@ -1,6 +1,7 @@
 import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
+import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
 import { LocalSyncData, sendMessage, serviceWorker } from "../../app";
 
 /**
@@ -19,6 +20,7 @@ import { LocalSyncData, sendMessage, serviceWorker } from "../../app";
 export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, 
      typeId: number,orderId:number = 1, typeString: string = "", userId: number = 999
     ){  
+        let startTime = performance.now()
         if (serviceWorker) {
             const res: any = await sendMessage('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId })
             console.log('data received from sw', res)
@@ -43,6 +45,30 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
                  LocalConnectionData.AddConnection(connection);
                  //storeToDatabase("localconnection", connection);
              }
+             /**
+             * Add to Logger
+             */
+            console.log("CreateTheConnectionLocal...");
+            
+            let sessionId:string = getCookie('SessionId');
+            let dataLog:LogData= {
+                requestStatus: 200,
+                executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+                responseSize: `${JSON.stringify(connection).length}`,
+                sessionId: sessionId,
+                functionName: "CreateTheConnectionLocal",
+                functionParameters : ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId']
+            }
+            Logger.log(
+                "INFO",
+                "From function MakeTheInstanceConceptLocal",
+                dataLog
+            )
+            // Send logs to the server
+            Logger.sendLogsToServer()
+            /**
+             * End of Logger
+             */
              return connection;
         }
         catch(error){

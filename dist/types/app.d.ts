@@ -35,6 +35,7 @@ export { LoginToBackend } from './Api/Login';
 export { GetConnectionOfTheConcept } from './Api/GetConnectionOfTheConcept';
 export { default as Signup } from './Api/Signup';
 export { default as Signin } from './Api/Signin';
+export { SignupEntity } from './Api/Signup';
 export { default as UpdateComposition } from './Services/UpdateComposition';
 export { SearchAllConcepts } from './Api/Search/Search';
 export { SearchWithLinker } from './Api/Search/SearchWithLinker';
@@ -68,7 +69,7 @@ export { GetCompositionWithIdAndDateFromMemory } from './Services/GetComposition
 export { GetConceptByCharacterAndType } from './Api/GetConceptByCharacterAndType';
 export { GetConnectionDataPrefetch } from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered } from './Services/Search/SearchLinkMultiple';
-export { NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW } from './Constants/FormatConstants';
+export { NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL } from './Constants/FormatConstants';
 export { PRIVATE, PUBLIC, ADMIN } from './Constants/AccessConstants';
 export { SearchWithTypeAndLinkerApi } from './Api/Search/SearchWithTypeAndLinker';
 export { DependencyObserver } from './WrapperFunctions/DepenedencyObserver';
@@ -106,6 +107,10 @@ export { createFormFieldData } from "./Validator/utils";
 export { BaseUrl } from './DataStructures/BaseUrl';
 export { StatefulWidget } from './Widgets/StatefulWidget';
 export { DeleteConnectionByType } from './Services/DeleteConnectionByType';
+export { Anomaly } from './Anomaly/anomaly';
+export { FreeschemaQuery } from './DataStructures/Search/FreeschemaQuery';
+export { FreeschemaQueryApi } from './Api/Search/FreeschemaQueryApi';
+export { SchemaQueryListener } from './WrapperFunctions/SchemaQueryObservable';
 export declare var serviceWorker: any;
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete

@@ -54,4 +54,5 @@ export declare class BaseUrl {
     static CreateTheConnectionNewUrl(): string;
     static MakeTheTypeConceptUrl(): string;
     static DeleteTheConnectionUrl(): string;
+    static FreeschemaQueryUrl(): string;
 }

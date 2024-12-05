@@ -1,8 +1,10 @@
 import { Concept, CreateTheConnectionLocal, MakeTheInstanceConceptLocal, sendMessage, serviceWorker } from "../../app";
+import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
 import { HandleInternalError } from "../Common/ErrorPosting";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false){
     try{
+        let startTime = performance.now()
         if (serviceWorker) {
             const res: any = await sendMessage('CreateConnectionBetweenTwoConceptsLocal', {ofTheConcept, toTheConcept, linker, both})
             console.log('data received from sw', res)
@@ -30,10 +32,35 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
         // }
         var connectionConcept = await MakeTheInstanceConceptLocal("connection",forwardLinker,false,999,999,999);
         let newConnection = await CreateTheConnectionLocal(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000)
+        /**
+         * Start Log Service
+         */
+        console.log("CreateConnectionBetweenTwoConceptsLocal...");
+            
+        let sessionId:string = getCookie('SessionId');
+        let dataLog:LogData= {
+            requestStatus: 200,
+            executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+            responseSize: `${JSON.stringify(newConnection).length}`,
+            sessionId: sessionId,
+            functionName: "CreateConnectionBetweenTwoConceptsLocal",
+            functionParameters : ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'],
+        }
+        Logger.log(
+            "INFO",
+            "From function CreateConnectionBetweenTwoConceptsLocal",
+            dataLog
+        )
+        // Send logs to the server
+        Logger.sendLogsToServer()
+
+        /**
+         * End of Log
+         */
         return newConnection;
     }
     catch(ex){
         throw ex;
     }
 
-    }
+}
