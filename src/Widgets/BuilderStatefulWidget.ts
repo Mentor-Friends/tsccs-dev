@@ -17,7 +17,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   onmountVal: any;
   addEventVal: any;
   phonebooks: any = [];
-  childrenData: any = [];
+  childrenData: any = {};
   html: string = "";
   addEventFunction: any;
   componentDidMountFunction: any;
@@ -76,6 +76,14 @@ export class BuilderStatefulWidget extends StatefulWidget {
       }
     });
   }
+
+
+  // async CreateConceptConnections(){
+  //   let mainConcept = await 
+  //   for(let i=0; i<this.childrenData.length; i++){
+
+  //   }
+  // }
   
 
   async getUserId() {

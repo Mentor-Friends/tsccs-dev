@@ -113,6 +113,7 @@ import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
+import { WidgetTree } from "./Widgets/WidgetTree";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -125,6 +126,7 @@ export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
+export {WidgetTree} from './Widgets/WidgetTree';
 
 
 type listeners = {

@@ -124,7 +124,7 @@ export class StatefulWidget extends BaseWidget{
     /**
      * This is the function that needs to be called.
      */
-    async mountChildWidgets(){
+    mountChildWidgets(){
     }
   
     /**
