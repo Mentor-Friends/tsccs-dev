@@ -1,4 +1,4 @@
-import { ConceptsData, GetTheConcept } from "../app";
+import { ConceptsData, dispatchIdEvent, GetTheConcept } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { IdentifierFlags } from "./IdentifierFlags";
@@ -34,7 +34,8 @@ export class BinaryTypeTree{
         else{
             let event = new CustomEvent(`${node.key}`, {detail: node.value[0]});
             // console.log("this is the fired event", event);
-             dispatchEvent(event);
+            //  dispatchEvent(event);
+            dispatchIdEvent(node.key, {detail: node.value[0]})
             // console.log("this is the fired event", event);
             this.root = this.root.addType(this.root, node.key, node.value[0]);
         }

@@ -1,3 +1,4 @@
+import { InnerActions, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
@@ -24,11 +25,19 @@ import { LocalId } from "../../DataStructures/Local/LocalId";
  */
 export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, 
 typeId:number, 
-accessId:number, isComposition: boolean = false, referentId:number = 0){
+accessId:number, isComposition: boolean = false, referentId:number = 0, actions: InnerActions = {concepts: [], connections: []}){
     try{
+        if (serviceWorker) {
+            const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
+            // console.log('data received from sw', res)
+            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+            return res.data
+          }
+
         //let id = -Math.floor(Math.random() * 100000000);
         let id = await LocalId.getConceptId();
-        console.log("this is the getting id type connection", id);
+        // console.log("this is the getting id type connection", id);
 
         let isNew: boolean = true;
         let created_on:Date = new Date();
@@ -42,6 +51,7 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
         concept.isTemp = true;
         concept.isComposition = isComposition;
         LocalConceptsData.AddConcept(concept);
+        actions.concepts.push(concept)
         //storeToDatabase("localconcept",concept);
         return concept;
     }

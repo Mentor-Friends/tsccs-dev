@@ -1,3 +1,4 @@
+import { dispatchIdEvent } from "../../app";
 import { NodePrimitive } from "./NodePrimitive";
 
 export class ConnectionOfNode extends NodePrimitive{

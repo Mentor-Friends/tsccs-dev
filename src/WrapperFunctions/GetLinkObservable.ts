@@ -43,6 +43,7 @@ export class GetLinkObservable extends DependencyObserver
               var prefetch :number[] = [];
               for(var i=0; i<this.connections.length; i++){
                 prefetch.push(this.connections[i].toTheConceptId);
+                this.linkers.push(this.connections[i].id)
                 this.listenToEvent(this.connections[i].toTheConceptId);
               }
              // await GetAllConnectionsOfCompositionBulk(prefetch);
@@ -56,6 +57,7 @@ export class GetLinkObservable extends DependencyObserver
 
     async build(){
 
+        this.data = []
         this.connections = await GetConnectionBulk(this.linkers);
         for(var i=0; i<this.connections.length; i++){
             let toConceptId = this.connections[i].toTheConceptId;
@@ -86,6 +88,52 @@ export class GetLinkObservable extends DependencyObserver
 
 }
 
+// class GetLinkServiceObservable
+// {
+//     mainConcept: number
+//     linker:string;
+//     inpage: number;
+//     page: number;
+//     format: number = NORMAL;
+//     connections: Connection[] = [];
+//     data: any = [];
+//     subscribers: any[] = []
+
+//     /**
+//      * 
+//      * @param id this is the id whose links need to be found
+//      * @param linker this is the type connection that is connected to the mainConcept(id)
+//      * @param inpage number of outputs that has to be displayed
+//      * @param page the page which needs to be displayed as per the inpage parameter
+//      * @param format the format in which the output should be displayed (NORMAL, DATAID,JUSTDATA,DATAIDDATE)
+//      */
+//     constructor(id: number, linker:string, inpage: number, page: number, format: number){
+//         this.mainConcept = id;
+//         this.linker = linker;
+//         this.inpage = inpage;
+//         this.page = page;
+//         this.format = format;
+//     }
+
+//     async subscribe(callback: Function) {
+//         this.subscribers.push(callback);
+//         const listenerId = Date.now() + '-' + Math.floor(Math.random() * 99999999)
+//         const listener = {
+//             listenerId: listenerId,
+//             callback: callback,
+//             createdAt: Date.now()
+//         }
+//         subscribedListeners.push(listener)
+//         console.log('listener', serviceWorker)
+//         // const res: any = await sendMessage('GetLinkListener', {id: this.mainConcept, linker: this.linker, inpage: this.inpage, page: this.page, format: this.format, listener })
+//         const res: any = await sendMessage('GetLinkListener', {id: this.mainConcept, linker: this.linker, inpage: this.inpage, page: this.page, format: this.format, listener: {
+//             listenerId: listenerId,
+//             createdAt: Date.now()
+//         } })
+//         return callback(res.data);
+//     }
+// }
+
 /**
  * 
  * @param id this is the id whose links need to be found
@@ -95,5 +143,9 @@ export class GetLinkObservable extends DependencyObserver
  * @param format the format in which the output should be displayed (NORMAL, DATAID,JUSTDATA,DATAIDDATE)
  */
 export function GetLinkListener(id:number, linker:string, inpage: number, page: number, format:number = NORMAL){
-    return new GetLinkObservable(id, linker, inpage, page, format);
+    return new GetLinkObservable(id, linker, inpage, page, format)
+    // console.log("serviceworker", serviceWorker);
+    // if (serviceWorker) {
+    //   return new GetLinkServiceObservable(id, linker, inpage, page, format);
+    // } else return new GetLinkObservable(id, linker, inpage, page, format);
 }

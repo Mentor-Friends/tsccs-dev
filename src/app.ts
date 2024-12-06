@@ -1,6 +1,6 @@
-export {init, updateAccessToken};
+export { init, updateAccessToken };
 
-import CreateConceptBinaryTreeFromIndexDb from './Services/CreateBinaryTreeFromData';
+import CreateConceptBinaryTreeFromIndexDb from "./Services/CreateBinaryTreeFromData";
 
 import { IdentifierFlags } from './DataStructures/IdentifierFlags';
 export {SearchLinkMultipleApi} from './Api/Search/SearchLinkMultipleApi';
@@ -112,6 +112,10 @@ import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConceptsToMemory, Pop
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+import { broadcastChannel } from "./Constants/general.const";
+export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
+export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
+export { InnerActions } from "./Constants/general.const";
 export { Anomaly } from './Anomaly/anomaly';
 export { Validator } from './Validator/validator';
 export { createFormFieldData } from './Validator/utils';
@@ -121,16 +125,28 @@ export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
+
+
+type listeners = {
+  listenerId: string | number
+  callback: any,
+  createdAt: number
+}
+export var serviceWorker: any;
+const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
+export let subscribedListeners: listeners[] = []
+
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.
  * @param accessToken access token got from the sign in process
  */
-function updateAccessToken(accessToken:string = ""){
-   TokenStorage.BearerAccessToken = accessToken;
+function updateAccessToken(accessToken: string = "") {
+  TokenStorage.BearerAccessToken = accessToken;
+  if (serviceWorker) sendMessage('updateAccessToken', { accessToken })
 }
 /**
- * 
+ *
  * @param url This is the url for the backend c# system or our main data fabric server
  * @param aiurl This is the AI url that pulls in the data using our AI system . If you do not enter this then also disable the enableAi flag.
  * @param accessToken This is the JWT token that needs to be passed (But since you have just initilized the system). There is no way we can get access token
@@ -138,139 +154,441 @@ function updateAccessToken(accessToken:string = ""){
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
+ * @param enableSW {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined - This is for enabling service worker with its scope
  */
-async function init(url:string = "", aiurl:string="", accessToken:string = "", nodeUrl:string ="", enableAi:boolean = true, applicationName: string="", isTest: boolean = false){
-   /**
-    * This process sets the initlizers in the static class BaseUrl that is used all over the system to access the urls
-    * Here we set the following variables.
-    * randomizer is created so that we can uniquely identify this initlization process but in the case that the BASE_RANDOMIZER has been alreay
-    * set in the indexdb this is replaced by the indexdb value.
-    */
-   try{
-   BaseUrl.BASE_URL = url;
-   BaseUrl.AI_URL = aiurl;
-   BaseUrl.NODE_URL = nodeUrl;
-   BaseUrl.BASE_APPLICATION= applicationName;
-   TokenStorage.BearerAccessToken = accessToken;
-   let randomizer = Math.floor(Math.random() * 100000000);
-   BaseUrl.BASE_RANDOMIZER = randomizer;
-   if(isTest){
-         IdentifierFlags.isDataLoaded= true;
-   IdentifierFlags.isCharacterLoaded= true;
-   IdentifierFlags.isTypeLoaded= true;
+async function init(
+  url: string = "",
+  aiurl: string = "",
+  accessToken: string = "",
+  nodeUrl: string = "",
+  enableAi: boolean = true,
+  applicationName: string = "",
+  enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
+  isTest: boolean = false,
+) {
+  try {
+    BaseUrl.BASE_URL = url;
+    BaseUrl.AI_URL = aiurl;
+    BaseUrl.NODE_URL = nodeUrl;
+    BaseUrl.BASE_APPLICATION = applicationName;
+    TokenStorage.BearerAccessToken = accessToken;
+    let randomizer = Math.floor(Math.random() * 100000000);
+    // BaseUrl.BASE_RANDOMIZER = randomizer;
+    // BaseUrl.BASE_RANDOMIZER = 999;
+    
+    BaseUrl.setRandomizer(randomizer)
+    if (isTest) {
+      IdentifierFlags.isDataLoaded = true;
+      IdentifierFlags.isCharacterLoaded = true;
+      IdentifierFlags.isTypeLoaded = true;
       IdentifierFlags.isLocalDataLoaded = true;
-   IdentifierFlags.isLocalTypeLoaded = true;
-   IdentifierFlags.isLocalCharacterLoaded = true;
-   IdentifierFlags.isConnectionLoaded = true;
-   IdentifierFlags.isConnectionTypeLoaded = true;
-   IdentifierFlags.isLocalConnectionLoaded = true;
+      IdentifierFlags.isLocalTypeLoaded = true;
+      IdentifierFlags.isLocalCharacterLoaded = true;
+      IdentifierFlags.isConnectionLoaded = true;
+      IdentifierFlags.isConnectionTypeLoaded = true;
+      IdentifierFlags.isLocalConnectionLoaded = true;
       return true;
-   }
-   console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
+    }
 
-/**
-    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
-    * We use some sort of AI algorithm to initilize these concepts with the most used concept.
-    * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
-    * If the developer does not want to use this feature then they can just set enableAi to false.
-    */
-await InitializeSystem(enableAi);
-const start = new Date().getTime();
+    if (!("serviceWorker" in navigator)) {
+      await initConceptConnection();
+      console.warn("Service Worker not supported in this browser.");
+      return
+    }
 
-/**
- * This  will create a binary tree in the memory from the indexdb.
- * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
- * and that the type binary tree has been loaded.
- * These trees are helpful in caching concepts and connections for the data fabric.
- */
-await   CreateConceptBinaryTreeFromIndexDb().then(()=>{
-   // IdentifierFlags.isDataLoaded= true;
-   // IdentifierFlags.isCharacterLoaded= true;
-   // IdentifierFlags.isTypeLoaded= true;
-   let elapsed = new Date().getTime() - start;
-   console.log("The time taken to prepare concept  data is  ", elapsed);
-}).catch((event) => {
-  // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
-   throw event;
-});
+    listenBroadCastMessages()
+    if (enableSW && enableSW.activate && enableSW.manual) {
+      await new Promise((resolve, reject) => {
+        navigator.serviceWorker.ready
+        .then(async (registration) => {
+          console.log('registraions ready', registration)
+          serviceWorker = registration.active
+          await sendMessage("init", {
+            url,
+            aiurl,
+            accessToken,
+            nodeUrl,
+            enableAi,
+            applicationName,
+            isTest,
+          });
+          resolve('done')
+        })
+        .catch(err => {
+          console.error("Error: Ready service worker", err)
+          reject(err);
+        })
+        .finally(() => console.log('Finally service worker ready done'))
 
+        setTimeout(() => reject('Timeout ready'), 30000)
+      })
+    } else if (
+      enableSW &&
+      enableSW?.activate
+    ) {
+      try {
+        console.log("service worker initialiing");
+        // navigator.serviceWorker
+        //   .getRegistrations()
+        //   .then(async (registrations) => {
+        //     console.log("Service Workers registered:", registrations);
+        //     if (registrations.length > 0) {
+        //       // TODO:: check if the domain has our own service worker or others
+        //       registrations.forEach((registration, index) => {
+        //         console.log(`Service Worker ${index + 1}:`, registration);
+        //         if (registration.installing) {
+        //           console.log("Status: Installing");
+        //         } else if (registration.waiting) {
+        //           console.log("Status: Waiting");
+        //         } else if (registration.active) {
+        //           console.log("Status: Active");
+        //           serviceWorker = registration.active;
+        //           // sendMessage('init', {})
+        //         } else {
+        //           console.log("Status: No active worker", registration);
+        //         }
+        //       });
 
+        //       // // for now asuming its other
+        //       // await initConceptConnection(
+        //       //   url,
+        //       //   aiurl,
+        //       //   accessToken,
+        //       //   nodeUrl,
+        //       //   enableAi,
+        //       //   applicationName,
+        //       //   isTest
+        //       // );
+        //     } else {
+              // let serviceWorkerPath = enableSW.path ? enableSW.path : './serviceWorker.bundle.js'
+              // if (enableSW.path && enableSW.path.slice(-1) == '/') serviceWorkerPath = enableSW.path + 'serviceWorker.bundle.js'
+              // else if (enableSW.path && enableSW.path.length > 2 && !enableSW.path.includes('serviceWorker.bundle.js')) serviceWorkerPath = enableSW.path + './serviceWorker.bundle.js'
 
-/**
- * This will create a binary tree of local concepts that is saved from the indexdb.
- * This process after finishing creating a binary tree of local concepts then set flag to denote that
- * LocalBinaryTree has been created from the concepts in indexdb
- * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
- * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
- */
-await CreateLocalBinaryTreeFromIndexDb().then(()=>{
-   // IdentifierFlags.isLocalDataLoaded = true;
-   // IdentifierFlags.isLocalTypeLoaded = true;
-   // IdentifierFlags.isLocalCharacterLoaded = true;
-   let elapsed = new Date().getTime() - start;
-   console.log("The time taken to prepare local concept  ", elapsed);
-}).catch((event) => {
-  throw event;
-});
+              await new Promise<void>((resolve, reject) => {
+                let success = false;
 
+                navigator.serviceWorker
+                  .register(enableSW.pathToSW ?? "./serviceWorker.bundle.js", {
+                    // type: "module",
+                    scope: enableSW.scope ?? "/",
+                  })
+                  .then(async (registration) => {
+                    console.log(
+                      "Service Worker registered:",
+                      registration
+                    );
+                    if (registration.active) {
+                      console.log("active sw");
+                      serviceWorker = registration.active;
 
+                      await sendMessage("init", {
+                        url,
+                        aiurl,
+                        accessToken,
+                        nodeUrl,
+                        enableAi,
+                        applicationName,
+                        isTest,
+                      });
+                      resolve();
+                    } else {
+                      // Handle if on state change didn't trigger
+                      setTimeout(() => {
+                        if (!success) reject("Not Completed Initialization");
+                      }, 5000);
+                    }
+                    // Listen for updates to the service worker
+                    console.log("update listen start");
+                    registration.onupdatefound = () => {
+                      const newWorker = registration.installing;
+                      console.log("new worker", newWorker);
+                      if (newWorker) {
+                        newWorker.onstatechange = async () => {
+                          console.log("on state change triggered");
+                          // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                          if ((newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
+                            // && navigator.serviceWorker.controller) {
+                            console.log(
+                              "New Service Worker is active",
+                              registration
+                            );
+                            serviceWorker = newWorker;
+                            // serviceWorker = registration.active;
+                            // Send init message now that it's active
+                            await sendMessage("init", {
+                              url,
+                              aiurl,
+                              accessToken,
+                              nodeUrl,
+                              enableAi,
+                              applicationName,
+                              isTest,
+                            });
+                            success = true;
+                            resolve();
+                          }
+                        };
+                      }
+                    };
 
-/**
- * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
- * a static class called LocalConnectionData. 
- * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
- */
-await GetConnectionsFromIndexDbLocal().then(()=>{
-   IdentifierFlags.isLocalConnectionLoaded = true;
-}).catch((event) => {
-   //console.log("This is the error in creating local connections binary tree");
-   throw event;
-});
-
-/**
- * We have designed our system to use local concepts and connections with its own local ids(negative ids) that 
- * is only valid for the browser that creates this. We have a translator in our node server.
- * This function does this process in initlization.
- */
-PopulateTheLocalConceptsToMemory().then(()=>{
-}).catch((event) => {
-   console.log("This is the error in populating binary tree");
-  throw event;
-});
-
-// PopulateTheLocalConnectionToMemory().then(()=>{
-// }).catch((event) => {
-//    console.log("This is the error in populating binary tree");
-//   throw event;
-// });
-
-
-
-/**
- * This process gets the connections from indexdb and loads it to the connections array which is inside of
- * a static class called ConnectionData. 
- * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
- */
-await GetConnectionsFromIndexDb().then(()=>{
-   IdentifierFlags.isConnectionLoaded = true;
-   IdentifierFlags.isConnectionTypeLoaded = true;
-   let elapsed = new Date().getTime() - start;
-   console.log("The time taken to prepare connections  ", elapsed);
-}).catch((event) => {
-   //console.log("This is the error in creating connections tree");
-   throw event;
-});
-
-return true;
+                    // Listen for the activation of the new service worker
+                    registration.addEventListener('controllerchange', async () => {
+                      if (navigator.serviceWorker.controller) {
+                        console.log('Service worker has been activated');
+                        await sendMessage("init", {
+                          url,
+                          aiurl,
+                          accessToken,
+                          nodeUrl,
+                          enableAi,
+                          applicationName,
+                          isTest,
+                        });
+                        // The new service worker is now controlling the page
+                        // You can reload the page if necessary or handle the update process here
+                      }
+                    });
+                  })
+                  .catch(async (error) => {
+                    await initConceptConnection();
+                    reject(error);
+                    console.error("Service Worker registration failed:", error);
+                  });
+              });
+          //   }
+          // })
+          // .catch((err) => {
+          //   console.log("Unable to register", err);
+          // });
+      } catch (error) {
+        await initConceptConnection();
+        console.error("Unable to start service worker", error);
+      }
+    } else {
+      await initConceptConnection();
+      console.warn('Service Worker not activated')
+    }
+    return true;
+  } catch (error) {
+    await initConceptConnection();
+    console.warn("Cannot initialize the system", error);
+  }
 }
-catch(error){
-   console.log("cannot initialize the system", error);
+
+export async function sendMessage(type: string, payload: any) {
+  const messageId = Math.random().toString(36).substring(5); // Generate a unique message ID
+  payload.messageId = messageId
+  payload.TABID = TABID
+  // let actions = payload.actions
+
+  const newPayload = JSON.parse(JSON.stringify(payload))
+
+  return new Promise((resolve, reject) => {
+    // navigator.serviceWorker.ready
+    //   .then((registration) => {
+        const responseHandler = (event: any) => {
+          if (event?.data?.messageId == messageId) { // Check if the message ID matches
+            if (event.data?.actions) {
+              payload.actions = JSON.parse(JSON.stringify(event.data.actions))
+            }
+            resolve(event.data);
+            navigator.serviceWorker.removeEventListener("message", responseHandler);
+          }
+        };
+    
+        navigator.serviceWorker.addEventListener("message", responseHandler);
+        // console.log("before sending message", type, 'new', newPayload);
+        // serviceWorker?.postMessage({ type, payload });
+    
+        // Send the message to the service worker
+        if (navigator.serviceWorker.controller) {
+          serviceWorker.postMessage({ type, payload: newPayload });
+          // navigator.serviceWorker.controller.postMessage({ type, payload });
+        } else {
+          // wait one second before checking again
+          setTimeout(() => {
+            // if (navigator.serviceWorker.controller) {
+            if (serviceWorker) {
+              serviceWorker.postMessage({ type, payload });
+              // navigator.serviceWorker.controller.postMessage({ type, payload });
+            } else {
+              console.log('not ready', type)
+              reject("Service worker not ready");
+            }
+          }, 60000) // 60 seconds
+        }
+    
+        // Timeout for waiting for the response (e.g., 5 seconds)
+        setTimeout(() => {
+          reject("No response from service worker after timeout");
+          navigator.serviceWorker.removeEventListener("message", responseHandler);
+        }, 60000); // 60 sec
+      // })
+      // .catch(err => reject(err))
+      // .finally(() => console.log('finally'))
+  });
 }
-   
 
+export function dispatchIdEvent(id: number|string, data:any = {}) {
+  // console.log('id event dispatched', id)
+  if (serviceWorker) {
+    // let event = new Event(`${id}`);
+    let event = new CustomEvent(`${id}`, data)
+    console.log("event fired from", event);
+    dispatchEvent(event);
+  } else {
+    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
+  }
 }
 
+// export function sendMessage(type: string, payload: any) {
+//    return new Promise((resolve) => {
+//      const responseHandler = (event: any) => {
+//        resolve(event.data);
+//        navigator.serviceWorker.removeEventListener("message", responseHandler);
+//      };
+ 
+//      navigator.serviceWorker.addEventListener("message", responseHandler);
+//      navigator.serviceWorker.controller?.postMessage({ type, payload });
+//    });
+//  }
 
+// actions for message received on broadcast channel (specially from service worker)
+const broadcastActions: any = {
+  GetLinkListener: async (payload: any) => {
+    const listener = subscribedListeners.find(listener => listener.listenerId == payload.listenerId)
+    listener?.callback(payload.data)
+    return { success: true }
+  },
+  dispatchEvent: async (payload: any) => {
+    if (serviceWorker) {
+      let event = new Event(payload.id || '');
+      dispatchEvent(event);
+    }
+    // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
+    //   clients.forEach(client => {
+    //     client.postMessage({ id, updatedData });
+    //   });
+    // });
+    return { success: true }
+  }
+}
 
+function listenBroadCastMessages() {
+  
+  // broadcast event can be listened through both the service worker and other tabs
+  broadcastChannel.addEventListener('message', async (event) => {
+    const { type, payload }: any = event.data;
+      if (!type) return;
+      let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
+    
+      if (broadcastActions[type]) {
+        responseData = await broadcastActions[type](payload);
+      } else {
+        console.log(`Unable to handle "${type}" case in BC service worker`)
+      }
+    
+  });
+}
 
+/**
+ * Method to initialize the initial data
+ * @param url string
+ * @param aiurl string
+ * @param accessToken string
+ * @param nodeUrl string
+ * @param enableAi boolean
+ * @param applicationName string
+ * @param isTest boolean
+ * @returns Promise<any>
+ */
+async function initConceptConnection() {
+  
+  /**
+   * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
+   * We use some sort of AI algorithm to initilize these concepts with the most used concept.
+   * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
+   * If the developer does not want to use this feature then they can just set enableAi to false.
+   */
+  await InitializeSystem();
+  const start = new Date().getTime();
 
+  /**
+   * This  will create a binary tree in the memory from the indexdb.
+   * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
+   * and that the type binary tree has been loaded.
+   * These trees are helpful in caching concepts and connections for the data fabric.
+   */
+  await CreateConceptBinaryTreeFromIndexDb()
+    .then(() => {
+      // IdentifierFlags.isDataLoaded= true;
+      // IdentifierFlags.isCharacterLoaded= true;
+      // IdentifierFlags.isTypeLoaded= true;
+      let elapsed = new Date().getTime() - start;
+      console.log("The time taken to prepare concept  data is  ", elapsed);
+    })
+    .catch((event) => {
+      // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
+      throw event;
+    });
+
+  /**
+   * This will create a binary tree of local concepts that is saved from the indexdb.
+   * This process after finishing creating a binary tree of local concepts then set flag to denote that
+   * LocalBinaryTree has been created from the concepts in indexdb
+   * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
+   * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
+   */
+  await CreateLocalBinaryTreeFromIndexDb()
+    .then(() => {
+      // IdentifierFlags.isLocalDataLoaded = true;
+      // IdentifierFlags.isLocalTypeLoaded = true;
+      // IdentifierFlags.isLocalCharacterLoaded = true;
+      let elapsed = new Date().getTime() - start;
+      console.log("The time taken to prepare local concept  ", elapsed);
+    })
+    .catch((event) => {
+      throw event;
+    });
+
+  /**
+   * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
+   * a static class called LocalConnectionData.
+   * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+   */
+  await GetConnectionsFromIndexDbLocal()
+    .then(() => {
+      IdentifierFlags.isLocalConnectionLoaded = true;
+    })
+    .catch((event) => {
+      //console.log("This is the error in creating local connections binary tree");
+      throw event;
+    });
+
+  /**
+   * We have designed our system to use local concepts and connections with its own local ids(negative ids) that
+   * is only valid for the browser that creates this. We have a translator in our node server.
+   * This function does this process in initlization.
+   */
+  await PopulateTheLocalConnectionToMemory().catch((event) => {
+    console.log("This is the error in populating binary tree");
+   throw event;
+ });;
+
+  /**
+   * This process gets the connections from indexdb and loads it to the connections array which is inside of
+   * a static class called ConnectionData.
+   * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
+   */
+  await GetConnectionsFromIndexDb()
+    .then(() => {
+      IdentifierFlags.isConnectionLoaded = true;
+      IdentifierFlags.isConnectionTypeLoaded = true;
+      let elapsed = new Date().getTime() - start;
+      console.log("The time taken to prepare connections  ", elapsed);
+    })
+    .catch((event) => {
+      //console.log("This is the error in creating connections tree");
+      throw event;
+    });
+}

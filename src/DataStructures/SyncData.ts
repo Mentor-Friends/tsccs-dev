@@ -6,6 +6,7 @@ import { ConceptsData } from "./ConceptData";
 import { Connection } from "./Connection";
 import { ConnectionData } from "./ConnectionData";
 import { ReservedIds } from "./ReservedIds";
+import { sendMessage, serviceWorker } from "../app";
 
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
@@ -74,7 +75,12 @@ export class SyncData{
         }
      }
 
-     static async  SyncDataOnline(){
+     static async SyncDataOnline(){
+        console.log('sw triggered')
+        if (serviceWorker) {
+            const res: any = await sendMessage('SyncData__SyncDataOnline', {})
+            return res.data
+        }
         for(let i=0;i<this.conceptsSyncArray.length;i++){
             ConceptsData.AddConcept(this.conceptsSyncArray[i]);
         }

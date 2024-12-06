@@ -14,8 +14,15 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
-    static BASE_RANDOMIZER = 999;
+    private static BASE_RANDOMIZER = 999;
 
+    static setRandomizer(id: number) {
+        console.log('set randomizer', id)
+        this.BASE_RANDOMIZER = id
+    }
+    static getRandomizer() {
+        return this.BASE_RANDOMIZER
+        }
 
 
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';

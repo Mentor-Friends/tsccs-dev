@@ -130,8 +130,6 @@ export class Validator {
             }
         }        
 
-        console.log(`Error of the field ${fieldName} : `, errors);
-
         return errors
     }
 

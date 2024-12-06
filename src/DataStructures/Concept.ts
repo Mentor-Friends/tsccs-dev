@@ -19,7 +19,8 @@ export  class Concept{
     isComposition: boolean = false;
     isTemp: boolean = false;
     isSynced : boolean = false;
-    applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    applicationId: number = BaseUrl.getRandomizer();
     x:number = 0;
     y: number = 0;
 
