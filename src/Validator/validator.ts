@@ -79,7 +79,7 @@ export class Validator {
             console.log("Find Pattern : ", pattern);
             
             if (pattern && value !== '' && !pattern.test(value)) {
-                errors['dataType'] = `Invalid format for ${dataType} in ${fieldName}`;
+                errors['dataType'] = `Invalid value for ${dataType}`;
             }
         }
 
