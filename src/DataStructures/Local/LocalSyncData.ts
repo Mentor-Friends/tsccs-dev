@@ -117,8 +117,8 @@ export class LocalSyncData{
                 console.warn('Syncing this way has been Depreceted in service worker.')
 
                 console.info('Only if serive worker is not running')
-                conceptsArray = this.conceptsSyncArray.slice();
-                connectionsArray = this.connectionSyncArray.slice();
+                conceptsArray = this.conceptsSyncArray.slice() || [];
+                connectionsArray = this.connectionSyncArray.slice() || [];
                 // return []
             }
     
