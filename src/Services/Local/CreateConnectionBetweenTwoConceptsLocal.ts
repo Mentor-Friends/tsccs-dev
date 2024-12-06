@@ -39,8 +39,8 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
             
         let sessionId:string = getCookie('SessionId');
         let dataLog:LogData= {
-            requestStatus: 200,
-            executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+            responseStatus: 200,
+            responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
             responseSize: `${JSON.stringify(newConnection).length}`,
             sessionId: sessionId,
             functionName: "CreateConnectionBetweenTwoConceptsLocal",
@@ -52,7 +52,7 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
             dataLog
         )
         // Send logs to the server
-        Logger.sendLogsToServer()
+        // Logger.sendLogsToServer()
 
         /**
          * End of Log

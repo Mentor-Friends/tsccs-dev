@@ -53,14 +53,14 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
         LocalConceptsData.AddConcept(concept);
         //storeToDatabase("localconcept",concept);
         /**
-             * Add to Logger
-             */
+         * Add to Logger
+         */
         console.log("CreateTheConceptLocal...");
             
         let sessionId:string = getCookie('SessionId');
         let logData:LogData= {
-            requestStatus: 200,
-            executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+            responseStatus: 200,
+            responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
             responseSize: `${JSON.stringify(concept).length}`,
             sessionId: sessionId,
             functionName: "CreateTheConceptLocal",
@@ -72,7 +72,7 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
             logData
         )
         // Send logs to the server
-        Logger.sendLogsToServer()
+        // Logger.sendLogsToServer()
         /**
          * End of Logger
          */

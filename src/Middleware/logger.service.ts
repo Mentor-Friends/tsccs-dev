@@ -85,24 +85,31 @@ export class Logger {
             
             const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
             if (storedLogs.length === 0) return;
-
+            console.log("Stored Logs : ", storedLogs);
+            
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
 
+                console.log("Sending logs chunk:", chunk);
+                console.log("Payload chunk:", JSON.stringify(chunk)); 
+
                 const response = await fetch(Logger.SERVER_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ logs: chunk }),
+                    body: JSON.stringify( chunk ),
                 });
 
                 if (!response.ok) {
-                    console.error("Failed to send logs:", response.statusText);
+                    const responseBody = await response.text();
+                    console.log("Response Body on failed request : ", responseBody);
+                    console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
                 }
             }
 
             localStorage.removeItem("logs");
+            console.log("Logs successfully sent and cleared.");
         } catch (error) {
             console.error("Error while sending logs to server:", error);
         }
@@ -130,13 +137,13 @@ export interface LogData {
      * The HTTP status code of the request.
      * @example "200", "404", "500"
      */
-    requestStatus?: string|Number;
+    responseStatus?: string|Number;
 
     /**
      * The time taken to execute the function.
      * @example "150ms"
      */
-    executionTime?: string;
+    responseTime?: string;
 
     /**
      * The size of the response payload.

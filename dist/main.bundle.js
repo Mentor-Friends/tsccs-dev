@@ -116,6 +116,7 @@ __webpack_require__.d(__webpack_exports__, {
   SL: () => (/* reexport */ LISTNORMAL),
   vF: () => (/* reexport */ LocalConceptData_LocalConceptsData),
   HW: () => (/* reexport */ LocalSyncData),
+  Vy: () => (/* reexport */ Logger),
   Ne: () => (/* reexport */ LoginToBackend),
   fg: () => (/* reexport */ MakeTheInstanceConcept),
   kQ: () => (/* reexport */ MakeTheInstanceConceptLocal),
@@ -8421,20 +8422,26 @@ class Logger {
                 const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
                 if (storedLogs.length === 0)
                     return;
+                console.log("Stored Logs : ", storedLogs);
                 const chunkSize = 50;
                 for (let i = 0; i < storedLogs.length; i += chunkSize) {
                     const chunk = storedLogs.slice(i, i + chunkSize);
+                    console.log("Sending logs chunk:", chunk);
+                    console.log("Payload chunk:", JSON.stringify(chunk));
                     const response = yield fetch(Logger.SERVER_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ logs: chunk }),
+                        body: JSON.stringify(chunk),
                     });
                     if (!response.ok) {
-                        console.error("Failed to send logs:", response.statusText);
+                        const responseBody = yield response.text();
+                        console.log("Response Body on failed request : ", responseBody);
+                        console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                         return;
                     }
                 }
                 localStorage.removeItem("logs");
+                console.log("Logs successfully sent and cleared.");
             }
             catch (error) {
                 console.error("Error while sending logs to server:", error);
@@ -8523,8 +8530,8 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
             console.log("CreateTheConnectionLocal...");
             let sessionId = getCookie('SessionId');
             let dataLog = {
-                requestStatus: 200,
-                executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+                responseStatus: 200,
+                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
                 responseSize: `${JSON.stringify(connection).length}`,
                 sessionId: sessionId,
                 functionName: "CreateTheConnectionLocal",
@@ -8532,7 +8539,7 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
             };
             Logger.log("INFO", "From function MakeTheInstanceConceptLocal", dataLog);
             // Send logs to the server
-            Logger.sendLogsToServer();
+            // Logger.sendLogsToServer()
             /**
              * End of Logger
              */
@@ -8604,13 +8611,13 @@ function CreateTheConceptLocal(referent_1, typecharacter_1, userId_1, categoryId
             LocalConceptData_LocalConceptsData.AddConcept(concept);
             //storeToDatabase("localconcept",concept);
             /**
-                 * Add to Logger
-                 */
+             * Add to Logger
+             */
             console.log("CreateTheConceptLocal...");
             let sessionId = getCookie('SessionId');
             let logData = {
-                requestStatus: 200,
-                executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+                responseStatus: 200,
+                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
                 responseSize: `${JSON.stringify(concept).length}`,
                 sessionId: sessionId,
                 functionName: "CreateTheConceptLocal",
@@ -8618,7 +8625,7 @@ function CreateTheConceptLocal(referent_1, typecharacter_1, userId_1, categoryId
             };
             Logger.log("INFO", "From function CreateTheConceptLocal", logData);
             // Send logs to the server
-            Logger.sendLogsToServer();
+            // Logger.sendLogsToServer()
             /**
              * End of Logger
              */
@@ -8806,8 +8813,8 @@ function MakeTheInstanceConceptLocal(type_1, referent_1) {
             console.log("MakeTheInstanceConceptLocal...");
             let sessionId = getCookie('SessionId');
             let dataLog = {
-                requestStatus: 200,
-                executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+                responseStatus: 200,
+                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
                 responseSize: `${JSON.stringify(concept).length}`,
                 sessionId: sessionId,
                 functionName: "MakeTheInstanceConceptLocal",
@@ -8815,7 +8822,7 @@ function MakeTheInstanceConceptLocal(type_1, referent_1) {
             };
             Logger.log("INFO", "From function MakeTheInstanceConceptLocal", dataLog);
             // Send logs to the server
-            Logger.sendLogsToServer();
+            // Logger.sendLogsToServer()
             /**
              * End of Logger
              */
@@ -14265,8 +14272,8 @@ function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1,
             console.log("CreateConnectionBetweenTwoConceptsLocal...");
             let sessionId = getCookie('SessionId');
             let dataLog = {
-                requestStatus: 200,
-                executionTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+                responseStatus: 200,
+                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
                 responseSize: `${JSON.stringify(newConnection).length}`,
                 sessionId: sessionId,
                 functionName: "CreateConnectionBetweenTwoConceptsLocal",
@@ -14274,7 +14281,7 @@ function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1,
             };
             Logger.log("INFO", "From function CreateConnectionBetweenTwoConceptsLocal", dataLog);
             // Send logs to the server
-            Logger.sendLogsToServer();
+            // Logger.sendLogsToServer()
             /**
              * End of Log
              */
@@ -16514,6 +16521,7 @@ var app_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
+
 var serviceWorker;
 console.log("Start from logging...");
 /**
@@ -16957,6 +16965,7 @@ var __webpack_exports__LConnection = __webpack_exports__.BH;
 var __webpack_exports__LISTNORMAL = __webpack_exports__.SL;
 var __webpack_exports__LocalConceptsData = __webpack_exports__.vF;
 var __webpack_exports__LocalSyncData = __webpack_exports__.HW;
+var __webpack_exports__Logger = __webpack_exports__.Vy;
 var __webpack_exports__LoginToBackend = __webpack_exports__.Ne;
 var __webpack_exports__MakeTheInstanceConcept = __webpack_exports__.fg;
 var __webpack_exports__MakeTheInstanceConceptLocal = __webpack_exports__.kQ;
@@ -17015,6 +17024,6 @@ var __webpack_exports__serviceWorker = __webpack_exports__.wK;
 var __webpack_exports__storeToDatabase = __webpack_exports__.eD;
 var __webpack_exports__subscribedListeners = __webpack_exports__.KD;
 var __webpack_exports__updateAccessToken = __webpack_exports__.$Q;
-export { __webpack_exports__ADMIN as ADMIN, __webpack_exports__ALLID as ALLID, __webpack_exports__AddGhostConcept as AddGhostConcept, __webpack_exports__Anomaly as Anomaly, __webpack_exports__BaseUrl as BaseUrl, __webpack_exports__BinaryTree as BinaryTree, __webpack_exports__Composition as Composition, __webpack_exports__CompositionBinaryTree as CompositionBinaryTree, __webpack_exports__CompositionNode as CompositionNode, __webpack_exports__Concept as Concept, __webpack_exports__ConceptsData as ConceptsData, __webpack_exports__Connection as Connection, __webpack_exports__ConnectionData as ConnectionData, __webpack_exports__CreateComposition as CreateComposition, __webpack_exports__CreateConnectionBetweenTwoConcepts as CreateConnectionBetweenTwoConcepts, __webpack_exports__CreateConnectionBetweenTwoConceptsGeneral as CreateConnectionBetweenTwoConceptsGeneral, __webpack_exports__CreateConnectionBetweenTwoConceptsLocal as CreateConnectionBetweenTwoConceptsLocal, __webpack_exports__CreateDefaultConcept as CreateDefaultConcept, __webpack_exports__CreateDefaultLConcept as CreateDefaultLConcept, __webpack_exports__CreateSession as CreateSession, __webpack_exports__CreateSessionVisit as CreateSessionVisit, __webpack_exports__CreateTheCompositionLocal as CreateTheCompositionLocal, __webpack_exports__CreateTheCompositionWithCache as CreateTheCompositionWithCache, __webpack_exports__CreateTheConnection as CreateTheConnection, __webpack_exports__CreateTheConnectionGeneral as CreateTheConnectionGeneral, __webpack_exports__CreateTheConnectionLocal as CreateTheConnectionLocal, __webpack_exports__DATAID as DATAID, __webpack_exports__DATAIDDATE as DATAIDDATE, __webpack_exports__DelayFunctionExecution as DelayFunctionExecution, __webpack_exports__DeleteConceptById as DeleteConceptById, __webpack_exports__DeleteConceptLocal as DeleteConceptLocal, __webpack_exports__DeleteConnectionById as DeleteConnectionById, __webpack_exports__DeleteConnectionByType as DeleteConnectionByType, __webpack_exports__DependencyObserver as DependencyObserver, __webpack_exports__FilterSearch as FilterSearch, __webpack_exports__FormatFromConnections as FormatFromConnections, __webpack_exports__FormatFromConnectionsAltered as FormatFromConnectionsAltered, __webpack_exports__FreeschemaQuery as FreeschemaQuery, __webpack_exports__FreeschemaQueryApi as FreeschemaQueryApi, __webpack_exports__GetAllConnectionsOfComposition as GetAllConnectionsOfComposition, __webpack_exports__GetAllConnectionsOfCompositionBulk as GetAllConnectionsOfCompositionBulk, __webpack_exports__GetComposition as GetComposition, __webpack_exports__GetCompositionBulk as GetCompositionBulk, __webpack_exports__GetCompositionBulkWithDataId as GetCompositionBulkWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataId as GetCompositionFromConnectionsWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject as GetCompositionFromConnectionsWithDataIdInObject, __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex as GetCompositionFromConnectionsWithDataIdIndex, __webpack_exports__GetCompositionFromConnectionsWithIndex as GetCompositionFromConnectionsWithIndex, __webpack_exports__GetCompositionList as GetCompositionList, __webpack_exports__GetCompositionListAll as GetCompositionListAll, __webpack_exports__GetCompositionListAllWithId as GetCompositionListAllWithId, __webpack_exports__GetCompositionListListener as GetCompositionListListener, __webpack_exports__GetCompositionListLocal as GetCompositionListLocal, __webpack_exports__GetCompositionListLocalWithId as GetCompositionListLocalWithId, __webpack_exports__GetCompositionListWithId as GetCompositionListWithId, __webpack_exports__GetCompositionListWithIdUpdated as GetCompositionListWithIdUpdated, __webpack_exports__GetCompositionListener as GetCompositionListener, __webpack_exports__GetCompositionLocal as GetCompositionLocal, __webpack_exports__GetCompositionLocalWithId as GetCompositionLocalWithId, __webpack_exports__GetCompositionWithAllIds as GetCompositionWithAllIds, __webpack_exports__GetCompositionWithCache as GetCompositionWithCache, __webpack_exports__GetCompositionWithDataIdBulk as GetCompositionWithDataIdBulk, __webpack_exports__GetCompositionWithDataIdWithCache as GetCompositionWithDataIdWithCache, __webpack_exports__GetCompositionWithId as GetCompositionWithId, __webpack_exports__GetCompositionWithIdAndDateFromMemory as GetCompositionWithIdAndDateFromMemory, __webpack_exports__GetConceptBulk as GetConceptBulk, __webpack_exports__GetConceptByCharacter as GetConceptByCharacter, __webpack_exports__GetConceptByCharacterAndCategoryLocal as GetConceptByCharacterAndCategoryLocal, __webpack_exports__GetConceptByCharacterAndType as GetConceptByCharacterAndType, __webpack_exports__GetConnectionBetweenTwoConceptsLinker as GetConnectionBetweenTwoConceptsLinker, __webpack_exports__GetConnectionBulk as GetConnectionBulk, __webpack_exports__GetConnectionById as GetConnectionById, __webpack_exports__GetConnectionDataPrefetch as GetConnectionDataPrefetch, __webpack_exports__GetConnectionOfTheConcept as GetConnectionOfTheConcept, __webpack_exports__GetLink as GetLink, __webpack_exports__GetLinkListListener as GetLinkListListener, __webpack_exports__GetLinkListener as GetLinkListener, __webpack_exports__GetLinkRaw as GetLinkRaw, __webpack_exports__GetLinkerConnectionFromConcepts as GetLinkerConnectionFromConcepts, __webpack_exports__GetLinkerConnectionToConcepts as GetLinkerConnectionToConcepts, __webpack_exports__GetRelation as GetRelation, __webpack_exports__GetRelationLocal as GetRelationLocal, __webpack_exports__GetRelationRaw as GetRelationRaw, __webpack_exports__GetTheConcept as GetTheConcept, __webpack_exports__GetTheConceptLocal as GetTheConceptLocal, __webpack_exports__GetUserGhostId as GetUserGhostId, __webpack_exports__JUSTDATA as JUSTDATA, __webpack_exports__LConcept as LConcept, __webpack_exports__LConnection as LConnection, __webpack_exports__LISTNORMAL as LISTNORMAL, __webpack_exports__LocalConceptsData as LocalConceptsData, __webpack_exports__LocalSyncData as LocalSyncData, __webpack_exports__LoginToBackend as LoginToBackend, __webpack_exports__MakeTheInstanceConcept as MakeTheInstanceConcept, __webpack_exports__MakeTheInstanceConceptLocal as MakeTheInstanceConceptLocal, __webpack_exports__MakeTheTimestamp as MakeTheTimestamp, __webpack_exports__MakeTheTypeConcept as MakeTheTypeConcept, __webpack_exports__MakeTheTypeConceptApi as MakeTheTypeConceptApi, __webpack_exports__MakeTheTypeConceptLocal as MakeTheTypeConceptLocal, __webpack_exports__NORMAL as NORMAL, __webpack_exports__PRIVATE as PRIVATE, __webpack_exports__PUBLIC as PUBLIC, __webpack_exports__PatcherStructure as PatcherStructure, __webpack_exports__RAW as RAW, __webpack_exports__RecursiveSearchApi as RecursiveSearchApi, __webpack_exports__RecursiveSearchApiNewRawFullLinker as RecursiveSearchApiNewRawFullLinker, __webpack_exports__RecursiveSearchApiRaw as RecursiveSearchApiRaw, __webpack_exports__RecursiveSearchApiRawFullLinker as RecursiveSearchApiRawFullLinker, __webpack_exports__RecursiveSearchListener as RecursiveSearchListener, __webpack_exports__SchemaQueryListener as SchemaQueryListener, __webpack_exports__SearchAllConcepts as SearchAllConcepts, __webpack_exports__SearchLinkInternal as SearchLinkInternal, __webpack_exports__SearchLinkInternalAll as SearchLinkInternalAll, __webpack_exports__SearchLinkMultipleAll as SearchLinkMultipleAll, __webpack_exports__SearchLinkMultipleAllObservable as SearchLinkMultipleAllObservable, __webpack_exports__SearchLinkMultipleApi as SearchLinkMultipleApi, __webpack_exports__SearchQuery as SearchQuery, __webpack_exports__SearchStructure as SearchStructure, __webpack_exports__SearchWithLinker as SearchWithLinker, __webpack_exports__SearchWithTypeAndLinker as SearchWithTypeAndLinker, __webpack_exports__SearchWithTypeAndLinkerApi as SearchWithTypeAndLinkerApi, __webpack_exports__SessionData as SessionData, __webpack_exports__Signin as Signin, __webpack_exports__Signup as Signup, __webpack_exports__SignupEntity as SignupEntity, __webpack_exports__SplitStrings as SplitStrings, __webpack_exports__StatefulWidget as StatefulWidget, __webpack_exports__SyncData as SyncData, __webpack_exports__TrashTheConcept as TrashTheConcept, __webpack_exports__UpdateComposition as UpdateComposition, __webpack_exports__UpdateCompositionLocal as UpdateCompositionLocal, __webpack_exports__UserBinaryTree as UserBinaryTree, __webpack_exports__Validator as Validator, __webpack_exports__ViewInternalData as ViewInternalData, __webpack_exports__ViewInternalDataApi as ViewInternalDataApi, __webpack_exports__convertFromConceptToLConcept as convertFromConceptToLConcept, __webpack_exports__convertFromLConceptToConcept as convertFromLConceptToConcept, __webpack_exports__createFormFieldData as createFormFieldData, __webpack_exports__dispatchIdEvent as dispatchIdEvent, __webpack_exports__getFromDatabaseWithType as getFromDatabaseWithType, __webpack_exports__getObjectsFromIndexDb as getObjectsFromIndexDb, __webpack_exports__init as init, __webpack_exports__recursiveFetch as recursiveFetch, __webpack_exports__recursiveFetchNew as recursiveFetchNew, __webpack_exports__searchLinkMultipleListener as searchLinkMultipleListener, __webpack_exports__sendMessage as sendMessage, __webpack_exports__serviceWorker as serviceWorker, __webpack_exports__storeToDatabase as storeToDatabase, __webpack_exports__subscribedListeners as subscribedListeners, __webpack_exports__updateAccessToken as updateAccessToken };
+export { __webpack_exports__ADMIN as ADMIN, __webpack_exports__ALLID as ALLID, __webpack_exports__AddGhostConcept as AddGhostConcept, __webpack_exports__Anomaly as Anomaly, __webpack_exports__BaseUrl as BaseUrl, __webpack_exports__BinaryTree as BinaryTree, __webpack_exports__Composition as Composition, __webpack_exports__CompositionBinaryTree as CompositionBinaryTree, __webpack_exports__CompositionNode as CompositionNode, __webpack_exports__Concept as Concept, __webpack_exports__ConceptsData as ConceptsData, __webpack_exports__Connection as Connection, __webpack_exports__ConnectionData as ConnectionData, __webpack_exports__CreateComposition as CreateComposition, __webpack_exports__CreateConnectionBetweenTwoConcepts as CreateConnectionBetweenTwoConcepts, __webpack_exports__CreateConnectionBetweenTwoConceptsGeneral as CreateConnectionBetweenTwoConceptsGeneral, __webpack_exports__CreateConnectionBetweenTwoConceptsLocal as CreateConnectionBetweenTwoConceptsLocal, __webpack_exports__CreateDefaultConcept as CreateDefaultConcept, __webpack_exports__CreateDefaultLConcept as CreateDefaultLConcept, __webpack_exports__CreateSession as CreateSession, __webpack_exports__CreateSessionVisit as CreateSessionVisit, __webpack_exports__CreateTheCompositionLocal as CreateTheCompositionLocal, __webpack_exports__CreateTheCompositionWithCache as CreateTheCompositionWithCache, __webpack_exports__CreateTheConnection as CreateTheConnection, __webpack_exports__CreateTheConnectionGeneral as CreateTheConnectionGeneral, __webpack_exports__CreateTheConnectionLocal as CreateTheConnectionLocal, __webpack_exports__DATAID as DATAID, __webpack_exports__DATAIDDATE as DATAIDDATE, __webpack_exports__DelayFunctionExecution as DelayFunctionExecution, __webpack_exports__DeleteConceptById as DeleteConceptById, __webpack_exports__DeleteConceptLocal as DeleteConceptLocal, __webpack_exports__DeleteConnectionById as DeleteConnectionById, __webpack_exports__DeleteConnectionByType as DeleteConnectionByType, __webpack_exports__DependencyObserver as DependencyObserver, __webpack_exports__FilterSearch as FilterSearch, __webpack_exports__FormatFromConnections as FormatFromConnections, __webpack_exports__FormatFromConnectionsAltered as FormatFromConnectionsAltered, __webpack_exports__FreeschemaQuery as FreeschemaQuery, __webpack_exports__FreeschemaQueryApi as FreeschemaQueryApi, __webpack_exports__GetAllConnectionsOfComposition as GetAllConnectionsOfComposition, __webpack_exports__GetAllConnectionsOfCompositionBulk as GetAllConnectionsOfCompositionBulk, __webpack_exports__GetComposition as GetComposition, __webpack_exports__GetCompositionBulk as GetCompositionBulk, __webpack_exports__GetCompositionBulkWithDataId as GetCompositionBulkWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataId as GetCompositionFromConnectionsWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject as GetCompositionFromConnectionsWithDataIdInObject, __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex as GetCompositionFromConnectionsWithDataIdIndex, __webpack_exports__GetCompositionFromConnectionsWithIndex as GetCompositionFromConnectionsWithIndex, __webpack_exports__GetCompositionList as GetCompositionList, __webpack_exports__GetCompositionListAll as GetCompositionListAll, __webpack_exports__GetCompositionListAllWithId as GetCompositionListAllWithId, __webpack_exports__GetCompositionListListener as GetCompositionListListener, __webpack_exports__GetCompositionListLocal as GetCompositionListLocal, __webpack_exports__GetCompositionListLocalWithId as GetCompositionListLocalWithId, __webpack_exports__GetCompositionListWithId as GetCompositionListWithId, __webpack_exports__GetCompositionListWithIdUpdated as GetCompositionListWithIdUpdated, __webpack_exports__GetCompositionListener as GetCompositionListener, __webpack_exports__GetCompositionLocal as GetCompositionLocal, __webpack_exports__GetCompositionLocalWithId as GetCompositionLocalWithId, __webpack_exports__GetCompositionWithAllIds as GetCompositionWithAllIds, __webpack_exports__GetCompositionWithCache as GetCompositionWithCache, __webpack_exports__GetCompositionWithDataIdBulk as GetCompositionWithDataIdBulk, __webpack_exports__GetCompositionWithDataIdWithCache as GetCompositionWithDataIdWithCache, __webpack_exports__GetCompositionWithId as GetCompositionWithId, __webpack_exports__GetCompositionWithIdAndDateFromMemory as GetCompositionWithIdAndDateFromMemory, __webpack_exports__GetConceptBulk as GetConceptBulk, __webpack_exports__GetConceptByCharacter as GetConceptByCharacter, __webpack_exports__GetConceptByCharacterAndCategoryLocal as GetConceptByCharacterAndCategoryLocal, __webpack_exports__GetConceptByCharacterAndType as GetConceptByCharacterAndType, __webpack_exports__GetConnectionBetweenTwoConceptsLinker as GetConnectionBetweenTwoConceptsLinker, __webpack_exports__GetConnectionBulk as GetConnectionBulk, __webpack_exports__GetConnectionById as GetConnectionById, __webpack_exports__GetConnectionDataPrefetch as GetConnectionDataPrefetch, __webpack_exports__GetConnectionOfTheConcept as GetConnectionOfTheConcept, __webpack_exports__GetLink as GetLink, __webpack_exports__GetLinkListListener as GetLinkListListener, __webpack_exports__GetLinkListener as GetLinkListener, __webpack_exports__GetLinkRaw as GetLinkRaw, __webpack_exports__GetLinkerConnectionFromConcepts as GetLinkerConnectionFromConcepts, __webpack_exports__GetLinkerConnectionToConcepts as GetLinkerConnectionToConcepts, __webpack_exports__GetRelation as GetRelation, __webpack_exports__GetRelationLocal as GetRelationLocal, __webpack_exports__GetRelationRaw as GetRelationRaw, __webpack_exports__GetTheConcept as GetTheConcept, __webpack_exports__GetTheConceptLocal as GetTheConceptLocal, __webpack_exports__GetUserGhostId as GetUserGhostId, __webpack_exports__JUSTDATA as JUSTDATA, __webpack_exports__LConcept as LConcept, __webpack_exports__LConnection as LConnection, __webpack_exports__LISTNORMAL as LISTNORMAL, __webpack_exports__LocalConceptsData as LocalConceptsData, __webpack_exports__LocalSyncData as LocalSyncData, __webpack_exports__Logger as Logger, __webpack_exports__LoginToBackend as LoginToBackend, __webpack_exports__MakeTheInstanceConcept as MakeTheInstanceConcept, __webpack_exports__MakeTheInstanceConceptLocal as MakeTheInstanceConceptLocal, __webpack_exports__MakeTheTimestamp as MakeTheTimestamp, __webpack_exports__MakeTheTypeConcept as MakeTheTypeConcept, __webpack_exports__MakeTheTypeConceptApi as MakeTheTypeConceptApi, __webpack_exports__MakeTheTypeConceptLocal as MakeTheTypeConceptLocal, __webpack_exports__NORMAL as NORMAL, __webpack_exports__PRIVATE as PRIVATE, __webpack_exports__PUBLIC as PUBLIC, __webpack_exports__PatcherStructure as PatcherStructure, __webpack_exports__RAW as RAW, __webpack_exports__RecursiveSearchApi as RecursiveSearchApi, __webpack_exports__RecursiveSearchApiNewRawFullLinker as RecursiveSearchApiNewRawFullLinker, __webpack_exports__RecursiveSearchApiRaw as RecursiveSearchApiRaw, __webpack_exports__RecursiveSearchApiRawFullLinker as RecursiveSearchApiRawFullLinker, __webpack_exports__RecursiveSearchListener as RecursiveSearchListener, __webpack_exports__SchemaQueryListener as SchemaQueryListener, __webpack_exports__SearchAllConcepts as SearchAllConcepts, __webpack_exports__SearchLinkInternal as SearchLinkInternal, __webpack_exports__SearchLinkInternalAll as SearchLinkInternalAll, __webpack_exports__SearchLinkMultipleAll as SearchLinkMultipleAll, __webpack_exports__SearchLinkMultipleAllObservable as SearchLinkMultipleAllObservable, __webpack_exports__SearchLinkMultipleApi as SearchLinkMultipleApi, __webpack_exports__SearchQuery as SearchQuery, __webpack_exports__SearchStructure as SearchStructure, __webpack_exports__SearchWithLinker as SearchWithLinker, __webpack_exports__SearchWithTypeAndLinker as SearchWithTypeAndLinker, __webpack_exports__SearchWithTypeAndLinkerApi as SearchWithTypeAndLinkerApi, __webpack_exports__SessionData as SessionData, __webpack_exports__Signin as Signin, __webpack_exports__Signup as Signup, __webpack_exports__SignupEntity as SignupEntity, __webpack_exports__SplitStrings as SplitStrings, __webpack_exports__StatefulWidget as StatefulWidget, __webpack_exports__SyncData as SyncData, __webpack_exports__TrashTheConcept as TrashTheConcept, __webpack_exports__UpdateComposition as UpdateComposition, __webpack_exports__UpdateCompositionLocal as UpdateCompositionLocal, __webpack_exports__UserBinaryTree as UserBinaryTree, __webpack_exports__Validator as Validator, __webpack_exports__ViewInternalData as ViewInternalData, __webpack_exports__ViewInternalDataApi as ViewInternalDataApi, __webpack_exports__convertFromConceptToLConcept as convertFromConceptToLConcept, __webpack_exports__convertFromLConceptToConcept as convertFromLConceptToConcept, __webpack_exports__createFormFieldData as createFormFieldData, __webpack_exports__dispatchIdEvent as dispatchIdEvent, __webpack_exports__getFromDatabaseWithType as getFromDatabaseWithType, __webpack_exports__getObjectsFromIndexDb as getObjectsFromIndexDb, __webpack_exports__init as init, __webpack_exports__recursiveFetch as recursiveFetch, __webpack_exports__recursiveFetchNew as recursiveFetchNew, __webpack_exports__searchLinkMultipleListener as searchLinkMultipleListener, __webpack_exports__sendMessage as sendMessage, __webpack_exports__serviceWorker as serviceWorker, __webpack_exports__storeToDatabase as storeToDatabase, __webpack_exports__subscribedListeners as subscribedListeners, __webpack_exports__updateAccessToken as updateAccessToken };
 
 //# sourceMappingURL=main.bundle.js.map

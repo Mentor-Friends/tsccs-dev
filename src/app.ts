@@ -113,6 +113,7 @@ import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
+export { Logger } from "./Middleware/logger.service";
 export { Validator } from "./Validator/validator";
 export { createFormFieldData } from "./Validator/utils";
 export {BaseUrl} from './DataStructures/BaseUrl';
