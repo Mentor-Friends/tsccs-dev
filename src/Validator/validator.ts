@@ -73,10 +73,7 @@ export class Validator {
 
         // 2. Validate using regex pattern for the data type
         if (dataType && value) {
-            console.log(`Comment on Data Type ${dataType} and Value ${value}`);
-            
             let pattern = DATA_TYPES_RULES[dataType];
-            console.log("Find Pattern : ", pattern);
             
             if (pattern && value !== '' && !pattern.test(value)) {
                 errors['dataType'] = `Invalid value for ${dataType}`;
