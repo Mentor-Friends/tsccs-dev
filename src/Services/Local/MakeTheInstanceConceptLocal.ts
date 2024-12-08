@@ -89,13 +89,16 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
             
             let sessionId:string = getCookie('SessionId');
             let dataLog:LogData= {
+                userId: userId,
                 responseStatus: 200,
                 responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(concept).length}`,
+                responseSize: `${JSON.stringify(concept).length}` || "",
                 sessionId: sessionId,
                 functionName: "MakeTheInstanceConceptLocal",
                 functionParameters : ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId']
             }
+            console.log("Print logData : ", dataLog);
+            
             Logger.log(
                 "INFO",
                 "From function MakeTheInstanceConceptLocal",

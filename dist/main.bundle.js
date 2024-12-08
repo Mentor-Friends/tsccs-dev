@@ -8357,9 +8357,6 @@ var logger_service_awaiter = (undefined && undefined.__awaiter) || function (thi
     });
 };
 class Logger {
-    // // Set default log label as INFO
-    // private static logLevel:string = "INFO"
-    // private static logs : any[] = [];
     /**
      * Set the log level (e.g., "DEBUG", "INFO", "WARNING", "ERROR").
      */
@@ -8372,10 +8369,6 @@ class Logger {
     static shouldLog(level) {
         return Logger.LOG_LEVELS.indexOf(level) >= Logger.LOG_LEVELS.indexOf(Logger.logLevel);
     }
-    // private static shouldLog(level: string): boolean {
-    //     const levels = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    //     return levels.indexOf(level) >= levels.indexOf(Logger.logLevel);
-    // }
     /**
      * Logs a message with optional additional structured data.
      */
@@ -8386,18 +8379,11 @@ class Logger {
             message }, data);
         Logger.logs.push(logEntry);
         console.log("Log Data in Logger Class : ", Logger.logs);
-        const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
-        storedLogs.push(logEntry);
-        console.log("Stored Logs : ", storedLogs);
-        localStorage.setItem("logs", JSON.stringify(storedLogs));
-        // try {
-        //     const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
-        //     storedLogs.push(logEntry);
-        //     console.log("Stored Logs : ", storedLogs);
-        //     localStorage.setItem("logs", JSON.stringify(storedLogs));
-        // } catch (error) {
-        //     console.error("Failed to save log to localStorage:", error);
-        // }
+        this.saveToLocalStorage(logEntry);
+        // const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
+        // storedLogs.push(logEntry);
+        // console.log("Stored Logs : ", storedLogs);
+        // localStorage.setItem("logs", JSON.stringify(storedLogs));
     }
     /**
      * Helper method to save logs to localStorage.
@@ -8453,6 +8439,11 @@ Logger.logLevel = "INFO";
 Logger.logs = [];
 Logger.SERVER_URL = "https://devai.freeschema.com/api/v1/add-logs";
 Logger.LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
+/**
+ *
+ * @param cname The name of the cookie
+ * @returns Cookie value
+ */
 function getCookie(cname) {
     let name = cname + "=";
     let decodedCookie = decodeURIComponent(document.cookie);
@@ -8530,6 +8521,7 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
             console.log("CreateTheConnectionLocal...");
             let sessionId = getCookie('SessionId');
             let dataLog = {
+                userId: userId,
                 responseStatus: 200,
                 responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
                 responseSize: `${JSON.stringify(connection).length}`,
@@ -8813,13 +8805,15 @@ function MakeTheInstanceConceptLocal(type_1, referent_1) {
             console.log("MakeTheInstanceConceptLocal...");
             let sessionId = getCookie('SessionId');
             let dataLog = {
+                userId: userId,
                 responseStatus: 200,
                 responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(concept).length}`,
+                responseSize: `${JSON.stringify(concept).length}` || "",
                 sessionId: sessionId,
                 functionName: "MakeTheInstanceConceptLocal",
                 functionParameters: ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId']
             };
+            console.log("Print logData : ", dataLog);
             Logger.log("INFO", "From function MakeTheInstanceConceptLocal", dataLog);
             // Send logs to the server
             // Logger.sendLogsToServer()
@@ -14272,6 +14266,7 @@ function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1,
             console.log("CreateConnectionBetweenTwoConceptsLocal...");
             let sessionId = getCookie('SessionId');
             let dataLog = {
+                userId: userId,
                 responseStatus: 200,
                 responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
                 responseSize: `${JSON.stringify(newConnection).length}`,
@@ -14799,6 +14794,7 @@ var GetCompositionListObservable_awaiter = (undefined && undefined.__awaiter) ||
 
 
 
+
 /**
  * This wrapper will wrap the listing function and then allow users to return the list.
  */
@@ -14885,7 +14881,26 @@ class GetCompositionListObservable extends DependencyObserver {
  * This function will give you the list of the concepts by composition name with a listener to any data change.
  */
 function GetCompositionListListener(compositionName, userId, inpage, page, format = JUSTDATA) {
-    return new GetCompositionListObservable(compositionName, userId, inpage, page, format);
+    let startTime = performance.now();
+    const compositionResult = new GetCompositionListObservable(compositionName, userId, inpage, page, format);
+    /**
+     * Integrate Logger
+     *
+     */
+    console.log("GetCompositionListListener...");
+    let sessionId = getCookie('SessionId');
+    let dataLog = {
+        userId: userId,
+        responseStatus: 200,
+        responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+        responseSize: `${JSON.stringify(compositionResult).length}` || "",
+        sessionId: sessionId,
+        functionName: "GetCompositionListListener",
+        functionParameters: ['compositionName', 'userId', 'inpage', 'page', 'format']
+    };
+    console.log("Print logData : ", dataLog);
+    Logger.log("INFO", "From function GetCompositionListListener", dataLog);
+    return compositionResult;
 }
 
 ;// CONCATENATED MODULE: ./src/WrapperFunctions/GetLinkObservable.ts
@@ -15598,6 +15613,7 @@ var validator_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 };
 
 
+
 class Validator {
     /**
      * Checks if a concept with the given type and value is unique.
@@ -15644,6 +15660,7 @@ class Validator {
     validateField(fieldName_1, fieldType_1, dataType_1, value_1, pattern_1, conceptType_1, maxLength_1, minLength_1, minValue_1, maxValue_1, accept_1, file_1, required_1) {
         return validator_awaiter(this, arguments, void 0, function* (fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique = false) {
             var _a;
+            let startTime = performance.now();
             const errors = {};
             // 1. Validate required field (must not be empty)
             if (required && (value === null || value === '')) {
@@ -15696,6 +15713,26 @@ class Validator {
                     errors['unique'] = `Value is not unique`;
                 }
             }
+            /**
+             * Integrate Logger
+             *
+             */
+            console.log("validateField...");
+            let sessionId = getCookie('SessionId');
+            let dataLog = {
+                userId: "",
+                responseStatus: 200,
+                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+                responseSize: `${JSON.stringify(errors).length}` || "",
+                sessionId: sessionId,
+                functionName: "validateField",
+                functionParameters: ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique']
+            };
+            console.log("Print logData : ", dataLog);
+            Logger.log("INFO", "From function validateField", dataLog);
+            /**
+             * End of Logger Integration
+             */
             return errors;
         });
     }
@@ -15711,6 +15748,7 @@ class Validator {
      */
     validateForm(formData) {
         return validator_awaiter(this, void 0, void 0, function* () {
+            let startTime = performance.now();
             const validationErrors = {};
             // Iterate through the fields in the form data
             for (const fieldName in formData) {
@@ -15720,6 +15758,26 @@ class Validator {
                 if (Object.keys(fieldErrors).length > 0)
                     validationErrors[fieldName] = fieldErrors;
             }
+            /**
+             * Integrate Logger
+             *
+             */
+            console.log("validateForm...");
+            let sessionId = getCookie('SessionId');
+            let dataLog = {
+                userId: "",
+                responseStatus: 200,
+                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+                responseSize: `${JSON.stringify(validationErrors).length}` || "",
+                sessionId: sessionId,
+                functionName: "validateForm",
+                functionParameters: ['formData']
+            };
+            console.log("Print logData : ", dataLog);
+            Logger.log("INFO", "From function validateForm", dataLog);
+            /**
+             * End of Logger Integration
+             */
             return validationErrors;
         });
     }

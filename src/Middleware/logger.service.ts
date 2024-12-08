@@ -5,10 +5,6 @@ export class Logger {
     private static readonly SERVER_URL = "https://devai.freeschema.com/api/v1/add-logs";
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
 
-    // // Set default log label as INFO
-    // private static logLevel:string = "INFO"
-    // private static logs : any[] = [];
-
     /**
      * Set the log level (e.g., "DEBUG", "INFO", "WARNING", "ERROR").
      */
@@ -22,10 +18,6 @@ export class Logger {
     private static shouldLog(level: string): boolean {
         return Logger.LOG_LEVELS.indexOf(level) >= Logger.LOG_LEVELS.indexOf(Logger.logLevel);
     }
-    // private static shouldLog(level: string): boolean {
-    //     const levels = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    //     return levels.indexOf(level) >= levels.indexOf(Logger.logLevel);
-    // }
 
 
     /**
@@ -47,20 +39,12 @@ export class Logger {
 
         Logger.logs.push(logEntry);
         console.log("Log Data in Logger Class : ", Logger.logs);
-
-        const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
-        storedLogs.push(logEntry);
-        console.log("Stored Logs : ", storedLogs);
-        localStorage.setItem("logs", JSON.stringify(storedLogs));
+        this.saveToLocalStorage(logEntry)
+        // const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
+        // storedLogs.push(logEntry);
+        // console.log("Stored Logs : ", storedLogs);
+        // localStorage.setItem("logs", JSON.stringify(storedLogs));
         
-        // try {
-        //     const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
-        //     storedLogs.push(logEntry);
-        //     console.log("Stored Logs : ", storedLogs);
-        //     localStorage.setItem("logs", JSON.stringify(storedLogs));
-        // } catch (error) {
-        //     console.error("Failed to save log to localStorage:", error);
-        // }
     }
 
     /**
@@ -121,6 +105,11 @@ export class Logger {
  * Represents the structure of log data used for application monitoring and anomaly detection.
  */
 export interface LogData {
+    /**
+     * The userId of the request
+     */
+    userId?: string|Number;
+
     /**
      * The origin of the request (e.g., browser, API client).
      * @example "Browser"
@@ -183,7 +172,11 @@ export interface LogData {
     conceptsUsed?: string[];
 }
 
-
+/**
+ * 
+ * @param cname The name of the cookie
+ * @returns Cookie value
+ */
 export function getCookie(cname:string) {
     let name = cname + "=";
     let decodedCookie = decodeURIComponent(document.cookie);

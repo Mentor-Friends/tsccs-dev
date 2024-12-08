@@ -1,5 +1,6 @@
 import { GetAllConceptsByType } from "../Api/GetAllConceptsByType";
 import { ConceptsData, Connection, ConnectionData, DATAID, GetAllConnectionsOfCompositionBulk, GetComposition, GetCompositionList, GetConceptByCharacter, JUSTDATA, NORMAL } from "../app";
+import { getCookie, LogData, Logger } from "../Middleware/logger.service";
 import { GetCompositionById, GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionWithIdFromMemory, RecursiveFetchBuildLayer } from "../Services/GetComposition";
 import { DependencyObserver } from "./DepenedencyObserver";
 import { GetCompositionListener, GetCompositionObservable } from "./GetCompositionObservable";
@@ -103,5 +104,33 @@ export class GetCompositionListObservable extends DependencyObserver{
  * This function will give you the list of the concepts by composition name with a listener to any data change.
  */
 export function GetCompositionListListener(compositionName:string, userId: number, inpage: number, page: number, format:number = JUSTDATA){
-    return new GetCompositionListObservable(compositionName, userId, inpage, page,format);
+
+    let startTime = performance.now()
+    
+    const compositionResult = new GetCompositionListObservable(compositionName, userId, inpage, page,format);
+    /**
+     * Integrate Logger
+     * 
+     */
+    console.log("GetCompositionListListener...");
+            
+    let sessionId:string = getCookie('SessionId');
+    let dataLog:LogData= {
+        userId: userId,
+        responseStatus: 200,
+        responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+        responseSize: `${JSON.stringify(compositionResult).length}` || "",
+        sessionId: sessionId,
+        functionName: "GetCompositionListListener",
+        functionParameters : ['compositionName', 'userId', 'inpage', 'page', 'format']
+    }
+    console.log("Print logData : ", dataLog);
+    
+    Logger.log(
+        "INFO",
+        "From function GetCompositionListListener",
+        dataLog
+    )
+
+    return compositionResult
 }

@@ -1,4 +1,5 @@
-import { GetConceptByCharacterAndType, MakeTheTypeConcept } from "../app";
+import { GetConceptByCharacterAndType, Logger, MakeTheTypeConcept } from "../app";
+import { getCookie, LogData } from "../Middleware/logger.service";
 import { DATA_TYPES_RULES } from "./constant";
 import { FormErrors, FormFieldData } from "./interface";
 
@@ -64,6 +65,7 @@ export class Validator {
         required: boolean,
         isUnique: boolean = false
     ): Promise< {[fieldName:string] : string } > {
+        let startTime = performance.now()
         const errors: { [fieldName: string]: string } = {};
 
         // 1. Validate required field (must not be empty)
@@ -124,7 +126,34 @@ export class Validator {
             if (!isUniqueValue) {
                 errors['unique'] = `Value is not unique`;
             }
-        }        
+        }
+
+        /**
+         * Integrate Logger
+         * 
+         */
+        console.log("validateField...");
+                
+        let sessionId:string = getCookie('SessionId');
+        let dataLog:LogData= {
+            userId: "",
+            responseStatus: 200,
+            responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+            responseSize: `${JSON.stringify(errors).length}` || "",
+            sessionId: sessionId,
+            functionName: "validateField",
+            functionParameters : ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique']
+        }
+        console.log("Print logData : ", dataLog);
+        
+        Logger.log(
+            "INFO",
+            "From function validateField",
+            dataLog
+        )
+        /**
+         * End of Logger Integration
+         */
 
         return errors
     }
@@ -142,6 +171,7 @@ export class Validator {
     public async validateForm(formData: { 
         [key: string]: FormFieldData
     }): Promise<FormErrors> {
+        let startTime = performance.now()
         const validationErrors: FormErrors = {};
 
         // Iterate through the fields in the form data
@@ -156,6 +186,34 @@ export class Validator {
             if (Object.keys(fieldErrors).length > 0) validationErrors[fieldName] = fieldErrors;
 
         }
+
+        /**
+         * Integrate Logger
+         * 
+         */
+        console.log("validateForm...");
+                
+        let sessionId:string = getCookie('SessionId');
+        let dataLog:LogData= {
+            userId: "",
+            responseStatus: 200,
+            responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
+            responseSize: `${JSON.stringify(validationErrors).length}` || "",
+            sessionId: sessionId,
+            functionName: "validateForm",
+            functionParameters : ['formData']
+        }
+        console.log("Print logData : ", dataLog);
+        
+        Logger.log(
+            "INFO",
+            "From function validateForm",
+            dataLog
+        )
+        /**
+         * End of Logger Integration
+         */
+
 
         return validationErrors;
     }
