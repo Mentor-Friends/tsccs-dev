@@ -1,4 +1,5 @@
 import { BaseUrl, InnerActions, LocalSyncData, updateAccessToken } from "./app";
+import { broadcastChannel } from "./Constants/general.const";
 import { IdentifierFlags } from "./DataStructures/IdentifierFlags";
 import { TokenStorage } from "./DataStructures/Security/TokenStorage";
 import CreateConceptBinaryTreeFromIndexDb from "./Services/CreateBinaryTreeFromData";
@@ -23,9 +24,35 @@ self.addEventListener("install", (event: any) => {
 // Activate Service Worker
 self.addEventListener("activate", async (event: any) => {
   console.log("Service Worker activating... sw");
-  // await init();
-  event.waitUntil((self as any).clients.claim());
+
+  // Using event.waitUntil to wait for the Promise to resolve
+  event.waitUntil(
+    new Promise((resolve, reject) => {
+      try {
+        // Claim control of the clients (this makes the service worker active immediately)
+        (self as any).clients.claim();
+        console.log('claimed')
+        
+        if (!TSCCS_init) {
+          // Send a message using broadcastChannel to notify about init status
+          broadcastChannel.postMessage({
+            type: "checkInit",
+            payload: {},
+          });
+  
+          console.log("Message posted to broadcastChannel");
+        }
+
+        // Resolve the Promise to indicate activation is complete
+        resolve(undefined);
+      } catch (error) {
+        console.error("Error during service worker activation:", error);
+        reject(error);
+      }
+    })
+  );
 });
+
 
 // For Caching gives the event when fetch request is triggered
 // self.addEventListener('fetch', (event: any) => {
