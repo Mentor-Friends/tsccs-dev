@@ -5,6 +5,7 @@ import { BaseWidget } from "./BaseWidget";
  * system them extend this class and populate the functions such as getHtml() and widgetDidMount()
  */
 export class StatefulWidget extends BaseWidget{
+
     params: any;
     /**
      * These are the child widgets that need to be added to  this widget

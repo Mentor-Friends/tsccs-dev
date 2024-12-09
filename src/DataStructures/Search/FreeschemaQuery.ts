@@ -9,6 +9,7 @@ export class FreeschemaQuery{
     inpage: number = 10;
     page: number = 1;
     concepts: Concept[] = [];
+    conceptIds: number[] = [];
     selectors: string[] = [];
     freeschemaQueries : FreeschemaQuery[] = [];
     filters: FilterSearch[] = [];
@@ -16,4 +17,5 @@ export class FreeschemaQuery{
     typeConnection: string = "";
     outputFormat: number = NORMAL;
     name: string = "";
+    reverse: boolean = false;
 }
