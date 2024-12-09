@@ -3,7 +3,7 @@ import { BuilderStatefulWidget } from "./BuilderStatefulWidget";
 export function TypeEditor( event:any, that:BuilderStatefulWidget){
     if(event){
         const inputVal = document.querySelector(
-          "#widget-properties .flex-column"
+          "#widget-properties #widget-type"
         );
         console.log("This is the input val container", inputVal, that, event);
         const existedInputEl: any = inputVal?.querySelectorAll("input");
