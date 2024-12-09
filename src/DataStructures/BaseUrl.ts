@@ -14,7 +14,7 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
-    private static BASE_RANDOMIZER = 999;
+    public static BASE_RANDOMIZER = 999;
 
     static setRandomizer(id: number) {
         console.log('set randomizer', id)

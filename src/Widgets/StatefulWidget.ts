@@ -7,6 +7,8 @@ import { BaseWidget } from "./BaseWidget";
 export class StatefulWidget extends BaseWidget{
 
     params: any;
+    html: string = "";
+
     /**
      * These are the child widgets that need to be added to  this widget
      */
@@ -24,7 +26,7 @@ export class StatefulWidget extends BaseWidget{
     /**
      * This is the element that is a copy of the element that is mounted.
      */
-    protected element: HTMLElement | null = null;
+    element: HTMLElement | null = null;
 
 
     getElement(){
@@ -41,7 +43,7 @@ export class StatefulWidget extends BaseWidget{
      * @returns the html string that needs to be mounted to the DOM.
      */
      getHtml(): string {    
-      return '';
+      return this.html;
     }
 
 

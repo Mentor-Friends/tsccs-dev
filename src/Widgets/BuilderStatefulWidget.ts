@@ -8,17 +8,13 @@ import { TypeEditor } from "./BuilderSpeceficFunctions";
 
 export class BuilderStatefulWidget extends StatefulWidget {
   childComponents: any = [];
-  elementIdentifier: number = 0;
   componentMounted: boolean = false;
-  parentElement: string = "";
   oldHtml: HTMLElement | null = null;
   // subscribers: any = [];
-  element: HTMLElement | null = null;
   onmountVal: any;
   addEventVal: any;
   phonebooks: any = [];
   childrenData: any = {};
-  html: string = "";
   addEventFunction: any;
   componentDidMountFunction: any;
   mountChildWidgetsFunction: any;
@@ -29,53 +25,53 @@ export class BuilderStatefulWidget extends StatefulWidget {
 
 
 
-  async getWidgetCodeFromId(widgetId: number, token: string) {
-    //console.log("getWidgetCodeFromId", widgetId, token);
-    return new Promise(async (resolve: any, reject: any) => {
-      try {
-        let searchFirst = new SearchQuery();
-        searchFirst.composition = widgetId;
-        searchFirst.fullLinkers = [
-          "the_widgetcode",
-          "the_widgetcode_widget",
-          "the_widgetcode_name",
-          "the_widgetcode_html",
-          "the_widgetcode_css",
-          "the_widgetcode_js",
-          "the_widgetcode_timestamp",
-          "the_widgetcode_typevalue",
-          "the_widgetcode_addevent",
-          "the_widgetcode_onmount",
-          "the_widgetcode_onupdate",
-          "the_widgetcode_mountChildWidgets",
-          "the_widgetcode_cleanhtml",
-          "the_widgetcode_s_child",
-        ];
-        searchFirst.inpage = 100;
+  // async getWidgetCodeFromId(widgetId: number, token: string) {
+  //   //console.log("getWidgetCodeFromId", widgetId, token);
+  //   return new Promise(async (resolve: any, reject: any) => {
+  //     try {
+  //       let searchFirst = new SearchQuery();
+  //       searchFirst.composition = widgetId;
+  //       searchFirst.fullLinkers = [
+  //         "the_widgetcode",
+  //         "the_widgetcode_widget",
+  //         "the_widgetcode_name",
+  //         "the_widgetcode_html",
+  //         "the_widgetcode_css",
+  //         "the_widgetcode_js",
+  //         "the_widgetcode_timestamp",
+  //         "the_widgetcode_typevalue",
+  //         "the_widgetcode_addevent",
+  //         "the_widgetcode_onmount",
+  //         "the_widgetcode_onupdate",
+  //         "the_widgetcode_mountChildWidgets",
+  //         "the_widgetcode_cleanhtml",
+  //         "the_widgetcode_s_child",
+  //       ];
+  //       searchFirst.inpage = 100;
   
-        let searchSecond = new SearchQuery();
-        searchSecond.fullLinkers = [
-          "the_childwidget",
-          "the_childwidget_typevalue",
-          "the_childwidget_widget",
-          "the_childwidget_wrapperId",
-        ];
-        searchSecond.inpage = 100;
+  //       let searchSecond = new SearchQuery();
+  //       searchSecond.fullLinkers = [
+  //         "the_childwidget",
+  //         "the_childwidget_typevalue",
+  //         "the_childwidget_widget",
+  //         "the_childwidget_wrapperId",
+  //       ];
+  //       searchSecond.inpage = 100;
   
-        const queryParams = [searchFirst, searchSecond];
-        const output = await SearchLinkMultipleAll(queryParams, token);
-        //console.log("getWidgetCodeFromId output ->", output);
-        resolve(output);
-        return output;
-      } catch (error: any) {
-        console.error("error", error);
-        if (error?.status === 401) {
-          HandleHttpError(error?.response)
-        }
-        reject(error);
-      }
-    });
-  }
+  //       const queryParams = [searchFirst, searchSecond];
+  //       const output = await SearchLinkMultipleAll(queryParams, token);
+  //       //console.log("getWidgetCodeFromId output ->", output);
+  //       resolve(output);
+  //       return output;
+  //     } catch (error: any) {
+  //       console.error("error", error);
+  //       if (error?.status === 401) {
+  //         HandleHttpError(error?.response)
+  //       }
+  //       reject(error);
+  //     }
+  //   });
+  // }
 
 
   // async CreateConceptConnections(){
@@ -221,7 +217,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
       parent?.setAttribute("data-type-value", that.widgetType);
       
       parent.appendChild(this.element);
-      this.childWidgetElement = this.getElementByClassName("added-widget-container")
 
 
 
@@ -237,6 +232,8 @@ export class BuilderStatefulWidget extends StatefulWidget {
         this.render();
 
       }
+      this.childWidgetElement = this.getElementByClassName("added-widget-container")
+
 
 
     }
@@ -281,62 +278,62 @@ export class BuilderStatefulWidget extends StatefulWidget {
     // renderOnmount.call(this, tsccs);
   }
 
-  async getWidgetClassFunction(widgetId: number) {
-    return new Promise(async (resolve: any) => {
+  // async getWidgetClassFunction(widgetId: number) {
+  //   return new Promise(async (resolve: any) => {
       
-      const profileData: any = await new Promise((resolve2: any) => {
-        let dataFromLocalStorage: string = localStorage?.getItem("profile") || "";
-        if (dataFromLocalStorage) {
-          const profileData = JSON.parse(dataFromLocalStorage);
-          resolve2(profileData)
-        } else {
-          resolve2()
-        }
-      });
+  //     const profileData: any = await new Promise((resolve2: any) => {
+  //       let dataFromLocalStorage: string = localStorage?.getItem("profile") || "";
+  //       if (dataFromLocalStorage) {
+  //         const profileData = JSON.parse(dataFromLocalStorage);
+  //         resolve2(profileData)
+  //       } else {
+  //         resolve2()
+  //       }
+  //     });
       
-      const token = profileData?.token;
-      let output: any = await this.getWidgetCodeFromId(widgetId, token);
-      const widgetInfo = output?.data?.the_widgetcode;
-      const widgetName = widgetInfo?.the_widgetcode_name?.[0]?.data?.the_name;
-      const widgetHTML = widgetInfo?.the_widgetcode_html?.[0]?.data?.the_html;
-      const widgetCSS = widgetInfo?.the_widgetcode_css?.[0]?.data?.the_css;
-      const widgetJS = widgetInfo?.the_widgetcode_js?.[0]?.data?.the_js;
-      const widgetTimestamp =
-        widgetInfo?.the_widgetcode_timestamp?.[0]?.data?.the_timestamp;
-      const widgetPackageId = widgetInfo?.the_widgetcode_widget?.[0].id;
-      const widgetAddEvent =
-        widgetInfo?.the_widgetcode_addevent?.[0]?.data?.the_addevent;
-      const widgetOnmount =
-        widgetInfo?.the_widgetcode_onmount?.[0]?.data?.the_onmount;
-      const widgetOnupdate =
-        widgetInfo?.the_widgetcode_onupdate?.[0]?.data?.the_onupdate;
-      const widgetMountChildWidgets =
-        widgetInfo?.the_widgetcode_mountChildWidgets?.[0]?.data
-          ?.the_mountChildWidgets;
+  //     const token = profileData?.token;
+  //     let output: any = await this.getWidgetCodeFromId(widgetId, token);
+  //     const widgetInfo = output?.data?.the_widgetcode;
+  //     const widgetName = widgetInfo?.the_widgetcode_name?.[0]?.data?.the_name;
+  //     const widgetHTML = widgetInfo?.the_widgetcode_html?.[0]?.data?.the_html;
+  //     const widgetCSS = widgetInfo?.the_widgetcode_css?.[0]?.data?.the_css;
+  //     const widgetJS = widgetInfo?.the_widgetcode_js?.[0]?.data?.the_js;
+  //     const widgetTimestamp =
+  //       widgetInfo?.the_widgetcode_timestamp?.[0]?.data?.the_timestamp;
+  //     const widgetPackageId = widgetInfo?.the_widgetcode_widget?.[0].id;
+  //     const widgetAddEvent =
+  //       widgetInfo?.the_widgetcode_addevent?.[0]?.data?.the_addevent;
+  //     const widgetOnmount =
+  //       widgetInfo?.the_widgetcode_onmount?.[0]?.data?.the_onmount;
+  //     const widgetOnupdate =
+  //       widgetInfo?.the_widgetcode_onupdate?.[0]?.data?.the_onupdate;
+  //     const widgetMountChildWidgets =
+  //       widgetInfo?.the_widgetcode_mountChildWidgets?.[0]?.data
+  //         ?.the_mountChildWidgets;
 
-      const widgetData = {
-        id: output?.id,
-        name: widgetName,
-        html: widgetHTML,
-        css: widgetCSS,
-        js: widgetJS,
-        timestamp: widgetTimestamp,
-        widgetId: widgetPackageId,
-        addevent: widgetAddEvent,
-        onmount: widgetOnmount,
-        onupdate: widgetOnupdate,
-        mountChildWidgets: widgetMountChildWidgets,
-      };
+  //     const widgetData = {
+  //       id: output?.id,
+  //       name: widgetName,
+  //       html: widgetHTML,
+  //       css: widgetCSS,
+  //       js: widgetJS,
+  //       timestamp: widgetTimestamp,
+  //       widgetId: widgetPackageId,
+  //       addevent: widgetAddEvent,
+  //       onmount: widgetOnmount,
+  //       onupdate: widgetOnupdate,
+  //       mountChildWidgets: widgetMountChildWidgets,
+  //     };
 
-      const widgetInstance = new BuilderStatefulWidget();
-      widgetInstance.html = widgetData?.html;
-      widgetInstance.componentDidMountFunction = widgetData?.onmount;
-      widgetInstance.addEventFunction = widgetData?.addevent;
-      widgetInstance.mountChildWidgetsFunction = widgetData?.mountChildWidgets;
+  //     const widgetInstance = new BuilderStatefulWidget();
+  //     widgetInstance.html = widgetData?.html;
+  //     widgetInstance.componentDidMountFunction = widgetData?.onmount;
+  //     widgetInstance.addEventFunction = widgetData?.addevent;
+  //     widgetInstance.mountChildWidgetsFunction = widgetData?.mountChildWidgets;
 
-      resolve(widgetInstance);
-    });
-  }
+  //     resolve(widgetInstance);
+  //   });
+  // }
 
   async CreateConnectionBetweenEntityLocal(
     concept1Data: Concept,
