@@ -39,6 +39,9 @@ export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concep
     if(fullLinker != ""){
          typeConcept = await MakeTheTypeConceptApi(fullLinker, 999);
     }
-    let connections: Connection[] = await GetCompositionConnectionsBetweenTwoConcepts(ofTheConcept.id, toTheConcept.id, typeConcept.id);
+    let connections: Connection[] = []
+    if (!forward) 
+        connections = await GetCompositionConnectionsBetweenTwoConcepts(toTheConcept.id, ofTheConcept.id, typeConcept.id);
+    else connections = await GetCompositionConnectionsBetweenTwoConcepts(ofTheConcept.id, toTheConcept.id, typeConcept.id);
     return connections;
 }
