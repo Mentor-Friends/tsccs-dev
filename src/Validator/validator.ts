@@ -128,32 +128,21 @@ export class Validator {
             }
         }
 
-        /**
-         * Integrate Logger
-         * 
-         */
+        // Add Log
         console.log("validateField...");
-                
-        let sessionId:string = getCookie('SessionId');
-        let dataLog:LogData= {
-            userId: "",
-            responseStatus: 200,
-            responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-            responseSize: `${JSON.stringify(errors).length}` || "",
-            sessionId: sessionId,
-            functionName: "validateField",
-            functionParameters : ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique']
-        }
-        console.log("Print logData : ", dataLog);
-        
-        Logger.log(
-            "INFO",
-            "From function validateField",
-            dataLog
-        )
-        /**
-         * End of Logger Integration
-         */
+        Logger.logInfo(
+            startTime,
+            "",
+            undefined,
+            "Unknown",
+            "Unknown",
+            200,
+            errors,
+            "validateField",
+            ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'],  // Function parameters
+            "UnknownUserAgent",
+            []
+        );
 
         return errors
     }
@@ -187,34 +176,72 @@ export class Validator {
 
         }
 
-        /**
-         * Integrate Logger
-         * 
-         */
+        // Add Log
         console.log("validateForm...");
-                
-        let sessionId:string = getCookie('SessionId');
-        let dataLog:LogData= {
-            userId: "",
-            responseStatus: 200,
-            responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-            responseSize: `${JSON.stringify(validationErrors).length}` || "",
-            sessionId: sessionId,
-            functionName: "validateForm",
-            functionParameters : ['formData']
-        }
-        console.log("Print logData : ", dataLog);
-        
-        Logger.log(
-            "INFO",
-            "From function validateForm",
-            dataLog
-        )
-        /**
-         * End of Logger Integration
-         */
+        Logger.logInfo(
+            startTime,
+            "",
+            undefined,
+            "Unknown",
+            "Unknown",
+            200,
+            validationErrors,
+            "validateForm",
+            ['formData'],
+            "UnknownUserAgent",
+            []
+        );
 
 
         return validationErrors;
+    }
+
+    /**
+     * 
+     * @param fieldName 
+     * @param fieldType 
+     * @param dataType 
+     * @param value 
+     * @param pattern 
+     * @param conceptType 
+     * @param maxLength 
+     * @param minLength 
+     * @param minValue 
+     * @param maxValue 
+     * @param accept 
+     * @param file 
+     * @param required 
+     * @param isUnique 
+     * @returns Object with status and details
+     */
+    public validate(
+        fieldName: string,
+        fieldType: string | null,
+        dataType: string | null,
+        value: string | null,
+        pattern:string | null,
+        conceptType: string | null,
+        maxLength: number | null,
+        minLength: number | null,
+        minValue: number | null,
+        maxValue: number | null,
+        accept: string | null,
+        file: File | null,
+        required: boolean,
+        isUnique: boolean = false
+    ){
+        let error:any = {};
+        this.validateField(
+            fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
+        ).then((err) => {
+            if (Object.keys(err).length > 0) {
+                error['status'] = false
+                error['details'] = err;
+            } else {
+                error['status'] = true
+            }
+        })
+
+        return error;
     }
 }

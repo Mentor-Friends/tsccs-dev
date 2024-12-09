@@ -5,7 +5,7 @@ import { UpdateToDatabase } from "../../Database/indexdblocal";
 import { ConceptsData } from "../ConceptData";
 import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "../Connection";
-import { CreateDefaultConcept, CreateDefaultLConcept, sendMessage, serviceWorker } from "../../app";
+import { CreateDefaultConcept, CreateDefaultLConcept, Logger, sendMessage, serviceWorker } from "../../app";
 import { LocalConnectionData } from "./LocalConnectionData";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
@@ -75,6 +75,7 @@ export class LocalSyncData{
      }
 
      static async SyncDataOnline(){
+        let startTime = performance.now()
         try{
             console.log('sw triggered')
             if (serviceWorker) {
@@ -111,9 +112,15 @@ export class LocalSyncData{
                 }
     
             //}
+            // Add Log
+            Logger.logInfo(startTime, "unknown", undefined, "unknown", undefined, 200, conceptsArray, "SyncDataOnline", [], "unknown", undefined )
+    
             return conceptsArray;
         }
         catch(error){
+            // Add Log
+            Logger.logError(startTime, "unknown", undefined, "unknown", undefined, 500, error, "SyncDataOnline", [], "unknown", undefined )
+    
             throw error;
         }
 

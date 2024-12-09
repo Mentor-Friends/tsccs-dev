@@ -40,12 +40,152 @@ export class Logger {
         Logger.logs.push(logEntry);
         console.log("Log Data in Logger Class : ", Logger.logs);
         this.saveToLocalStorage(logEntry)
-        // const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
-        // storedLogs.push(logEntry);
-        // console.log("Stored Logs : ", storedLogs);
-        // localStorage.setItem("logs", JSON.stringify(storedLogs));
         
     }
+
+    public static logInfo(
+        startTime: number,
+        userId: string | number,
+        operationType?: "read" | "create" | "update" | "delete" | "search",
+        requestFrom?: string,
+        requestIP?: string,
+        responseStatus?: number,
+        responseData?: any,
+        functionName?: string,
+        functionParameters?: any[],
+        userAgent?: string,
+        conceptsUsed?: string[]
+    ): void {
+        const sessionId = getCookie("SessionId");
+        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+        const logData: LogData = {
+            userId,
+            operationType,
+            requestFrom,
+            requestIP,
+            responseStatus,
+            responseTime,
+            responseSize,
+            sessionId: sessionId?.toString(),
+            functionName,
+            functionParameters,
+            userAgent,
+            conceptsUsed,
+        };
+    
+        Logger.log("INFO", `Information logged for ${functionName}`, logData);
+    }
+    
+    public static logError(
+        startTime: number,
+        userId: string | number,
+        operationType?: "read" | "create" | "update" | "delete" | "search",
+        requestFrom?: string,
+        requestIP?: string,
+        responseStatus?: number,
+        responseData?: any,
+        functionName?: string,
+        functionParameters?: any[],
+        userAgent?: string,
+        conceptsUsed?: string[]
+    ): void {
+        const sessionId = getCookie("SessionId");
+        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+
+        const logData: LogData = {
+            userId,
+            operationType,
+            requestFrom,
+            requestIP,
+            responseStatus,
+            responseTime,
+            responseSize,
+            sessionId: sessionId?.toString(),
+            functionName,
+            functionParameters,
+            userAgent,
+            conceptsUsed,
+        };
+    
+        Logger.log("ERROR", `Information logged for ${functionName}`, logData);
+
+    }
+
+    public static logWarning(
+        startTime: number,
+        userId: string | number,
+        operationType?: "read" | "create" | "update" | "delete" | "search",
+        requestFrom?: string,
+        requestIP?: string,
+        responseStatus?: number,
+        responseData?: any,
+        functionName?: string,
+        functionParameters?: any[],
+        userAgent?: string,
+        conceptsUsed?: string[]
+    ): void {
+        const sessionId = getCookie("SessionId");
+        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+
+        const logData: LogData = {
+            userId,
+            operationType,
+            requestFrom,
+            requestIP,
+            responseStatus,
+            responseTime,
+            responseSize,
+            sessionId: sessionId?.toString(),
+            functionName,
+            functionParameters,
+            userAgent,
+            conceptsUsed,
+        };
+    
+        Logger.log("WARNING", `Information logged for ${functionName}`, logData);
+
+    }
+
+    public static logDebug(
+        startTime: number,
+        userId: string | number,
+        operationType?: "read" | "create" | "update" | "delete" | "search",
+        requestFrom?: string,
+        requestIP?: string,
+        responseStatus?: number,
+        responseData?: any,
+        functionName?: string,
+        functionParameters?: any[],
+        userAgent?: string,
+        conceptsUsed?: string[]
+    ): void {
+        const sessionId = getCookie("SessionId");
+        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+
+        const logData: LogData = {
+            userId,
+            operationType,
+            requestFrom,
+            requestIP,
+            responseStatus,
+            responseTime,
+            responseSize,
+            sessionId: sessionId?.toString(),
+            functionName,
+            functionParameters,
+            userAgent,
+            conceptsUsed,
+        };
+    
+        Logger.log("DEBUG", `Information logged for ${functionName}`, logData);
+    
+    }
+
+
 
     /**
      * Helper method to save logs to localStorage.
@@ -109,6 +249,12 @@ export interface LogData {
      * The userId of the request
      */
     userId?: string|Number;
+
+    /**
+     * The type of operation performed (e.g., create, read, update, delete).
+     * @example "create"
+     */
+     operationType?: 'create' | 'read' | 'update' | 'delete' | 'search';
 
     /**
      * The origin of the request (e.g., browser, API client).

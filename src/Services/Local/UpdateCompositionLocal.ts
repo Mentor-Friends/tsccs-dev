@@ -17,6 +17,7 @@ import {
   CreateTheConnectionLocal,
   LConnection,
   LocalSyncData,
+  Logger,
   sendMessage,
   serviceWorker,
 } from "../../app";
@@ -29,6 +30,7 @@ import {
 export async function UpdateCompositionLocal(
   patcherStructure: PatcherStructure
 ) {
+  let startTime = performance.now()
   if (serviceWorker) {
     const res: any = await sendMessage("UpdateCompositionLocal", {
       patcherStructure,
@@ -169,4 +171,7 @@ export async function UpdateCompositionLocal(
   }
 
   await LocalSyncData.SyncDataOnline();
+  // Add Log
+  Logger.logInfo(startTime, userId, "update", "unknown", undefined, 200, object, "UpdateCompositionLocal", ['patcherStructure'], "unknown", undefined )
+    
 }

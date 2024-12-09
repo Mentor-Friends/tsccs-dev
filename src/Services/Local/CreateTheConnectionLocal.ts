@@ -49,24 +49,19 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
              * Add to Logger
              */
             console.log("CreateTheConnectionLocal...");
-            
-            let sessionId:string = getCookie('SessionId');
-            let dataLog:LogData= {
-                userId: userId,
-                responseStatus: 200,
-                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(connection).length}`,
-                sessionId: sessionId,
-                functionName: "CreateTheConnectionLocal",
-                functionParameters : ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId']
-            }
-            Logger.log(
-                "INFO",
-                "From function MakeTheInstanceConceptLocal",
-                dataLog
-            )
-            // Send logs to the server
-            // Logger.sendLogsToServer()
+            Logger.logInfo(
+                startTime, 
+                userId, 
+                "create",
+                "Unknown",
+                "Unknown",
+                200,
+                connection,
+                "CreateTheConnectionLocal",
+                ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'],
+                "UnknownUserAgent",
+                []
+            );
             /**
              * End of Logger
              */

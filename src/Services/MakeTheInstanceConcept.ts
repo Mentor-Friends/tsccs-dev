@@ -3,7 +3,7 @@ import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndTyp
 import { MakeTheNameInBackend } from "../Api/MakeTheNameInBackend";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
-import { MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
 
@@ -30,6 +30,7 @@ export default async function MakeTheInstanceConcept(
   passedSessionId: number = 999,
   referentId: number = 0
 ) {
+  let startTime = performance.now()
   if (serviceWorker) {
     const res: any = await sendMessage("MakeTheInstanceConcept", {
       type,
@@ -146,5 +147,12 @@ export default async function MakeTheInstanceConcept(
   //     }
   // }
   concept.type = typeConcept;
+  // Add Log
+  Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 200, concept, "MakeTheInstanceConcept", 
+    ['type', 'referent', 'composition', 'userId', 'passedAccessId', 'passedSessionId', 'referentId'], 
+    "unknown", 
+    undefined 
+  )
+    
   return concept;
 }

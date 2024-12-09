@@ -3,8 +3,8 @@ import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
 import { HandleInternalError } from "../Common/ErrorPosting";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false){
+    let startTime = performance.now()
     try{
-        let startTime = performance.now()
         if (serviceWorker) {
             const res: any = await sendMessage('CreateConnectionBetweenTwoConceptsLocal', {ofTheConcept, toTheConcept, linker, both})
             console.log('data received from sw', res)
@@ -32,35 +32,30 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
         // }
         var connectionConcept = await MakeTheInstanceConceptLocal("connection",forwardLinker,false,999,999,999);
         let newConnection = await CreateTheConnectionLocal(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000)
-        /**
-         * Start Log Service
-         */
-        console.log("CreateConnectionBetweenTwoConceptsLocal...");
-            
-        let sessionId:string = getCookie('SessionId');
-        let dataLog:LogData= {
-            userId: userId,
-            responseStatus: 200,
-            responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-            responseSize: `${JSON.stringify(newConnection).length}`,
-            sessionId: sessionId,
-            functionName: "CreateConnectionBetweenTwoConceptsLocal",
-            functionParameters : ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'],
-        }
-        Logger.log(
-            "INFO",
-            "From function CreateConnectionBetweenTwoConceptsLocal",
-            dataLog
+        
+        // Add Log
+        Logger.logInfo(
+            startTime, 
+            userId, 
+            'create', 
+            undefined, 
+            undefined, 
+            200, 
+            newConnection, 
+            'CreateConnectionBetweenTwoConceptsLocal',
+            ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], 
+            undefined,
+            undefined
         )
-        // Send logs to the server
-        // Logger.sendLogsToServer()
-
-        /**
-         * End of Log
-         */
         return newConnection;
     }
     catch(ex){
+        // Add Log
+        Logger.logError(startTime, ofTheConcept.userId, 'create', undefined, undefined, 500, ex, 'CreateConnectionBetweenTwoConceptsLocal',
+            ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], 
+            undefined,
+            undefined
+         )
         throw ex;
     }
 

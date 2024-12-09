@@ -4,6 +4,7 @@ import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { Logger } from "../app";
 
 /**
  * This function takes in a list of ids and returns a list of concepts . This uses local memory to find concepts
@@ -15,6 +16,7 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
 export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[]>{
     let result:Concept[] = [];
     let setTime = new Date().getTime();
+    let startTime = performance.now()
     // let conceptIds = passedConcepts.filter((value, index, self) => {
     //   return self.indexOf(value) === index;
     // });
@@ -67,9 +69,13 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
     
                 }
                 console.log("added the concepts");
+                // Add Log
+                Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, result, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
             }
             else{
                 console.log("Get Concept Bulk error", response.status);
+                // Add Log
+                Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
                 HandleHttpError(response);
             }
 
@@ -81,12 +87,16 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
        
     }
     catch (error) {
-        if (error instanceof Error) {
-          console.log('Get Concept Bulk  error message: ', error.message);
-        } else {
-          console.log('Get Concept Bulk  unexpected error: ', error);
-        }
-       HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
+      if (error instanceof Error) {
+        console.log('Get Concept Bulk  error message: ', error.message);
+      } else {
+        console.log('Get Concept Bulk  unexpected error: ', error);
+      }
+
+      // Add Log
+      Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
+      
+      HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
       }
 
       return result;

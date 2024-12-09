@@ -82,33 +82,23 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     
             concept.type = typeConcept;
             LocalSyncData.AddConcept(concept);
-            /**
-             * Add to Logger
-             */
+             
+            // Add Log
             console.log("MakeTheInstanceConceptLocal...");
-            
-            let sessionId:string = getCookie('SessionId');
-            let dataLog:LogData= {
-                userId: userId,
-                responseStatus: 200,
-                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(concept).length}` || "",
-                sessionId: sessionId,
-                functionName: "MakeTheInstanceConceptLocal",
-                functionParameters : ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId']
-            }
-            console.log("Print logData : ", dataLog);
-            
-            Logger.log(
-                "INFO",
-                "From function MakeTheInstanceConceptLocal",
-                dataLog
-            )
-            // Send logs to the server
-            // Logger.sendLogsToServer()
-            /**
-             * End of Logger
-             */
+            Logger.logInfo(
+                startTime,
+                userId,
+                "create",
+                "Unknown",
+                "Unknown",
+                200,
+                concept,
+                "MakeTheInstanceConceptLocal",
+                ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId'],
+                "UnknownUserAgent",
+                []
+            );
+
             return concept;
         }
         catch(error){

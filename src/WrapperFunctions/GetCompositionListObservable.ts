@@ -108,29 +108,23 @@ export function GetCompositionListListener(compositionName:string, userId: numbe
     let startTime = performance.now()
     
     const compositionResult = new GetCompositionListObservable(compositionName, userId, inpage, page,format);
-    /**
-     * Integrate Logger
-     * 
-     */
-    console.log("GetCompositionListListener...");
-            
-    let sessionId:string = getCookie('SessionId');
-    let dataLog:LogData= {
-        userId: userId,
-        responseStatus: 200,
-        responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-        responseSize: `${JSON.stringify(compositionResult).length}` || "",
-        sessionId: sessionId,
-        functionName: "GetCompositionListListener",
-        functionParameters : ['compositionName', 'userId', 'inpage', 'page', 'format']
-    }
-    console.log("Print logData : ", dataLog);
     
-    Logger.log(
-        "INFO",
-        "From function GetCompositionListListener",
-        dataLog
-    )
+    // Add Log
+    console.log("GetCompositionListListener...");
+    Logger.logInfo(
+        startTime, 
+        userId,
+        "read",
+        "Unknown",
+        "Unknown",
+        200,
+        compositionResult,
+        "GetCompositionListListener",
+        ['compositionName', 'userId', 'inpage', 'page', 'format'],
+        "UnknownUserAgent",
+        []
+    );
+    
 
     return compositionResult
 }

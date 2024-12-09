@@ -2283,8 +2283,10 @@ var SearchLinkMultipleApi_awaiter = (undefined && undefined.__awaiter) || functi
 
 
 
+
 function SearchLinkMultipleApi(searchQuery_1) {
     return SearchLinkMultipleApi_awaiter(this, arguments, void 0, function* (searchQuery, token = "") {
+        let startTime = performance.now();
         var header = GetRequestHeaderWithAuthorization("application/json", token);
         const queryUrl = BaseUrl_BaseUrl.SearchLinkMultipleAllApiUrl();
         const body = JSON.stringify(searchQuery);
@@ -2296,16 +2298,20 @@ function SearchLinkMultipleApi(searchQuery_1) {
             });
             if (response.ok) {
                 let result = yield response.json();
+                // Add Log
+                Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined);
                 return result;
             }
             else {
                 ErrorPosting_HandleHttpError(response);
                 console.log("This is the searching multiple error", response.status);
+                Logger.logWarning(startTime, "unknown", "search", "unknown", undefined, response.status, response, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined);
                 return [];
             }
         }
         catch (ex) {
             console.log("This is the searching multiple error", ex);
+            Logger.logWarning(startTime, "unknown", "search", "unknown", undefined, 500, ex, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined);
             HandleInternalError(ex, queryUrl);
         }
     });
@@ -3534,6 +3540,7 @@ var GetConceptBulk_awaiter = (undefined && undefined.__awaiter) || function (thi
 
 
 
+
 /**
  * This function takes in a list of ids and returns a list of concepts . This uses local memory to find concepts
  * namely in the concept binary tree. If it could not find the concepts in local memory then it fetches those from
@@ -3545,6 +3552,7 @@ function GetConceptBulk(passedConcepts) {
     return GetConceptBulk_awaiter(this, void 0, void 0, function* () {
         let result = [];
         let setTime = new Date().getTime();
+        let startTime = performance.now();
         // let conceptIds = passedConcepts.filter((value, index, self) => {
         //   return self.indexOf(value) === index;
         // });
@@ -3590,9 +3598,13 @@ function GetConceptBulk(passedConcepts) {
                             }
                         }
                         console.log("added the concepts");
+                        // Add Log
+                        Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, result, "GetConceptBulk", ['passedConcepts'], "unknown", undefined);
                     }
                     else {
                         console.log("Get Concept Bulk error", response.status);
+                        // Add Log
+                        Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", ['passedConcepts'], "unknown", undefined);
                         ErrorPosting_HandleHttpError(response);
                     }
                 }
@@ -3605,6 +3617,8 @@ function GetConceptBulk(passedConcepts) {
             else {
                 console.log('Get Concept Bulk  unexpected error: ', error);
             }
+            // Add Log
+            Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined);
             HandleInternalError(error, BaseUrl_BaseUrl.GetConceptBulkUrl());
         }
         return result;
@@ -5128,6 +5142,7 @@ class LocalSyncData {
     }
     static SyncDataOnline() {
         return LocalSyncData_awaiter(this, void 0, void 0, function* () {
+            let startTime = performance.now();
             try {
                 console.log('sw triggered');
                 if (serviceWorker) {
@@ -5158,9 +5173,13 @@ class LocalSyncData {
                     LocalConnectionData.AddPermanentConnection(connections[i]);
                 }
                 //}
+                // Add Log
+                Logger.logInfo(startTime, "unknown", undefined, "unknown", undefined, 200, conceptsArray, "SyncDataOnline", [], "unknown", undefined);
                 return conceptsArray;
             }
             catch (error) {
+                // Add Log
+                Logger.logError(startTime, "unknown", undefined, "unknown", undefined, 500, error, "SyncDataOnline", [], "unknown", undefined);
                 throw error;
             }
         });
@@ -7927,6 +7946,7 @@ var MakeTheInstanceConcept_awaiter = (undefined && undefined.__awaiter) || funct
  */
 function MakeTheInstanceConcept(type_1, referent_1) {
     return MakeTheInstanceConcept_awaiter(this, arguments, void 0, function* (type, referent, composition = false, userId, passedAccessId = 4, passedSessionId = 999, referentId = 0) {
+        let startTime = performance.now();
         if (serviceWorker) {
             const res = yield sendMessage("MakeTheInstanceConcept", {
                 type,
@@ -8001,6 +8021,8 @@ function MakeTheInstanceConcept(type_1, referent_1) {
         //     }
         // }
         concept.type = typeConcept;
+        // Add Log
+        Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 200, concept, "MakeTheInstanceConcept", ['type', 'referent', 'composition', 'userId', 'passedAccessId', 'passedSessionId', 'referentId'], "unknown", undefined);
         return concept;
     });
 }
@@ -8380,10 +8402,86 @@ class Logger {
         Logger.logs.push(logEntry);
         console.log("Log Data in Logger Class : ", Logger.logs);
         this.saveToLocalStorage(logEntry);
-        // const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
-        // storedLogs.push(logEntry);
-        // console.log("Stored Logs : ", storedLogs);
-        // localStorage.setItem("logs", JSON.stringify(storedLogs));
+    }
+    static logInfo(startTime, userId, operationType, requestFrom, requestIP, responseStatus, responseData, functionName, functionParameters, userAgent, conceptsUsed) {
+        const sessionId = getCookie("SessionId");
+        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+        const logData = {
+            userId,
+            operationType,
+            requestFrom,
+            requestIP,
+            responseStatus,
+            responseTime,
+            responseSize,
+            sessionId: sessionId === null || sessionId === void 0 ? void 0 : sessionId.toString(),
+            functionName,
+            functionParameters,
+            userAgent,
+            conceptsUsed,
+        };
+        Logger.log("INFO", `Information logged for ${functionName}`, logData);
+    }
+    static logError(startTime, userId, operationType, requestFrom, requestIP, responseStatus, responseData, functionName, functionParameters, userAgent, conceptsUsed) {
+        const sessionId = getCookie("SessionId");
+        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+        const logData = {
+            userId,
+            operationType,
+            requestFrom,
+            requestIP,
+            responseStatus,
+            responseTime,
+            responseSize,
+            sessionId: sessionId === null || sessionId === void 0 ? void 0 : sessionId.toString(),
+            functionName,
+            functionParameters,
+            userAgent,
+            conceptsUsed,
+        };
+        Logger.log("ERROR", `Information logged for ${functionName}`, logData);
+    }
+    static logWarning(startTime, userId, operationType, requestFrom, requestIP, responseStatus, responseData, functionName, functionParameters, userAgent, conceptsUsed) {
+        const sessionId = getCookie("SessionId");
+        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+        const logData = {
+            userId,
+            operationType,
+            requestFrom,
+            requestIP,
+            responseStatus,
+            responseTime,
+            responseSize,
+            sessionId: sessionId === null || sessionId === void 0 ? void 0 : sessionId.toString(),
+            functionName,
+            functionParameters,
+            userAgent,
+            conceptsUsed,
+        };
+        Logger.log("WARNING", `Information logged for ${functionName}`, logData);
+    }
+    static logDebug(startTime, userId, operationType, requestFrom, requestIP, responseStatus, responseData, functionName, functionParameters, userAgent, conceptsUsed) {
+        const sessionId = getCookie("SessionId");
+        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+        const logData = {
+            userId,
+            operationType,
+            requestFrom,
+            requestIP,
+            responseStatus,
+            responseTime,
+            responseSize,
+            sessionId: sessionId === null || sessionId === void 0 ? void 0 : sessionId.toString(),
+            functionName,
+            functionParameters,
+            userAgent,
+            conceptsUsed,
+        };
+        Logger.log("DEBUG", `Information logged for ${functionName}`, logData);
     }
     /**
      * Helper method to save logs to localStorage.
@@ -8519,19 +8617,7 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
             * Add to Logger
             */
             console.log("CreateTheConnectionLocal...");
-            let sessionId = getCookie('SessionId');
-            let dataLog = {
-                userId: userId,
-                responseStatus: 200,
-                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(connection).length}`,
-                sessionId: sessionId,
-                functionName: "CreateTheConnectionLocal",
-                functionParameters: ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId']
-            };
-            Logger.log("INFO", "From function MakeTheInstanceConceptLocal", dataLog);
-            // Send logs to the server
-            // Logger.sendLogsToServer()
+            Logger.logInfo(startTime, userId, "create", "Unknown", "Unknown", 200, connection, "CreateTheConnectionLocal", ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'], "UnknownUserAgent", []);
             /**
              * End of Logger
              */
@@ -8799,27 +8885,9 @@ function MakeTheInstanceConceptLocal(type_1, referent_1) {
             }
             concept.type = typeConcept;
             LocalSyncData.AddConcept(concept);
-            /**
-             * Add to Logger
-             */
+            // Add Log
             console.log("MakeTheInstanceConceptLocal...");
-            let sessionId = getCookie('SessionId');
-            let dataLog = {
-                userId: userId,
-                responseStatus: 200,
-                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(concept).length}` || "",
-                sessionId: sessionId,
-                functionName: "MakeTheInstanceConceptLocal",
-                functionParameters: ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId']
-            };
-            console.log("Print logData : ", dataLog);
-            Logger.log("INFO", "From function MakeTheInstanceConceptLocal", dataLog);
-            // Send logs to the server
-            // Logger.sendLogsToServer()
-            /**
-             * End of Logger
-             */
+            Logger.logInfo(startTime, userId, "create", "Unknown", "Unknown", 200, concept, "MakeTheInstanceConceptLocal", ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId'], "UnknownUserAgent", []);
             return concept;
         }
         catch (error) {
@@ -8856,6 +8924,7 @@ var CreateTheCompositionLocal_awaiter = (undefined && undefined.__awaiter) || fu
  */
 function CreateTheCompositionLocal(json_1) {
     return CreateTheCompositionLocal_awaiter(this, arguments, void 0, function* (json, ofTheConceptId = null, ofTheConceptUserId = null, mainKey = null, userId = null, accessId = null, sessionInformationId = null, automaticSync = false) {
+        let startTime = performance.now();
         if (serviceWorker) {
             const res = yield sendMessage('CreateTheCompositionLocal', { json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId });
             console.log('data received from sw', res);
@@ -8896,6 +8965,8 @@ function CreateTheCompositionLocal(json_1) {
                 yield CreateTheConnectionLocal(ofThe, concept.id, localMainKey);
             }
         }
+        // Add Log
+        Logger.logInfo(startTime, userId || "unknown", "create", "unknown", undefined, 200, MainConcept, "CreateTheCompositionLocal", ['json', 'ofTheConceptId', 'ofTheConceptUserId', 'mainKey', 'userId', 'accessId', 'sessionInformationId', 'automaticSync'], "unknown", undefined);
         return MainConcept;
     });
 }
@@ -9174,6 +9245,7 @@ var GetTheConcept_awaiter = (undefined && undefined.__awaiter) || function (this
  */
 function GetTheConcept(id_1) {
     return GetTheConcept_awaiter(this, arguments, void 0, function* (id, userId = 999) {
+        let startTime = performance.now();
         try {
             if (serviceWorker) {
                 const res = yield sendMessage('GetTheConcept', { id, userId });
@@ -9201,10 +9273,14 @@ function GetTheConcept(id_1) {
                     }
                 }
             }
+            // Add Log
+            Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined);
             return concept;
         }
         catch (err) {
             console.error("this is the error in the getting concept", err);
+            // Add Log
+            Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", ['id', 'userId'], "unknown", undefined);
             throw err;
         }
     });
@@ -9387,10 +9463,13 @@ var GetLink_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _
 function GetLink(id_1, linker_1) {
     return GetLink_awaiter(this, arguments, void 0, function* (id, linker, inpage = 10, page = 1) {
         var _a;
+        let startTime = performance.now();
         if (serviceWorker) {
             console.log('data receiving');
             const res = yield sendMessage('GetLink', { id, linker, inpage, page });
             console.log('data received from sw', res);
+            // Add Log
+            Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, res, "GetLink", ['id', 'linker', 'inpage', 'page'], "unknown", undefined);
             return res.data;
         }
         let output = [];
@@ -9413,6 +9492,8 @@ function GetLink(id_1, linker_1) {
                 output.push(newComposition);
             }
         }
+        // Add Log
+        Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, output, "GetLink", ['id', 'linker', 'inpage', 'page'], "unknown", undefined);
         return output;
     });
 }
@@ -13849,6 +13930,7 @@ var UpdateCompositionLocal_awaiter = (undefined && undefined.__awaiter) || funct
 // function to update the cache composition
 function UpdateCompositionLocal(patcherStructure) {
     return UpdateCompositionLocal_awaiter(this, void 0, void 0, function* () {
+        let startTime = performance.now();
         if (serviceWorker) {
             const res = yield sendMessage("UpdateCompositionLocal", {
                 patcherStructure,
@@ -13940,6 +14022,8 @@ function UpdateCompositionLocal(patcherStructure) {
             yield DeleteConnectionById(toDeleteConnections[j].id);
         }
         yield LocalSyncData.SyncDataOnline();
+        // Add Log
+        Logger.logInfo(startTime, userId, "update", "unknown", undefined, 200, object, "UpdateCompositionLocal", ['patcherStructure'], "unknown", undefined);
     });
 }
 
@@ -14233,8 +14317,8 @@ var CreateConnectionBetweenTwoConceptsLocal_awaiter = (undefined && undefined.__
 function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1, linker_1) {
     return CreateConnectionBetweenTwoConceptsLocal_awaiter(this, arguments, void 0, function* (ofTheConcept, toTheConcept, linker, both = false) {
         var _a, _b;
+        let startTime = performance.now();
         try {
-            let startTime = performance.now();
             if (serviceWorker) {
                 const res = yield sendMessage('CreateConnectionBetweenTwoConceptsLocal', { ofTheConcept, toTheConcept, linker, both });
                 console.log('data received from sw', res);
@@ -14260,29 +14344,13 @@ function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1,
             // }
             var connectionConcept = yield MakeTheInstanceConceptLocal("connection", forwardLinker, false, 999, 999, 999);
             let newConnection = yield CreateTheConnectionLocal(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000);
-            /**
-             * Start Log Service
-             */
-            console.log("CreateConnectionBetweenTwoConceptsLocal...");
-            let sessionId = getCookie('SessionId');
-            let dataLog = {
-                userId: userId,
-                responseStatus: 200,
-                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(newConnection).length}`,
-                sessionId: sessionId,
-                functionName: "CreateConnectionBetweenTwoConceptsLocal",
-                functionParameters: ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'],
-            };
-            Logger.log("INFO", "From function CreateConnectionBetweenTwoConceptsLocal", dataLog);
-            // Send logs to the server
-            // Logger.sendLogsToServer()
-            /**
-             * End of Log
-             */
+            // Add Log
+            Logger.logInfo(startTime, userId, 'create', undefined, undefined, 200, newConnection, 'CreateConnectionBetweenTwoConceptsLocal', ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], undefined, undefined);
             return newConnection;
         }
         catch (ex) {
+            // Add Log
+            Logger.logError(startTime, ofTheConcept.userId, 'create', undefined, undefined, 500, ex, 'CreateConnectionBetweenTwoConceptsLocal', ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], undefined, undefined);
             throw ex;
         }
     });
@@ -14883,23 +14951,9 @@ class GetCompositionListObservable extends DependencyObserver {
 function GetCompositionListListener(compositionName, userId, inpage, page, format = JUSTDATA) {
     let startTime = performance.now();
     const compositionResult = new GetCompositionListObservable(compositionName, userId, inpage, page, format);
-    /**
-     * Integrate Logger
-     *
-     */
+    // Add Log
     console.log("GetCompositionListListener...");
-    let sessionId = getCookie('SessionId');
-    let dataLog = {
-        userId: userId,
-        responseStatus: 200,
-        responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-        responseSize: `${JSON.stringify(compositionResult).length}` || "",
-        sessionId: sessionId,
-        functionName: "GetCompositionListListener",
-        functionParameters: ['compositionName', 'userId', 'inpage', 'page', 'format']
-    };
-    console.log("Print logData : ", dataLog);
-    Logger.log("INFO", "From function GetCompositionListListener", dataLog);
+    Logger.logInfo(startTime, userId, "read", "Unknown", "Unknown", 200, compositionResult, "GetCompositionListListener", ['compositionName', 'userId', 'inpage', 'page', 'format'], "UnknownUserAgent", []);
     return compositionResult;
 }
 
@@ -15613,7 +15667,6 @@ var validator_awaiter = (undefined && undefined.__awaiter) || function (thisArg,
 };
 
 
-
 class Validator {
     /**
      * Checks if a concept with the given type and value is unique.
@@ -15713,26 +15766,10 @@ class Validator {
                     errors['unique'] = `Value is not unique`;
                 }
             }
-            /**
-             * Integrate Logger
-             *
-             */
+            // Add Log
             console.log("validateField...");
-            let sessionId = getCookie('SessionId');
-            let dataLog = {
-                userId: "",
-                responseStatus: 200,
-                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(errors).length}` || "",
-                sessionId: sessionId,
-                functionName: "validateField",
-                functionParameters: ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique']
-            };
-            console.log("Print logData : ", dataLog);
-            Logger.log("INFO", "From function validateField", dataLog);
-            /**
-             * End of Logger Integration
-             */
+            Logger.logInfo(startTime, "", undefined, "Unknown", "Unknown", 200, errors, "validateField", ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'], // Function parameters
+            "UnknownUserAgent", []);
             return errors;
         });
     }
@@ -15758,28 +15795,42 @@ class Validator {
                 if (Object.keys(fieldErrors).length > 0)
                     validationErrors[fieldName] = fieldErrors;
             }
-            /**
-             * Integrate Logger
-             *
-             */
+            // Add Log
             console.log("validateForm...");
-            let sessionId = getCookie('SessionId');
-            let dataLog = {
-                userId: "",
-                responseStatus: 200,
-                responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-                responseSize: `${JSON.stringify(validationErrors).length}` || "",
-                sessionId: sessionId,
-                functionName: "validateForm",
-                functionParameters: ['formData']
-            };
-            console.log("Print logData : ", dataLog);
-            Logger.log("INFO", "From function validateForm", dataLog);
-            /**
-             * End of Logger Integration
-             */
+            Logger.logInfo(startTime, "", undefined, "Unknown", "Unknown", 200, validationErrors, "validateForm", ['formData'], "UnknownUserAgent", []);
             return validationErrors;
         });
+    }
+    /**
+     *
+     * @param fieldName
+     * @param fieldType
+     * @param dataType
+     * @param value
+     * @param pattern
+     * @param conceptType
+     * @param maxLength
+     * @param minLength
+     * @param minValue
+     * @param maxValue
+     * @param accept
+     * @param file
+     * @param required
+     * @param isUnique
+     * @returns Object with status and details
+     */
+    validate(fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique = false) {
+        let error = {};
+        this.validateField(fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique).then((err) => {
+            if (Object.keys(err).length > 0) {
+                error['status'] = false;
+                error['details'] = err;
+            }
+            else {
+                error['status'] = true;
+            }
+        });
+        return error;
     }
 }
 

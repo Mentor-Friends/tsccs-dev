@@ -1,4 +1,4 @@
-import { sendMessage, serviceWorker } from "../../app";
+import { Logger, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept";
 import {CreateTheConnectionLocal} from "./CreateTheConnectionLocal";
@@ -18,6 +18,7 @@ import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
  */
 export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null, automaticSync: boolean  = false)
 {
+    let startTime = performance.now()
     if (serviceWorker) {
         const res: any = await sendMessage('CreateTheCompositionLocal', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId })
         console.log('data received from sw', res)
@@ -63,6 +64,13 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
         }
 
       }
+      // Add Log
+      Logger.logInfo(startTime, userId || "unknown", "create", "unknown", undefined, 200, MainConcept, "CreateTheCompositionLocal", 
+        ['json', 'ofTheConceptId', 'ofTheConceptUserId', 'mainKey', 'userId', 'accessId', 'sessionInformationId', 'automaticSync' ], 
+        "unknown", 
+        undefined 
+    )
+   
       return MainConcept;
 }
 
