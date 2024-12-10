@@ -1,5 +1,5 @@
 import { GetConnectionOfTheConcept } from "../Api/GetConnectionOfTheConcept";
-import { sendMessage, serviceWorker } from "../app";
+import { Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { Connection } from "../DataStructures/Connection";
 import { SyncData } from "../DataStructures/SyncData";
@@ -16,6 +16,7 @@ export async function CreateConnectionBetweenTwoConcepts(
   both: boolean = false,
   count: boolean = false
 ) {
+  let startTime = performance.now()
    if (serviceWorker) {
       const res: any = await sendMessage('CreateConnectionBetweenTwoConcepts', { ofTheConcept, toTheConcept, linker, both, count })
       console.log('data received from sw', res)
@@ -74,6 +75,12 @@ export async function CreateConnectionBetweenTwoConcepts(
     accessId
   );
   SyncData.AddConnection(newConnection);
+  // Add Log
+  Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 500, newConnection, "CreateConnectionBetweenTwoConcepts", 
+    [ofTheConcept, toTheConcept, linker, both, count], 
+    "unknown", undefined 
+  )
+
   return newConnection;
 }
 
