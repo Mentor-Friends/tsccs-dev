@@ -127,6 +127,7 @@ export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {WidgetTree} from './Widgets/WidgetTree';
+export { DeleteUser } from './Services/DeleteConcept';
 
 
 

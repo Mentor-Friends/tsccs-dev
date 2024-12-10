@@ -27,7 +27,9 @@ export class Validator {
         // Check if the concept exists for the provided value and type_concept_id
         let concept = await GetConceptByCharacterAndType(value, type_concept_id);
         if (!concept || !concept.id) {
-            return true;
+            if(concept.id > 0){
+                return true;
+            }
         }
         return false;
     }

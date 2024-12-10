@@ -108,6 +108,11 @@ export class BaseUrl{
         return this.BASE_URL + '/api/delete_concept';
     }
 
+    static DeleteUserUrl(){
+        return this.BASE_URL + '/api/deleteuser';
+    }
+
+
     static RecursiveSearchUrl(){
         return this.BASE_URL + '/api/recursivesearch-concept-connection';
     }
