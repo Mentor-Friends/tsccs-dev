@@ -122,11 +122,12 @@ export { Validator } from './Validator/validator';
 export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
-export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
+export {DeleteConnectionByType, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {WidgetTree} from './Widgets/WidgetTree';
+
 
 
 type listeners = {

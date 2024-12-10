@@ -1,7 +1,7 @@
 import { Actions } from ".";
 import { GetCompositionConnectionsBetweenTwoConcepts } from "../../Api/GetCompositionConnectionsBetweenTwoConcepts";
 import { GetConcept } from "../../Api/GetConcept";
-import { ConceptsData, ConnectionData, GetCompositionList, GetCompositionListAllWithId, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionListWithId, GetCompositionLocal, GetCompositionLocalWithId, GetConceptBulk, GetConceptByCharacter, GetConceptByCharacterAndCategoryLocal, GetConceptByCharacterAndType, GetLink, GetRelation, GetRelationRaw, GetTheConcept } from "../../app";
+import { ConceptsData, ConnectionData, GetAllTheConnectionsByTypeAndOfTheConcept, GetCompositionList, GetCompositionListAllWithId, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionListWithId, GetCompositionLocal, GetCompositionLocalWithId, GetConceptBulk, GetConceptByCharacter, GetConceptByCharacterAndCategoryLocal, GetConceptByCharacterAndType, GetLink, GetRelation, GetRelationRaw, GetTheConcept } from "../../app";
 import { broadcastChannel } from "../../Constants/general.const";
 import { FindConnectionsOfCompositionsBulkInMemory } from "../../Services/FindConnectionsOfCompositionBulkInMemory";
 import {
@@ -135,6 +135,12 @@ export const getActions: Actions = {
   },
   FindConnectionsOfCompositionsBulkInMemory: async (payload) => {
     const data = await FindConnectionsOfCompositionsBulkInMemory(payload.composition_ids)
+    return { success: true, data };
+  },
+
+  GetAllTheConnectionsByTypeAndOfTheConcept: async (payload) => {
+    const data = await GetAllTheConnectionsByTypeAndOfTheConcept(payload.id,
+      payload.linker)
     return { success: true, data };
   },
 
