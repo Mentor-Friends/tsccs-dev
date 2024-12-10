@@ -9174,6 +9174,7 @@ var GetConnections_awaiter = (undefined && undefined.__awaiter) || function (thi
 
 function GetConnectionById(id) {
     return GetConnections_awaiter(this, void 0, void 0, function* () {
+        let startTime = performance.now();
         if (serviceWorker) {
             const res = yield sendMessage('GetConnectionById', { id });
             console.log('data received from sw', res);
@@ -9184,6 +9185,8 @@ function GetConnectionById(id) {
             let connectionString = yield GetConnection(id);
             connection = connectionString;
         }
+        // Add Log
+        Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, connection, "GetConnectionById", [id], "unknown", undefined);
         return connection;
     });
 }
@@ -9308,6 +9311,7 @@ var CreateConnectionBetweenTwoConcepts_awaiter = (undefined && undefined.__await
 function CreateConnectionBetweenTwoConcepts(ofTheConcept_1, toTheConcept_1, linker_1) {
     return CreateConnectionBetweenTwoConcepts_awaiter(this, arguments, void 0, function* (ofTheConcept, toTheConcept, linker, both = false, count = false) {
         var _a, _b;
+        let startTime = performance.now();
         if (serviceWorker) {
             const res = yield sendMessage('CreateConnectionBetweenTwoConcepts', { ofTheConcept, toTheConcept, linker, both, count });
             console.log('data received from sw', res);
@@ -9335,6 +9339,8 @@ function CreateConnectionBetweenTwoConcepts(ofTheConcept_1, toTheConcept_1, link
         let connectionConcept = yield MakeTheInstanceConcept("connection", forwardLinker, false, 999, 999, 999);
         let newConnection = new Connection_Connection(0, ofTheConcept.id, toTheConcept.id, userId, connectionConcept.id, 1000, accessId);
         SyncData.AddConnection(newConnection);
+        // Add Log
+        Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 500, newConnection, "CreateConnectionBetweenTwoConcepts", [ofTheConcept, toTheConcept, linker, both, count], "unknown", undefined);
         return newConnection;
     });
 }
@@ -13877,6 +13883,7 @@ var GetTheConceptLocal_awaiter = (undefined && undefined.__awaiter) || function 
  */
 function GetTheConceptLocal(id) {
     return GetTheConceptLocal_awaiter(this, void 0, void 0, function* () {
+        let startTime = performance.now();
         try {
             if (serviceWorker) {
                 const res = yield sendMessage('GetTheConceptLocal', { id });
@@ -13900,6 +13907,8 @@ function GetTheConceptLocal(id) {
                 let concept = yield GetTheConcept(id);
                 lconcept = convertFromConceptToLConcept(concept);
             }
+            // Add Log
+            Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, lconcept, "GetTheConceptLocal", [id], "unknown", undefined);
             return lconcept;
         }
         catch (error) {
@@ -16116,6 +16125,12 @@ var DeleteConnectionByType_awaiter = (undefined && undefined.__awaiter) || funct
 };
 
 
+/**
+ *
+ * @param id
+ * @param linker
+ * @returns
+ */
 function DeleteConnectionByType(id, linker) {
     return DeleteConnectionByType_awaiter(this, void 0, void 0, function* () {
         if (serviceWorker) {
