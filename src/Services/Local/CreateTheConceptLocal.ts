@@ -1,4 +1,4 @@
-import { sendMessage, serviceWorker } from "../../app";
+import { InnerActions, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
@@ -26,18 +26,20 @@ import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
  */
 export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, 
 typeId:number, 
-accessId:number, isComposition: boolean = false, referentId:number = 0){
+accessId:number, isComposition: boolean = false, referentId:number = 0, actions: InnerActions = {concepts: [], connections: []}){
     let startTime = performance.now()
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
+            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data
           }
 
         //let id = -Math.floor(Math.random() * 100000000);
         let id = await LocalId.getConceptId();
-        console.log("this is the getting id type connection", id);
+        // console.log("this is the getting id type connection", id);
 
         let isNew: boolean = true;
         let created_on:Date = new Date();
@@ -51,31 +53,12 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
         concept.isTemp = true;
         concept.isComposition = isComposition;
         LocalConceptsData.AddConcept(concept);
+        actions.concepts.push(concept)
         //storeToDatabase("localconcept",concept);
-        /**
-         * Add to Logger
-         */
-        console.log("CreateTheConceptLocal...");
-            
-        let sessionId:string = getCookie('SessionId');
-        let logData:LogData= {
-            responseStatus: 200,
-            responseTime: `${(performance.now() - startTime).toFixed(3)}ms`,
-            responseSize: `${JSON.stringify(concept).length}`,
-            sessionId: sessionId,
-            functionName: "CreateTheConceptLocal",
-            functionParameters : ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId']
-        }
-        Logger.log(
-            "INFO",
-            "From function CreateTheConceptLocal",
-            logData
-        )
-        // Send logs to the server
-        // Logger.sendLogsToServer()
-        /**
-         * End of Logger
-         */
+
+        // Add Log
+        Logger.logInfo(startTime, userId, "create", "unknown", "unknown", 200, concept, "createTheConceptLocal", ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId'], undefined)
+
         return concept;
     }
     catch(error){

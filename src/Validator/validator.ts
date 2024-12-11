@@ -27,10 +27,10 @@ export class Validator {
 
         // Check if the concept exists for the provided value and type_concept_id
         let concept = await GetConceptByCharacterAndType(value, type_concept_id);
-        if (!concept || !concept.id) {
-            return true;
+        if(concept.id > 0){
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -76,6 +76,7 @@ export class Validator {
         // 2. Validate using regex pattern for the data type
         if (dataType && value) {
             let pattern = DATA_TYPES_RULES[dataType];
+            
             if (pattern && value !== '' && !pattern.test(value)) {
                 errors['dataType'] = `Invalid value for ${dataType}`;
             }

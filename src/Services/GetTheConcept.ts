@@ -15,7 +15,7 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('GetTheConcept', {id, userId})
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
             return res.data
           }
 

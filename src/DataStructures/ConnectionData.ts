@@ -41,7 +41,6 @@ export class ConnectionData {
     //     this.connectionArray.push(connection);
     // if(!connection.isTemp){
     //UpdateToDatabase("connection", connection);
-    console.log('testing add connection', connection)
     ConnectionBinaryTree.addConnectionToTree(connection);
     ConnectionTypeTree.addConnectionToTree(connection);
     ConnectionOfTheTree.addConnection(connection);
@@ -86,7 +85,7 @@ export class ConnectionData {
         "ConnectionData__GetConnectionByOfTheConceptAndType",
         { ofTheConceptId, typeId }
       );
-      console.log("data received from sw", res);
+      // console.log("data received from sw", res);
       return res.data;
     }
     
@@ -134,7 +133,7 @@ export class ConnectionData {
   static async GetConnection(id: number) {
     if (serviceWorker) {
       const res: any = await sendMessage('ConnectionData__GetConnection', {id})
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
 
@@ -176,7 +175,7 @@ export class ConnectionData {
         "ConnectionData__GetConnectionsOfCompositionLocal",
         { id }
       );
-      console.log("data received from sw", res);
+      // console.log("data received from sw", res);
       return res.data;
     }
     let connections: Connection[] = [];
@@ -203,24 +202,28 @@ export class ConnectionData {
     //return connections;
   }
 
-  static async GetConnectionsOfConcept(id: number) {
-    let connectionIds: number[] = [];
-    let connections: Connection[] = [];
-    connectionIds = await ConnectionData.GetConnectionByOfTheConceptAndType(
-      id,
-      id
-    );
-    for (let i = 0; i < connectionIds.length; i++) {
-      let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
-      if (conn) {
-        connections.push(conn.value);
+
+    static async GetConnectionsOfConcept(id: number){
+      if (serviceWorker) {
+        const res: any = await sendMessage("ConnectionData__GetConnectionsOfConcept", { id });
+        // console.log("data received from sw", res);
+        return res.data;
       }
+        let connectionIds: number [] = [];
+        let connections: Connection[] = [];
+        connectionIds = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+
+        for(let i=0; i< connectionIds.length; i++){
+            let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+            if(conn){
+                connections.push(conn.value);
+            }   
+        }
+
+        return connections;
+    } 
+
+    getName(){
+        return this.name;
     }
-
-    return connections;
-  }
-
-  getName() {
-    return this.name;
-  }
 }

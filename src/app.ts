@@ -114,18 +114,34 @@ import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
 export { Logger } from "./Middleware/logger.service";
-export { Validator } from "./Validator/validator";
-export { createFormFieldData } from "./Validator/utils";
+import { WidgetTree } from "./Widgets/WidgetTree";
+export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
+export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
+export { InnerActions } from "./Constants/general.const";
+export { Anomaly } from './Anomaly/anomaly';
+export { Validator } from './Validator/validator';
+export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
-export {DeleteConnectionByType} from './Services/DeleteConnectionByType';
-export { Anomaly } from './Anomaly/anomaly';
+export {DeleteConnectionByType, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
+export {WidgetTree} from './Widgets/WidgetTree';
+export { DeleteUser } from './Services/DeleteConcept';
 
+
+
+type listeners = {
+  listenerId: string | number
+  callback: any,
+  createdAt: number
+}
 export var serviceWorker: any;
-console.log("Start from logging...");
+const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
+export let subscribedListeners: listeners[] = [];
+let serviceWorkerReady = false;
+let messageQueue: any[] = []
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
@@ -145,7 +161,7 @@ function updateAccessToken(accessToken: string = "") {
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
- * @param enableSW {activate: boolean, scope: 'string'} | undefined - This is for enabling service worker with its scope
+ * @param enableSW {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined - This is for enabling service worker with its scope
  */
 async function init(
   url: string = "",
@@ -154,19 +170,68 @@ async function init(
   nodeUrl: string = "",
   enableAi: boolean = true,
   applicationName: string = "",
-  enableSW: {activate: boolean, scope: string} | undefined = undefined,
+  enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
   isTest: boolean = false,
 ) {
   try {
-    // await initConceptConnection(url, aiurl, accessToken, nodeUrl, enableAi, applicationName, isTest)
+    BaseUrl.BASE_URL = url;
+    BaseUrl.AI_URL = aiurl;
+    BaseUrl.NODE_URL = nodeUrl;
+    BaseUrl.BASE_APPLICATION = applicationName;
+    TokenStorage.BearerAccessToken = accessToken;
+    let randomizer = Math.floor(Math.random() * 100000000);
+    // BaseUrl.BASE_RANDOMIZER = randomizer;
+    // BaseUrl.BASE_RANDOMIZER = 999;
+    
+    BaseUrl.setRandomizer(randomizer)
+    if (isTest) {
+      IdentifierFlags.isDataLoaded = true;
+      IdentifierFlags.isCharacterLoaded = true;
+      IdentifierFlags.isTypeLoaded = true;
+      IdentifierFlags.isLocalDataLoaded = true;
+      IdentifierFlags.isLocalTypeLoaded = true;
+      IdentifierFlags.isLocalCharacterLoaded = true;
+      IdentifierFlags.isConnectionLoaded = true;
+      IdentifierFlags.isConnectionTypeLoaded = true;
+      IdentifierFlags.isLocalConnectionLoaded = true;
+      return true;
+    }
+
+    if (!("serviceWorker" in navigator)) {
+      await initConceptConnection();
+      console.warn("Service Worker not supported in this browser.");
+      return
+    }
 
     listenBroadCastMessages()
+    if (enableSW && enableSW.activate && enableSW.manual) {
+      await new Promise((resolve, reject) => {
+        navigator.serviceWorker.ready
+        .then(async (registration) => {
+          console.log('registraions ready', registration)
+          serviceWorker = registration.active
+          await sendMessage("init", {
+            url,
+            aiurl,
+            accessToken,
+            nodeUrl,
+            enableAi,
+            applicationName,
+            isTest,
+          });
+          resolve('done')
+        })
+        .catch(err => {
+          console.error("Error: Ready service worker", err)
+          reject(err);
+        })
+        .finally(() => console.log('Finally service worker ready done'))
 
-    if (
-      "serviceWorker" in navigator &&
+        setTimeout(() => reject('Timeout ready'), 30000)
+      })
+    } else if (
       enableSW &&
-      enableSW?.activate &&
-      enableSW?.scope
+      enableSW?.activate
     ) {
       try {
         console.log("service worker initialiing");
@@ -190,23 +255,18 @@ async function init(
         //           console.log("Status: No active worker", registration);
         //         }
         //       });
-
-        //       // // for now asuming its other
-        //       // await initConceptConnection(
-        //       //   url,
-        //       //   aiurl,
-        //       //   accessToken,
-        //       //   nodeUrl,
-        //       //   enableAi,
-        //       //   applicationName,
-        //       //   isTest
-        //       // );
         //     } else {
+              // let serviceWorkerPath = enableSW.path ? enableSW.path : './serviceWorker.bundle.js'
+              // if (enableSW.path && enableSW.path.slice(-1) == '/') serviceWorkerPath = enableSW.path + 'serviceWorker.bundle.js'
+              // else if (enableSW.path && enableSW.path.length > 2 && !enableSW.path.includes('serviceWorker.bundle.js')) serviceWorkerPath = enableSW.path + './serviceWorker.bundle.js'
+
               await new Promise<void>((resolve, reject) => {
+                let success = false;
+
                 navigator.serviceWorker
-                  .register("./serviceWorker.bundle.js", {
+                  .register(enableSW.pathToSW ?? "./serviceWorker.bundle.js", {
                     // type: "module",
-                    scope: enableSW.scope ? enableSW.scope : "/",
+                    scope: enableSW.scope ?? "/",
                   })
                   .then(async (registration) => {
                     console.log(
@@ -228,55 +288,94 @@ async function init(
                       });
                       resolve();
                     } else {
-                      let success = false;
-                      // Listen for updates to the service worker
-                      console.log("updaet listen start");
-                      registration.onupdatefound = () => {
-                        const newWorker = registration.installing;
-                        console.log("new worker", newWorker);
-                        if (newWorker) {
-                          newWorker.onstatechange = async () => {
-                            console.log("on state change triggered");
-                            // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                            if (newWorker.state === "activated") {
-                              // && navigator.serviceWorker.controller) {
-                              console.log(
-                                "New Service Worker is active",
-                                registration
-                              );
-                              serviceWorker = registration.active;
-                              // Send init message now that it's active
-                              await sendMessage("init", {
-                                url,
-                                aiurl,
-                                accessToken,
-                                nodeUrl,
-                                enableAi,
-                                applicationName,
-                                isTest,
-                              });
-                              success = true;
-                              resolve();
-                            }
-                          };
-                        }
-                      };
                       // Handle if on state change didn't trigger
                       setTimeout(() => {
                         if (!success) reject("Not Completed Initialization");
-                      }, 3000);
+                      }, 5000);
+                    }
+
+                    // state change 
+                    if (registration.installing || registration.waiting || registration.active) {
+                      registration.addEventListener('statechange', async (event: any) => {
+                        if (event?.target?.state === 'activating') {
+                          serviceWorker = navigator.serviceWorker.controller
+                          console.log('Service Worker is activating statechange');
+                          await sendMessage("init", {
+                            url,
+                            aiurl,
+                            accessToken,
+                            nodeUrl,
+                            enableAi,
+                            applicationName,
+                            isTest,
+                          });
+                        }
+                      });
+                    }
+
+                    // Listen for updates to the service worker
+                    console.log("update listen start");
+                    registration.onupdatefound = () => {
+                      const newWorker = registration.installing;
+                      console.log("new worker", newWorker);
+                      if (newWorker) {
+                        newWorker.onstatechange = async () => {
+                          console.log("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
+                          // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                          if ((newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
+                            // && navigator.serviceWorker.controller) {
+                            console.log(
+                              "New Service Worker is active",
+                              registration
+                            );
+                            serviceWorker = newWorker;
+                            // serviceWorker = registration.active;
+                            // Send init message now that it's active
+                            await sendMessage("init", {
+                              url,
+                              aiurl,
+                              accessToken,
+                              nodeUrl,
+                              enableAi,
+                              applicationName,
+                              isTest,
+                            });
+                            success = true;
+                            serviceWorkerReady = true;
+                            processMessageQueue();
+                            resolve();
+                          }
+                        };
+                      }
+                    };
+
+                    // Listen for the activation of the new service worker
+                    registration.addEventListener('controllerchange', async () => {
+                      if (navigator.serviceWorker.controller) {
+                        serviceWorker = navigator.serviceWorker.controller
+                        console.log('Service worker has been activated');
+                        await sendMessage("init", {
+                          url,
+                          aiurl,
+                          accessToken,
+                          nodeUrl,
+                          enableAi,
+                          applicationName,
+                          isTest,
+                        });
+                        // The new service worker is now controlling the page
+                        // You can reload the page if necessary or handle the update process here
+                      }
+                    });
+                      // If the service worker is already active, mark it as ready
+                    if (registration.active) {
+                      serviceWorkerReady = true;
+                      console.log('Service Worker is already active');
+                      processMessageQueue();
                     }
                   })
                   .catch(async (error) => {
-                    await initConceptConnection(
-                      url,
-                      aiurl,
-                      accessToken,
-                      nodeUrl,
-                      enableAi,
-                      applicationName,
-                      isTest
-                    );
+                    await initConceptConnection();
                     reject(error);
                     console.error("Service Worker registration failed:", error);
                   });
@@ -287,58 +386,88 @@ async function init(
           //   console.log("Unable to register", err);
           // });
       } catch (error) {
-        await initConceptConnection(
-          url,
-          aiurl,
-          accessToken,
-          nodeUrl,
-          enableAi,
-          applicationName,
-          isTest
-        );
+        await initConceptConnection();
         console.error("Unable to start service worker", error);
       }
     } else {
-      await initConceptConnection(
-        url,
-        aiurl,
-        accessToken,
-        nodeUrl,
-        enableAi,
-        applicationName,
-        isTest
-      );
-      console.log("Service Worker not supported in this browser.");
+      await initConceptConnection();
+      console.warn('Service Worker not activated')
     }
     return true;
   } catch (error) {
-    console.log("cannot initialize the system", error);
+    await initConceptConnection();
+    console.warn("Cannot initialize the system", error);
   }
 }
 
-export function sendMessage(type: string, payload: any) {
-   // TODO:: add payload validator based on type of the message
-  return new Promise((resolve) => {
-    const responseHandler = (event: any) => {
-      resolve(event.data);
-      navigator.serviceWorker.removeEventListener("message", responseHandler);
-    };
+/**
+ * Method to send message to the service worker from main thread
+ * @param type string
+ * @param payload any
+ * @returns Promise<any>
+ */
+export async function sendMessage(type: string, payload: any) {
+  const messageId = Math.random().toString(36).substring(2); // Generate a unique message ID
+  payload.messageId = messageId
+  payload.TABID = TABID
+  // let actions = payload.actions
 
-    navigator.serviceWorker.addEventListener("message", responseHandler);
-    serviceWorker?.postMessage({ type, payload });
+  const newPayload = JSON.parse(JSON.stringify(payload))
+
+  return new Promise((resolve, reject) => {
+    // navigator.serviceWorker.ready
+    //   .then((registration) => {
+    if (navigator.serviceWorker.controller) {
+      const responseHandler = (event: any) => {
+        if (event?.data?.messageId == messageId) { // Check if the message ID matches
+          if (event.data?.actions) {
+            payload.actions = JSON.parse(JSON.stringify(event.data.actions))
+          }
+          resolve(event.data);
+          navigator.serviceWorker.removeEventListener("message", responseHandler);
+        }
+      };
+  
+      navigator.serviceWorker.addEventListener("message", responseHandler);
+      // console.log("before sending message", type, 'new', newPayload);
+      // serviceWorker?.postMessage({ type, payload });
+  
+      // Send the message to the service worker
+      if (navigator.serviceWorker.controller) {
+        try {
+          navigator.serviceWorker.controller.postMessage({ type, payload: newPayload })
+        } catch(err) {
+          console.log(err)
+          serviceWorker.postMessage({ type, payload: newPayload });
+        }
+        // navigator.serviceWorker.controller.postMessage({ type, payload });
+      } else {
+        // wait one second before checking again
+        setTimeout(() => {
+          // if (navigator.serviceWorker.controller) {
+          if (serviceWorker) {
+            serviceWorker.postMessage({ type, payload });
+            // navigator.serviceWorker.controller.postMessage({ type, payload });
+          } else {
+            console.log('not ready', type)
+            reject("Service worker not ready");
+          }
+        }, 90000) // 90 seconds
+      }
+  
+      // Timeout for waiting for the response (e.g., 5 seconds)
+      setTimeout(() => {
+        reject("No response from service worker after timeout");
+        navigator.serviceWorker.removeEventListener("message", responseHandler);
+      }, 90000); // 90 sec
+    } else {
+      messageQueue.push({message: {type, payload: newPayload}})
+      console.log('Message Queued', type, payload)
+    }
+      // })
+      // .catch(err => reject(err))
+      // .finally(() => console.log('finally'))
   });
-}
-
-export function dispatchIdEvent(id: number|string, data:any = {}) {
-  console.log('id event dispatched', id)
-  if (serviceWorker) {
-    // let event = new Event(`${id}`);
-    let event = new CustomEvent(`${id}`, data)
-    console.log("event fired from", event);
-    dispatchEvent(event);
-  } else {
-    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
-  }
 }
 
 // export function sendMessage(type: string, payload: any) {
@@ -353,13 +482,6 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
 //    });
 //  }
 
-type listeners = {
-  listenerId: string | number
-  callback: any,
-  createdAt: number
-}
-export let subscribedListeners: listeners[] = []
-
 // actions for message received on broadcast channel (specially from service worker)
 const broadcastActions: any = {
   GetLinkListener: async (payload: any) => {
@@ -370,7 +492,6 @@ const broadcastActions: any = {
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
       let event = new Event(payload.id || '');
-      console.log("broadcast dispatched evenet found", event);
       dispatchEvent(event);
     }
     // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
@@ -379,43 +500,42 @@ const broadcastActions: any = {
     //   });
     // });
     return { success: true }
+  },
+  checkInit: async (payload: any) => {
+    console.log('service worker init 0')
+    if (navigator.serviceWorker.controller) {
+      console.log('service worker init 1')
+      serviceWorker = navigator.serviceWorker.controller
+    }
+    await sendMessage("init", {
+      url: BaseUrl.BASE_URL,
+      aiurl: BaseUrl.AI_URL,
+      accessToken: TokenStorage.BearerAccessToken,
+      nodeUrl: BaseUrl.NODE_URL,
+      enableAi: false,
+      applicationName: BaseUrl.BASE_APPLICATION
+    });
+    return { success: true }
   }
 }
 
+/**
+ * Method to trigger broadcast message listener
+ */
 function listenBroadCastMessages() {
-  
   // broadcast event can be listened through both the service worker and other tabs
   broadcastChannel.addEventListener('message', async (event) => {
     const { type, payload }: any = event.data;
-    console.log('Received in Main Thread:', type, event, event.data);
       if (!type) return;
       let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
     
       if (broadcastActions[type]) {
         responseData = await broadcastActions[type](payload);
       } else {
-        console.log('else bc type')
-        console.log(`Unable to handle "${type}" case in service worker`)
+        console.log(`Unable to handle "${type}" case in BC service worker`)
       }
     
   });
-}
-
-// Utility function to handle service worker or fallback logic
-async function handleServiceWorkerRequest<T>(
-  serviceWorkerMethod: string, 
-  params: any, 
-  fallbackFunction: Function
-): Promise<T> {
-  if (serviceWorker) {
-    console.log('Data receiving');
-    const res: any = await sendMessage(serviceWorkerMethod, params);
-    console.log('Data received from SW', res);
-    return res.data;
-  } else {
-    console.log('Used old BT');
-    return await fallbackFunction(...params);
-  }
 }
 
 /**
@@ -429,39 +549,8 @@ async function handleServiceWorkerRequest<T>(
  * @param isTest boolean
  * @returns Promise<any>
  */
-async function initConceptConnection(
-  url: string = "",
-  aiurl: string = "",
-  accessToken: string = "",
-  nodeUrl: string = "",
-  enableAi: boolean = true,
-  applicationName: string = "",
-  isTest: boolean = false
-) {
-  BaseUrl.BASE_URL = url;
-  BaseUrl.AI_URL = aiurl;
-  BaseUrl.NODE_URL = nodeUrl;
-  BaseUrl.BASE_APPLICATION = applicationName;
-  TokenStorage.BearerAccessToken = accessToken;
-  let randomizer = Math.floor(Math.random() * 100000000);
-  // BaseUrl.BASE_RANDOMIZER = randomizer;
-  // BaseUrl.BASE_RANDOMIZER = 999;
+async function initConceptConnection() {
   
-  BaseUrl.setRandomizer(999)
-  if (isTest) {
-    IdentifierFlags.isDataLoaded = true;
-    IdentifierFlags.isCharacterLoaded = true;
-    IdentifierFlags.isTypeLoaded = true;
-    IdentifierFlags.isLocalDataLoaded = true;
-    IdentifierFlags.isLocalTypeLoaded = true;
-    IdentifierFlags.isLocalCharacterLoaded = true;
-    IdentifierFlags.isConnectionLoaded = true;
-    IdentifierFlags.isConnectionTypeLoaded = true;
-    IdentifierFlags.isLocalConnectionLoaded = true;
-    return true;
-  }
-  console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
-
   /**
    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
    * We use some sort of AI algorithm to initilize these concepts with the most used concept.
@@ -549,4 +638,28 @@ async function initConceptConnection(
       //console.log("This is the error in creating connections tree");
       throw event;
     });
+}
+
+/**
+ * Method to dispatch Event received from SW
+ * @param id number|string
+ * @param data any
+ */
+export function dispatchIdEvent(id: number|string, data:any = {}) {
+  // console.log('id event dispatched', id)
+  if (serviceWorker) {
+    // let event = new Event(`${id}`);
+    let event = new CustomEvent(`${id}`, data)
+    console.log("event fired from", event);
+    dispatchEvent(event);
+  } else {
+    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
+  }
+}
+
+async function processMessageQueue() {
+  while (messageQueue.length > 0) {
+    const { message, resolve, reject } = messageQueue.shift();
+    await sendMessage(message.type, message.payload)
+  }
 }

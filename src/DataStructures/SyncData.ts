@@ -75,10 +75,10 @@ export class SyncData{
         }
      }
 
-     static async  SyncDataOnline(){
+     static async SyncDataOnline(){
         console.log('sw triggered')
         if (serviceWorker) {
-            const res: any = await sendMessage('SyncData_SyncDataOnline', {})
+            const res: any = await sendMessage('SyncData__SyncDataOnline', {})
             return res.data
         }
         for(let i=0;i<this.conceptsSyncArray.length;i++){

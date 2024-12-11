@@ -1,4 +1,4 @@
-import { Logger, sendMessage, serviceWorker } from "../../app";
+import { InnerActions, Logger, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept";
 import {CreateTheConnectionLocal} from "./CreateTheConnectionLocal";
@@ -16,12 +16,14 @@ import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
  * @param automaticSync for future use.
  * @returns the main concept of this composition.
  */
-export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null, automaticSync: boolean  = false)
+export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null, automaticSync: boolean  = false, actions: InnerActions = {concepts: [], connections: []})
 {
     let startTime = performance.now()
     if (serviceWorker) {
-        const res: any = await sendMessage('CreateTheCompositionLocal', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId })
-        console.log('data received from sw', res)
+        const res: any = await sendMessage('CreateTheCompositionLocal', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, actions })
+        // console.log('data received from sw', res)
+        if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+        if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
         return res.data
       }
       
@@ -35,31 +37,31 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
             if(ofTheConceptId == null && ofTheConceptUserId == null){
 
                 let localMainKey = MainKeyLocal;
-                let conceptString = await MakeTheInstanceConceptLocal(key, "", true, localUserId, localAccessId, localSessionId);
+                let conceptString = await MakeTheInstanceConceptLocal(key, "", true, localUserId, localAccessId, localSessionId, undefined, actions);
                 let concept = conceptString as Concept;
                 MainConcept = concept;
                 localMainKey = concept.id;
                 MainKeyLocal = concept.id;
-                await CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
+                await CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId, undefined, actions );
     
             }
             else{
                 let ofThe:number = ofTheConceptId ?? 999;
                 let ofTheUser:number = ofTheConceptUserId ?? 999;
                 let localMainKey = MainKeyLocal;
-                let conceptString = await MakeTheInstanceConceptLocal(key, "", true, localUserId, localAccessId, localSessionId  );
+                let conceptString = await MakeTheInstanceConceptLocal(key, "", true, localUserId, localAccessId, localSessionId, undefined, actions );
                 let concept = conceptString as Concept;
-                await CreateTheConnectionLocal(ofThe, concept.id, localMainKey);
-                await CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId );
+                await CreateTheConnectionLocal(ofThe, concept.id, localMainKey, undefined, undefined, undefined, actions);
+                await CreateTheCompositionLocal(json[key], concept.id, concept.userId, localMainKey, userId, accessId, sessionInformationId, undefined, actions );
             }
         }
         else{
             let ofThe:number = ofTheConceptId ?? 999;
             let ofTheUser:number = ofTheConceptUserId ?? 999;
             let localMainKey = MainKeyLocal;
-            let conceptString = await MakeTheInstanceConceptLocal(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
+            let conceptString = await MakeTheInstanceConceptLocal(key, json[key].toString(), false, localUserId, localAccessId, localSessionId, undefined, actions);
             let concept = conceptString as Concept;
-            await CreateTheConnectionLocal(ofThe, concept.id, localMainKey);
+            await CreateTheConnectionLocal(ofThe, concept.id, localMainKey, undefined, undefined, undefined, actions);
 
         }
 

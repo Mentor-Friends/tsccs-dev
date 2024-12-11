@@ -15,6 +15,7 @@ import { MakeTheInstanceConceptLocal } from "./MakeTheInstanceConceptLocal";
 import {
   CreateDefaultLConcept,
   CreateTheConnectionLocal,
+  InnerActions,
   LConnection,
   LocalSyncData,
   Logger,
@@ -28,14 +29,18 @@ import {
 
 // function to update the cache composition
 export async function UpdateCompositionLocal(
-  patcherStructure: PatcherStructure
+  patcherStructure: PatcherStructure, 
+  actions: InnerActions = {concepts: [], connections: []}
 ) {
   let startTime = performance.now()
   if (serviceWorker) {
     const res: any = await sendMessage("UpdateCompositionLocal", {
       patcherStructure,
+      actions
     });
-    console.log("data received from sw", res);
+    // console.log("data received from sw", res);
+    if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+    if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
     return res.data;
   }
 
@@ -111,7 +116,9 @@ export async function UpdateCompositionLocal(
         true,
         composition.userId,
         4,
-        999
+        999,
+        undefined,
+        actions
       );
       await CreateTheCompositionLocal(
         object[key],
@@ -120,7 +127,9 @@ export async function UpdateCompositionLocal(
         composition.id,
         composition.userId,
         4,
-        999
+        999,
+        undefined,
+        actions
       );
     } else {
       // make the new concept in the object
@@ -130,7 +139,9 @@ export async function UpdateCompositionLocal(
         false,
         userId,
         accessId,
-        sessionId
+        sessionId,
+        undefined,
+        actions
       );
     }
 
@@ -158,7 +169,10 @@ export async function UpdateCompositionLocal(
       localConcept.id,
       insertingConcept.id,
       composition.id,
-      2
+      2,
+      undefined,
+      undefined,
+      actions
     );
     const connection = connectionString as LConnection;
     conceptList.push(insertingConcept);
@@ -170,8 +184,8 @@ export async function UpdateCompositionLocal(
     await DeleteConnectionById(toDeleteConnections[j].id);
   }
 
-  await LocalSyncData.SyncDataOnline();
   // Add Log
   Logger.logInfo(startTime, userId, "update", "unknown", undefined, 200, object, "UpdateCompositionLocal", ['patcherStructure'], "unknown", undefined )
     
+  await LocalSyncData.SyncDataOnline(undefined, actions);
 }

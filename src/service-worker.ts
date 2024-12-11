@@ -1,4 +1,5 @@
-import { BaseUrl, updateAccessToken } from "./app";
+import { BaseUrl, InnerActions, LocalSyncData, updateAccessToken } from "./app";
+import { broadcastChannel } from "./Constants/general.const";
 import { IdentifierFlags } from "./DataStructures/IdentifierFlags";
 import { TokenStorage } from "./DataStructures/Security/TokenStorage";
 import CreateConceptBinaryTreeFromIndexDb from "./Services/CreateBinaryTreeFromData";
@@ -10,18 +11,48 @@ import InitializeSystem from "./Services/InitializeSystem";
 import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConnectionToMemory } from "./Services/Local/CreateLocalBinaryTreeFromData";
 import { Actions, createActions, getActions, searchActions, syncActions, updateActions, connectionActions, deleteActions } from "./ServiceWorker/actions";
 
+let tabActionsMap: Map<string, InnerActions> = new Map()
+let TSCCS_init = false
+
 // Install Service Worker
 self.addEventListener("install", (event: any) => {
   console.log("Service Worker installing... sw");
   // event.waitUntil();
-  (self as any).skipWaiting()
+  event.waitUntil((self as any).skipWaiting())
 });
 
 // Activate Service Worker
-self.addEventListener("activate", async (event) => {
+self.addEventListener("activate", async (event: any) => {
   console.log("Service Worker activating... sw");
-  // await init();
+
+  // Using event.waitUntil to wait for the Promise to resolve
+  event.waitUntil(
+    new Promise((resolve, reject) => {
+      try {
+        // Claim control of the clients (this makes the service worker active immediately)
+        (self as any).clients.claim();
+        console.log('claimed')
+        
+        if (!TSCCS_init) {
+          // Send a message using broadcastChannel to notify about init status
+          broadcastChannel.postMessage({
+            type: "checkInit",
+            payload: {},
+          });
+  
+          console.log("Message posted to broadcastChannel");
+        }
+
+        // Resolve the Promise to indicate activation is complete
+        resolve(undefined);
+      } catch (error) {
+        console.error("Error during service worker activation:", error);
+        reject(error);
+      }
+    })
+  );
 });
+
 
 // For Caching gives the event when fetch request is triggered
 // self.addEventListener('fetch', (event: any) => {
@@ -31,6 +62,11 @@ self.addEventListener("activate", async (event) => {
 // Actions that can be performed in this service worker
 const actions: Actions = {
   init: async (payload: any) => {
+    if (TSCCS_init) {
+      console.warn('Already Initialized')
+      return {success: false, name: 'init'}
+    }
+    TSCCS_init = true
     await init(
         payload?.url,
         payload?.aiurl,
@@ -40,11 +76,11 @@ const actions: Actions = {
         payload?.applicationName,
         payload?.isTest
       );
-    return {success: true, data: undefined}
+    return {success: true, data: undefined, name: 'init'}
   },
   updateAccessToken: async (payload) => {
-    updateAccessToken(payload.accessToken)
-    return {success: true}
+    await updateAccessToken(payload.accessToken)
+    return {success: true, name: 'updateAccessToken'}
   },
   // imported actions
   ...getActions,
@@ -58,19 +94,64 @@ const actions: Actions = {
 
 // Listen message received by service worker
 self.addEventListener("message", async (event: any) => {
-  console.log("message received sw", event);
+  // console.log("message received sw", event);
   const { type, payload }: any = event.data;
-  if (!type) return;
-  console.log('has type', type)
-  let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
+  const tabId = payload.TABID
+  let addedActions = false
+  
+  if (!type || !payload.TABID) return;
+  
+  if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})
 
-  if (actions[type]) {
-    console.log('if type')
-    responseData = await actions[type](payload);
+  let responseData: {success: boolean, data?: any, messageId?: string, actions?: InnerActions} = {success: false, data: undefined}
+  let tabData = tabActionsMap.get(tabId)
+  if (!Array.isArray(payload?.actions?.concepts) || !Array.isArray(payload?.actions?.connections)) {
+    payload.actions = {concepts: [], connections: []}
+    addedActions = true
+  }
+  
+  if (type == 'LocalSyncData__SyncDataOnline' && !payload.transactionId && tabData) {
+    // add all the transaction to sync for the curernt tab // little chance of error when syncing is before marking of query transaction on single tab 
+    // console.log('tab Data in local', tabData)
+    const data = await LocalSyncData.SyncDataOnline(undefined, JSON.parse(JSON.stringify(tabData)));
+
+    tabActionsMap.delete(tabId)
+    tabData = undefined
+    console.log('Syncing the tab here', type)
+
+    responseData = { success: true, data, actions: {concepts: [], connections: []} }
+  } else if (actions[type]) {
+    try {
+      responseData = await actions[type](payload);
+    } catch (err) {
+      console.log('Error: type -> ', type, err)
+    }
   } else {
-    console.log('else type')
     console.log(`Unable to handle "${type}" case in service worker`)
   }
+  responseData.messageId = payload.messageId
+  
+  // update the concepts for current actions
+  if (responseData.actions && tabData) {
+    let data = {
+      concepts: [...tabData.concepts, ...responseData.actions.concepts],
+      connections: [
+        ...tabData.connections,
+        ...responseData.actions.connections,
+      ],
+    }
+    // save unique concepts and connections
+    let data2 = {
+      concepts: Array.from(
+      new Map(data.concepts.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
+      connections: Array.from(
+      new Map(data.connections.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
+  }
+    tabActionsMap.set(tabId, JSON.parse(JSON.stringify(data2)));
+    
+  }
+
+  if (addedActions) delete responseData.actions
   
   event.source.postMessage(responseData)
 
@@ -117,7 +198,7 @@ async function init(
     IdentifierFlags.isLocalConnectionLoaded = true;
     return true;
   }
-  console.log("This ist he base url", BaseUrl.BASE_URL, randomizer);
+  console.log("This is the base url", BaseUrl.BASE_URL, randomizer);
 
   /**
    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used

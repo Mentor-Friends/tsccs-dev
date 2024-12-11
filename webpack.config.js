@@ -7,9 +7,6 @@ module.exports = env => ({
    },
    mode: 'development',  // Set to 'production' for production
    devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
-   entry: './src/app.ts',
-   mode: 'production',  // convert to production for production
-   devtool: 'source-map', // remove for production
    watch: true,
    output: {
       filename: '[name].bundle.js',

@@ -103,16 +103,27 @@ export { FilterSearch } from './DataStructures/FilterSearch';
 export { SearchStructure } from './DataStructures/Search/SearchStructure';
 export { LocalConceptsData } from './DataStructures/Local/LocalConceptData';
 export { Logger } from "./Middleware/logger.service";
-export { Validator } from "./Validator/validator";
-export { createFormFieldData } from "./Validator/utils";
+export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
+export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
+export { InnerActions } from "./Constants/general.const";
+export { Anomaly } from './Anomaly/anomaly';
+export { Validator } from './Validator/validator';
+export { createFormFieldData } from './Validator/utils';
 export { BaseUrl } from './DataStructures/BaseUrl';
 export { StatefulWidget } from './Widgets/StatefulWidget';
-export { DeleteConnectionByType } from './Services/DeleteConnectionByType';
-export { Anomaly } from './Anomaly/anomaly';
+export { DeleteConnectionByType, GetAllTheConnectionsByTypeAndOfTheConcept } from './Services/DeleteConnectionByType';
 export { FreeschemaQuery } from './DataStructures/Search/FreeschemaQuery';
 export { FreeschemaQueryApi } from './Api/Search/FreeschemaQueryApi';
 export { SchemaQueryListener } from './WrapperFunctions/SchemaQueryObservable';
+export { WidgetTree } from './Widgets/WidgetTree';
+export { DeleteUser } from './Services/DeleteConcept';
+type listeners = {
+    listenerId: string | number;
+    callback: any;
+    createdAt: number;
+};
 export declare var serviceWorker: any;
+export declare let subscribedListeners: listeners[];
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.
@@ -128,17 +139,24 @@ declare function updateAccessToken(accessToken?: string): void;
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
  * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
  * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
- * @param enableSW {activate: boolean, scope: 'string'} | undefined - This is for enabling service worker with its scope
+ * @param enableSW {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined - This is for enabling service worker with its scope
  */
 declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUrl?: string, enableAi?: boolean, applicationName?: string, enableSW?: {
     activate: boolean;
-    scope: string;
+    scope?: string;
+    pathToSW?: string;
+    manual?: boolean;
 } | undefined, isTest?: boolean): Promise<true | undefined>;
+/**
+ * Method to send message to the service worker from main thread
+ * @param type string
+ * @param payload any
+ * @returns Promise<any>
+ */
 export declare function sendMessage(type: string, payload: any): Promise<unknown>;
+/**
+ * Method to dispatch Event received from SW
+ * @param id number|string
+ * @param data any
+ */
 export declare function dispatchIdEvent(id: number | string, data?: any): void;
-type listeners = {
-    listenerId: string | number;
-    callback: any;
-    createdAt: number;
-};
-export declare let subscribedListeners: listeners[];

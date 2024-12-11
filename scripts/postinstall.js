@@ -18,8 +18,6 @@ try {
 
   console.log("Running as a project dependency...");
 
-  // Now, proceed with the normal postinstall behavior (only for consuming project)
-
   // Try to resolve the path to `mftsccs-browser` package in the consuming project
   let sourceDir;
   try {
@@ -55,8 +53,17 @@ try {
     process.exit(1);
   }
 
+  // Path to the destination file
+  const destFile = path.join(destDir, "serviceWorker.bundle.js");
+
+  // If the destination file exists, delete it
+  if (fs.existsSync(destFile)) {
+    fs.unlinkSync(destFile);
+    console.log(`Existing file ${destFile} removed.`);
+  }
+
   // Copy the specific bundled file to the public directory
-  ncp(sourceFile, path.join(destDir, "serviceWorker.bundle.js"), (err) => {
+  ncp(sourceFile, destFile, (err) => {
     if (err) {
       console.error("Error copying serviceWorker.bundle.js:", err);
       process.exit(1);

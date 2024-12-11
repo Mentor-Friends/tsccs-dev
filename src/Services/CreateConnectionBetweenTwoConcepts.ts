@@ -19,7 +19,7 @@ export async function CreateConnectionBetweenTwoConcepts(
   let startTime = performance.now()
    if (serviceWorker) {
       const res: any = await sendMessage('CreateConnectionBetweenTwoConcepts', { ofTheConcept, toTheConcept, linker, both, count })
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
     

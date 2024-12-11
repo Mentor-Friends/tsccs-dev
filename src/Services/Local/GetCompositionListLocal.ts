@@ -12,7 +12,7 @@ import GetConceptByCharacterLocal from "./GetConceptByCharacterLocal";
 export  async function GetCompositionListLocal(compositionName: string,userId:number){
    if (serviceWorker) {
       const res: any = await sendMessage('GetCompositionListLocal', { compositionName, userId })
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
 
@@ -43,7 +43,7 @@ export  async function GetCompositionListLocal(compositionName: string,userId:nu
 export  async function GetCompositionListLocalWithId(compositionName: string, userId: number){
    if (serviceWorker) {
       const res: any = await sendMessage('GetCompositionListLocalWithId', { compositionName, userId })
-      console.log('data received from sw', res)
+      // console.log('data received from sw', res)
       return res.data
     }
 

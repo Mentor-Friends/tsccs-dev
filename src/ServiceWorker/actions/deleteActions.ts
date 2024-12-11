@@ -1,5 +1,5 @@
 import { Actions } from ".";
-import { DeleteConceptById, DeleteConceptLocal, DeleteConnectionById, DeleteConnectionByType } from "../../app";
+import { DeleteConceptById, DeleteConceptLocal, DeleteConnectionById, DeleteConnectionByType, DeleteUser } from "../../app";
 
 export const deleteActions: Actions = {
     DeleteConceptById: async (payload: any) => {
@@ -12,6 +12,11 @@ export const deleteActions: Actions = {
         const data = await DeleteConnectionById(
             payload.id
         )
+        return { success: true, data }
+    },
+
+    DeleteUser: async(payload: any)=>{
+        const data = await DeleteUser(payload.id)
         return { success: true, data }
     },
     DeleteConnectionByType: async (payload: any) => {

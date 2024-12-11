@@ -18,4 +18,5 @@ export class FreeschemaQuery{
     outputFormat: number = NORMAL;
     name: string = "";
     reverse: boolean = false;
+    includeInFilter: boolean = false;
 }

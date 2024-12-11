@@ -1,3 +1,4 @@
+import { InnerActions } from "../../app";
 /**
  * This function converts a json data to concept connection and also preserves its relation.
  * @param json The json data that needs to be converted to the concept connection system
@@ -10,4 +11,4 @@
  * @param automaticSync for future use.
  * @returns the main concept of this composition.
  */
-export declare function CreateTheCompositionLocal(json: any, ofTheConceptId?: number | null, ofTheConceptUserId?: number | null, mainKey?: number | null, userId?: number | null, accessId?: number | null, sessionInformationId?: number | null, automaticSync?: boolean): Promise<any>;
+export declare function CreateTheCompositionLocal(json: any, ofTheConceptId?: number | null, ofTheConceptUserId?: number | null, mainKey?: number | null, userId?: number | null, accessId?: number | null, sessionInformationId?: number | null, automaticSync?: boolean, actions?: InnerActions): Promise<any>;

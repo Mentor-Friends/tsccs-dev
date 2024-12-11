@@ -1,5 +1,5 @@
 import { GetCompositionConnectionsBetweenTwoConcepts } from "../Api/GetCompositionConnectionsBetweenTwoConcepts";
-import { Concept, Connection, CreateDefaultConcept, MakeTheTypeConceptApi } from "../app";
+import { Concept, Connection, CreateDefaultConcept, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
 /**
@@ -12,6 +12,11 @@ import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
  * @returns list of connections
  */
 export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concept, toTheConcept: Concept, linker: string, fullLinker: string, forward: boolean = true){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetConnectionBetweenTwoConceptsLinker', {ofTheConcept, toTheConcept, linker, fullLinker, forward})
+        // console.log('data received from sw', res)
+        return res.data
+      }
     let typeConcept: Concept = CreateDefaultConcept();
     if(linker != ""){
         let typeLinker = "";
@@ -34,6 +39,9 @@ export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concep
     if(fullLinker != ""){
          typeConcept = await MakeTheTypeConceptApi(fullLinker, 999);
     }
-    let connections: Connection[] = await GetCompositionConnectionsBetweenTwoConcepts(ofTheConcept.id, toTheConcept.id, typeConcept.id);
+    let connections: Connection[] = []
+    if (!forward) 
+        connections = await GetCompositionConnectionsBetweenTwoConcepts(toTheConcept.id, ofTheConcept.id, typeConcept.id);
+    else connections = await GetCompositionConnectionsBetweenTwoConcepts(ofTheConcept.id, toTheConcept.id, typeConcept.id);
     return connections;
 }

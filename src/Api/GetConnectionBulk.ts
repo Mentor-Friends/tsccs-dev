@@ -16,7 +16,7 @@ import { sendMessage, serviceWorker } from "../app";
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
     if (serviceWorker) {
         const res: any = await sendMessage('GetConnectionBulk', {connectionIds})
-        console.log('data received from sw', res)
+        // console.log('data received from sw', res)
         return res.data
     }
     

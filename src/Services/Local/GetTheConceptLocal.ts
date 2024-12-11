@@ -16,7 +16,7 @@ export async function GetTheConceptLocal(id: number){
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('GetTheConceptLocal', {id})
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
             return res.data
           }
 

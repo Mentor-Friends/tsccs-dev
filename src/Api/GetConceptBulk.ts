@@ -5,6 +5,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
+import { sendMessage, serviceWorker } from "../app";
 
 /**
  * This function takes in a list of ids and returns a list of concepts . This uses local memory to find concepts
@@ -14,6 +15,11 @@ import { Logger } from "../app";
  * @returns list of concepts
  */
 export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[]>{
+  if (serviceWorker) {
+    const res: any = await sendMessage('GetConceptBulk', {passedConcepts})
+    // console.log('data received from sw', res)
+    return res.data
+  }
     let result:Concept[] = [];
     let setTime = new Date().getTime();
     let startTime = performance.now()
@@ -59,7 +65,6 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
             });
             if(response.ok){
                 result = await response.json();
-                console.log("got all the concepts", result);
 
                 if(result.length > 0){
                     for(let i=0 ; i<result.length; i++){

@@ -35,11 +35,9 @@ export class ConnectionOfTheTree{
     static addConnection(connection: Connection){
         if(connection.id > 0){
             let key = this.CreateCompositionKey(connection.ofTheConceptId, connection.typeId);
-            console.log('key this.node', key, this.node)
 
             if(this.node){
                 let existingNode:ConnectionOfNode|null = this.node.getFromNode(key, this.node);
-                console.log(existingNode, 'existing node')
                 if(existingNode){
                     let connectionList: number[] = existingNode?.value;
                     if(connectionList.length == 0){

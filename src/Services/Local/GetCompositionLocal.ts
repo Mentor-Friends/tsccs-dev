@@ -14,7 +14,7 @@ export async function GetCompositionLocal(id:number){
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('GetCompositionLocal', { id })
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
             return res.data
           }
 
@@ -52,7 +52,7 @@ export async function GetCompositionLocalWithId(id:number){
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('GetCompositionLocalWithId', { id })
-            console.log('data received from sw', res)
+            // console.log('data received from sw', res)
             return res.data
           }
 

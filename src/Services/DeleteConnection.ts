@@ -9,7 +9,7 @@ import {GetConnectionById} from "./GetConnections";
 export  async function DeleteConnectionById(id:number){
     if (serviceWorker) {
         const res: any = await sendMessage('DeleteConnectionById', { id })
-        console.log('data received from sw', res)
+        // console.log('data received from sw', res)
         return res.data
       }
       

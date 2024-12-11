@@ -14,7 +14,7 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
-    private static BASE_RANDOMIZER = 999;
+    public static BASE_RANDOMIZER = 999;
 
     static setRandomizer(id: number) {
         console.log('set randomizer', id)
@@ -107,6 +107,11 @@ export class BaseUrl{
     static DeleteConceptUrl(){
         return this.BASE_URL + '/api/delete_concept';
     }
+
+    static DeleteUserUrl(){
+        return this.BASE_URL + '/api/deleteuser';
+    }
+
 
     static RecursiveSearchUrl(){
         return this.BASE_URL + '/api/recursivesearch-concept-connection';

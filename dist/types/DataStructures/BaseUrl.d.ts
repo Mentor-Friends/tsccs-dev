@@ -5,7 +5,7 @@ export declare class BaseUrl {
     static NODE_URL: string;
     static MQTT_CONNECTION: any;
     static BASE_APPLICATION: string;
-    private static BASE_RANDOMIZER;
+    static BASE_RANDOMIZER: number;
     static setRandomizer(id: number): void;
     static getRandomizer(): number;
     static GetConceptUrl(): string;
@@ -28,6 +28,7 @@ export declare class BaseUrl {
     static GetAllLinkerConnectionOfConceptUrl(): string;
     static GetAllLinkerConnectionToConceptUrl(): string;
     static DeleteConceptUrl(): string;
+    static DeleteUserUrl(): string;
     static RecursiveSearchUrl(): string;
     static SearchLinkMultipleAllApiUrl(): string;
     static MakeTheNameInBackendUrl(): string;
