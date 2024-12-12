@@ -131,6 +131,7 @@ self.addEventListener("message", async (event: any) => {
   }
   responseData.messageId = payload.messageId
   
+  tabData = tabActionsMap.get(tabId)
   // update the concepts for current actions
   if (responseData.actions && tabData) {
     let data = {
@@ -142,10 +143,10 @@ self.addEventListener("message", async (event: any) => {
     }
     // save unique concepts and connections
     let data2 = {
-      concepts: Array.from(
-      new Map(data.concepts.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
-      connections: Array.from(
-      new Map(data.connections.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
+      concepts: await Promise.all(Array.from(
+      new Map(data.concepts.map(item => [`${item.id}-${item.ghostId}`, item])).values())),
+      connections: await Promise.all(Array.from(
+      new Map(data.connections.map(item => [`${item.id}-${item.ghostId}`, item])).values())),
   }
     tabActionsMap.set(tabId, JSON.parse(JSON.stringify(data2)));
     
