@@ -52,8 +52,7 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
 export async function PopulateTheLocalConceptsToMemory(){
     try{
         // put a lock on the indexdb for the domain so that no two things do this same process.
-        await navigator.locks.request("dblock", async (lock) => {
-
+        await navigator.locks?.request("dblock", async (lock) => {
             // get the last local concept id(-ve) from the indexdb
             let idList = await getObjectsFromLocalIndexDb("localid");
             // if the list is valid then.
@@ -120,8 +119,7 @@ export async function PopulateTheLocalConceptsToMemory(){
  export async function PopulateTheLocalConnectionToMemory(){
     try{
                 // put a lock on the indexdb for the domain so that no two things do this same process.
-        await navigator.locks.request("dblock", async (lock) => {
-
+        await navigator.locks?.request("dblock", async (lock) => {
             let idList = await getObjectsFromLocalIndexDb("localid");
             if(Array.isArray(idList)){
                 
