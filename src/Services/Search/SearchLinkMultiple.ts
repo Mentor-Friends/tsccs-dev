@@ -8,7 +8,7 @@ import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
   if (serviceWorker) {
     const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
-    console.log('data received search from sw', res)
+    // console.log('data received search from sw', res)
     return res.data
   }
 

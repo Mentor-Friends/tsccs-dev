@@ -14566,9 +14566,10 @@ function CreateLocalBinaryTreeFromIndexDb() {
  */
 function PopulateTheLocalConceptsToMemory() {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             // put a lock on the indexdb for the domain so that no two things do this same process.
-            yield navigator.locks.request("dblock", (lock) => __awaiter(this, void 0, void 0, function* () {
+            yield ((_a = navigator.locks) === null || _a === void 0 ? void 0 : _a.request("dblock", (lock) => __awaiter(this, void 0, void 0, function* () {
                 // get the last local concept id(-ve) from the indexdb
                 let idList = yield (0,_Database_indexdblocal__WEBPACK_IMPORTED_MODULE_3__.getObjectsFromLocalIndexDb)("localid");
                 // if the list is valid then.
@@ -14598,7 +14599,7 @@ function PopulateTheLocalConceptsToMemory() {
                         _app__WEBPACK_IMPORTED_MODULE_4__.BaseUrl.setRandomizer(idList[2].value);
                     }
                 }
-            }));
+            })));
         }
         catch (error) {
             let errorObject = {
@@ -14625,9 +14626,10 @@ function PopulateTheLocalConceptsToMemory() {
 */
 function PopulateTheLocalConnectionToMemory() {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         try {
             // put a lock on the indexdb for the domain so that no two things do this same process.
-            yield navigator.locks.request("dblock", (lock) => __awaiter(this, void 0, void 0, function* () {
+            yield ((_a = navigator.locks) === null || _a === void 0 ? void 0 : _a.request("dblock", (lock) => __awaiter(this, void 0, void 0, function* () {
                 let idList = yield (0,_Database_indexdblocal__WEBPACK_IMPORTED_MODULE_3__.getObjectsFromLocalIndexDb)("localid");
                 if (Array.isArray(idList)) {
                     if (idList[1]) {
@@ -14650,7 +14652,7 @@ function PopulateTheLocalConnectionToMemory() {
                         _app__WEBPACK_IMPORTED_MODULE_4__.BaseUrl.setRandomizer(idList[2].value);
                     }
                 }
-            }));
+            })));
         }
         catch (error) {
             let errorObject = {
@@ -17079,7 +17081,7 @@ function SearchLinkMultipleAll(searchQuery_1) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('SearchLinkMultipleAll', { searchQuery, token, caller, format });
-            console.log('data received search from sw', res);
+            // console.log('data received search from sw', res)
             return res.data;
         }
         let conceptIds = [];
@@ -18327,8 +18329,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Validator: () => (/* binding */ Validator)
 /* harmony export */ });
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
-/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constant */ "./src/Validator/constant.ts");
+/* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Middleware/logger.service */ "./src/Middleware/logger.service.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant */ "./src/Validator/constant.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -18338,6 +18341,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 class Validator {
@@ -18357,10 +18361,11 @@ class Validator {
             const sessionUserId = 999;
             const userId = 999;
             // Create the type concept based on session data
-            let type_concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheTypeConcept)(type, sessionId, sessionUserId, userId);
+            let type_concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptApi)(type, userId);
             let type_concept_id = type_concept.id;
             // Check if the concept exists for the provided value and type_concept_id
-            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterAndType)(value, type_concept_id);
+            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConceptByCharacterAndType)(value, type_concept_id);
+            console.log("This is the concept for validator", concept);
             if (concept.id > 0) {
                 return false;
             }
@@ -18394,7 +18399,7 @@ class Validator {
             }
             // 2. Validate using regex pattern for the data type
             if (dataType && value) {
-                let pattern = _constant__WEBPACK_IMPORTED_MODULE_1__.DATA_TYPES_RULES[dataType];
+                let pattern = _constant__WEBPACK_IMPORTED_MODULE_2__.DATA_TYPES_RULES[dataType];
                 if (pattern && value !== '' && !pattern.test(value)) {
                     errors['dataType'] = `Invalid value for ${dataType}`;
                 }
@@ -18441,7 +18446,7 @@ class Validator {
             }
             // Add Log
             console.log("validateField...");
-            _app__WEBPACK_IMPORTED_MODULE_0__.Logger.logInfo(startTime, "", undefined, "Unknown", "Unknown", 200, errors, "validateField", ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'], // Function parameters
+            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logInfo(startTime, "", undefined, "Unknown", "Unknown", 200, errors, "validateField", ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'], // Function parameters
             "UnknownUserAgent", []);
             return errors;
         });
@@ -18470,7 +18475,7 @@ class Validator {
             }
             // Add Log
             console.log("validateForm...");
-            _app__WEBPACK_IMPORTED_MODULE_0__.Logger.logInfo(startTime, "", undefined, "Unknown", "Unknown", 200, validationErrors, "validateForm", ['formData'], "UnknownUserAgent", []);
+            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logInfo(startTime, "", undefined, "Unknown", "Unknown", 200, validationErrors, "validateForm", ['formData'], "UnknownUserAgent", []);
             return validationErrors;
         });
     }
@@ -18657,7 +18662,7 @@ function TypeEditor(event, that) {
             //console.log("inputValue", inputValue);
             //that.setProperty(inputValue);
             newThat.componentDidMount();
-            newThat.mountChildWidgets();
+            newThat.loadChildWidgets();
             (_c = (_b = newThat.element) === null || _b === void 0 ? void 0 : _b.parentElement) === null || _c === void 0 ? void 0 : _c.setAttribute("data-type-value", newThat.widgetType);
         };
         inputVal === null || inputVal === void 0 ? void 0 : inputVal.appendChild(inputEl);
@@ -18822,7 +18827,7 @@ class BuilderStatefulWidget extends _StatefulWidget__WEBPACK_IMPORTED_MODULE_0__
                         });
                         //console.log("result =>", result);
                         this.typeValueList = result;
-                        resolve(this.typeValueList);
+                        resolve(result);
                         return result;
                     }
                 });
@@ -19203,6 +19208,7 @@ class WidgetTree {
         this.timestamp = "";
         this.widgetId = 0;
         this.typeValue = "";
+        this.cleanHtml = "";
         this.addEvent = "";
         this.onmount = "";
         this.onupdate = "";

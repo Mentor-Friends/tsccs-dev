@@ -12,6 +12,7 @@ export class WidgetTree{
     timestamp:string ="";
     widgetId: number = 0;
     typeValue: string = "";
+    cleanHtml: string = "";
     addEvent: string = "";
     onmount: string = "";
     onupdate: string = "";

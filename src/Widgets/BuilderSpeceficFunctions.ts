@@ -45,7 +45,7 @@ export function TypeEditor( event:any, that:BuilderStatefulWidget){
           //console.log("inputValue", inputValue);
           //that.setProperty(inputValue);
           newThat.componentDidMount();
-          newThat.mountChildWidgets();
+          newThat.loadChildWidgets();
           newThat.element?.parentElement?.setAttribute("data-type-value", newThat.widgetType);
         };
 

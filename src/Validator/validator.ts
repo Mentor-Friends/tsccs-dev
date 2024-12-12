@@ -1,5 +1,5 @@
-import { GetConceptByCharacterAndType, Logger, MakeTheTypeConcept } from "../app";
-import { getCookie, LogData } from "../Middleware/logger.service";
+import { getCookie, LogData, Logger } from "../Middleware/logger.service";
+import { GetConceptByCharacterAndType, MakeTheTypeConcept, MakeTheTypeConceptApi } from "../app";
 import { DATA_TYPES_RULES } from "./constant";
 import { FormErrors, FormFieldData } from "./interface";
 
@@ -22,11 +22,12 @@ export class Validator {
         const userId: number = 999;
 
         // Create the type concept based on session data
-        let type_concept: any = await MakeTheTypeConcept(type, sessionId, sessionUserId, userId);
+        let type_concept: any = await MakeTheTypeConceptApi(type, userId);
         let type_concept_id: number = type_concept.id;
 
         // Check if the concept exists for the provided value and type_concept_id
         let concept = await GetConceptByCharacterAndType(value, type_concept_id);
+        console.log("This is the concept for validator", concept);
         if(concept.id > 0){
             return false;
         }

@@ -148,7 +148,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
             });
             //console.log("result =>", result);
             this.typeValueList = result;
-            resolve(this.typeValueList);
+            resolve(result);
             return result;
           }
         });
