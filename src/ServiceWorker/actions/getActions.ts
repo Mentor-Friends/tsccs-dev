@@ -140,7 +140,7 @@ export const getActions: Actions = {
 
   GetAllTheConnectionsByTypeAndOfTheConcept: async (payload) => {
     const data = await GetAllTheConnectionsByTypeAndOfTheConcept(payload.id,
-      payload.linker)
+      payload.linker, payload.reverse)
     return { success: true, data };
   },
 
