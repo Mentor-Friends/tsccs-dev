@@ -31,7 +31,8 @@ export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend'
 export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
 export {RecursiveSearchApi,RecursiveSearchApiWithInternalConnections, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker,RecursiveSearchApiNewRawFullLinker} from './Api/RecursiveSearch';
-export {GetCompositionBulkWithDataId,GetCompositionFromConnectionsWithDataIdFromConnections,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
+export {GetCompositionBulkWithDataId,GetCompositionFromConnectionsWithDataIdFromConnections,GetCompositionFromConnectionsWithIndexFromConnections,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
+
 export { GetConceptBulk } from './Api/GetConceptBulk';
 export { GetConnectionBulk } from './Api/GetConnectionBulk';
 export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
@@ -70,7 +71,7 @@ export {CreateConnectionBetweenTwoConceptsLocal} from './Services/Local/CreateCo
 export {DeleteConceptLocal} from './Services/Local/DeleteConceptLocal';
 export {GetConnectionBetweenTwoConceptsLinker} from './Services/GetConnectionBetweenTwoConceptsLinker';
 export {DelayFunctionExecution} from './Services/Common/DelayFunction';
-export {GetCompositionWithIdAndDateFromMemory} from './Services/GetComposition';
+export {GetCompositionWithIdAndDateFromMemory,GetCompositionFromMemoryWithConnections} from './Services/GetComposition';
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';

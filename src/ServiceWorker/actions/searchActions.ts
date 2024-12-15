@@ -1,5 +1,5 @@
 import { Actions } from ".";
-import { RecursiveSearchApi, RecursiveSearchApiNewRawFullLinker, RecursiveSearchApiRaw, RecursiveSearchApiRawFullLinker, SearchLinkMultipleAll } from "../../app";
+import { RecursiveSearchApi, RecursiveSearchApiNewRawFullLinker, RecursiveSearchApiRaw, RecursiveSearchApiRawFullLinker, RecursiveSearchApiWithInternalConnections, SearchLinkMultipleAll } from "../../app";
 
 export const searchActions: Actions = {
     SearchLinkMultipleAll: async (payload: any) => {
@@ -15,6 +15,15 @@ export const searchActions: Actions = {
     // Recursive Search
     RecursiveSearchApi: async (payload: any) => {
         const data = await RecursiveSearchApi(
+            payload.composition,
+            payload.listLinkers,
+            payload.textSearch
+        )
+        return { success: true, data }
+    },
+
+    RecursiveSearchApiWithInternalConnections: async (payload: any) => {
+        const data = await RecursiveSearchApiWithInternalConnections(
             payload.composition,
             payload.listLinkers,
             payload.textSearch

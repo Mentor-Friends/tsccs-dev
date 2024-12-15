@@ -74,7 +74,7 @@ export async function RecursiveSearchApiWithInternalConnections(
   textSearch: string = ""
 ) {
   if (serviceWorker) {
-    const res: any = await sendMessage("RecursiveSearchApi", {
+    const res: any = await sendMessage("RecursiveSearchApiWithInternalConnections", {
       composition,
       listLinkers,
       textSearch,
