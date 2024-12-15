@@ -4,7 +4,7 @@ import { Connection } from "../DataStructures/Connection";
 import { ConnectionData, GetConceptBulk, sendMessage, serviceWorker } from "../app";
 import { CheckForConnectionDeletionWithIds } from "./CheckForConnectionDeletion";
 import { FindConnectionsOfCompositionsBulkInMemory } from "./FindConnectionsOfCompositionBulkInMemory";
-import { GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryNew } from "./GetComposition";
+import { GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryFromConnection, GetCompositionWithIdFromMemoryNew } from "./GetComposition";
 
 /**
  * ## Format JUSTDATA ##
@@ -60,6 +60,32 @@ export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[
     let compositions: any[] = [];
     for(let i=0; i< conceptIds.length;i++){
         let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
+        compositions.push(comp);
+    }
+    return compositions;
+}
+
+/**
+ * ## FORMAT DATAIDDATE ##
+ * This is just a different version of GetCompositionFromConnectionsWithDataId, This has the added functionality that 
+ * it also prints out internal connections.
+ * This function converts the conceptIds and internal connectionIds to compositions in data-Id format.
+ * @param conceptIds This is the list of concept ids that need to be converted to compositions. 
+ * @param connectionIds These are the internal connectionIds that need to be passed to create the compositions.
+ * @returns list of compositions created from the passed conceptIds and connectionIds.
+ */
+export async function GetCompositionFromConnectionsWithDataIdFromConnections(conceptIds:number[]=[], connectionIds:number[] = []){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdFromConnections', {conceptIds, connectionIds})
+        // console.log('data received from sw', res)
+        return res.data
+      }
+      
+    let newConnections = await GetConnectionBulk(connectionIds);
+    //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
+    let compositions: any[] = [];
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionWithIdFromMemoryFromConnection(conceptIds[i], newConnections);
         compositions.push(comp);
     }
     return compositions;
