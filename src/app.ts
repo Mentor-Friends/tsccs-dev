@@ -115,6 +115,7 @@ import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
 import { WidgetTree } from "./Widgets/WidgetTree";
+import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPosting";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -273,7 +274,10 @@ async function init(
                       "Service Worker registered:",
                       registration
                     );
+                    
+                    // If the service worker is already active, mark it as ready
                     if (registration.active) {
+                      serviceWorkerReady = true;
                       console.log("active sw");
                       serviceWorker = registration.active;
 
@@ -286,6 +290,7 @@ async function init(
                         applicationName,
                         isTest,
                       });
+                      processMessageQueue();
                       resolve();
                     } else {
                       // Handle if on state change didn't trigger
@@ -351,6 +356,7 @@ async function init(
 
                     // Listen for the activation of the new service worker
                     registration.addEventListener('controllerchange', async () => {
+                      console.warn('controller change triggered', navigator.serviceWorker.controller)
                       if (navigator.serviceWorker.controller) {
                         serviceWorker = navigator.serviceWorker.controller
                         console.log('Service worker has been activated');
@@ -367,12 +373,6 @@ async function init(
                         // You can reload the page if necessary or handle the update process here
                       }
                     });
-                      // If the service worker is already active, mark it as ready
-                    if (registration.active) {
-                      serviceWorkerReady = true;
-                      console.log('Service Worker is already active');
-                      processMessageQueue();
-                    }
                   })
                   .catch(async (error) => {
                     await initConceptConnection();
@@ -420,6 +420,13 @@ export async function sendMessage(type: string, payload: any) {
     if (navigator.serviceWorker.controller) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
+          if (!event.data.success) {
+            if (event.data.status == 401) {
+              reject(HandleHttpError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
+            } else {
+              reject(`Failed to handle action ${type} ${JSON.stringify(payload)}`)
+            }
+          }
           if (event.data?.actions) {
             payload.actions = JSON.parse(JSON.stringify(event.data.actions))
           }
@@ -433,11 +440,12 @@ export async function sendMessage(type: string, payload: any) {
       // serviceWorker?.postMessage({ type, payload });
   
       // Send the message to the service worker
-      if (navigator.serviceWorker.controller) {
+      if (serviceWorker) {
         try {
-          navigator.serviceWorker.controller.postMessage({ type, payload: newPayload })
+          serviceWorker.postMessage({ type, payload: newPayload })
         } catch(err) {
           console.log(err)
+          // serviceWorker.postMessage({ type, payload: newPayload });
           serviceWorker.postMessage({ type, payload: newPayload });
         }
         // navigator.serviceWorker.controller.postMessage({ type, payload });
@@ -446,8 +454,9 @@ export async function sendMessage(type: string, payload: any) {
         setTimeout(() => {
           // if (navigator.serviceWorker.controller) {
           if (serviceWorker) {
-            serviceWorker.postMessage({ type, payload });
-            // navigator.serviceWorker.controller.postMessage({ type, payload });
+            // serviceWorker.postMessage({ type, payload });
+            console.info('This is triggered ')
+            serviceWorker?.postMessage({ type, payload });
           } else {
             console.log('not ready', type)
             reject("Service worker not ready");
@@ -463,6 +472,7 @@ export async function sendMessage(type: string, payload: any) {
     } else {
       messageQueue.push({message: {type, payload: newPayload}})
       console.log('Message Queued', type, payload)
+      if (type == 'init') resolve(null)
     }
       // })
       // .catch(err => reject(err))
