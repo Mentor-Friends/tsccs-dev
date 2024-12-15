@@ -194,7 +194,7 @@ export const getActions: Actions = {
     return { success: true, data };
   },
   ConnectionData__GetConnectionsOfCompositionLocal: async (payload) => {
-    const data = await ConnectionData.GetConnection(payload.id)
+    const data = await ConnectionData.GetConnectionsOfCompositionLocal(payload.id)
     return { success: true, data };
   },
   ConnectionData__GetConnectionsOfConcept: async (payload) => {
