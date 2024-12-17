@@ -10696,6 +10696,36 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 class Logger {
     /**
+     * Automatically starts the auto-sync mechanism.
+     * This is private and does not need external interaction.
+     */
+    static startAutoSync() {
+        if (this.autoSyncInterval) {
+            console.warn("Auto-sync is already running.");
+            return;
+        }
+        Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
+        console.log("AutoSync running every 1 second. Next sync at:", Logger.nextSyncTime);
+        Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
+        this.autoSyncInterval = window.setInterval(() => {
+            const currentTime = Date.now();
+            if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
+                Logger.nextSyncTime = currentTime + Logger.SYNC_INTERVAL_MS; // Reset for the next interval
+                Logger.sendLogsToServer();
+            }
+        }, 1000); // Check every second
+    }
+    /**
+     * Automatically stops the auto-sync mechanism when required.
+     */
+    static stopAutoSync() {
+        if (this.autoSyncInterval !== null) {
+            clearInterval(this.autoSyncInterval);
+            this.autoSyncInterval = null;
+            Logger.nextSyncTime = null;
+        }
+    }
+    /**
      * Set the log level (e.g., "DEBUG", "INFO", "WARNING", "ERROR").
      */
     static setLogLevel(level) {
@@ -10853,6 +10883,15 @@ Logger.logLevel = "INFO";
 Logger.logs = [];
 Logger.SERVER_URL = "https://devai.freeschema.com/api/v1/add-logs";
 Logger.LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
+Logger.SYNC_INTERVAL_MS = 300 * 1000;
+Logger.nextSyncTime = null;
+// Private auto-sync interval management
+Logger.autoSyncInterval = null;
+// Ensure logs are managed automatically
+(() => {
+    console.log("Initializing Logger with auto-sync mechanism.");
+    Logger.startAutoSync();
+})();
 /**
  *
  * @param cname The name of the cookie

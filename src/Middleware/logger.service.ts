@@ -4,6 +4,52 @@ export class Logger {
     private static logs: any[] = [];
     private static readonly SERVER_URL = "https://devai.freeschema.com/api/v1/add-logs";
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
+    private static readonly SYNC_INTERVAL_MS = 300 * 1000;
+    private static nextSyncTime: number | null = null;
+
+    // Private auto-sync interval management
+    private static autoSyncInterval: number | null = null;
+
+    // Ensure logs are managed automatically
+    static {
+        console.log("Initializing Logger with auto-sync mechanism.");
+        Logger.startAutoSync();
+    }
+
+    /**
+     * Automatically starts the auto-sync mechanism.
+     * This is private and does not need external interaction.
+     */
+    private static startAutoSync(): void {
+        if (this.autoSyncInterval) {
+            console.warn("Auto-sync is already running.");
+            return;
+        }
+
+        Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
+        console.log("AutoSync running every 1 second. Next sync at:", Logger.nextSyncTime);
+
+        Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
+        this.autoSyncInterval = window.setInterval(() => {
+            const currentTime = Date.now();
+            if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
+                Logger.nextSyncTime = currentTime + Logger.SYNC_INTERVAL_MS; // Reset for the next interval
+                Logger.sendLogsToServer();
+            }
+        }, 1000); // Check every second
+    }
+
+    /**
+     * Automatically stops the auto-sync mechanism when required.
+     */
+    private static stopAutoSync(): void {
+        if (this.autoSyncInterval !== null) {
+            clearInterval(this.autoSyncInterval);
+            this.autoSyncInterval = null;
+            Logger.nextSyncTime = null;
+        }
+    }
+
 
     /**
      * Set the log level (e.g., "DEBUG", "INFO", "WARNING", "ERROR").
