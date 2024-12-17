@@ -41,9 +41,16 @@ export class ConnectionData {
     //     this.connectionArray.push(connection);
     // if(!connection.isTemp){
     //UpdateToDatabase("connection", connection);
-    ConnectionBinaryTree.addConnectionToTree(connection);
-    ConnectionTypeTree.addConnectionToTree(connection);
-    ConnectionOfTheTree.addConnection(connection);
+    try{
+      ConnectionBinaryTree.addConnectionToTree(connection);
+      ConnectionTypeTree.addConnectionToTree(connection);
+      ConnectionOfTheTree.addConnection(connection);
+    }
+    catch(error){
+      console.log("this is the error in making the connection");
+      throw error;
+    }
+
   }
 
   static AddConnectionToMemory(connection: Connection) {
@@ -179,15 +186,22 @@ export class ConnectionData {
       return res.data;
     }
     let connections: Connection[] = [];
-    let connectionIds: number[] = [];
-    connectionIds = ConnectionData.GetConnectionByOfType(id, id);
-    for (let i = 0; i < connectionIds.length; i++) {
-      let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
-      if (conn) {
-        connections.push(conn.value);
+
+    try{
+      let connectionIds: number[] = [];
+      connectionIds = ConnectionData.GetConnectionByOfType(id, id);
+      for (let i = 0; i < connectionIds.length; i++) {
+        let conn = await ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+        if (conn) {
+          connections.push(conn.value);
+        }
       }
     }
+    catch(error){
+      console.log("this is the error GetConnectionsOfCompositionLocal", id, connections)
+    }
     return connections;
+
     //let node = await ConnectionTypeTree.getNodeFromTree(id);
     // if(node?.value){
     //     let returnedConnection = node.value;

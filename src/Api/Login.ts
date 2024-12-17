@@ -21,9 +21,7 @@ export async function LoginToBackend(email:string, password:string){
             });
             if(response.ok){
               const result = await response.json();
-              console.log(result.data);
               TokenStorage.BearerAccessToken = result.data.token;
-              console.log("this is the token",TokenStorage.BearerAccessToken);
              return result;
 
             }

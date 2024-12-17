@@ -5,6 +5,7 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData"
 import { GetConceptBulk, GetTheConcept, sendMessage, serviceWorker } from "../app";
+import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree";
 
 
 
@@ -254,12 +255,13 @@ export async function GetCompositionWithIdFromMemory(id:number){
         // console.log('data received from sw', res)
         return res.data
       }
+      let FinalReturn: any = {};
 
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
    // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
+   try{
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
-
     let compositionList:number[] = [];
     for(let i=0; i<connectionList.length; i++){
         if(!compositionList.includes(connectionList[i].ofTheConceptId)){
@@ -275,11 +277,16 @@ export async function GetCompositionWithIdFromMemory(id:number){
    // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
      let mainString = concept?.type?.characterValue ?? "";
      returnOutput[mainString] = output;
-    let FinalReturn: any = {};
     FinalReturn['created_at'] = concept.entryTimeStamp;
     FinalReturn['data'] = returnOutput;
     FinalReturn['id'] = id;
-    return FinalReturn;
+   }
+   catch(error){
+    console.log("this is the exception in GetCompositionWithIdFromMemory", id);
+   }
+   return FinalReturn;
+
+
 }
 
 /**
@@ -348,6 +355,7 @@ export async function GetCompositionWithIdFromMemoryFromConnection(id:number, co
      concept = conceptString as Concept;
     }
     let output = await recursiveFetchConcept(concept, connectionList, compositionList);
+    console.log("this is the output", output, concept);
    // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
      let mainString = concept?.type?.characterValue ?? "";
      returnOutput[mainString] = output;
