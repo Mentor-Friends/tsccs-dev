@@ -417,12 +417,14 @@ export async function sendMessage(type: string, payload: any) {
   return new Promise((resolve, reject) => {
     // navigator.serviceWorker.ready
     //   .then((registration) => {
-    if (navigator.serviceWorker.controller) {
+    if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
           if (!event.data.success) {
-            if (event.data.status == 401) {
+            if (event?.data?.status == 401) {
               reject(HandleHttpError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
+            } else if (event?.data?.status == 500) {
+              reject(HandleInternalError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
             } else {
               reject(`Failed to handle action ${type} ${JSON.stringify(payload)}`)
             }
