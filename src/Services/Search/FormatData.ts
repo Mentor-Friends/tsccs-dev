@@ -122,8 +122,11 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
     }
     for(let i=0 ; i< mainComposition.length; i++){
       let mymainData = compositionData[mainComposition[i]];
-      mymainData["id"] = mainComposition[i];
-      mainData.push(mymainData);
+      if(mymainData){
+        mymainData["id"] = mainComposition[i];
+        mainData.push(mymainData);
+      }
+
       
     }
 
