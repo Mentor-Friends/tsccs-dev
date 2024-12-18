@@ -7,6 +7,7 @@ import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnec
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { sendMessage, serviceWorker } from "../app";
+import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree";
 
 /**
  * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched

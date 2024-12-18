@@ -2270,9 +2270,7 @@ function LoginToBackend(email, password) {
             });
             if (response.ok) {
                 const result = yield response.json();
-                console.log(result.data);
                 _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken = result.data.token;
-                console.log("this is the token", _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken);
                 return result;
             }
             else {
@@ -2441,6 +2439,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   RecursiveSearchApiNewRawFullLinker: () => (/* binding */ RecursiveSearchApiNewRawFullLinker),
 /* harmony export */   RecursiveSearchApiRaw: () => (/* binding */ RecursiveSearchApiRaw),
 /* harmony export */   RecursiveSearchApiRawFullLinker: () => (/* binding */ RecursiveSearchApiRawFullLinker),
+/* harmony export */   RecursiveSearchApiWithInternalConnections: () => (/* binding */ RecursiveSearchApiWithInternalConnections),
 /* harmony export */   RecursiveSearchLocal: () => (/* binding */ RecursiveSearchLocal)
 /* harmony export */ });
 /* harmony import */ var _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../DataStructures/BaseUrl */ "./src/DataStructures/BaseUrl.ts");
@@ -2495,6 +2494,55 @@ function RecursiveSearchApi() {
                 let connections = result.internalConnections;
                 let externalConnections = result.externalConnections;
                 concepts = yield (0,_Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_2__.GetCompositionFromConnectionsWithDataId)(conceptIds, connections);
+            }
+            else {
+                console.log("recursive search error ", response.status);
+                (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_4__.HandleHttpError)(response);
+            }
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                console.log("recursive search error message: ", error.message);
+            }
+            else {
+                console.log("recursive search unexpected error: ", error);
+            }
+            (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_4__.HandleInternalError)(error, _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl());
+        }
+        return concepts;
+    });
+}
+function RecursiveSearchApiWithInternalConnections() {
+    return __awaiter(this, arguments, void 0, function* (composition = 0, listLinkers = [], textSearch = "") {
+        if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)("RecursiveSearchApiWithInternalConnections", {
+                composition,
+                listLinkers,
+                textSearch,
+            });
+            // console.log("data received from sw", res);
+            return res.data;
+        }
+        let concepts = [];
+        try {
+            let searchQuery = new _DataStructures_SearchQuery__WEBPACK_IMPORTED_MODULE_1__.SearchQuery();
+            searchQuery.composition = composition;
+            searchQuery.listLinkers = listLinkers;
+            searchQuery.textSearch = textSearch;
+            let raw = JSON.stringify(searchQuery);
+            let Connections = [];
+            let myHeaders = (0,_Services_Security_GetRequestHeader__WEBPACK_IMPORTED_MODULE_3__.GetRequestHeader)();
+            const response = yield fetch(_DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.RecursiveSearchUrl(), {
+                method: "POST",
+                headers: myHeaders,
+                body: raw,
+            });
+            if (response.ok) {
+                const result = yield response.json();
+                let conceptIds = result.compositionIds;
+                let connections = result.internalConnections;
+                let externalConnections = result.externalConnections;
+                concepts = yield (0,_Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_2__.GetCompositionFromConnectionsWithDataIdFromConnections)(conceptIds, connections);
             }
             else {
                 console.log("recursive search error ", response.status);
@@ -4577,8 +4625,8 @@ class CompositionNode {
                 const T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
             //return y;
@@ -4780,7 +4828,7 @@ class ConceptsData {
     }
     static AddConcept(concept) {
         if (_app__WEBPACK_IMPORTED_MODULE_5__.serviceWorker) {
-            const res = (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('AddConcept', { concept }); // is async function
+            const res = (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('ConceptsData__AddConcept', { concept }); // is async function
             // console.log('data received from sw', res)
             // return res.data // remove comment when this function is async
         }
@@ -4994,12 +5042,18 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 class ConnectionBinaryTree {
     static addNodeToTree(node) {
-        if (this.connectionroot == null) {
-            this.connectionroot = node;
-            return this.connectionroot;
+        try {
+            if (this.connectionroot == null) {
+                this.connectionroot = node;
+                return this.connectionroot;
+            }
+            else {
+                this.connectionroot = this.connectionroot.addNode(node, this.connectionroot, this.connectionroot.height);
+            }
         }
-        else {
-            this.connectionroot = this.connectionroot.addNode(node, this.connectionroot, this.connectionroot.height);
+        catch (error) {
+            console.log("This is the error in making the tree", error);
+            throw error;
         }
     }
     static addConnectionToTree(connection) {
@@ -5038,11 +5092,16 @@ class ConnectionBinaryTree {
     }
     static getNodeFromTree(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.connectionroot) {
-                let Node = this.connectionroot.getFromNode(id, this.connectionroot);
-                return Node;
+            try {
+                if (this.connectionroot) {
+                    let Node = this.connectionroot.getFromNode(id, this.connectionroot);
+                    return Node;
+                }
+                return this.connectionroot;
             }
-            return this.connectionroot;
+            catch (ex) {
+                console.log("this is the getNodeFromTree", id, this.connectionroot);
+            }
         });
     }
     static getConnectionListFromIds(ids, connectionArray, remainingIds) {
@@ -5072,6 +5131,8 @@ __webpack_require__.r(__webpack_exports__);
 
 class ConnectionNode {
     constructor(key, value, leftNode, rightNode) {
+        this.leftNode = null;
+        this.rightNode = null;
         this.variants = [];
         this.height = 1;
         this.key = key;
@@ -5110,17 +5171,25 @@ class ConnectionNode {
         //node.currentNode = this.addCurrentNode(passedNode, node.currentNode);
         return node;
     }
+    getMax(a, b) {
+        if (a > b) {
+            return a;
+        }
+        return b;
+    }
     addNode(passedNode, node, height) {
+        // try{
         if (node == null) {
-            node = passedNode;
-            return node;
+            //node = passedNode;
+            //ConnectionBinaryTree.connectionAll.push(node.value);
+            return passedNode;
         }
         let LeftNode = node.leftNode;
         let RightNode = node.rightNode;
-        if (node.key > passedNode.key) {
+        if (passedNode.key < node.key) {
             node.leftNode = this.addNode(passedNode, LeftNode, height);
         }
-        else if (node.key < passedNode.key) {
+        else if (passedNode.key > node.key) {
             node.rightNode = this.addNode(passedNode, RightNode, height);
         }
         // else if (node.key == passedNode.key && node.key != ""){
@@ -5129,31 +5198,38 @@ class ConnectionNode {
         else {
             return node;
         }
-        node.height = 1 + Math.max(this.getHeight(node.leftNode), this.getHeight(node.rightNode));
+        node.height = 1 + this.getMax(this.getHeight(node.leftNode), this.getHeight(node.rightNode));
         let balancingFactor = this.getBalanceFactor(node);
+        // this is left heavy
         if (balancingFactor > 1) {
             if (node.leftNode) {
-                if (passedNode.key < node.leftNode.key) {
+                if (this.getBalanceFactor(node.leftNode) >= 0) {
                     return this.rightRotate(node);
                 }
-                else if (passedNode.key > node.leftNode.key) {
+                if (this.getBalanceFactor(node.leftNode) < 0) {
                     node.leftNode = this.leftRotate(node.leftNode);
                     return this.rightRotate(node);
                 }
             }
         }
+        // this is right heavy
         if (balancingFactor < -1) {
             if (node.rightNode) {
-                if (passedNode.key > node.rightNode.key) {
+                if (this.getBalanceFactor(node.rightNode) <= 0) {
                     return this.leftRotate(node);
                 }
-                else if (passedNode.key < node.rightNode.key) {
+                if (this.getBalanceFactor(node.rightNode) > 0) {
                     node.rightNode = this.rightRotate(node.rightNode);
                     return this.leftRotate(node);
                 }
             }
         }
         return node;
+        // }
+        // catch(error){
+        //     console.log("this is the error in binary tree making", error, passedNode, node, height);
+        //     //throw error;
+        // }
     }
     addTypeNode(passedNode, node, height) {
         let debugFlag = false;
@@ -5192,7 +5268,7 @@ class ConnectionNode {
                 }
                 return node;
             }
-            node.height = 1 + Math.max(this.getHeight(node.leftNode), this.getHeight(node.rightNode));
+            node.height = 1 + this.getMax(this.getHeight(node.leftNode), this.getHeight(node.rightNode));
             if (debugFlag) {
                 console.log("height here", node.height);
             }
@@ -5256,10 +5332,12 @@ class ConnectionNode {
                 let T2 = x.rightNode;
                 y.leftNode = T2;
                 x.rightNode = y;
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(y.rightNode)) + 1;
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                y.height = this.getMax(this.getHeight(y.leftNode), this.getHeight(y.rightNode)) + 1;
+                x.height = this.getMax(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
                 return x;
             }
+            console.log("this is the error in right rotation", y, x);
+            throw new Error("Cannot perform right rotation: left node is null.");
             // return x;
         }
         return y;
@@ -5271,10 +5349,12 @@ class ConnectionNode {
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = this.getMax(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                y.height = this.getMax(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
+            console.log("this is the error in left rotation", x, y);
+            throw new Error("Cannot perform left rotation: right node is null.");
             //return y;
         }
         return x;
@@ -5292,23 +5372,29 @@ class ConnectionNode {
         return this.getHeight(N.leftNode) - this.getHeight(N.rightNode);
     }
     getFromNode(id, node) {
-        if (node) {
-            if (id == node.key) {
-                if (node.value.count) {
-                    node.value.count++;
+        try {
+            if (node) {
+                // console.log("this is the node test", id, node, node.leftNode, node.rightNode);
+                if (id == node.key) {
+                    if (node.value.count) {
+                        node.value.count++;
+                    }
+                    else {
+                        node.value.count = 1;
+                    }
+                    return node;
                 }
-                else {
-                    node.value.count = 1;
+                else if (id < node.key) {
+                    return this.getFromNode(id, node.leftNode);
+                }
+                else if (id > node.key) {
+                    return this.getFromNode(id, node.rightNode);
                 }
                 return node;
             }
-            else if (id < node.key) {
-                return this.getFromNode(id, node.leftNode);
-            }
-            else if (id > node.key) {
-                return this.getFromNode(id, node.rightNode);
-            }
-            return node;
+        }
+        catch (exception) {
+            console.log("this is the exception", id, node, node === null || node === void 0 ? void 0 : node.leftNode, node === null || node === void 0 ? void 0 : node.rightNode);
         }
         return node;
     }
@@ -5497,10 +5583,10 @@ class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_0__.NodeP
     }
     addNode(passedNode, node, height) {
         if (node == null) {
-            node = passedNode;
+            //node= passedNode;
             // let event = new Event(`${passedNode.key}`);
             // dispatchEvent(event);
-            return node;
+            return passedNode;
         }
         let LeftNode = node.leftNode;
         let RightNode = node.rightNode;
@@ -5517,11 +5603,11 @@ class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_0__.NodeP
         let balancingFactor = this.getBalanceFactor(node);
         if (balancingFactor > 1) {
             if (node.leftNode) {
-                if (passedNode.key < node.leftNode.key) {
+                if (this.getBalanceFactor(node.leftNode) >= 0) {
                     let returner = this.rightRotate(node);
                     return returner;
                 }
-                else if (passedNode.key > node.leftNode.key) {
+                if (this.getBalanceFactor(node.leftNode) < 0) {
                     node.leftNode = this.leftRotate(node.leftNode);
                     let returner = this.rightRotate(node);
                     return returner;
@@ -5530,11 +5616,11 @@ class ConnectionOfNode extends _NodePrimitive__WEBPACK_IMPORTED_MODULE_0__.NodeP
         }
         if (balancingFactor < -1) {
             if (node.rightNode) {
-                if (passedNode.key > node.rightNode.key) {
+                if (this.getBalanceFactor(node.rightNode) <= 0) {
                     let returner = this.leftRotate(node);
                     return returner;
                 }
-                else if (passedNode.key < node.rightNode.key) {
+                if (this.getBalanceFactor(node.rightNode) > 0) {
                     node.rightNode = this.rightRotate(node.rightNode);
                     let returner = this.leftRotate(node);
                     return returner;
@@ -5906,8 +5992,8 @@ class NodePrimitive {
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
             //return y;
@@ -6039,9 +6125,15 @@ class ConnectionData {
         //     this.connectionArray.push(connection);
         // if(!connection.isTemp){
         //UpdateToDatabase("connection", connection);
-        _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.addConnectionToTree(connection);
-        _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.addConnectionToTree(connection);
-        _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.addConnection(connection);
+        try {
+            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.addConnectionToTree(connection);
+            _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.addConnectionToTree(connection);
+            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.addConnection(connection);
+        }
+        catch (error) {
+            console.log("this is the error in making the connection");
+            throw error;
+        }
     }
     static AddConnectionToMemory(connection) {
         if (!connection.isTemp) {
@@ -6146,13 +6238,18 @@ class ConnectionData {
                 return res.data;
             }
             let connections = [];
-            let connectionIds = [];
-            connectionIds = ConnectionData.GetConnectionByOfType(id, id);
-            for (let i = 0; i < connectionIds.length; i++) {
-                let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
-                if (conn) {
-                    connections.push(conn.value);
+            try {
+                let connectionIds = [];
+                connectionIds = ConnectionData.GetConnectionByOfType(id, id);
+                for (let i = 0; i < connectionIds.length; i++) {
+                    let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+                    if (conn) {
+                        connections.push(conn.value);
+                    }
                 }
+            }
+            catch (error) {
+                console.log("this is the error GetConnectionsOfCompositionLocal", id, connections);
             }
             return connections;
             //let node = await ConnectionTypeTree.getNodeFromTree(id);
@@ -6643,8 +6740,8 @@ class LNode {
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
             //return y;
@@ -8468,8 +8565,8 @@ class Node {
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
             //return y;
@@ -9393,8 +9490,8 @@ class TypeNode {
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
             //return y;
@@ -9676,8 +9773,8 @@ class UserNode {
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
             //return y;
@@ -12232,7 +12329,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   GetAllTheConnectionsByTypeAndOfTheConcept: () => (/* binding */ GetAllTheConnectionsByTypeAndOfTheConcept)
 /* harmony export */ });
 /* harmony import */ var _Api_GetAllLinkerConnectionsFromTheConcept__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetAllLinkerConnectionsFromTheConcept */ "./src/Api/GetAllLinkerConnectionsFromTheConcept.ts");
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _Api_GetAllLinkerConnectionsToTheConcept__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Api/GetAllLinkerConnectionsToTheConcept */ "./src/Api/GetAllLinkerConnectionsToTheConcept.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12244,6 +12342,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
+
 /**
  *
  * @param id
@@ -12252,17 +12351,17 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
  */
 function DeleteConnectionByType(id, linker) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('DeleteConnectionByType', { id, linker });
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('DeleteConnectionByType', { id, linker });
             // console.log('data received from sw', res)
             return res.data;
         }
         let externalConnections = yield (0,_Api_GetAllLinkerConnectionsFromTheConcept__WEBPACK_IMPORTED_MODULE_0__.GetAllLinkerConnectionsFromTheConcept)(id);
         for (let i = 0; i < externalConnections.length; i++) {
-            _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.AddConnection(externalConnections[i]);
+            _app__WEBPACK_IMPORTED_MODULE_2__.ConnectionData.AddConnection(externalConnections[i]);
         }
-        let connections = yield _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.GetConnectionsOfConcept(id);
-        let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConceptByCharacter)(linker);
+        let connections = yield _app__WEBPACK_IMPORTED_MODULE_2__.ConnectionData.GetConnectionsOfConcept(id);
+        let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.GetConceptByCharacter)(linker);
         let toDelete = [];
         for (let i = 0; i < connections.length; i++) {
             if (connections[i].typeId == concept.id) {
@@ -12270,7 +12369,7 @@ function DeleteConnectionByType(id, linker) {
             }
         }
         for (let i = 0; i < toDelete.length; i++) {
-            (0,_app__WEBPACK_IMPORTED_MODULE_1__.DeleteConnectionById)(toDelete[i].id);
+            (0,_app__WEBPACK_IMPORTED_MODULE_2__.DeleteConnectionById)(toDelete[i].id);
         }
     });
 }
@@ -12280,23 +12379,34 @@ function DeleteConnectionByType(id, linker) {
  * @param linker the connection type
  * @returns Array of connections
  */
-function GetAllTheConnectionsByTypeAndOfTheConcept(id, linker) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetAllTheConnectionsByTypeAndOfTheConcept', { id, linker });
+function GetAllTheConnectionsByTypeAndOfTheConcept(id_1, linker_1) {
+    return __awaiter(this, arguments, void 0, function* (id, linker, reverse = false) {
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetAllTheConnectionsByTypeAndOfTheConcept', { id, linker, reverse });
             // console.log('data received from sw', res)
             return res.data;
         }
-        let externalConnections = yield (0,_Api_GetAllLinkerConnectionsFromTheConcept__WEBPACK_IMPORTED_MODULE_0__.GetAllLinkerConnectionsFromTheConcept)(id);
-        for (let i = 0; i < externalConnections.length; i++) {
-            _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.AddConnection(externalConnections[i]);
-        }
         let toDelete = [];
-        let connections = yield _app__WEBPACK_IMPORTED_MODULE_1__.ConnectionData.GetConnectionsOfConcept(id);
-        let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConceptByCharacter)(linker);
-        for (let i = 0; i < connections.length; i++) {
-            if (connections[i].typeId == concept.id) {
-                toDelete.push(connections[i]);
+        if (reverse) {
+            let externalConnections = yield (0,_Api_GetAllLinkerConnectionsToTheConcept__WEBPACK_IMPORTED_MODULE_1__.GetAllLinkerConnectionsToTheConcept)(id);
+            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.MakeTheTypeConceptApi)(linker, 999);
+            for (let i = 0; i < externalConnections.length; i++) {
+                if (externalConnections[i].typeId == concept.id) {
+                    toDelete.push(externalConnections[i]);
+                }
+            }
+        }
+        else {
+            let externalConnections = yield (0,_Api_GetAllLinkerConnectionsFromTheConcept__WEBPACK_IMPORTED_MODULE_0__.GetAllLinkerConnectionsFromTheConcept)(id);
+            for (let i = 0; i < externalConnections.length; i++) {
+                _app__WEBPACK_IMPORTED_MODULE_2__.ConnectionData.AddConnection(externalConnections[i]);
+            }
+            let connections = yield _app__WEBPACK_IMPORTED_MODULE_2__.ConnectionData.GetConnectionsOfConcept(id);
+            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.GetConceptByCharacter)(linker);
+            for (let i = 0; i < connections.length; i++) {
+                if (connections[i].typeId == concept.id) {
+                    toDelete.push(connections[i]);
+                }
             }
         }
         return toDelete;
@@ -12406,10 +12516,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   GetCompositionById: () => (/* binding */ GetCompositionById),
 /* harmony export */   GetCompositionFromMemory: () => (/* binding */ GetCompositionFromMemory),
 /* harmony export */   GetCompositionFromMemoryNormal: () => (/* binding */ GetCompositionFromMemoryNormal),
+/* harmony export */   GetCompositionFromMemoryWithConnections: () => (/* binding */ GetCompositionFromMemoryWithConnections),
 /* harmony export */   GetCompositionWithAllIds: () => (/* binding */ GetCompositionWithAllIds),
 /* harmony export */   GetCompositionWithId: () => (/* binding */ GetCompositionWithId),
 /* harmony export */   GetCompositionWithIdAndDateFromMemory: () => (/* binding */ GetCompositionWithIdAndDateFromMemory),
 /* harmony export */   GetCompositionWithIdFromMemory: () => (/* binding */ GetCompositionWithIdFromMemory),
+/* harmony export */   GetCompositionWithIdFromMemoryFromConnection: () => (/* binding */ GetCompositionWithIdFromMemoryFromConnection),
 /* harmony export */   GetCompositionWithIdFromMemoryFromConnections: () => (/* binding */ GetCompositionWithIdFromMemoryFromConnections),
 /* harmony export */   GetCompositionWithIdFromMemoryNew: () => (/* binding */ GetCompositionWithIdFromMemoryNew),
 /* harmony export */   RecursiveFetchBuildLayer: () => (/* binding */ RecursiveFetchBuildLayer),
@@ -12688,10 +12800,53 @@ function GetCompositionWithIdFromMemory(id) {
             // console.log('data received from sw', res)
             return res.data;
         }
+        let FinalReturn = {};
         let connectionList = [];
         let returnOutput = {};
         // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
-        connectionList = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_3__.ConnectionData.GetConnectionsOfCompositionLocal(id);
+        try {
+            connectionList = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_3__.ConnectionData.GetConnectionsOfCompositionLocal(id);
+            let compositionList = [];
+            for (let i = 0; i < connectionList.length; i++) {
+                if (!compositionList.includes(connectionList[i].ofTheConceptId)) {
+                    compositionList.push(connectionList[i].ofTheConceptId);
+                }
+            }
+            let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConcept(id);
+            if (concept.id == 0 && id != null && id != undefined) {
+                let conceptString = yield (0,_Api_GetConcept__WEBPACK_IMPORTED_MODULE_0__.GetConcept)(id);
+                concept = conceptString;
+            }
+            let output = yield recursiveFetchConcept(concept, connectionList, compositionList);
+            // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
+            let mainString = (_b = (_a = concept === null || concept === void 0 ? void 0 : concept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "";
+            returnOutput[mainString] = output;
+            FinalReturn['created_at'] = concept.entryTimeStamp;
+            FinalReturn['data'] = returnOutput;
+            FinalReturn['id'] = id;
+        }
+        catch (error) {
+            console.log("this is the exception in GetCompositionWithIdFromMemory", id);
+        }
+        return FinalReturn;
+    });
+}
+/**
+ * ### Format Normal ####
+ * Gets data just from memory
+ * @param id
+ * @returns
+ */
+function GetCompositionFromMemoryWithConnections(id, connectionList) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionFromMemoryWithConnections', { id, connectionList });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
+        let returnOutput = {};
+        // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
         let compositionList = [];
         for (let i = 0; i < connectionList.length; i++) {
             if (!compositionList.includes(connectionList[i].ofTheConceptId)) {
@@ -12704,6 +12859,45 @@ function GetCompositionWithIdFromMemory(id) {
             concept = conceptString;
         }
         let output = yield recursiveFetchConcept(concept, connectionList, compositionList);
+        // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
+        let mainString = (_b = (_a = concept === null || concept === void 0 ? void 0 : concept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "";
+        returnOutput[mainString] = output;
+        let FinalReturn = {};
+        FinalReturn['created_at'] = concept.entryTimeStamp;
+        FinalReturn['data'] = returnOutput;
+        FinalReturn['id'] = id;
+        return FinalReturn;
+    });
+}
+/**
+ * ### Format DATAIDDATE ####
+ * Gets data just from memory
+ * @param id
+ * @returns
+ */
+function GetCompositionWithIdFromMemoryFromConnection(id, connectionList) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var _a, _b;
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('GetCompositionWithIdFromMemory', { id });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
+        let returnOutput = {};
+        // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
+        let compositionList = [];
+        for (let i = 0; i < connectionList.length; i++) {
+            if (!compositionList.includes(connectionList[i].ofTheConceptId)) {
+                compositionList.push(connectionList[i].ofTheConceptId);
+            }
+        }
+        let concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConcept(id);
+        if (concept.id == 0 && id != null && id != undefined) {
+            let conceptString = yield (0,_Api_GetConcept__WEBPACK_IMPORTED_MODULE_0__.GetConcept)(id);
+            concept = conceptString;
+        }
+        let output = yield recursiveFetchConcept(concept, connectionList, compositionList);
+        console.log("this is the output", output, concept);
         // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
         let mainString = (_b = (_a = concept === null || concept === void 0 ? void 0 : concept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "";
         returnOutput[mainString] = output;
@@ -13262,10 +13456,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   GetCompositionFromConnectionsInObject: () => (/* binding */ GetCompositionFromConnectionsInObject),
 /* harmony export */   GetCompositionFromConnectionsInObjectNormal: () => (/* binding */ GetCompositionFromConnectionsInObjectNormal),
 /* harmony export */   GetCompositionFromConnectionsWithDataId: () => (/* binding */ GetCompositionFromConnectionsWithDataId),
+/* harmony export */   GetCompositionFromConnectionsWithDataIdFromConnections: () => (/* binding */ GetCompositionFromConnectionsWithDataIdFromConnections),
 /* harmony export */   GetCompositionFromConnectionsWithDataIdInObject: () => (/* binding */ GetCompositionFromConnectionsWithDataIdInObject),
 /* harmony export */   GetCompositionFromConnectionsWithDataIdInObjectNew: () => (/* binding */ GetCompositionFromConnectionsWithDataIdInObjectNew),
 /* harmony export */   GetCompositionFromConnectionsWithDataIdIndex: () => (/* binding */ GetCompositionFromConnectionsWithDataIdIndex),
 /* harmony export */   GetCompositionFromConnectionsWithIndex: () => (/* binding */ GetCompositionFromConnectionsWithIndex),
+/* harmony export */   GetCompositionFromConnectionsWithIndexFromConnections: () => (/* binding */ GetCompositionFromConnectionsWithIndexFromConnections),
 /* harmony export */   GetConnectionDataPrefetch: () => (/* binding */ GetConnectionDataPrefetch)
 /* harmony export */ });
 /* harmony import */ var _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetAllConnectionsOfCompositionBulk */ "./src/Api/GetAllConnectionsOfCompositionBulk.ts");
@@ -13348,6 +13544,32 @@ function GetCompositionFromConnectionsWithDataId() {
     });
 }
 /**
+ * ## FORMAT DATAIDDATE ##
+ * This is just a different version of GetCompositionFromConnectionsWithDataId, This has the added functionality that
+ * it also prints out internal connections.
+ * This function converts the conceptIds and internal connectionIds to compositions in data-Id format.
+ * @param conceptIds This is the list of concept ids that need to be converted to compositions.
+ * @param connectionIds These are the internal connectionIds that need to be passed to create the compositions.
+ * @returns list of compositions created from the passed conceptIds and connectionIds.
+ */
+function GetCompositionFromConnectionsWithDataIdFromConnections() {
+    return __awaiter(this, arguments, void 0, function* (conceptIds = [], connectionIds = []) {
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetCompositionFromConnectionsWithDataIdFromConnections', { conceptIds, connectionIds });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
+        let newConnections = yield (0,_Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(connectionIds);
+        //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
+        let compositions = [];
+        for (let i = 0; i < conceptIds.length; i++) {
+            let comp = yield (0,_GetComposition__WEBPACK_IMPORTED_MODULE_4__.GetCompositionWithIdFromMemoryFromConnection)(conceptIds[i], newConnections);
+            compositions.push(comp);
+        }
+        return compositions;
+    });
+}
+/**
  * ## Format DATAIDDATE ##
  * This function converts the conceptIds and internal connectionIds to compositions in data-Id format with index(conceptId).
  * @param conceptIds This is the list of concept ids that need to be converted to compositions.
@@ -13389,6 +13611,32 @@ function GetCompositionFromConnectionsWithIndex() {
         let compositions = {};
         for (let i = 0; i < conceptIds.length; i++) {
             let comp = yield (0,_GetComposition__WEBPACK_IMPORTED_MODULE_4__.GetCompositionFromMemory)(conceptIds[i]);
+            compositions[conceptIds[i]] = comp;
+        }
+        return compositions;
+    });
+}
+/**
+ * ## FORMAT DATAIDDATE ##
+ * This is just a different version of GetCompositionFromConnectionsWithDataId, This has the added functionality that
+ * it also prints out internal connections.
+ * This function converts the conceptIds and internal connectionIds to compositions in data-Id format.
+ * @param conceptIds This is the list of concept ids that need to be converted to compositions.
+ * @param connectionIds These are the internal connectionIds that need to be passed to create the compositions.
+ * @returns list of compositions created from the passed conceptIds and connectionIds.
+ */
+function GetCompositionFromConnectionsWithIndexFromConnections() {
+    return __awaiter(this, arguments, void 0, function* (conceptIds = [], connectionIds = []) {
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetCompositionFromConnectionsWithIndexFromConnections', { conceptIds, connectionIds });
+            // console.log('data received from sw', res)
+            return res.data;
+        }
+        let newConnections = yield (0,_Api_GetConnectionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionBulk)(connectionIds);
+        //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
+        let compositions = [];
+        for (let i = 0; i < conceptIds.length; i++) {
+            let comp = yield (0,_GetComposition__WEBPACK_IMPORTED_MODULE_4__.GetCompositionFromMemoryWithConnections)(conceptIds[i], newConnections);
             compositions[conceptIds[i]] = comp;
         }
         return compositions;
@@ -14966,7 +15214,7 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
                 connection = new _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_0__.Connection(randomid, realOfTheConceptId, realToTheConceptId, userId, typeId, orderId, accessId);
                 connection.isTemp = true;
                 connection.typeCharacter = typeString;
-                yield _app__WEBPACK_IMPORTED_MODULE_4__.LocalSyncData.AddConnection(connection);
+                _app__WEBPACK_IMPORTED_MODULE_4__.LocalSyncData.AddConnection(connection);
                 _DataStructures_Local_LocalConnectionData__WEBPACK_IMPORTED_MODULE_1__.LocalConnectionData.AddConnection(connection);
                 actions.connections.push(connection);
                 //storeToDatabase("localconnection", connection);
@@ -16487,8 +16735,10 @@ function FormatConceptsAndConnectionsNormalList(connections_1, compositionData_1
         }
         for (let i = 0; i < mainComposition.length; i++) {
             let mymainData = compositionData[mainComposition[i]];
-            mymainData["id"] = mainComposition[i];
-            mainData.push(mymainData);
+            if (mymainData) {
+                mymainData["id"] = mainComposition[i];
+                mainData.push(mymainData);
+            }
         }
         return mainData;
     });
@@ -17370,7 +17620,9 @@ function FormatConceptsAndConnections(connections_1, compositionData_1, mainComp
         }
         for (let i = 0; i < mainComposition.length; i++) {
             let mymainData = compositionData[mainComposition[i]];
-            mainData.push(mymainData);
+            if (mymainData) {
+                mainData.push(mymainData);
+            }
         }
         return mainData;
     });
@@ -17459,7 +17711,9 @@ function FormatFromConnectionsAlteredArray(connections_1, compositionData_1, con
         }
         for (let i = 0; i < mainComposition.length; i++) {
             let mymainData = compositionData[mainComposition[i]];
-            mainData.push(mymainData);
+            if (mymainData) {
+                mainData.push(mymainData);
+            }
         }
         return mainData;
     });
@@ -20277,10 +20531,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ADMIN: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__.ADMIN),
 /* harmony export */   ALLID: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.ALLID),
 /* harmony export */   AddGhostConcept: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_50__.AddGhostConcept),
-/* harmony export */   Anomaly: () => (/* reexport safe */ _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_104__.Anomaly),
+/* harmony export */   Anomaly: () => (/* reexport safe */ _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_105__.Anomaly),
 /* harmony export */   BaseUrl: () => (/* reexport safe */ _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl),
 /* harmony export */   BinaryTree: () => (/* reexport safe */ _DataStructures_BinaryTree__WEBPACK_IMPORTED_MODULE_83__.BinaryTree),
-/* harmony export */   BuilderStatefulWidget: () => (/* reexport safe */ _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_102__.BuilderStatefulWidget),
+/* harmony export */   BuilderStatefulWidget: () => (/* reexport safe */ _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_103__.BuilderStatefulWidget),
 /* harmony export */   Composition: () => (/* reexport safe */ _DataStructures_Composition_Composition__WEBPACK_IMPORTED_MODULE_87__.Composition),
 /* harmony export */   CompositionBinaryTree: () => (/* reexport safe */ _DataStructures_Composition_CompositionBinaryTree__WEBPACK_IMPORTED_MODULE_88__.CompositionBinaryTree),
 /* harmony export */   CompositionNode: () => (/* reexport safe */ _DataStructures_Composition_CompositionNode__WEBPACK_IMPORTED_MODULE_89__.CompositionNode),
@@ -20307,24 +20561,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   DeleteConceptById: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__.DeleteConceptById),
 /* harmony export */   DeleteConceptLocal: () => (/* reexport safe */ _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_61__.DeleteConceptLocal),
 /* harmony export */   DeleteConnectionById: () => (/* reexport safe */ _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_25__.DeleteConnectionById),
-/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_108__.DeleteConnectionByType),
+/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_109__.DeleteConnectionByType),
 /* harmony export */   DeleteUser: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__.DeleteUser),
 /* harmony export */   DependencyObserver: () => (/* reexport safe */ _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_68__.DependencyObserver),
 /* harmony export */   FilterSearch: () => (/* reexport safe */ _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_92__.FilterSearch),
 /* harmony export */   FormatFromConnections: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnections),
 /* harmony export */   FormatFromConnectionsAltered: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnectionsAltered),
-/* harmony export */   FreeschemaQuery: () => (/* reexport safe */ _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_109__.FreeschemaQuery),
-/* harmony export */   FreeschemaQueryApi: () => (/* reexport safe */ _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_110__.FreeschemaQueryApi),
+/* harmony export */   FreeschemaQuery: () => (/* reexport safe */ _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_110__.FreeschemaQuery),
+/* harmony export */   FreeschemaQueryApi: () => (/* reexport safe */ _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_111__.FreeschemaQueryApi),
 /* harmony export */   GetAllConnectionsOfComposition: () => (/* reexport safe */ _Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_6__.GetAllConnectionsOfComposition),
 /* harmony export */   GetAllConnectionsOfCompositionBulk: () => (/* reexport safe */ _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_33__.GetAllConnectionsOfCompositionBulk),
-/* harmony export */   GetAllTheConnectionsByTypeAndOfTheConcept: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_108__.GetAllTheConnectionsByTypeAndOfTheConcept),
+/* harmony export */   GetAllTheConnectionsByTypeAndOfTheConcept: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_109__.GetAllTheConnectionsByTypeAndOfTheConcept),
 /* harmony export */   GetComposition: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetComposition),
 /* harmony export */   GetCompositionBulk: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionBulk),
 /* harmony export */   GetCompositionBulkWithDataId: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionBulkWithDataId),
 /* harmony export */   GetCompositionFromConnectionsWithDataId: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithDataId),
+/* harmony export */   GetCompositionFromConnectionsWithDataIdFromConnections: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithDataIdFromConnections),
 /* harmony export */   GetCompositionFromConnectionsWithDataIdInObject: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithDataIdInObject),
 /* harmony export */   GetCompositionFromConnectionsWithDataIdIndex: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithDataIdIndex),
 /* harmony export */   GetCompositionFromConnectionsWithIndex: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithIndex),
+/* harmony export */   GetCompositionFromConnectionsWithIndexFromConnections: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionFromConnectionsWithIndexFromConnections),
+/* harmony export */   GetCompositionFromMemoryWithConnections: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetCompositionFromMemoryWithConnections),
 /* harmony export */   GetCompositionList: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__.GetCompositionList),
 /* harmony export */   GetCompositionListAll: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__.GetCompositionListAll),
 /* harmony export */   GetCompositionListAllWithId: () => (/* reexport safe */ _Services_GetCompositionList__WEBPACK_IMPORTED_MODULE_4__.GetCompositionListAllWithId),
@@ -20369,7 +20626,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   LISTNORMAL: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.LISTNORMAL),
 /* harmony export */   LocalConceptsData: () => (/* reexport safe */ _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_94__.LocalConceptsData),
 /* harmony export */   LocalSyncData: () => (/* reexport safe */ _DataStructures_Local_LocalSyncData__WEBPACK_IMPORTED_MODULE_90__.LocalSyncData),
-/* harmony export */   LocalTransaction: () => (/* reexport safe */ _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_103__.LocalTransaction),
+/* harmony export */   LocalTransaction: () => (/* reexport safe */ _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_104__.LocalTransaction),
 /* harmony export */   Logger: () => (/* reexport safe */ _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_101__.Logger),
 /* harmony export */   LoginToBackend: () => (/* reexport safe */ _Api_Login__WEBPACK_IMPORTED_MODULE_34__.LoginToBackend),
 /* harmony export */   MakeTheInstanceConcept: () => (/* reexport safe */ _Services_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_13__["default"]),
@@ -20387,8 +20644,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   RecursiveSearchApiNewRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiNewRawFullLinker),
 /* harmony export */   RecursiveSearchApiRaw: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRaw),
 /* harmony export */   RecursiveSearchApiRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRawFullLinker),
+/* harmony export */   RecursiveSearchApiWithInternalConnections: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiWithInternalConnections),
 /* harmony export */   RecursiveSearchListener: () => (/* reexport safe */ _WrapperFunctions_RecursiveSearchObservable__WEBPACK_IMPORTED_MODULE_74__.RecursiveSearchListener),
-/* harmony export */   SchemaQueryListener: () => (/* reexport safe */ _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_111__.SchemaQueryListener),
+/* harmony export */   SchemaQueryListener: () => (/* reexport safe */ _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_112__.SchemaQueryListener),
 /* harmony export */   SearchAllConcepts: () => (/* reexport safe */ _Api_Search_Search__WEBPACK_IMPORTED_MODULE_39__.SearchAllConcepts),
 /* harmony export */   SearchLinkInternal: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternal),
 /* harmony export */   SearchLinkInternalAll: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternalAll),
@@ -20405,19 +20663,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Signup: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_36__["default"]),
 /* harmony export */   SignupEntity: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_36__.SignupEntity),
 /* harmony export */   SplitStrings: () => (/* reexport safe */ _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_3__.SplitStrings),
-/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_107__.StatefulWidget),
+/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_108__.StatefulWidget),
 /* harmony export */   SyncData: () => (/* reexport safe */ _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_76__.SyncData),
 /* harmony export */   TrashTheConcept: () => (/* reexport safe */ _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_26__.TrashTheConcept),
 /* harmony export */   UpdateComposition: () => (/* reexport safe */ _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_38__["default"]),
 /* harmony export */   UpdateCompositionLocal: () => (/* reexport safe */ _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_53__.UpdateCompositionLocal),
 /* harmony export */   UserBinaryTree: () => (/* reexport safe */ _DataStructures_User_UserBinaryTree__WEBPACK_IMPORTED_MODULE_91__.UserBinaryTree),
-/* harmony export */   Validator: () => (/* reexport safe */ _Validator_validator__WEBPACK_IMPORTED_MODULE_105__.Validator),
+/* harmony export */   Validator: () => (/* reexport safe */ _Validator_validator__WEBPACK_IMPORTED_MODULE_106__.Validator),
 /* harmony export */   ViewInternalData: () => (/* reexport safe */ _Services_View_ViewInternalData__WEBPACK_IMPORTED_MODULE_56__.ViewInternalData),
 /* harmony export */   ViewInternalDataApi: () => (/* reexport safe */ _Api_View_ViewInternalDataApi__WEBPACK_IMPORTED_MODULE_57__.ViewInternalDataApi),
-/* harmony export */   WidgetTree: () => (/* reexport safe */ _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_112__.WidgetTree),
+/* harmony export */   WidgetTree: () => (/* reexport safe */ _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_113__.WidgetTree),
 /* harmony export */   convertFromConceptToLConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromConceptToLConcept),
 /* harmony export */   convertFromLConceptToConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromLConceptToConcept),
-/* harmony export */   createFormFieldData: () => (/* reexport safe */ _Validator_utils__WEBPACK_IMPORTED_MODULE_106__.createFormFieldData),
+/* harmony export */   createFormFieldData: () => (/* reexport safe */ _Validator_utils__WEBPACK_IMPORTED_MODULE_107__.createFormFieldData),
 /* harmony export */   dispatchIdEvent: () => (/* binding */ dispatchIdEvent),
 /* harmony export */   getFromDatabaseWithType: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getFromDatabaseWithType),
 /* harmony export */   getObjectsFromIndexDb: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getObjectsFromIndexDb),
@@ -20533,17 +20791,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_99__ = __webpack_require__(/*! ./DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
 /* harmony import */ var _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__ = __webpack_require__(/*! ./Constants/general.const */ "./src/Constants/general.const.ts");
 /* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Middleware/logger.service */ "./src/Middleware/logger.service.ts");
-/* harmony import */ var _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Widgets/BuilderStatefulWidget */ "./src/Widgets/BuilderStatefulWidget.ts");
-/* harmony import */ var _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Services/Transaction/LocalTransaction */ "./src/Services/Transaction/LocalTransaction.ts");
-/* harmony import */ var _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./Anomaly/anomaly */ "./src/Anomaly/anomaly.ts");
-/* harmony import */ var _Validator_validator__WEBPACK_IMPORTED_MODULE_105__ = __webpack_require__(/*! ./Validator/validator */ "./src/Validator/validator.ts");
-/* harmony import */ var _Validator_utils__WEBPACK_IMPORTED_MODULE_106__ = __webpack_require__(/*! ./Validator/utils */ "./src/Validator/utils.ts");
-/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_107__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
-/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_108__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
-/* harmony import */ var _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_109__ = __webpack_require__(/*! ./DataStructures/Search/FreeschemaQuery */ "./src/DataStructures/Search/FreeschemaQuery.ts");
-/* harmony import */ var _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_110__ = __webpack_require__(/*! ./Api/Search/FreeschemaQueryApi */ "./src/Api/Search/FreeschemaQueryApi.ts");
-/* harmony import */ var _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_111__ = __webpack_require__(/*! ./WrapperFunctions/SchemaQueryObservable */ "./src/WrapperFunctions/SchemaQueryObservable.ts");
-/* harmony import */ var _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_112__ = __webpack_require__(/*! ./Widgets/WidgetTree */ "./src/Widgets/WidgetTree.ts");
+/* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
+/* harmony import */ var _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Widgets/BuilderStatefulWidget */ "./src/Widgets/BuilderStatefulWidget.ts");
+/* harmony import */ var _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./Services/Transaction/LocalTransaction */ "./src/Services/Transaction/LocalTransaction.ts");
+/* harmony import */ var _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_105__ = __webpack_require__(/*! ./Anomaly/anomaly */ "./src/Anomaly/anomaly.ts");
+/* harmony import */ var _Validator_validator__WEBPACK_IMPORTED_MODULE_106__ = __webpack_require__(/*! ./Validator/validator */ "./src/Validator/validator.ts");
+/* harmony import */ var _Validator_utils__WEBPACK_IMPORTED_MODULE_107__ = __webpack_require__(/*! ./Validator/utils */ "./src/Validator/utils.ts");
+/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_108__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
+/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_109__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
+/* harmony import */ var _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_110__ = __webpack_require__(/*! ./DataStructures/Search/FreeschemaQuery */ "./src/DataStructures/Search/FreeschemaQuery.ts");
+/* harmony import */ var _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_111__ = __webpack_require__(/*! ./Api/Search/FreeschemaQueryApi */ "./src/Api/Search/FreeschemaQueryApi.ts");
+/* harmony import */ var _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_112__ = __webpack_require__(/*! ./WrapperFunctions/SchemaQueryObservable */ "./src/WrapperFunctions/SchemaQueryObservable.ts");
+/* harmony import */ var _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_113__ = __webpack_require__(/*! ./Widgets/WidgetTree */ "./src/Widgets/WidgetTree.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -20553,6 +20812,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -20794,7 +21054,9 @@ function init() {
                         })
                             .then((registration) => __awaiter(this, void 0, void 0, function* () {
                             console.log("Service Worker registered:", registration);
+                            // If the service worker is already active, mark it as ready
                             if (registration.active) {
+                                serviceWorkerReady = true;
                                 console.log("active sw");
                                 serviceWorker = registration.active;
                                 yield sendMessage("init", {
@@ -20806,6 +21068,7 @@ function init() {
                                     applicationName,
                                     isTest,
                                 });
+                                processMessageQueue();
                                 resolve();
                             }
                             else {
@@ -20868,6 +21131,7 @@ function init() {
                             };
                             // Listen for the activation of the new service worker
                             registration.addEventListener('controllerchange', () => __awaiter(this, void 0, void 0, function* () {
+                                console.warn('controller change triggered', navigator.serviceWorker.controller);
                                 if (navigator.serviceWorker.controller) {
                                     serviceWorker = navigator.serviceWorker.controller;
                                     console.log('Service worker has been activated');
@@ -20884,12 +21148,6 @@ function init() {
                                     // You can reload the page if necessary or handle the update process here
                                 }
                             }));
-                            // If the service worker is already active, mark it as ready
-                            if (registration.active) {
-                                serviceWorkerReady = true;
-                                console.log('Service Worker is already active');
-                                processMessageQueue();
-                            }
                         }))
                             .catch((error) => __awaiter(this, void 0, void 0, function* () {
                             yield initConceptConnection();
@@ -20936,11 +21194,22 @@ function sendMessage(type, payload) {
         return new Promise((resolve, reject) => {
             // navigator.serviceWorker.ready
             //   .then((registration) => {
-            if (navigator.serviceWorker.controller) {
+            if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
                 const responseHandler = (event) => {
-                    var _a, _b;
+                    var _a, _b, _c, _d, _e, _f;
                     if (((_a = event === null || event === void 0 ? void 0 : event.data) === null || _a === void 0 ? void 0 : _a.messageId) == messageId) { // Check if the message ID matches
-                        if ((_b = event.data) === null || _b === void 0 ? void 0 : _b.actions) {
+                        if (!event.data.success) {
+                            if (((_b = event === null || event === void 0 ? void 0 : event.data) === null || _b === void 0 ? void 0 : _b.status) == 401) {
+                                reject((0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_102__.HandleHttpError)(new Response('Unauthorized', { status: 401, statusText: (_c = event === null || event === void 0 ? void 0 : event.data) === null || _c === void 0 ? void 0 : _c.statusText })));
+                            }
+                            else if (((_d = event === null || event === void 0 ? void 0 : event.data) === null || _d === void 0 ? void 0 : _d.status) == 500) {
+                                reject((0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_102__.HandleInternalError)(new Response('Unauthorized', { status: 401, statusText: (_e = event === null || event === void 0 ? void 0 : event.data) === null || _e === void 0 ? void 0 : _e.statusText })));
+                            }
+                            else {
+                                reject(`Failed to handle action ${type} ${JSON.stringify(payload)}`);
+                            }
+                        }
+                        if ((_f = event.data) === null || _f === void 0 ? void 0 : _f.actions) {
                             payload.actions = JSON.parse(JSON.stringify(event.data.actions));
                         }
                         resolve(event.data);
@@ -20951,12 +21220,13 @@ function sendMessage(type, payload) {
                 // console.log("before sending message", type, 'new', newPayload);
                 // serviceWorker?.postMessage({ type, payload });
                 // Send the message to the service worker
-                if (navigator.serviceWorker.controller) {
+                if (serviceWorker) {
                     try {
-                        navigator.serviceWorker.controller.postMessage({ type, payload: newPayload });
+                        serviceWorker.postMessage({ type, payload: newPayload });
                     }
                     catch (err) {
                         console.log(err);
+                        // serviceWorker.postMessage({ type, payload: newPayload });
                         serviceWorker.postMessage({ type, payload: newPayload });
                     }
                     // navigator.serviceWorker.controller.postMessage({ type, payload });
@@ -20966,8 +21236,9 @@ function sendMessage(type, payload) {
                     setTimeout(() => {
                         // if (navigator.serviceWorker.controller) {
                         if (serviceWorker) {
-                            serviceWorker.postMessage({ type, payload });
-                            // navigator.serviceWorker.controller.postMessage({ type, payload });
+                            // serviceWorker.postMessage({ type, payload });
+                            console.info('This is triggered ');
+                            serviceWorker === null || serviceWorker === void 0 ? void 0 : serviceWorker.postMessage({ type, payload });
                         }
                         else {
                             console.log('not ready', type);
@@ -20984,6 +21255,8 @@ function sendMessage(type, payload) {
             else {
                 messageQueue.push({ message: { type, payload: newPayload } });
                 console.log('Message Queued', type, payload);
+                if (type == 'init')
+                    resolve(null);
             }
             // })
             // .catch(err => reject(err))
@@ -21291,9 +21564,12 @@ function processMessageQueue() {
 /******/ var __webpack_exports__GetCompositionBulk = __webpack_exports__.GetCompositionBulk;
 /******/ var __webpack_exports__GetCompositionBulkWithDataId = __webpack_exports__.GetCompositionBulkWithDataId;
 /******/ var __webpack_exports__GetCompositionFromConnectionsWithDataId = __webpack_exports__.GetCompositionFromConnectionsWithDataId;
+/******/ var __webpack_exports__GetCompositionFromConnectionsWithDataIdFromConnections = __webpack_exports__.GetCompositionFromConnectionsWithDataIdFromConnections;
 /******/ var __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject = __webpack_exports__.GetCompositionFromConnectionsWithDataIdInObject;
 /******/ var __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex = __webpack_exports__.GetCompositionFromConnectionsWithDataIdIndex;
 /******/ var __webpack_exports__GetCompositionFromConnectionsWithIndex = __webpack_exports__.GetCompositionFromConnectionsWithIndex;
+/******/ var __webpack_exports__GetCompositionFromConnectionsWithIndexFromConnections = __webpack_exports__.GetCompositionFromConnectionsWithIndexFromConnections;
+/******/ var __webpack_exports__GetCompositionFromMemoryWithConnections = __webpack_exports__.GetCompositionFromMemoryWithConnections;
 /******/ var __webpack_exports__GetCompositionList = __webpack_exports__.GetCompositionList;
 /******/ var __webpack_exports__GetCompositionListAll = __webpack_exports__.GetCompositionListAll;
 /******/ var __webpack_exports__GetCompositionListAllWithId = __webpack_exports__.GetCompositionListAllWithId;
@@ -21356,6 +21632,7 @@ function processMessageQueue() {
 /******/ var __webpack_exports__RecursiveSearchApiNewRawFullLinker = __webpack_exports__.RecursiveSearchApiNewRawFullLinker;
 /******/ var __webpack_exports__RecursiveSearchApiRaw = __webpack_exports__.RecursiveSearchApiRaw;
 /******/ var __webpack_exports__RecursiveSearchApiRawFullLinker = __webpack_exports__.RecursiveSearchApiRawFullLinker;
+/******/ var __webpack_exports__RecursiveSearchApiWithInternalConnections = __webpack_exports__.RecursiveSearchApiWithInternalConnections;
 /******/ var __webpack_exports__RecursiveSearchListener = __webpack_exports__.RecursiveSearchListener;
 /******/ var __webpack_exports__SchemaQueryListener = __webpack_exports__.SchemaQueryListener;
 /******/ var __webpack_exports__SearchAllConcepts = __webpack_exports__.SearchAllConcepts;
@@ -21399,7 +21676,7 @@ function processMessageQueue() {
 /******/ var __webpack_exports__storeToDatabase = __webpack_exports__.storeToDatabase;
 /******/ var __webpack_exports__subscribedListeners = __webpack_exports__.subscribedListeners;
 /******/ var __webpack_exports__updateAccessToken = __webpack_exports__.updateAccessToken;
-/******/ export { __webpack_exports__ADMIN as ADMIN, __webpack_exports__ALLID as ALLID, __webpack_exports__AddGhostConcept as AddGhostConcept, __webpack_exports__Anomaly as Anomaly, __webpack_exports__BaseUrl as BaseUrl, __webpack_exports__BinaryTree as BinaryTree, __webpack_exports__BuilderStatefulWidget as BuilderStatefulWidget, __webpack_exports__Composition as Composition, __webpack_exports__CompositionBinaryTree as CompositionBinaryTree, __webpack_exports__CompositionNode as CompositionNode, __webpack_exports__Concept as Concept, __webpack_exports__ConceptsData as ConceptsData, __webpack_exports__Connection as Connection, __webpack_exports__ConnectionData as ConnectionData, __webpack_exports__CreateComposition as CreateComposition, __webpack_exports__CreateConnectionBetweenTwoConcepts as CreateConnectionBetweenTwoConcepts, __webpack_exports__CreateConnectionBetweenTwoConceptsGeneral as CreateConnectionBetweenTwoConceptsGeneral, __webpack_exports__CreateConnectionBetweenTwoConceptsLocal as CreateConnectionBetweenTwoConceptsLocal, __webpack_exports__CreateDefaultConcept as CreateDefaultConcept, __webpack_exports__CreateDefaultLConcept as CreateDefaultLConcept, __webpack_exports__CreateSession as CreateSession, __webpack_exports__CreateSessionVisit as CreateSessionVisit, __webpack_exports__CreateTheCompositionLocal as CreateTheCompositionLocal, __webpack_exports__CreateTheCompositionWithCache as CreateTheCompositionWithCache, __webpack_exports__CreateTheConnection as CreateTheConnection, __webpack_exports__CreateTheConnectionGeneral as CreateTheConnectionGeneral, __webpack_exports__CreateTheConnectionLocal as CreateTheConnectionLocal, __webpack_exports__DATAID as DATAID, __webpack_exports__DATAIDDATE as DATAIDDATE, __webpack_exports__DelayFunctionExecution as DelayFunctionExecution, __webpack_exports__DeleteConceptById as DeleteConceptById, __webpack_exports__DeleteConceptLocal as DeleteConceptLocal, __webpack_exports__DeleteConnectionById as DeleteConnectionById, __webpack_exports__DeleteConnectionByType as DeleteConnectionByType, __webpack_exports__DeleteUser as DeleteUser, __webpack_exports__DependencyObserver as DependencyObserver, __webpack_exports__FilterSearch as FilterSearch, __webpack_exports__FormatFromConnections as FormatFromConnections, __webpack_exports__FormatFromConnectionsAltered as FormatFromConnectionsAltered, __webpack_exports__FreeschemaQuery as FreeschemaQuery, __webpack_exports__FreeschemaQueryApi as FreeschemaQueryApi, __webpack_exports__GetAllConnectionsOfComposition as GetAllConnectionsOfComposition, __webpack_exports__GetAllConnectionsOfCompositionBulk as GetAllConnectionsOfCompositionBulk, __webpack_exports__GetAllTheConnectionsByTypeAndOfTheConcept as GetAllTheConnectionsByTypeAndOfTheConcept, __webpack_exports__GetComposition as GetComposition, __webpack_exports__GetCompositionBulk as GetCompositionBulk, __webpack_exports__GetCompositionBulkWithDataId as GetCompositionBulkWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataId as GetCompositionFromConnectionsWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject as GetCompositionFromConnectionsWithDataIdInObject, __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex as GetCompositionFromConnectionsWithDataIdIndex, __webpack_exports__GetCompositionFromConnectionsWithIndex as GetCompositionFromConnectionsWithIndex, __webpack_exports__GetCompositionList as GetCompositionList, __webpack_exports__GetCompositionListAll as GetCompositionListAll, __webpack_exports__GetCompositionListAllWithId as GetCompositionListAllWithId, __webpack_exports__GetCompositionListListener as GetCompositionListListener, __webpack_exports__GetCompositionListLocal as GetCompositionListLocal, __webpack_exports__GetCompositionListLocalWithId as GetCompositionListLocalWithId, __webpack_exports__GetCompositionListWithId as GetCompositionListWithId, __webpack_exports__GetCompositionListWithIdUpdated as GetCompositionListWithIdUpdated, __webpack_exports__GetCompositionListener as GetCompositionListener, __webpack_exports__GetCompositionLocal as GetCompositionLocal, __webpack_exports__GetCompositionLocalWithId as GetCompositionLocalWithId, __webpack_exports__GetCompositionWithAllIds as GetCompositionWithAllIds, __webpack_exports__GetCompositionWithCache as GetCompositionWithCache, __webpack_exports__GetCompositionWithDataIdBulk as GetCompositionWithDataIdBulk, __webpack_exports__GetCompositionWithDataIdWithCache as GetCompositionWithDataIdWithCache, __webpack_exports__GetCompositionWithId as GetCompositionWithId, __webpack_exports__GetCompositionWithIdAndDateFromMemory as GetCompositionWithIdAndDateFromMemory, __webpack_exports__GetConceptBulk as GetConceptBulk, __webpack_exports__GetConceptByCharacter as GetConceptByCharacter, __webpack_exports__GetConceptByCharacterAndCategoryLocal as GetConceptByCharacterAndCategoryLocal, __webpack_exports__GetConceptByCharacterAndType as GetConceptByCharacterAndType, __webpack_exports__GetConnectionBetweenTwoConceptsLinker as GetConnectionBetweenTwoConceptsLinker, __webpack_exports__GetConnectionBulk as GetConnectionBulk, __webpack_exports__GetConnectionById as GetConnectionById, __webpack_exports__GetConnectionDataPrefetch as GetConnectionDataPrefetch, __webpack_exports__GetConnectionOfTheConcept as GetConnectionOfTheConcept, __webpack_exports__GetLink as GetLink, __webpack_exports__GetLinkListListener as GetLinkListListener, __webpack_exports__GetLinkListener as GetLinkListener, __webpack_exports__GetLinkRaw as GetLinkRaw, __webpack_exports__GetLinkerConnectionFromConcepts as GetLinkerConnectionFromConcepts, __webpack_exports__GetLinkerConnectionToConcepts as GetLinkerConnectionToConcepts, __webpack_exports__GetRelation as GetRelation, __webpack_exports__GetRelationLocal as GetRelationLocal, __webpack_exports__GetRelationRaw as GetRelationRaw, __webpack_exports__GetTheConcept as GetTheConcept, __webpack_exports__GetTheConceptLocal as GetTheConceptLocal, __webpack_exports__GetUserGhostId as GetUserGhostId, __webpack_exports__JUSTDATA as JUSTDATA, __webpack_exports__LConcept as LConcept, __webpack_exports__LConnection as LConnection, __webpack_exports__LISTNORMAL as LISTNORMAL, __webpack_exports__LocalConceptsData as LocalConceptsData, __webpack_exports__LocalSyncData as LocalSyncData, __webpack_exports__LocalTransaction as LocalTransaction, __webpack_exports__Logger as Logger, __webpack_exports__LoginToBackend as LoginToBackend, __webpack_exports__MakeTheInstanceConcept as MakeTheInstanceConcept, __webpack_exports__MakeTheInstanceConceptLocal as MakeTheInstanceConceptLocal, __webpack_exports__MakeTheTimestamp as MakeTheTimestamp, __webpack_exports__MakeTheTypeConcept as MakeTheTypeConcept, __webpack_exports__MakeTheTypeConceptApi as MakeTheTypeConceptApi, __webpack_exports__MakeTheTypeConceptLocal as MakeTheTypeConceptLocal, __webpack_exports__NORMAL as NORMAL, __webpack_exports__PRIVATE as PRIVATE, __webpack_exports__PUBLIC as PUBLIC, __webpack_exports__PatcherStructure as PatcherStructure, __webpack_exports__RAW as RAW, __webpack_exports__RecursiveSearchApi as RecursiveSearchApi, __webpack_exports__RecursiveSearchApiNewRawFullLinker as RecursiveSearchApiNewRawFullLinker, __webpack_exports__RecursiveSearchApiRaw as RecursiveSearchApiRaw, __webpack_exports__RecursiveSearchApiRawFullLinker as RecursiveSearchApiRawFullLinker, __webpack_exports__RecursiveSearchListener as RecursiveSearchListener, __webpack_exports__SchemaQueryListener as SchemaQueryListener, __webpack_exports__SearchAllConcepts as SearchAllConcepts, __webpack_exports__SearchLinkInternal as SearchLinkInternal, __webpack_exports__SearchLinkInternalAll as SearchLinkInternalAll, __webpack_exports__SearchLinkMultipleAll as SearchLinkMultipleAll, __webpack_exports__SearchLinkMultipleAllObservable as SearchLinkMultipleAllObservable, __webpack_exports__SearchLinkMultipleApi as SearchLinkMultipleApi, __webpack_exports__SearchQuery as SearchQuery, __webpack_exports__SearchStructure as SearchStructure, __webpack_exports__SearchWithLinker as SearchWithLinker, __webpack_exports__SearchWithTypeAndLinker as SearchWithTypeAndLinker, __webpack_exports__SearchWithTypeAndLinkerApi as SearchWithTypeAndLinkerApi, __webpack_exports__SessionData as SessionData, __webpack_exports__Signin as Signin, __webpack_exports__Signup as Signup, __webpack_exports__SignupEntity as SignupEntity, __webpack_exports__SplitStrings as SplitStrings, __webpack_exports__StatefulWidget as StatefulWidget, __webpack_exports__SyncData as SyncData, __webpack_exports__TrashTheConcept as TrashTheConcept, __webpack_exports__UpdateComposition as UpdateComposition, __webpack_exports__UpdateCompositionLocal as UpdateCompositionLocal, __webpack_exports__UserBinaryTree as UserBinaryTree, __webpack_exports__Validator as Validator, __webpack_exports__ViewInternalData as ViewInternalData, __webpack_exports__ViewInternalDataApi as ViewInternalDataApi, __webpack_exports__WidgetTree as WidgetTree, __webpack_exports__convertFromConceptToLConcept as convertFromConceptToLConcept, __webpack_exports__convertFromLConceptToConcept as convertFromLConceptToConcept, __webpack_exports__createFormFieldData as createFormFieldData, __webpack_exports__dispatchIdEvent as dispatchIdEvent, __webpack_exports__getFromDatabaseWithType as getFromDatabaseWithType, __webpack_exports__getObjectsFromIndexDb as getObjectsFromIndexDb, __webpack_exports__init as init, __webpack_exports__recursiveFetch as recursiveFetch, __webpack_exports__recursiveFetchNew as recursiveFetchNew, __webpack_exports__searchLinkMultipleListener as searchLinkMultipleListener, __webpack_exports__sendMessage as sendMessage, __webpack_exports__serviceWorker as serviceWorker, __webpack_exports__storeToDatabase as storeToDatabase, __webpack_exports__subscribedListeners as subscribedListeners, __webpack_exports__updateAccessToken as updateAccessToken };
+/******/ export { __webpack_exports__ADMIN as ADMIN, __webpack_exports__ALLID as ALLID, __webpack_exports__AddGhostConcept as AddGhostConcept, __webpack_exports__Anomaly as Anomaly, __webpack_exports__BaseUrl as BaseUrl, __webpack_exports__BinaryTree as BinaryTree, __webpack_exports__BuilderStatefulWidget as BuilderStatefulWidget, __webpack_exports__Composition as Composition, __webpack_exports__CompositionBinaryTree as CompositionBinaryTree, __webpack_exports__CompositionNode as CompositionNode, __webpack_exports__Concept as Concept, __webpack_exports__ConceptsData as ConceptsData, __webpack_exports__Connection as Connection, __webpack_exports__ConnectionData as ConnectionData, __webpack_exports__CreateComposition as CreateComposition, __webpack_exports__CreateConnectionBetweenTwoConcepts as CreateConnectionBetweenTwoConcepts, __webpack_exports__CreateConnectionBetweenTwoConceptsGeneral as CreateConnectionBetweenTwoConceptsGeneral, __webpack_exports__CreateConnectionBetweenTwoConceptsLocal as CreateConnectionBetweenTwoConceptsLocal, __webpack_exports__CreateDefaultConcept as CreateDefaultConcept, __webpack_exports__CreateDefaultLConcept as CreateDefaultLConcept, __webpack_exports__CreateSession as CreateSession, __webpack_exports__CreateSessionVisit as CreateSessionVisit, __webpack_exports__CreateTheCompositionLocal as CreateTheCompositionLocal, __webpack_exports__CreateTheCompositionWithCache as CreateTheCompositionWithCache, __webpack_exports__CreateTheConnection as CreateTheConnection, __webpack_exports__CreateTheConnectionGeneral as CreateTheConnectionGeneral, __webpack_exports__CreateTheConnectionLocal as CreateTheConnectionLocal, __webpack_exports__DATAID as DATAID, __webpack_exports__DATAIDDATE as DATAIDDATE, __webpack_exports__DelayFunctionExecution as DelayFunctionExecution, __webpack_exports__DeleteConceptById as DeleteConceptById, __webpack_exports__DeleteConceptLocal as DeleteConceptLocal, __webpack_exports__DeleteConnectionById as DeleteConnectionById, __webpack_exports__DeleteConnectionByType as DeleteConnectionByType, __webpack_exports__DeleteUser as DeleteUser, __webpack_exports__DependencyObserver as DependencyObserver, __webpack_exports__FilterSearch as FilterSearch, __webpack_exports__FormatFromConnections as FormatFromConnections, __webpack_exports__FormatFromConnectionsAltered as FormatFromConnectionsAltered, __webpack_exports__FreeschemaQuery as FreeschemaQuery, __webpack_exports__FreeschemaQueryApi as FreeschemaQueryApi, __webpack_exports__GetAllConnectionsOfComposition as GetAllConnectionsOfComposition, __webpack_exports__GetAllConnectionsOfCompositionBulk as GetAllConnectionsOfCompositionBulk, __webpack_exports__GetAllTheConnectionsByTypeAndOfTheConcept as GetAllTheConnectionsByTypeAndOfTheConcept, __webpack_exports__GetComposition as GetComposition, __webpack_exports__GetCompositionBulk as GetCompositionBulk, __webpack_exports__GetCompositionBulkWithDataId as GetCompositionBulkWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataId as GetCompositionFromConnectionsWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataIdFromConnections as GetCompositionFromConnectionsWithDataIdFromConnections, __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject as GetCompositionFromConnectionsWithDataIdInObject, __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex as GetCompositionFromConnectionsWithDataIdIndex, __webpack_exports__GetCompositionFromConnectionsWithIndex as GetCompositionFromConnectionsWithIndex, __webpack_exports__GetCompositionFromConnectionsWithIndexFromConnections as GetCompositionFromConnectionsWithIndexFromConnections, __webpack_exports__GetCompositionFromMemoryWithConnections as GetCompositionFromMemoryWithConnections, __webpack_exports__GetCompositionList as GetCompositionList, __webpack_exports__GetCompositionListAll as GetCompositionListAll, __webpack_exports__GetCompositionListAllWithId as GetCompositionListAllWithId, __webpack_exports__GetCompositionListListener as GetCompositionListListener, __webpack_exports__GetCompositionListLocal as GetCompositionListLocal, __webpack_exports__GetCompositionListLocalWithId as GetCompositionListLocalWithId, __webpack_exports__GetCompositionListWithId as GetCompositionListWithId, __webpack_exports__GetCompositionListWithIdUpdated as GetCompositionListWithIdUpdated, __webpack_exports__GetCompositionListener as GetCompositionListener, __webpack_exports__GetCompositionLocal as GetCompositionLocal, __webpack_exports__GetCompositionLocalWithId as GetCompositionLocalWithId, __webpack_exports__GetCompositionWithAllIds as GetCompositionWithAllIds, __webpack_exports__GetCompositionWithCache as GetCompositionWithCache, __webpack_exports__GetCompositionWithDataIdBulk as GetCompositionWithDataIdBulk, __webpack_exports__GetCompositionWithDataIdWithCache as GetCompositionWithDataIdWithCache, __webpack_exports__GetCompositionWithId as GetCompositionWithId, __webpack_exports__GetCompositionWithIdAndDateFromMemory as GetCompositionWithIdAndDateFromMemory, __webpack_exports__GetConceptBulk as GetConceptBulk, __webpack_exports__GetConceptByCharacter as GetConceptByCharacter, __webpack_exports__GetConceptByCharacterAndCategoryLocal as GetConceptByCharacterAndCategoryLocal, __webpack_exports__GetConceptByCharacterAndType as GetConceptByCharacterAndType, __webpack_exports__GetConnectionBetweenTwoConceptsLinker as GetConnectionBetweenTwoConceptsLinker, __webpack_exports__GetConnectionBulk as GetConnectionBulk, __webpack_exports__GetConnectionById as GetConnectionById, __webpack_exports__GetConnectionDataPrefetch as GetConnectionDataPrefetch, __webpack_exports__GetConnectionOfTheConcept as GetConnectionOfTheConcept, __webpack_exports__GetLink as GetLink, __webpack_exports__GetLinkListListener as GetLinkListListener, __webpack_exports__GetLinkListener as GetLinkListener, __webpack_exports__GetLinkRaw as GetLinkRaw, __webpack_exports__GetLinkerConnectionFromConcepts as GetLinkerConnectionFromConcepts, __webpack_exports__GetLinkerConnectionToConcepts as GetLinkerConnectionToConcepts, __webpack_exports__GetRelation as GetRelation, __webpack_exports__GetRelationLocal as GetRelationLocal, __webpack_exports__GetRelationRaw as GetRelationRaw, __webpack_exports__GetTheConcept as GetTheConcept, __webpack_exports__GetTheConceptLocal as GetTheConceptLocal, __webpack_exports__GetUserGhostId as GetUserGhostId, __webpack_exports__JUSTDATA as JUSTDATA, __webpack_exports__LConcept as LConcept, __webpack_exports__LConnection as LConnection, __webpack_exports__LISTNORMAL as LISTNORMAL, __webpack_exports__LocalConceptsData as LocalConceptsData, __webpack_exports__LocalSyncData as LocalSyncData, __webpack_exports__LocalTransaction as LocalTransaction, __webpack_exports__Logger as Logger, __webpack_exports__LoginToBackend as LoginToBackend, __webpack_exports__MakeTheInstanceConcept as MakeTheInstanceConcept, __webpack_exports__MakeTheInstanceConceptLocal as MakeTheInstanceConceptLocal, __webpack_exports__MakeTheTimestamp as MakeTheTimestamp, __webpack_exports__MakeTheTypeConcept as MakeTheTypeConcept, __webpack_exports__MakeTheTypeConceptApi as MakeTheTypeConceptApi, __webpack_exports__MakeTheTypeConceptLocal as MakeTheTypeConceptLocal, __webpack_exports__NORMAL as NORMAL, __webpack_exports__PRIVATE as PRIVATE, __webpack_exports__PUBLIC as PUBLIC, __webpack_exports__PatcherStructure as PatcherStructure, __webpack_exports__RAW as RAW, __webpack_exports__RecursiveSearchApi as RecursiveSearchApi, __webpack_exports__RecursiveSearchApiNewRawFullLinker as RecursiveSearchApiNewRawFullLinker, __webpack_exports__RecursiveSearchApiRaw as RecursiveSearchApiRaw, __webpack_exports__RecursiveSearchApiRawFullLinker as RecursiveSearchApiRawFullLinker, __webpack_exports__RecursiveSearchApiWithInternalConnections as RecursiveSearchApiWithInternalConnections, __webpack_exports__RecursiveSearchListener as RecursiveSearchListener, __webpack_exports__SchemaQueryListener as SchemaQueryListener, __webpack_exports__SearchAllConcepts as SearchAllConcepts, __webpack_exports__SearchLinkInternal as SearchLinkInternal, __webpack_exports__SearchLinkInternalAll as SearchLinkInternalAll, __webpack_exports__SearchLinkMultipleAll as SearchLinkMultipleAll, __webpack_exports__SearchLinkMultipleAllObservable as SearchLinkMultipleAllObservable, __webpack_exports__SearchLinkMultipleApi as SearchLinkMultipleApi, __webpack_exports__SearchQuery as SearchQuery, __webpack_exports__SearchStructure as SearchStructure, __webpack_exports__SearchWithLinker as SearchWithLinker, __webpack_exports__SearchWithTypeAndLinker as SearchWithTypeAndLinker, __webpack_exports__SearchWithTypeAndLinkerApi as SearchWithTypeAndLinkerApi, __webpack_exports__SessionData as SessionData, __webpack_exports__Signin as Signin, __webpack_exports__Signup as Signup, __webpack_exports__SignupEntity as SignupEntity, __webpack_exports__SplitStrings as SplitStrings, __webpack_exports__StatefulWidget as StatefulWidget, __webpack_exports__SyncData as SyncData, __webpack_exports__TrashTheConcept as TrashTheConcept, __webpack_exports__UpdateComposition as UpdateComposition, __webpack_exports__UpdateCompositionLocal as UpdateCompositionLocal, __webpack_exports__UserBinaryTree as UserBinaryTree, __webpack_exports__Validator as Validator, __webpack_exports__ViewInternalData as ViewInternalData, __webpack_exports__ViewInternalDataApi as ViewInternalDataApi, __webpack_exports__WidgetTree as WidgetTree, __webpack_exports__convertFromConceptToLConcept as convertFromConceptToLConcept, __webpack_exports__convertFromLConceptToConcept as convertFromLConceptToConcept, __webpack_exports__createFormFieldData as createFormFieldData, __webpack_exports__dispatchIdEvent as dispatchIdEvent, __webpack_exports__getFromDatabaseWithType as getFromDatabaseWithType, __webpack_exports__getObjectsFromIndexDb as getObjectsFromIndexDb, __webpack_exports__init as init, __webpack_exports__recursiveFetch as recursiveFetch, __webpack_exports__recursiveFetchNew as recursiveFetchNew, __webpack_exports__searchLinkMultipleListener as searchLinkMultipleListener, __webpack_exports__sendMessage as sendMessage, __webpack_exports__serviceWorker as serviceWorker, __webpack_exports__storeToDatabase as storeToDatabase, __webpack_exports__subscribedListeners as subscribedListeners, __webpack_exports__updateAccessToken as updateAccessToken };
 /******/ 
 
 //# sourceMappingURL=main.bundle.js.map

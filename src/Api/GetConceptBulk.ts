@@ -5,7 +5,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
-import { sendMessage, serviceWorker } from "../app";
+import { BinaryTree, sendMessage, serviceWorker } from "../app";
 
 /**
  * This function takes in a list of ids and returns a list of concepts . This uses local memory to find concepts
@@ -71,7 +71,6 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
                         let concept = result[i] as Concept;
                         ConceptsData.AddConcept(concept);
                     }
-    
                 }
                 console.log("added the concepts");
                 // Add Log

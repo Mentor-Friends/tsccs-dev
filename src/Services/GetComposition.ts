@@ -5,6 +5,7 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData"
 import { GetConceptBulk, GetTheConcept, sendMessage, serviceWorker } from "../app";
+import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree";
 
 
 
@@ -254,11 +255,55 @@ export async function GetCompositionWithIdFromMemory(id:number){
         // console.log('data received from sw', res)
         return res.data
       }
+      let FinalReturn: any = {};
 
     let connectionList:Connection[] = [];
     let returnOutput: any = {};
    // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
+   try{
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+    let compositionList:number[] = [];
+    for(let i=0; i<connectionList.length; i++){
+        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+            compositionList.push(connectionList[i].ofTheConceptId);
+        }
+    }
+    let concept = await ConceptsData.GetConcept(id);
+    if(concept.id == 0 && id != null && id != undefined){
+        let conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    let output = await recursiveFetchConcept(concept, connectionList, compositionList);
+   // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
+     let mainString = concept?.type?.characterValue ?? "";
+     returnOutput[mainString] = output;
+    FinalReturn['created_at'] = concept.entryTimeStamp;
+    FinalReturn['data'] = returnOutput;
+    FinalReturn['id'] = id;
+   }
+   catch(error){
+    console.log("this is the exception in GetCompositionWithIdFromMemory", id);
+   }
+   return FinalReturn;
+
+
+}
+
+/**
+ * ### Format Normal ####
+ * Gets data just from memory
+ * @param id 
+ * @returns 
+ */
+export async function GetCompositionFromMemoryWithConnections(id:number, connectionList:Connection[]){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionFromMemoryWithConnections', {id, connectionList})
+        // console.log('data received from sw', res)
+        return res.data
+      }
+
+    let returnOutput: any = {};
+   // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
 
     let compositionList:number[] = [];
     for(let i=0; i<connectionList.length; i++){
@@ -272,6 +317,45 @@ export async function GetCompositionWithIdFromMemory(id:number){
      concept = conceptString as Concept;
     }
     let output = await recursiveFetchConcept(concept, connectionList, compositionList);
+   // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
+     let mainString = concept?.type?.characterValue ?? "";
+     returnOutput[mainString] = output;
+    let FinalReturn: any = {};
+    FinalReturn['created_at'] = concept.entryTimeStamp;
+    FinalReturn['data'] = returnOutput;
+    FinalReturn['id'] = id;
+    return FinalReturn;
+}
+
+/**
+ * ### Format DATAIDDATE ####
+ * Gets data just from memory
+ * @param id 
+ * @returns 
+ */
+export async function GetCompositionWithIdFromMemoryFromConnection(id:number, connectionList: Connection[]){
+    if (serviceWorker) {
+        const res: any = await sendMessage('GetCompositionWithIdFromMemory', {id})
+        // console.log('data received from sw', res)
+        return res.data
+      }
+
+    let returnOutput: any = {};
+   // connectionList = await ConnectionData.GetConnectionsOfConcept(id);
+
+    let compositionList:number[] = [];
+    for(let i=0; i<connectionList.length; i++){
+        if(!compositionList.includes(connectionList[i].ofTheConceptId)){
+            compositionList.push(connectionList[i].ofTheConceptId);
+        }
+    }
+    let concept = await ConceptsData.GetConcept(id);
+    if(concept.id == 0 && id != null && id != undefined){
+        let conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    let output = await recursiveFetchConcept(concept, connectionList, compositionList);
+    console.log("this is the output", output, concept);
    // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
      let mainString = concept?.type?.characterValue ?? "";
      returnOutput[mainString] = output;

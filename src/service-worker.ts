@@ -13,6 +13,7 @@ import { Actions, createActions, getActions, searchActions, syncActions, updateA
 
 let tabActionsMap: Map<string, InnerActions> = new Map()
 let TSCCS_init = false
+let actionsLock = false
 
 // Install Service Worker
 self.addEventListener("install", (event: any) => {
@@ -32,16 +33,7 @@ self.addEventListener("activate", async (event: any) => {
         // Claim control of the clients (this makes the service worker active immediately)
         (self as any).clients.claim();
         console.log('claimed')
-        
-        if (!TSCCS_init) {
-          // Send a message using broadcastChannel to notify about init status
-          broadcastChannel.postMessage({
-            type: "checkInit",
-            payload: {},
-          });
-  
-          console.log("Message posted to broadcastChannel");
-        }
+        checkSWInitialization()
 
         // Resolve the Promise to indicate activation is complete
         resolve(undefined);
@@ -52,6 +44,29 @@ self.addEventListener("activate", async (event: any) => {
     })
   );
 });
+// Handle 401 in service worker
+// self.addEventListener('fetch', (event: any) => {
+//   event.respondWith(
+//     fetch(event.request)
+//       .then(response => {
+//         if (response.status === 401) {
+//           // Post a message to the main thread about the 401
+//           event.source.postMessage({success: false, data: {status: 401, statusText: response.statusText}, messageId: event?.payload?.messageId})
+//           // (self as any).clients.matchAll().then((clients: any) => {
+//           //   clients.forEach((client: any) => {
+//           //     client.postMessage({ type: 'auth-error', message: 'Unauthorized' });
+//           //   });
+//           // });
+//         }
+//         return response;
+//       })
+//       .catch(error => {
+//         console.error('Network error: ', error)
+//         // Handle network errors
+//         return new Response('Network error', { status: 500 });
+//       })
+//   );
+// });
 
 
 // For Caching gives the event when fetch request is triggered
@@ -64,7 +79,7 @@ const actions: Actions = {
   init: async (payload: any) => {
     if (TSCCS_init) {
       console.warn('Already Initialized')
-      return {success: false, name: 'init'}
+      return {success: true, name: 'init'}
     }
     TSCCS_init = true
     await init(
@@ -94,67 +109,77 @@ const actions: Actions = {
 
 // Listen message received by service worker
 self.addEventListener("message", async (event: any) => {
-  // console.log("message received sw", event);
+  let responseData: {success: boolean, data?: any, messageId?: string, actions?: InnerActions} = {success: false, data: undefined}
   const { type, payload }: any = event.data;
   const tabId = payload.TABID
   let addedActions = false
-  
-  if (!type || !payload.TABID) return;
-  
-  if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})
 
-  let responseData: {success: boolean, data?: any, messageId?: string, actions?: InnerActions} = {success: false, data: undefined}
-  let tabData = tabActionsMap.get(tabId)
-  if (!Array.isArray(payload?.actions?.concepts) || !Array.isArray(payload?.actions?.connections)) {
-    payload.actions = {concepts: [], connections: []}
-    addedActions = true
-  }
+  try {
+    if (!type || !payload.TABID) return;
   
-  if (type == 'LocalSyncData__SyncDataOnline' && !payload.transactionId && tabData) {
-    // add all the transaction to sync for the curernt tab // little chance of error when syncing is before marking of query transaction on single tab 
-    // console.log('tab Data in local', tabData)
-    const data = await LocalSyncData.SyncDataOnline(undefined, JSON.parse(JSON.stringify(tabData)));
-
-    tabActionsMap.delete(tabId)
-    tabData = undefined
-    console.log('Syncing the tab here', type)
-
-    responseData = { success: true, data, actions: {concepts: [], connections: []} }
-  } else if (actions[type]) {
-    try {
-      responseData = await actions[type](payload);
-    } catch (err) {
-      console.log('Error: type -> ', type, err)
+    if (!checkSWInitialization()) {
+      console.warn('Message received before sw initialization', type)
+      event.source.postMessage(responseData)
     }
-  } else {
-    console.log(`Unable to handle "${type}" case in service worker`)
-  }
-  responseData.messageId = payload.messageId
-  
-  // update the concepts for current actions
-  if (responseData.actions && tabData) {
-    let data = {
-      concepts: [...tabData.concepts, ...responseData.actions.concepts],
-      connections: [
-        ...tabData.connections,
-        ...responseData.actions.connections,
-      ],
-    }
-    // save unique concepts and connections
-    let data2 = {
-      concepts: Array.from(
-      new Map(data.concepts.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
-      connections: Array.from(
-      new Map(data.connections.map(item => [`${item.id}-${item.ghostId}`, item])).values()),
-  }
-    tabActionsMap.set(tabId, JSON.parse(JSON.stringify(data2)));
     
-  }
-
-  if (addedActions) delete responseData.actions
+    if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})
   
-  event.source.postMessage(responseData)
-
+    let tabData = tabActionsMap.get(tabId)
+    if (!Array.isArray(payload?.actions?.concepts) || !Array.isArray(payload?.actions?.connections)) {
+      payload.actions = {concepts: [], connections: []}
+      addedActions = true
+    }
+    
+    if (type == 'LocalSyncData__SyncDataOnline' && !payload.transactionId && tabData) {
+      // add all the transaction to sync for the curernt tab // little chance of error when syncing is before marking of query transaction on single tab 
+      // console.log('tab Data in local', tabData)
+      const dataPromise = LocalSyncData.SyncDataOnline(undefined, JSON.parse(JSON.stringify(tabData)));
+  
+      tabActionsMap.delete(tabId)
+      tabData = undefined
+      console.log('Syncing the tab here', type)
+  
+      responseData = { success: true, data: await dataPromise, actions: {concepts: [], connections: []} }
+    } else if (actions[type]) {
+        responseData = await actions[type](payload);
+    } else {
+      console.log(`Unable to handle "${type}" case in service worker`)
+    }
+    responseData.messageId = payload.messageId
+    
+    if (actionsLock) console.warn('Race condition has been met', type); // use queue if occured
+    actionsLock = true
+      tabData = tabActionsMap.get(tabId)
+    // update the concepts for current actions
+    if (responseData.actions && tabData) {
+      let data = {
+        concepts: [...tabData.concepts, ...responseData.actions.concepts],
+        connections: [
+          ...tabData.connections,
+          ...responseData.actions.connections,
+        ],
+      }
+      // save unique concepts and connections
+      const [concepts, connections] = await Promise.all([
+        Promise.all(Array.from(
+          new Map(data.concepts.map(item => [`${item.id}-${item.ghostId}`, item])).values())),
+        Promise.all(Array.from(
+          new Map(data.connections.map(item => [`${item.id}-${item.ghostId}`, item])).values()))
+      ])
+      tabActionsMap.set(tabId, JSON.parse(JSON.stringify({concepts, connections})));
+    }
+    actionsLock = false
+  
+    if (addedActions) delete responseData.actions
+    
+    event.source.postMessage(responseData)
+  } catch (error: any) {
+    if (error?.status == 401 || error?.status == 500) {
+      responseData = {success: false, data: {status: error.status, statusText: error?.url}, messageId: payload.messageId}
+    }
+    console.log('Service worker Message Handle Error: ', type, error)
+    event.source.postMessage(responseData)
+  }
 });
 
 /**
@@ -284,4 +309,22 @@ async function init(
       //console.log("This is the error in creating connections tree");
       throw event;
     });
+}
+
+/**
+ * Method to check and inform main thread if sw is not initialized
+ * @returns boolean
+ */
+const checkSWInitialization = () => {
+  if (!TSCCS_init) {
+    // Send a message using broadcastChannel to notify about init status
+    broadcastChannel.postMessage({
+      type: "checkInit",
+      payload: {},
+    });
+
+    console.log("Message posted to broadcastChannel");
+    return false
+  }
+  return true
 }

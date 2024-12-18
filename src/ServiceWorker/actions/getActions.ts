@@ -9,12 +9,13 @@ import {
   GetCompositionById,
   GetCompositionFromMemory,
   GetCompositionFromMemoryNormal,
+  GetCompositionFromMemoryWithConnections,
   GetCompositionWithId,
   GetCompositionWithIdAndDateFromMemory,
   GetCompositionWithIdFromMemory,
   GetCompositionWithIdFromMemoryNew,
 } from "../../Services/GetComposition";
-import { GetCompositionFromConnectionsWithDataId, GetCompositionFromConnectionsWithDataIdIndex, GetConnectionDataPrefetch } from "../../Services/GetCompositionBulk";
+import { GetCompositionFromConnectionsWithDataId, GetCompositionFromConnectionsWithDataIdFromConnections, GetCompositionFromConnectionsWithDataIdIndex, GetCompositionFromConnectionsWithIndex, GetCompositionFromConnectionsWithIndexFromConnections, GetConnectionDataPrefetch } from "../../Services/GetCompositionBulk";
 import { GetConceptByCharacterUpdated } from "../../Services/GetConceptByCharacter";
 import { GetTheConceptLocal } from "../../Services/Local/GetTheConceptLocal";
 import { GetLinkListener } from "../../WrapperFunctions/GetLinkObservable";
@@ -140,7 +141,25 @@ export const getActions: Actions = {
 
   GetAllTheConnectionsByTypeAndOfTheConcept: async (payload) => {
     const data = await GetAllTheConnectionsByTypeAndOfTheConcept(payload.id,
-      payload.linker)
+      payload.linker, payload.reverse)
+    return { success: true, data };
+  },
+
+  GetCompositionFromMemoryWithConnections: async (payload) => {
+    const data = await GetCompositionFromMemoryWithConnections(payload.id, payload.connectionList)
+    return {success: true, data};
+  },
+
+  GetCompositionFromConnectionsWithIndexFromConnections: async (payload) =>{
+    const data = await GetCompositionFromConnectionsWithIndexFromConnections(
+      payload.conceptIds, payload.connectionIds)
+    return { success: true, data };
+  },
+
+  GetCompositionFromConnectionsWithDataIdFromConnections: async (payload) => {
+    const data = await GetCompositionFromConnectionsWithDataIdFromConnections(
+      payload.conceptIds, payload.connectionIds
+    )
     return { success: true, data };
   },
 
@@ -194,7 +213,7 @@ export const getActions: Actions = {
     return { success: true, data };
   },
   ConnectionData__GetConnectionsOfCompositionLocal: async (payload) => {
-    const data = await ConnectionData.GetConnection(payload.id)
+    const data = await ConnectionData.GetConnectionsOfCompositionLocal(payload.id)
     return { success: true, data };
   },
   ConnectionData__GetConnectionsOfConcept: async (payload) => {
