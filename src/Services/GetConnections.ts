@@ -1,3 +1,4 @@
+import { AccessTracker } from "../AccessTracker/accessTracker";
 import { GetConnection } from "../Api/GetConnection";
 import { sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
@@ -6,6 +7,12 @@ import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/Con
 import { ConnectionData } from "../DataStructures/ConnectionData";
 
 export  async function GetConnectionById(id:number){
+   // Add connection id in access tracker
+   try{
+      AccessTracker.incrementConnection(id)
+   } catch {
+      console.error("Error adding connections in access tracker");
+   }
    if (serviceWorker) {
       const res: any = await sendMessage('GetConnectionById', { id })
       // console.log('data received from sw', res)
