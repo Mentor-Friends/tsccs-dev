@@ -1,4 +1,5 @@
 import { BaseUrl } from "../app";
+import { BASE_URL } from "../Constants/ApiConstants";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 type CountMap = Record<number, number>;
@@ -83,7 +84,10 @@ export class AccessTracker {
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
             const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
 
-            const response = await fetch(`http://localhost:5000/api/v1/access-tracker/sync-access-tracker`, {
+            // const response = await fetch(`http://localhost:5000/api/v1/access-tracker/sync-access-tracker`, {
+            console.log("I am getting url : ", BaseUrl.PostPrefetchConceptConnections());
+            
+            const response = await fetch(BaseUrl.PostPrefetchConceptConnections(), {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
@@ -157,5 +161,73 @@ export class AccessTracker {
           console.warn("[MANUAL SYNC] No valid access token found. Sync aborted.");
         }
     }
+
+    /**
+     * Fetch suggested concepts from the server with proper error handling.
+     */
+    public static async GetSuggestedConcepts() {
+        try {
+            const accessToken = TokenStorage.BearerAccessToken;
+
+            const response = await fetch(BaseUrl.GetSuggestedConcepts(), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorDetails = await response.text();
+                throw new Error(`Failed to load concepts: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
+            }
+
+            const concepts = await response.json() || [];
+            return concepts;
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error('Error fetching suggested concepts:', error.message);
+                throw new Error('Unable to fetch suggested concepts. Please try again later.');
+            } else {
+                console.error('An unexpected error occurred:', error);
+                throw new Error('An unexpected error occurred while fetching suggested concepts.');
+            }
+        }
+    }
+
+
+    /**
+     * Fetch suggested connections from the server with proper error handling.
+     */
+    public static async GetSuggestedConnections() {
+        try {
+            const accessToken = TokenStorage.BearerAccessToken;
+
+            const response = await fetch(BaseUrl.GetSuggestedConnections(), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorDetails = await response.text();
+                throw new Error(`Failed to load connections: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
+            }
+
+            const connections = await response.json() || [];
+            return connections;
+        } catch (error:any) {
+            if (error instanceof Error) {
+                console.error('Error fetching suggested Connections:', error.message);
+                throw new Error('Unable to fetch suggested connections. Please try again later.');
+            } else {
+                console.error('An unexpected error occurred:', error);
+                throw new Error('An unexpected error occurred while fetching suggested Connections.');
+            }
+        }
+    }
+
     
 }
