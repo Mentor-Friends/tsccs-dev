@@ -3,8 +3,8 @@ const Dotenv = require('dotenv-webpack');
 
 module.exports = env => ({
    entry: './src/app.ts',
-   mode: 'development',
-   devtool: 'inline-source-map',
+   mode: 'production',
+   //devtool: 'inline-source-map',
    watch: true,
    output: {
       filename: 'bundle.js',

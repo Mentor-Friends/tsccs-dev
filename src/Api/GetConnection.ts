@@ -3,6 +3,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { Connection } from "../DataStructures/Connection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConnection(id: number){
     var result :Connection= await ConnectionData.GetConnection(id);
 
@@ -24,6 +25,7 @@ export async function GetConnection(id: number){
             }
             else{
                 console.log("Get Connection Error", response.status);
+                HandleHttpError(response);
             }
             return result;
             
@@ -36,6 +38,6 @@ export async function GetConnection(id: number){
         } else {
           console.log('Get Connection unexpected error: ', error);
         }
-        return result;
+        throw error;
       }
 }

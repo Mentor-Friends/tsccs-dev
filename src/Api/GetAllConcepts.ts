@@ -2,6 +2,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetAllConceptsOfUserUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetAllUserConcepts(userId: number){
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
@@ -18,6 +19,7 @@ export async function GetAllUserConcepts(userId: number){
             }
             else{
               console.log("GetAllUserConcepts error", response.status);
+              HandleHttpError(response);
             }
 
     }
@@ -27,5 +29,6 @@ export async function GetAllUserConcepts(userId: number){
         } else {
           console.log('GetAllUserConcepts unexpected error: ', error);
         }
+        throw error;
       }
 }

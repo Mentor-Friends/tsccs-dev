@@ -3,6 +3,7 @@ import { GetConceptByCharacterAndTypeUrl } from './../Constants/ApiConstants';
 import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
   let concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
     try{
@@ -26,7 +27,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           else{
           //  throw new Error(`Error! status: ${response.status}`);
             console.log("This is the concept by type and character error", response.status);
-
+            HandleHttpError(response);
           }
 
       }
@@ -39,6 +40,6 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
         } else {
           console.log(' This is the concept by type and character unexpected error: ', error);
         }
-        return concept;
+        throw error;
       }
 }

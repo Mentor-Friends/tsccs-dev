@@ -2,6 +2,7 @@ import { CreateTheTextDataUrl } from "../../Constants/ApiConstants";
 import { TheTexts } from "../../DataStructures/TheTexts";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function CreateTextData(textData: TheTexts){
     try{
             var header = GetRequestHeader();
@@ -11,6 +12,7 @@ export async function CreateTextData(textData: TheTexts){
                 body: JSON.stringify(textData),
             });
             if(!response.ok){
+              HandleHttpError(response);
                 throw new Error(`Error! status: ${response.status}`);
             }
              const resultString = await response.json();
@@ -24,6 +26,6 @@ export async function CreateTextData(textData: TheTexts){
         } else {
           console.log('Create the text unexpected error: ', error);
         }
-        return {};
+       throw error;
       }
 }

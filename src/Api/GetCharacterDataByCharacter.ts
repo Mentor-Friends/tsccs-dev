@@ -4,6 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { TheCharacter } from "../DataStructures/TheCharacter";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetCharacterByCharacter(characterValue: string){
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
@@ -13,6 +14,7 @@ export async function GetCharacterByCharacter(characterValue: string){
                 body: `character_value=${characterValue}`
             });
             if(!response.ok){
+               HandleHttpError(response);
                 throw new Error(`Error! status: ${response.status}`);
             }
              const result = await response.json() as TheCharacter;
@@ -21,10 +23,9 @@ export async function GetCharacterByCharacter(characterValue: string){
     catch (error) {
         if (error instanceof Error) {
           console.log('error message: ', error.message);
-          return error.message;
         } else {
           console.log('unexpected error: ', error);
-          return 'An unexpected error occurred';
         }
+        throw error;
       }
 }

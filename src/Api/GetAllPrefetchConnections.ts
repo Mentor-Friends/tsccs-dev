@@ -1,5 +1,6 @@
 import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
+import { HandleHttpError } from '../Services/Common/ErrorPosting';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { ConnectionData } from '../app';
@@ -17,6 +18,7 @@ export async function GetAllPrefetchConnections(userId:number, inpage:number){
             body: urlencoded
         });
         if(!response.ok){
+           HandleHttpError(response);
             throw new Error(`Get all prefetch connections Error! status: ${response.status}`);
         }
          const result = await response.json();
@@ -31,10 +33,9 @@ export async function GetAllPrefetchConnections(userId:number, inpage:number){
 catch (error) {
     if (error instanceof Error) {
       console.log('Get all prefetch connections error message: ', error.message);
-      return error.message;
     } else {
       console.log('Get all prefetch connections unexpected error: ', error);
-      return 'An unexpected error occurred';
     }
+    throw error;
   }
 }

@@ -5,6 +5,7 @@ import { TheCharacter } from "../DataStructures/TheCharacter";
 import { Connection } from "../DataStructures/Connection";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
   let connectionList:Connection[] = []; 
   try{
@@ -25,6 +26,7 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
             }
             else{
               console.log("Get connection of concept error", response.status);
+              HandleHttpError(response);
             }
             return connectionList;
     }
@@ -34,6 +36,6 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
         } else {
           console.log('Get connection of concept unexpected error: ', error);
         }
-        return connectionList;
+        throw error;
       }
 }

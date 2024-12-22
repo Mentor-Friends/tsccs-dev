@@ -4,6 +4,7 @@ import { SearchQuery } from "../DataStructures/SearchQuery";
 import { GetCompositionFromConnectionsWithDataId } from "../Services/GetCompositionBulk";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 
 export  async function RecursiveSearchApi(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
   var concepts:any[] = [];
@@ -30,6 +31,7 @@ try{
     }
     else{
       console.log("recursive search error ", response.status);
+      HandleHttpError(response);
     }
     return concepts;
 
@@ -41,6 +43,6 @@ catch (error) {
     } else {
       console.log('recursive search unexpected error: ', error);
     }
-    return concepts;
+    throw error;
   }
 }

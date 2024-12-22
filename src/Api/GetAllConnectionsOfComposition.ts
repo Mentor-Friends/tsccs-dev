@@ -6,6 +6,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionBinaryTree } from '../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { HandleHttpError } from '../Services/Common/ErrorPosting';
 export async function GetAllConnectionsOfComposition(composition_id: number){
       
         var connectionList: Connection[] = [];
@@ -36,6 +37,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
         body: `composition_id=${composition_id}`
       });
       if(!response.ok){
+        HandleHttpError(response);
           throw new Error(`Error! status: ${response.status}`);
       }
       const result = await response.json();
@@ -52,6 +54,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
       } else {
         console.log('Get all connection of composition error : ', error);
       }
-      return connectionList;
+      throw error;
     }
 }

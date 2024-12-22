@@ -1,4 +1,5 @@
 import { Connection } from "../DataStructures/Connection";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { BaseUrl } from "../app";
 
@@ -22,6 +23,7 @@ export async function GetAllLinkerConnectionsFromTheConcept(conceptId:number){
           }
           else{
             console.log("Get all linker connection from the concepts error", "cannot get respone" );
+            HandleHttpError(response);
 
           }
            return connections;
@@ -32,6 +34,6 @@ export async function GetAllLinkerConnectionsFromTheConcept(conceptId:number){
       } else {
         console.log('Get all linker connection from the concepts error(Unexpected): ', error);
       }
-      return connections;
+      throw error;
     }
 }

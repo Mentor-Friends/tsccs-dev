@@ -3,6 +3,7 @@ import { Concept } from "../../DataStructures/Concept";
 import { Connection } from "../../DataStructures/Connection";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheConnectionApi(connectionData: Connection[]){
   let result = new Connection(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
     try{
@@ -21,6 +22,7 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
             }
             else{
               console.log('Create the connection error message: ', response);
+              HandleHttpError(response);
             }
             return result;
 
@@ -32,6 +34,6 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
         } else {
           console.log(' Create the connection unexpected error: ', error);
         }
-        return result;
+        throw error;
       }
 }

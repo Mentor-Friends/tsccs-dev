@@ -75,29 +75,35 @@ export class SyncData{
      }
 
      static async  SyncDataOnline(){
-        for(let i=0;i<this.conceptsSyncArray.length;i++){
-            ConceptsData.AddConcept(this.conceptsSyncArray[i]);
+        try{
+            for(let i=0;i<this.conceptsSyncArray.length;i++){
+                ConceptsData.AddConcept(this.conceptsSyncArray[i]);
+            }
+    
+            for(let i=0;i<this.connectionSyncArray.length;i++){
+                ConnectionData.AddConnection(this.connectionSyncArray[i]);
+            }
+            
+            if(this.conceptsSyncArray.length > 0){
+                let conceptsArray = this.conceptsSyncArray.slice();
+                this.conceptsSyncArray = [];
+                CreateTheConceptApi(conceptsArray);
+            }
+             if(this.connectionSyncArray.length > 0){
+    
+                // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
+                //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
+                // }
+                let connectionsArray = this.connectionSyncArray.slice();
+                this.connectionSyncArray = [];
+                await CreateTheConnectionApi(connectionsArray);
+            }
+            return "done";
+        }
+        catch(err){
+            throw err;
         }
 
-        for(let i=0;i<this.connectionSyncArray.length;i++){
-            ConnectionData.AddConnection(this.connectionSyncArray[i]);
-        }
-        
-        if(this.conceptsSyncArray.length > 0){
-            let conceptsArray = this.conceptsSyncArray.slice();
-            this.conceptsSyncArray = [];
-            CreateTheConceptApi(conceptsArray);
-        }
-         if(this.connectionSyncArray.length > 0){
-
-            // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
-            //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);
-            // }
-            let connectionsArray = this.connectionSyncArray.slice();
-            this.connectionSyncArray = [];
-            await CreateTheConnectionApi(connectionsArray);
-        }
-        return "done";
 
      }
 

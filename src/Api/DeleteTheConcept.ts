@@ -1,5 +1,6 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Concept } from "../DataStructures/Concept";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConcept(id:number){
     try{
@@ -10,6 +11,7 @@ export default async function DeleteTheConcept(id:number){
                 body: formdata
             });
             if(!response.ok){
+              HandleHttpError(response);
                 throw new Error(`Error! status: ${response.status}`);
             }
 
@@ -22,5 +24,6 @@ export default async function DeleteTheConcept(id:number){
         } else {
           console.log('Delete concept unexpected error: ', error);
         }
+        throw error;
       }
 }

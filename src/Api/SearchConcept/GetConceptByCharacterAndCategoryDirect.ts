@@ -4,6 +4,7 @@ import { Concept } from "./../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../../app";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: string, category_id: number){
     let concept = CreateDefaultConcept();
 
@@ -22,6 +23,7 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
           else{
           //  throw new Error(`Error! status: ${response.status}`);
             console.log("This is the concept by category and character error", response.status);
+            HandleHttpError(response);
             }
       return concept;
 
@@ -32,6 +34,6 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
         } else {
           console.log(' This is the concept by category and character unexpected error: ', error);
         }
-        return concept;
+        throw error;
       }
 }

@@ -5,6 +5,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConnectionBulk(connectionIds: number[] = []){
     var connectionList:Connection[] = [];
 
@@ -43,6 +44,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []){
             }
             else{
                 console.log("Get Connection Bulk error", response.status);
+                HandleHttpError(response);
             }
 
 
@@ -57,6 +59,6 @@ export async function GetConnectionBulk(connectionIds: number[] = []){
         } else {
           console.log('Get Connection Bulk unexpected error: ', error);
         }
-        return connectionList;
+        throw error;
       }
 }

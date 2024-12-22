@@ -2,6 +2,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetAllConceptsByTypeUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetAllConceptsByType(type:string,userId: number){
     try{
             var urlencoded = new URLSearchParams();
@@ -22,6 +23,7 @@ export async function GetAllConceptsByType(type:string,userId: number){
             }
 
             console.log("GetAllConceptsByType error", response.status);
+            HandleHttpError(response);
 
     }
     catch (error) {
@@ -30,5 +32,6 @@ export async function GetAllConceptsByType(type:string,userId: number){
         } else {
           console.log('GetAllConceptsByType unexpected error: ', error);
         }
+        throw error;
       }
 }

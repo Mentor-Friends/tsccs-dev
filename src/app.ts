@@ -58,6 +58,7 @@ export {GetCompositionFromConnectionsWithDataIdInObject} from './Services/GetCom
 export {ViewInternalData} from './Services/View/ViewInternalData';
 export {convertFromLConceptToConcept} from './Services/Conversion/ConvertConcepts';
 export {SearchLinkInternal} from './Services/Search/SearchLinkInternal';
+export { HandleHttpError } from './Services/Common/ErrorPosting'; 
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -78,6 +79,7 @@ export {CompositionNode} from './DataStructures/Composition/CompositionNode';
 export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
 export {FilterSearch} from './DataStructures/FilterSearch';
 export {SearchStructure} from './DataStructures/Search/SearchStructure';
+export {FreeSchemaResponse} from './DataStructures/Responses/ErrorResponse';
 import {GetDataFromIndexDb,GetDataFromIndexDbLocal} from './Services/GetDataFromIndexDb';
 import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTreeFromData';
 import InitializeSystem from './Services/InitializeSystem';

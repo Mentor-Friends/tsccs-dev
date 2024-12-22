@@ -5,7 +5,8 @@ import { LConnection } from "../../DataStructures/Local/LConnection";
 import { CreateDefaultConcept } from "../CreateDefaultConcept";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept"
 
-  
+
+
   export function convertFromConceptToLConcept(concept: Concept) {
     const LConcept: LConcept = CreateDefaultLConcept()
     LConcept.id = concept.id

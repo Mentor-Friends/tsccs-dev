@@ -5,6 +5,7 @@ import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept } from "../../app";
+import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheConceptApi(conceptData: any){
   let result = CreateDefaultConcept();
     try{
@@ -15,6 +16,7 @@ export async function CreateTheConceptApi(conceptData: any){
                 body: JSON.stringify(conceptData),
             });
             if(!response.ok){
+              HandleHttpError(response);
                 throw new Error(`Error! status: ${response.status}`);
             }
              const resultString = await response.json();
@@ -28,6 +30,6 @@ export async function CreateTheConceptApi(conceptData: any){
         } else {
           console.log('Create the concept api unexpected error: ', error);
         }
-        return result;
+        throw error;
       }
 }

@@ -4,6 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { ReservedIds } from "../DataStructures/ReservedIds";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetReservedIds(){
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
@@ -12,6 +13,7 @@ export async function GetReservedIds(){
                 headers: header,
             });
             if(!response.ok){
+                HandleHttpError(response);
                 throw new Error(`Error! status: ${response.status}`);
             }
              const result = await response.json();
@@ -22,10 +24,9 @@ export async function GetReservedIds(){
     catch (error) {
         if (error instanceof Error) {
           console.log('get reserved ids error message: ', error.message);
-          return error.message;
         } else {
           console.log('get reserved ids  unexpected error: ', error);
-          return 'An unexpected error occurred';
         }
+        throw error;
       }
 }
