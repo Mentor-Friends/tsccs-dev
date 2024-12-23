@@ -136,7 +136,7 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
     let newCompositionData: any [] = [];
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
     compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
-
+    console.log("this is the composition data", compositionData);
      let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse );
      return output;
 }

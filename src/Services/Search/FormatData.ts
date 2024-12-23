@@ -1,4 +1,5 @@
 import { Connection, GetTheConcept } from "../../app";
+import { removeThePrefix } from "../Common/RegexFunction";
 
 /**
  * ######### Format is normal ######### used for listing. This only provides type connections.
@@ -81,7 +82,11 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
   
             let key = ofTheConcept.type?.characterValue ?? "self";
             if(connections[i].ofTheConceptId in compositionData){
-              newData = compositionData[connections[i].ofTheConceptId]
+              newData = compositionData[connections[i].ofTheConceptId];
+              let newType = typeof newData[key];
+              if(newType == "string"){
+                newData[key] = {};
+              }
             }
             else{
               newData = {};
@@ -96,6 +101,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
                     newData[key][linkerConcept.characterValue].push(data);
                 }
                 else{
+
                   if(linkerConcept.characterValue.includes("_s_")){
                     newData[key][linkerConcept.characterValue] = [];
                       newData[key][linkerConcept.characterValue].push(data);
@@ -179,6 +185,10 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
             }
             if(connections[i].toTheConceptId in compositionData){
               newData = compositionData[connections[i].toTheConceptId]
+              let newType = typeof newData[key];
+              if(newType == "string"){
+                newData[key] = {};
+              }
             }
             else{
               newData = {};
@@ -197,7 +207,9 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
                     newData[key][reverseCharater].push(data);
                   }
                   else{
+
                     if(reverseCharater.includes("_s_")){
+
                       newData[key][reverseCharater] = [];
                       newData[key][reverseCharater].push(data);
                   }
@@ -232,6 +244,10 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
             }
             if(connections[i].ofTheConceptId in compositionData){
               newData = compositionData[connections[i].ofTheConceptId]
+              let newType = typeof newData[key];
+              if(newType == "string"){
+                newData[key] = {};
+              }
             }
             else{
               newData = {};
@@ -250,6 +266,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
                     newData[key][linkerConcept.characterValue].push(data);
                   }
                   else{
+
                     if(linkerConcept.characterValue.includes("_s_")){
                         newData[key][linkerConcept.characterValue] = [];
                         newData[key][linkerConcept.characterValue].push(data);
@@ -439,14 +456,19 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
             try{
               let mytype = ofTheConcept?.type?.characterValue ?? "none";
               let value = ofTheConcept.characterValue;
+              let dataCharacter = linkerConcept.characterValue;
+              if (dataCharacter == "")
+                {
+                    dataCharacter = mytype;
+                    dataCharacter = removeThePrefix(dataCharacter);
+                }
               let data = {
                     [mytype] : value
             }
-              let reverseCharater = linkerConcept.characterValue + "_reverse";
+              let reverseCharater = dataCharacter + "_reverse";
 
                   if(linkerConcept.characterValue.includes("_s_")){
-                    // newData[key][reverseCharater] = [];
-                    // newData[key][reverseCharater].push(data);
+                    // do nothing
                   }
                   else{
                     if(typeof newData[key] == "string"){
@@ -482,18 +504,23 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
             try{
               let mytype = toTheConcept?.type?.characterValue ?? "none";
               let value = toTheConcept.characterValue;
+              let dataCharacter = linkerConcept.characterValue;
+              if (dataCharacter == "")
+              {
+                  dataCharacter = mytype;
+                  dataCharacter = removeThePrefix(dataCharacter);
+              }
               let data = {
                     [mytype] : value
             }
                   if(linkerConcept.characterValue.includes("_s_")){
-                  //   newData[key][linkerConcept.characterValue] = [];
-                    // newData[key][linkerConcept.characterValue].push(data);
+                      // do nothing
                   }
                   else{
                     if(typeof newData[key] == "string"){
                       newData[key] = {};
                     }
-                    newData[key][linkerConcept.characterValue] = data;
+                    newData[key][dataCharacter] = data;
                   }
     
       
@@ -658,13 +685,20 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
             try{
               let mytype = ofTheConcept?.type?.characterValue ?? "none";
               let value = ofTheConcept.characterValue;
+              let dataCharacter = linkerConcept.characterValue;
+              
+              // if there is not connection type defined then put the type of the destination concept.
+              if(dataCharacter == ""){
+                dataCharacter = mytype;
+                dataCharacter = removeThePrefix(dataCharacter);
+              }
               let data = {
                   "id": ofTheConcept.id,
                   "data": {
                       [mytype] : value
                   }
               }
-              let reverseCharater = linkerConcept.characterValue + "_reverse";
+              let reverseCharater = dataCharacter + "_reverse";
 
                   if(reverseCharater.includes("_s_")){
                     // do nothing
@@ -703,7 +737,14 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
             try{
               let mytype = toTheConcept?.type?.characterValue ?? "none";
               let value = toTheConcept.characterValue;
-  
+              let dataCharacter = linkerConcept.characterValue;
+              
+              // if there is not connection type defined then put the type of the destination concept.
+              if (dataCharacter == "")
+              {
+                  dataCharacter = mytype;
+                  dataCharacter = removeThePrefix(dataCharacter);
+              }
               let data = {
                 "id": toTheConcept.id,
                 "data": {
@@ -711,14 +752,14 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
                 }
               }
 
-                  if(linkerConcept.characterValue.includes("_s_")){
+                  if(dataCharacter.includes("_s_")){
                       // do nothing
                   }
                   else{
                       if(typeof newData[key] == "string"){
                         newData[key] = {};
                       }
-                      newData[key][linkerConcept.characterValue] = data;
+                      newData[key][dataCharacter] = data;
                   }
 
             }
