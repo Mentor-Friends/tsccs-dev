@@ -1,12 +1,7 @@
 {
   "name": "test-in-browser",
-<<<<<<< HEAD
   "version": "1.1.56-beta",
   "environment": "0.0.4",
-=======
-  "version": "0.0.2",
-  "environment": "production",
->>>>>>> 0c36a77e11fcc93df6f2ea8932d85b814365070f
   "description": "Full Pack of concept and connection system",
   "main": "dist/main.bundle.js",
   "types": "dist/types/app.d.ts",

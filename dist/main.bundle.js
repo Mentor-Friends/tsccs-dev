@@ -1,5 +1,246 @@
 /******/ var __webpack_modules__ = ({
 
+/***/ "./src/AccessTracker/accessTracker.ts":
+/*!********************************************!*\
+  !*** ./src/AccessTracker/accessTracker.ts ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AccessTracker: () => (/* binding */ AccessTracker)
+/* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var _a;
+
+
+class AccessTracker {
+    /**
+     * Increments the count for a specific conceptId.
+     */
+    static incrementConcept(conceptId) {
+        this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
+        this.saveDataToLocalStorage();
+    }
+    /**
+     * Increments the count for a specific connectionId.
+     */
+    static incrementConnection(connectionId) {
+        this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
+        this.saveDataToLocalStorage();
+    }
+    /**
+     * Retrieves the top N concepts by their counts.
+     */
+    static getTopConcepts(n) {
+        return Object.entries(this.conceptsData)
+            .map(([key, value]) => [parseInt(key), value])
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, n);
+    }
+    /**
+     * Retrieves the top N connections by their counts.
+     */
+    static getTopConnections(n) {
+        return Object.entries(this.connectionsData)
+            .map(([key, value]) => [parseInt(key), value])
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, n);
+    }
+    /**
+     * Saves the concept and connection data to localStorage.
+     */
+    static saveDataToLocalStorage() {
+        const data = {
+            concepts: this.conceptsData,
+            connections: this.connectionsData
+        };
+        localStorage.setItem('trackerData', JSON.stringify(data));
+    }
+    /**
+     * Loads the concept and connection data from localStorage.
+     */
+    static loadDataFromLocalStorage() {
+        const savedData = localStorage.getItem('trackerData');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            this.conceptsData = data.concepts || {};
+            this.connectionsData = data.connections || {};
+        }
+    }
+    /**
+     * Syncs the concept and connection data with the server.
+     */
+    static syncToServer(accessToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
+                // Ensure conceptsData and connectionsData are not undefined or null
+                const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
+                const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
+                // const response = await fetch(`http://localhost:5000/api/v1/access-tracker/sync-access-tracker`, {
+                console.log("I am getting url : ", _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostPrefetchConceptConnections());
+                const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostPrefetchConceptConnections(), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify({
+                        concepts: conceptsToSend,
+                        connections: connectionsToSend
+                    }),
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to sync data to the server.');
+                }
+                const serverData = yield response.json();
+                this.conceptsData = serverData.concepts;
+                this.connectionsData = serverData.connections;
+                this.saveDataToLocalStorage();
+                console.log(`Sync successful at ${new Date().toISOString()}`);
+                this.setNextSyncTime();
+            }
+            catch (error) {
+                console.error('Sync error:', error);
+            }
+        });
+    }
+    /**
+     * Sets the next sync time based on the current time and sync interval.
+     */
+    static setNextSyncTime() {
+        // Calculate next sync time (current time + TimeToSync interval)
+        this.nextSyncTime = Date.now() + this.TimeToSync;
+        console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
+    }
+    /**
+     * Starts auto-syncing to the server every specified time interval.
+     * This will automatically call `syncToServer` every 5 minutes
+     */
+    static startAutoSync() {
+        const tokenString = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
+        if (tokenString) {
+            console.log("[AUTO-SYNC] Auto-sync initialized.");
+            this.syncNow().catch(console.error);
+        }
+        setInterval(() => {
+            const currentTime = Date.now();
+            console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
+            if (currentTime >= this.nextSyncTime) {
+                console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
+                this.syncNow().catch(console.error);
+            }
+            else {
+                console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
+            }
+        }, 1000); // Check every second
+    }
+    /**
+     * Sync immediately (called by setInterval when time to sync has arrived).
+     */
+    static syncNow() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const tokenString = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
+            if (tokenString) {
+                console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
+                yield this.syncToServer(tokenString);
+            }
+            else {
+                console.warn("[MANUAL SYNC] No valid access token found. Sync aborted.");
+            }
+        });
+    }
+    /**
+     * Fetch suggested concepts from the server with proper error handling.
+     */
+    static GetSuggestedConcepts() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const accessToken = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
+                const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.GetSuggestedConcepts(), {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                if (!response.ok) {
+                    const errorDetails = yield response.text();
+                    throw new Error(`Failed to load concepts: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
+                }
+                const concepts = (yield response.json()) || [];
+                return concepts;
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    console.error('Error fetching suggested concepts:', error.message);
+                    throw new Error('Unable to fetch suggested concepts. Please try again later.');
+                }
+                else {
+                    console.error('An unexpected error occurred:', error);
+                    throw new Error('An unexpected error occurred while fetching suggested concepts.');
+                }
+            }
+        });
+    }
+    /**
+     * Fetch suggested connections from the server with proper error handling.
+     */
+    static GetSuggestedConnections() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const accessToken = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
+                const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.GetSuggestedConnections(), {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+                if (!response.ok) {
+                    const errorDetails = yield response.text();
+                    throw new Error(`Failed to load connections: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
+                }
+                const connections = (yield response.json()) || [];
+                return connections;
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    console.error('Error fetching suggested Connections:', error.message);
+                    throw new Error('Unable to fetch suggested connections. Please try again later.');
+                }
+                else {
+                    console.error('An unexpected error occurred:', error);
+                    throw new Error('An unexpected error occurred while fetching suggested Connections.');
+                }
+            }
+        });
+    }
+}
+_a = AccessTracker;
+AccessTracker.conceptsData = {};
+AccessTracker.connectionsData = {};
+AccessTracker.TimeToSync = 300000;
+AccessTracker.nextSyncTime = Date.now();
+(() => {
+    console.log(`[INIT] Next Sync Time set to: ${new Date(_a.nextSyncTime).toISOString()}`);
+    _a.startAutoSync();
+})();
+
+
+/***/ }),
+
 /***/ "./src/Anomaly/anomaly.ts":
 /*!********************************!*\
   !*** ./src/Anomaly/anomaly.ts ***!
@@ -3763,6 +4004,15 @@ class BaseUrl {
         return this.BASE_URL + '/api/get-preloaded-concepts';
         // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
+    static PostPrefetchConceptConnections() {
+        return this.NODE_URL + '/api/v1/access-tracker/sync-access-tracker';
+    }
+    static GetSuggestedConcepts() {
+        return this.NODE_URL + '/api/v1/access-tracker/list-concepts-file';
+    }
+    static GetSuggestedConnections() {
+        return this.NODE_URL + '/api/v1/access-tracker/list-connections-file';
+    }
     static GetAllPrefetchConnectionsUrl() {
         return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';
     }
@@ -6077,12 +6327,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ConnectionData: () => (/* binding */ ConnectionData)
 /* harmony export */ });
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
-/* harmony import */ var _Database_indexeddb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Database/indexeddb */ "./src/Database/indexeddb.ts");
-/* harmony import */ var _Connection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Connection */ "./src/DataStructures/Connection.ts");
-/* harmony import */ var _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionBinaryTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionBinaryTree.ts");
-/* harmony import */ var _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionOfTheTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionOfTheTree.ts");
-/* harmony import */ var _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionTypeTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionTypeTree.ts");
+/* harmony import */ var _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../AccessTracker/accessTracker */ "./src/AccessTracker/accessTracker.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _Database_indexeddb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Database/indexeddb */ "./src/Database/indexeddb.ts");
+/* harmony import */ var _Connection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Connection */ "./src/DataStructures/Connection.ts");
+/* harmony import */ var _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionBinaryTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionBinaryTree.ts");
+/* harmony import */ var _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionOfTheTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionOfTheTree.ts");
+/* harmony import */ var _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ConnectionBinaryTree/ConnectionTypeTree */ "./src/DataStructures/ConnectionBinaryTree/ConnectionTypeTree.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -6092,6 +6343,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -6112,7 +6364,7 @@ class ConnectionData {
         return contains;
     }
     static AddConnectionToStorage(connection) {
-        (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_1__.UpdateToDatabase)("connection", connection);
+        (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_2__.UpdateToDatabase)("connection", connection);
     }
     static AddConnection(connection) {
         //    var contains = this.CheckContains(connection);
@@ -6126,9 +6378,9 @@ class ConnectionData {
         // if(!connection.isTemp){
         //UpdateToDatabase("connection", connection);
         try {
-            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.addConnectionToTree(connection);
-            _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.addConnectionToTree(connection);
-            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.addConnection(connection);
+            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionBinaryTree.addConnectionToTree(connection);
+            _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_6__.ConnectionTypeTree.addConnectionToTree(connection);
+            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionOfTheTree.addConnection(connection);
         }
         catch (error) {
             console.log("this is the error in making the connection");
@@ -6137,9 +6389,9 @@ class ConnectionData {
     }
     static AddConnectionToMemory(connection) {
         if (!connection.isTemp) {
-            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.addConnectionToTree(connection);
-            _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.addConnectionToTree(connection);
-            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.addConnection(connection);
+            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionBinaryTree.addConnectionToTree(connection);
+            _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_6__.ConnectionTypeTree.addConnectionToTree(connection);
+            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionOfTheTree.addConnection(connection);
         }
     }
     static AddToDictionary(connection) {
@@ -6152,23 +6404,23 @@ class ConnectionData {
         //     }
         //    }
         if (connection.id != 0) {
-            (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_1__.removeFromDatabase)("connection", connection.id);
-            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.removeNodeFromTree(connection.id);
+            (0,_Database_indexeddb__WEBPACK_IMPORTED_MODULE_2__.removeFromDatabase)("connection", connection.id);
+            _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionBinaryTree.removeNodeFromTree(connection.id);
             // ConnectionTypeTree.removeTypeConcept(connection.typeId, connection.id);
-            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.removeNodeFromTree(connection.id);
+            _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionOfTheTree.removeNodeFromTree(connection.id);
         }
     }
     static GetConnectionTypeOfTree() {
-        _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.node;
+        _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionOfTheTree.node;
     }
     static GetConnectionByOfTheConceptAndType(ofTheConceptId, typeId) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionByOfTheConceptAndType", { ofTheConceptId, typeId });
+            if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)("ConnectionData__GetConnectionByOfTheConceptAndType", { ofTheConceptId, typeId });
                 // console.log("data received from sw", res);
                 return res.data;
             }
-            let connections = _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
+            let connections = _ConnectionBinaryTree_ConnectionOfTheTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
             if (connections) {
                 return connections;
             }
@@ -6176,27 +6428,29 @@ class ConnectionData {
         });
     }
     static GetConnectionByOfType(ofTheConceptId, typeId) {
-        let connections = _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
+        let connections = _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_6__.ConnectionTypeTree.GetConnectionByOfTheConceptAndTypeId(ofTheConceptId, typeId);
         if (connections) {
             return connections;
         }
         return [];
     }
     static GetConnectionTree() {
-        return _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.connectionroot;
+        return _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionBinaryTree.connectionroot;
     }
     static GetConnectionTypeTree() {
-        return _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_5__.ConnectionTypeTree.connectionTypeRoot;
+        return _ConnectionBinaryTree_ConnectionTypeTree__WEBPACK_IMPORTED_MODULE_6__.ConnectionTypeTree.connectionTypeRoot;
     }
     static GetConnectionBulkData(ids, connectionArray, remainingIds) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getConnectionListFromIds(ids, connectionArray, remainingIds);
+            yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionBinaryTree.getConnectionListFromIds(ids, connectionArray, remainingIds);
         });
     }
     static GetConnection(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)('ConnectionData__GetConnection', { id });
+            // Increment Connection
+            _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__.AccessTracker.incrementConnection(id);
+            if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('ConnectionData__GetConnection', { id });
                 // console.log('data received from sw', res)
                 return res.data;
             }
@@ -6208,8 +6462,8 @@ class ConnectionData {
             //         }
             //     }
             //     return myConcept;
-            let myConnection = new _Connection__WEBPACK_IMPORTED_MODULE_2__.Connection(0, 0, 0, 0, 0, 0, 0);
-            let node = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getNodeFromTree(id);
+            let myConnection = new _Connection__WEBPACK_IMPORTED_MODULE_3__.Connection(0, 0, 0, 0, 0, 0, 0);
+            let node = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionBinaryTree.getNodeFromTree(id);
             if (node === null || node === void 0 ? void 0 : node.value) {
                 let returnedConcept = node.value;
                 if (returnedConcept) {
@@ -6232,8 +6486,8 @@ class ConnectionData {
     // commented
     static GetConnectionsOfCompositionLocal(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionsOfCompositionLocal", { id });
+            if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)("ConnectionData__GetConnectionsOfCompositionLocal", { id });
                 // console.log("data received from sw", res);
                 return res.data;
             }
@@ -6242,7 +6496,7 @@ class ConnectionData {
                 let connectionIds = [];
                 connectionIds = ConnectionData.GetConnectionByOfType(id, id);
                 for (let i = 0; i < connectionIds.length; i++) {
-                    let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+                    let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
                     if (conn) {
                         connections.push(conn.value);
                     }
@@ -6268,8 +6522,8 @@ class ConnectionData {
     }
     static GetConnectionsOfConcept(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (_app__WEBPACK_IMPORTED_MODULE_0__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.sendMessage)("ConnectionData__GetConnectionsOfConcept", { id });
+            if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)("ConnectionData__GetConnectionsOfConcept", { id });
                 // console.log("data received from sw", res);
                 return res.data;
             }
@@ -6277,7 +6531,7 @@ class ConnectionData {
             let connections = [];
             connectionIds = yield ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
             for (let i = 0; i < connectionIds.length; i++) {
-                let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_3__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
+                let conn = yield _ConnectionBinaryTree_ConnectionBinaryTree__WEBPACK_IMPORTED_MODULE_4__.ConnectionBinaryTree.getNodeFromTree(connectionIds[i]);
                 if (conn) {
                     connections.push(conn.value);
                 }
@@ -14160,9 +14414,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   GetConnectionById: () => (/* binding */ GetConnectionById)
 /* harmony export */ });
-/* harmony import */ var _Api_GetConnection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetConnection */ "./src/Api/GetConnection.ts");
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
-/* harmony import */ var _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../DataStructures/ConnectionData */ "./src/DataStructures/ConnectionData.ts");
+/* harmony import */ var _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../AccessTracker/accessTracker */ "./src/AccessTracker/accessTracker.ts");
+/* harmony import */ var _Api_GetConnection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Api/GetConnection */ "./src/Api/GetConnection.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../DataStructures/ConnectionData */ "./src/DataStructures/ConnectionData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14175,21 +14430,29 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
 function GetConnectionById(id) {
     return __awaiter(this, void 0, void 0, function* () {
         let startTime = performance.now();
-        if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetConnectionById', { id });
+        // Add connection id in access tracker
+        try {
+            _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__.AccessTracker.incrementConnection(id);
+        }
+        catch (_a) {
+            console.error("Error adding connections in access tracker");
+        }
+        if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetConnectionById', { id });
             // console.log('data received from sw', res)
             return res.data;
         }
-        let connection = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_2__.ConnectionData.GetConnection(id);
+        let connection = yield _DataStructures_ConnectionData__WEBPACK_IMPORTED_MODULE_3__.ConnectionData.GetConnection(id);
         if ((connection == null || connection.id == 0) && id != null && id != undefined) {
-            let connectionString = yield (0,_Api_GetConnection__WEBPACK_IMPORTED_MODULE_0__.GetConnection)(id);
+            let connectionString = yield (0,_Api_GetConnection__WEBPACK_IMPORTED_MODULE_1__.GetConnection)(id);
             connection = connectionString;
         }
         // Add Log
-        _app__WEBPACK_IMPORTED_MODULE_1__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, connection, "GetConnectionById", [id], "unknown", undefined);
+        _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, connection, "GetConnectionById", [id], "unknown", undefined);
         return connection;
     });
 }
@@ -14524,10 +14787,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ GetTheConcept)
 /* harmony export */ });
-/* harmony import */ var _Api_GetConcept__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetConcept */ "./src/Api/GetConcept.ts");
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
-/* harmony import */ var _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../DataStructures/ConceptData */ "./src/DataStructures/ConceptData.ts");
-/* harmony import */ var _CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./CreateDefaultConcept */ "./src/Services/CreateDefaultConcept.ts");
+/* harmony import */ var _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../AccessTracker/accessTracker */ "./src/AccessTracker/accessTracker.ts");
+/* harmony import */ var _Api_GetConcept__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Api/GetConcept */ "./src/Api/GetConcept.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../DataStructures/ConceptData */ "./src/DataStructures/ConceptData.ts");
+/* harmony import */ var _CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./CreateDefaultConcept */ "./src/Services/CreateDefaultConcept.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14537,6 +14801,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -14551,40 +14816,47 @@ function GetTheConcept(id_1) {
     return __awaiter(this, arguments, void 0, function* (id, userId = 999) {
         let startTime = performance.now();
         try {
-            if (_app__WEBPACK_IMPORTED_MODULE_1__.serviceWorker) {
-                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.sendMessage)('GetTheConcept', { id, userId });
+            // Increment count of the concept
+            try {
+                _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__.AccessTracker.incrementConcept(id);
+            }
+            catch (error) {
+                console.error("Error adding concept in access tracker:", error);
+            }
+            if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
+                const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetTheConcept', { id, userId });
                 // console.log('data received from sw', res)
                 return res.data;
             }
-            let concept = (0,_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_3__.CreateDefaultConcept)();
+            let concept = (0,_CreateDefaultConcept__WEBPACK_IMPORTED_MODULE_4__.CreateDefaultConcept)();
             if (id < 0) {
-                let lconcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetUserGhostId)(userId, id);
-                concept = (0,_app__WEBPACK_IMPORTED_MODULE_1__.convertFromLConceptToConcept)(lconcept);
+                let lconcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.GetUserGhostId)(userId, id);
+                concept = (0,_app__WEBPACK_IMPORTED_MODULE_2__.convertFromLConceptToConcept)(lconcept);
                 return concept;
             }
-            concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConcept(id);
+            concept = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_3__.ConceptsData.GetConcept(id);
             if ((concept == null || concept.id == 0) && id != null && id != undefined) {
-                let conceptString = yield (0,_Api_GetConcept__WEBPACK_IMPORTED_MODULE_0__.GetConcept)(id);
+                let conceptString = yield (0,_Api_GetConcept__WEBPACK_IMPORTED_MODULE_1__.GetConcept)(id);
                 concept = conceptString;
             }
             if (concept.id != 0) {
                 if (concept.type == null) {
-                    let conceptType = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_2__.ConceptsData.GetConcept(concept.typeId);
+                    let conceptType = yield _DataStructures_ConceptData__WEBPACK_IMPORTED_MODULE_3__.ConceptsData.GetConcept(concept.typeId);
                     if (conceptType == null && concept.typeId != null && concept.typeId != undefined) {
-                        let typeConceptString = yield (0,_Api_GetConcept__WEBPACK_IMPORTED_MODULE_0__.GetConcept)(concept.typeId);
+                        let typeConceptString = yield (0,_Api_GetConcept__WEBPACK_IMPORTED_MODULE_1__.GetConcept)(concept.typeId);
                         let typeConcept = typeConceptString;
                         concept.type = typeConcept;
                     }
                 }
             }
             // Add Log
-            _app__WEBPACK_IMPORTED_MODULE_1__.Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined);
+            _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined);
             return concept;
         }
         catch (err) {
             console.error("this is the error in the getting concept", err);
             // Add Log
-            _app__WEBPACK_IMPORTED_MODULE_1__.Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", ['id', 'userId'], "unknown", undefined);
+            _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", ['id', 'userId'], "unknown", undefined);
             throw err;
         }
     });
@@ -20530,6 +20802,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ADMIN: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__.ADMIN),
 /* harmony export */   ALLID: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.ALLID),
+/* harmony export */   AccessTracker: () => (/* reexport safe */ _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_114__.AccessTracker),
 /* harmony export */   AddGhostConcept: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_50__.AddGhostConcept),
 /* harmony export */   Anomaly: () => (/* reexport safe */ _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_105__.Anomaly),
 /* harmony export */   BaseUrl: () => (/* reexport safe */ _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl),
@@ -20803,6 +21076,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_111__ = __webpack_require__(/*! ./Api/Search/FreeschemaQueryApi */ "./src/Api/Search/FreeschemaQueryApi.ts");
 /* harmony import */ var _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_112__ = __webpack_require__(/*! ./WrapperFunctions/SchemaQueryObservable */ "./src/WrapperFunctions/SchemaQueryObservable.ts");
 /* harmony import */ var _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_113__ = __webpack_require__(/*! ./Widgets/WidgetTree */ "./src/Widgets/WidgetTree.ts");
+/* harmony import */ var _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_114__ = __webpack_require__(/*! ./AccessTracker/accessTracker */ "./src/AccessTracker/accessTracker.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -20812,6 +21086,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -21518,6 +21793,7 @@ function processMessageQueue() {
 /******/ var __webpack_exports__ = __webpack_require__("./src/app.ts");
 /******/ var __webpack_exports__ADMIN = __webpack_exports__.ADMIN;
 /******/ var __webpack_exports__ALLID = __webpack_exports__.ALLID;
+/******/ var __webpack_exports__AccessTracker = __webpack_exports__.AccessTracker;
 /******/ var __webpack_exports__AddGhostConcept = __webpack_exports__.AddGhostConcept;
 /******/ var __webpack_exports__Anomaly = __webpack_exports__.Anomaly;
 /******/ var __webpack_exports__BaseUrl = __webpack_exports__.BaseUrl;
@@ -21676,7 +21952,7 @@ function processMessageQueue() {
 /******/ var __webpack_exports__storeToDatabase = __webpack_exports__.storeToDatabase;
 /******/ var __webpack_exports__subscribedListeners = __webpack_exports__.subscribedListeners;
 /******/ var __webpack_exports__updateAccessToken = __webpack_exports__.updateAccessToken;
-/******/ export { __webpack_exports__ADMIN as ADMIN, __webpack_exports__ALLID as ALLID, __webpack_exports__AddGhostConcept as AddGhostConcept, __webpack_exports__Anomaly as Anomaly, __webpack_exports__BaseUrl as BaseUrl, __webpack_exports__BinaryTree as BinaryTree, __webpack_exports__BuilderStatefulWidget as BuilderStatefulWidget, __webpack_exports__Composition as Composition, __webpack_exports__CompositionBinaryTree as CompositionBinaryTree, __webpack_exports__CompositionNode as CompositionNode, __webpack_exports__Concept as Concept, __webpack_exports__ConceptsData as ConceptsData, __webpack_exports__Connection as Connection, __webpack_exports__ConnectionData as ConnectionData, __webpack_exports__CreateComposition as CreateComposition, __webpack_exports__CreateConnectionBetweenTwoConcepts as CreateConnectionBetweenTwoConcepts, __webpack_exports__CreateConnectionBetweenTwoConceptsGeneral as CreateConnectionBetweenTwoConceptsGeneral, __webpack_exports__CreateConnectionBetweenTwoConceptsLocal as CreateConnectionBetweenTwoConceptsLocal, __webpack_exports__CreateDefaultConcept as CreateDefaultConcept, __webpack_exports__CreateDefaultLConcept as CreateDefaultLConcept, __webpack_exports__CreateSession as CreateSession, __webpack_exports__CreateSessionVisit as CreateSessionVisit, __webpack_exports__CreateTheCompositionLocal as CreateTheCompositionLocal, __webpack_exports__CreateTheCompositionWithCache as CreateTheCompositionWithCache, __webpack_exports__CreateTheConnection as CreateTheConnection, __webpack_exports__CreateTheConnectionGeneral as CreateTheConnectionGeneral, __webpack_exports__CreateTheConnectionLocal as CreateTheConnectionLocal, __webpack_exports__DATAID as DATAID, __webpack_exports__DATAIDDATE as DATAIDDATE, __webpack_exports__DelayFunctionExecution as DelayFunctionExecution, __webpack_exports__DeleteConceptById as DeleteConceptById, __webpack_exports__DeleteConceptLocal as DeleteConceptLocal, __webpack_exports__DeleteConnectionById as DeleteConnectionById, __webpack_exports__DeleteConnectionByType as DeleteConnectionByType, __webpack_exports__DeleteUser as DeleteUser, __webpack_exports__DependencyObserver as DependencyObserver, __webpack_exports__FilterSearch as FilterSearch, __webpack_exports__FormatFromConnections as FormatFromConnections, __webpack_exports__FormatFromConnectionsAltered as FormatFromConnectionsAltered, __webpack_exports__FreeschemaQuery as FreeschemaQuery, __webpack_exports__FreeschemaQueryApi as FreeschemaQueryApi, __webpack_exports__GetAllConnectionsOfComposition as GetAllConnectionsOfComposition, __webpack_exports__GetAllConnectionsOfCompositionBulk as GetAllConnectionsOfCompositionBulk, __webpack_exports__GetAllTheConnectionsByTypeAndOfTheConcept as GetAllTheConnectionsByTypeAndOfTheConcept, __webpack_exports__GetComposition as GetComposition, __webpack_exports__GetCompositionBulk as GetCompositionBulk, __webpack_exports__GetCompositionBulkWithDataId as GetCompositionBulkWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataId as GetCompositionFromConnectionsWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataIdFromConnections as GetCompositionFromConnectionsWithDataIdFromConnections, __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject as GetCompositionFromConnectionsWithDataIdInObject, __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex as GetCompositionFromConnectionsWithDataIdIndex, __webpack_exports__GetCompositionFromConnectionsWithIndex as GetCompositionFromConnectionsWithIndex, __webpack_exports__GetCompositionFromConnectionsWithIndexFromConnections as GetCompositionFromConnectionsWithIndexFromConnections, __webpack_exports__GetCompositionFromMemoryWithConnections as GetCompositionFromMemoryWithConnections, __webpack_exports__GetCompositionList as GetCompositionList, __webpack_exports__GetCompositionListAll as GetCompositionListAll, __webpack_exports__GetCompositionListAllWithId as GetCompositionListAllWithId, __webpack_exports__GetCompositionListListener as GetCompositionListListener, __webpack_exports__GetCompositionListLocal as GetCompositionListLocal, __webpack_exports__GetCompositionListLocalWithId as GetCompositionListLocalWithId, __webpack_exports__GetCompositionListWithId as GetCompositionListWithId, __webpack_exports__GetCompositionListWithIdUpdated as GetCompositionListWithIdUpdated, __webpack_exports__GetCompositionListener as GetCompositionListener, __webpack_exports__GetCompositionLocal as GetCompositionLocal, __webpack_exports__GetCompositionLocalWithId as GetCompositionLocalWithId, __webpack_exports__GetCompositionWithAllIds as GetCompositionWithAllIds, __webpack_exports__GetCompositionWithCache as GetCompositionWithCache, __webpack_exports__GetCompositionWithDataIdBulk as GetCompositionWithDataIdBulk, __webpack_exports__GetCompositionWithDataIdWithCache as GetCompositionWithDataIdWithCache, __webpack_exports__GetCompositionWithId as GetCompositionWithId, __webpack_exports__GetCompositionWithIdAndDateFromMemory as GetCompositionWithIdAndDateFromMemory, __webpack_exports__GetConceptBulk as GetConceptBulk, __webpack_exports__GetConceptByCharacter as GetConceptByCharacter, __webpack_exports__GetConceptByCharacterAndCategoryLocal as GetConceptByCharacterAndCategoryLocal, __webpack_exports__GetConceptByCharacterAndType as GetConceptByCharacterAndType, __webpack_exports__GetConnectionBetweenTwoConceptsLinker as GetConnectionBetweenTwoConceptsLinker, __webpack_exports__GetConnectionBulk as GetConnectionBulk, __webpack_exports__GetConnectionById as GetConnectionById, __webpack_exports__GetConnectionDataPrefetch as GetConnectionDataPrefetch, __webpack_exports__GetConnectionOfTheConcept as GetConnectionOfTheConcept, __webpack_exports__GetLink as GetLink, __webpack_exports__GetLinkListListener as GetLinkListListener, __webpack_exports__GetLinkListener as GetLinkListener, __webpack_exports__GetLinkRaw as GetLinkRaw, __webpack_exports__GetLinkerConnectionFromConcepts as GetLinkerConnectionFromConcepts, __webpack_exports__GetLinkerConnectionToConcepts as GetLinkerConnectionToConcepts, __webpack_exports__GetRelation as GetRelation, __webpack_exports__GetRelationLocal as GetRelationLocal, __webpack_exports__GetRelationRaw as GetRelationRaw, __webpack_exports__GetTheConcept as GetTheConcept, __webpack_exports__GetTheConceptLocal as GetTheConceptLocal, __webpack_exports__GetUserGhostId as GetUserGhostId, __webpack_exports__JUSTDATA as JUSTDATA, __webpack_exports__LConcept as LConcept, __webpack_exports__LConnection as LConnection, __webpack_exports__LISTNORMAL as LISTNORMAL, __webpack_exports__LocalConceptsData as LocalConceptsData, __webpack_exports__LocalSyncData as LocalSyncData, __webpack_exports__LocalTransaction as LocalTransaction, __webpack_exports__Logger as Logger, __webpack_exports__LoginToBackend as LoginToBackend, __webpack_exports__MakeTheInstanceConcept as MakeTheInstanceConcept, __webpack_exports__MakeTheInstanceConceptLocal as MakeTheInstanceConceptLocal, __webpack_exports__MakeTheTimestamp as MakeTheTimestamp, __webpack_exports__MakeTheTypeConcept as MakeTheTypeConcept, __webpack_exports__MakeTheTypeConceptApi as MakeTheTypeConceptApi, __webpack_exports__MakeTheTypeConceptLocal as MakeTheTypeConceptLocal, __webpack_exports__NORMAL as NORMAL, __webpack_exports__PRIVATE as PRIVATE, __webpack_exports__PUBLIC as PUBLIC, __webpack_exports__PatcherStructure as PatcherStructure, __webpack_exports__RAW as RAW, __webpack_exports__RecursiveSearchApi as RecursiveSearchApi, __webpack_exports__RecursiveSearchApiNewRawFullLinker as RecursiveSearchApiNewRawFullLinker, __webpack_exports__RecursiveSearchApiRaw as RecursiveSearchApiRaw, __webpack_exports__RecursiveSearchApiRawFullLinker as RecursiveSearchApiRawFullLinker, __webpack_exports__RecursiveSearchApiWithInternalConnections as RecursiveSearchApiWithInternalConnections, __webpack_exports__RecursiveSearchListener as RecursiveSearchListener, __webpack_exports__SchemaQueryListener as SchemaQueryListener, __webpack_exports__SearchAllConcepts as SearchAllConcepts, __webpack_exports__SearchLinkInternal as SearchLinkInternal, __webpack_exports__SearchLinkInternalAll as SearchLinkInternalAll, __webpack_exports__SearchLinkMultipleAll as SearchLinkMultipleAll, __webpack_exports__SearchLinkMultipleAllObservable as SearchLinkMultipleAllObservable, __webpack_exports__SearchLinkMultipleApi as SearchLinkMultipleApi, __webpack_exports__SearchQuery as SearchQuery, __webpack_exports__SearchStructure as SearchStructure, __webpack_exports__SearchWithLinker as SearchWithLinker, __webpack_exports__SearchWithTypeAndLinker as SearchWithTypeAndLinker, __webpack_exports__SearchWithTypeAndLinkerApi as SearchWithTypeAndLinkerApi, __webpack_exports__SessionData as SessionData, __webpack_exports__Signin as Signin, __webpack_exports__Signup as Signup, __webpack_exports__SignupEntity as SignupEntity, __webpack_exports__SplitStrings as SplitStrings, __webpack_exports__StatefulWidget as StatefulWidget, __webpack_exports__SyncData as SyncData, __webpack_exports__TrashTheConcept as TrashTheConcept, __webpack_exports__UpdateComposition as UpdateComposition, __webpack_exports__UpdateCompositionLocal as UpdateCompositionLocal, __webpack_exports__UserBinaryTree as UserBinaryTree, __webpack_exports__Validator as Validator, __webpack_exports__ViewInternalData as ViewInternalData, __webpack_exports__ViewInternalDataApi as ViewInternalDataApi, __webpack_exports__WidgetTree as WidgetTree, __webpack_exports__convertFromConceptToLConcept as convertFromConceptToLConcept, __webpack_exports__convertFromLConceptToConcept as convertFromLConceptToConcept, __webpack_exports__createFormFieldData as createFormFieldData, __webpack_exports__dispatchIdEvent as dispatchIdEvent, __webpack_exports__getFromDatabaseWithType as getFromDatabaseWithType, __webpack_exports__getObjectsFromIndexDb as getObjectsFromIndexDb, __webpack_exports__init as init, __webpack_exports__recursiveFetch as recursiveFetch, __webpack_exports__recursiveFetchNew as recursiveFetchNew, __webpack_exports__searchLinkMultipleListener as searchLinkMultipleListener, __webpack_exports__sendMessage as sendMessage, __webpack_exports__serviceWorker as serviceWorker, __webpack_exports__storeToDatabase as storeToDatabase, __webpack_exports__subscribedListeners as subscribedListeners, __webpack_exports__updateAccessToken as updateAccessToken };
+/******/ export { __webpack_exports__ADMIN as ADMIN, __webpack_exports__ALLID as ALLID, __webpack_exports__AccessTracker as AccessTracker, __webpack_exports__AddGhostConcept as AddGhostConcept, __webpack_exports__Anomaly as Anomaly, __webpack_exports__BaseUrl as BaseUrl, __webpack_exports__BinaryTree as BinaryTree, __webpack_exports__BuilderStatefulWidget as BuilderStatefulWidget, __webpack_exports__Composition as Composition, __webpack_exports__CompositionBinaryTree as CompositionBinaryTree, __webpack_exports__CompositionNode as CompositionNode, __webpack_exports__Concept as Concept, __webpack_exports__ConceptsData as ConceptsData, __webpack_exports__Connection as Connection, __webpack_exports__ConnectionData as ConnectionData, __webpack_exports__CreateComposition as CreateComposition, __webpack_exports__CreateConnectionBetweenTwoConcepts as CreateConnectionBetweenTwoConcepts, __webpack_exports__CreateConnectionBetweenTwoConceptsGeneral as CreateConnectionBetweenTwoConceptsGeneral, __webpack_exports__CreateConnectionBetweenTwoConceptsLocal as CreateConnectionBetweenTwoConceptsLocal, __webpack_exports__CreateDefaultConcept as CreateDefaultConcept, __webpack_exports__CreateDefaultLConcept as CreateDefaultLConcept, __webpack_exports__CreateSession as CreateSession, __webpack_exports__CreateSessionVisit as CreateSessionVisit, __webpack_exports__CreateTheCompositionLocal as CreateTheCompositionLocal, __webpack_exports__CreateTheCompositionWithCache as CreateTheCompositionWithCache, __webpack_exports__CreateTheConnection as CreateTheConnection, __webpack_exports__CreateTheConnectionGeneral as CreateTheConnectionGeneral, __webpack_exports__CreateTheConnectionLocal as CreateTheConnectionLocal, __webpack_exports__DATAID as DATAID, __webpack_exports__DATAIDDATE as DATAIDDATE, __webpack_exports__DelayFunctionExecution as DelayFunctionExecution, __webpack_exports__DeleteConceptById as DeleteConceptById, __webpack_exports__DeleteConceptLocal as DeleteConceptLocal, __webpack_exports__DeleteConnectionById as DeleteConnectionById, __webpack_exports__DeleteConnectionByType as DeleteConnectionByType, __webpack_exports__DeleteUser as DeleteUser, __webpack_exports__DependencyObserver as DependencyObserver, __webpack_exports__FilterSearch as FilterSearch, __webpack_exports__FormatFromConnections as FormatFromConnections, __webpack_exports__FormatFromConnectionsAltered as FormatFromConnectionsAltered, __webpack_exports__FreeschemaQuery as FreeschemaQuery, __webpack_exports__FreeschemaQueryApi as FreeschemaQueryApi, __webpack_exports__GetAllConnectionsOfComposition as GetAllConnectionsOfComposition, __webpack_exports__GetAllConnectionsOfCompositionBulk as GetAllConnectionsOfCompositionBulk, __webpack_exports__GetAllTheConnectionsByTypeAndOfTheConcept as GetAllTheConnectionsByTypeAndOfTheConcept, __webpack_exports__GetComposition as GetComposition, __webpack_exports__GetCompositionBulk as GetCompositionBulk, __webpack_exports__GetCompositionBulkWithDataId as GetCompositionBulkWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataId as GetCompositionFromConnectionsWithDataId, __webpack_exports__GetCompositionFromConnectionsWithDataIdFromConnections as GetCompositionFromConnectionsWithDataIdFromConnections, __webpack_exports__GetCompositionFromConnectionsWithDataIdInObject as GetCompositionFromConnectionsWithDataIdInObject, __webpack_exports__GetCompositionFromConnectionsWithDataIdIndex as GetCompositionFromConnectionsWithDataIdIndex, __webpack_exports__GetCompositionFromConnectionsWithIndex as GetCompositionFromConnectionsWithIndex, __webpack_exports__GetCompositionFromConnectionsWithIndexFromConnections as GetCompositionFromConnectionsWithIndexFromConnections, __webpack_exports__GetCompositionFromMemoryWithConnections as GetCompositionFromMemoryWithConnections, __webpack_exports__GetCompositionList as GetCompositionList, __webpack_exports__GetCompositionListAll as GetCompositionListAll, __webpack_exports__GetCompositionListAllWithId as GetCompositionListAllWithId, __webpack_exports__GetCompositionListListener as GetCompositionListListener, __webpack_exports__GetCompositionListLocal as GetCompositionListLocal, __webpack_exports__GetCompositionListLocalWithId as GetCompositionListLocalWithId, __webpack_exports__GetCompositionListWithId as GetCompositionListWithId, __webpack_exports__GetCompositionListWithIdUpdated as GetCompositionListWithIdUpdated, __webpack_exports__GetCompositionListener as GetCompositionListener, __webpack_exports__GetCompositionLocal as GetCompositionLocal, __webpack_exports__GetCompositionLocalWithId as GetCompositionLocalWithId, __webpack_exports__GetCompositionWithAllIds as GetCompositionWithAllIds, __webpack_exports__GetCompositionWithCache as GetCompositionWithCache, __webpack_exports__GetCompositionWithDataIdBulk as GetCompositionWithDataIdBulk, __webpack_exports__GetCompositionWithDataIdWithCache as GetCompositionWithDataIdWithCache, __webpack_exports__GetCompositionWithId as GetCompositionWithId, __webpack_exports__GetCompositionWithIdAndDateFromMemory as GetCompositionWithIdAndDateFromMemory, __webpack_exports__GetConceptBulk as GetConceptBulk, __webpack_exports__GetConceptByCharacter as GetConceptByCharacter, __webpack_exports__GetConceptByCharacterAndCategoryLocal as GetConceptByCharacterAndCategoryLocal, __webpack_exports__GetConceptByCharacterAndType as GetConceptByCharacterAndType, __webpack_exports__GetConnectionBetweenTwoConceptsLinker as GetConnectionBetweenTwoConceptsLinker, __webpack_exports__GetConnectionBulk as GetConnectionBulk, __webpack_exports__GetConnectionById as GetConnectionById, __webpack_exports__GetConnectionDataPrefetch as GetConnectionDataPrefetch, __webpack_exports__GetConnectionOfTheConcept as GetConnectionOfTheConcept, __webpack_exports__GetLink as GetLink, __webpack_exports__GetLinkListListener as GetLinkListListener, __webpack_exports__GetLinkListener as GetLinkListener, __webpack_exports__GetLinkRaw as GetLinkRaw, __webpack_exports__GetLinkerConnectionFromConcepts as GetLinkerConnectionFromConcepts, __webpack_exports__GetLinkerConnectionToConcepts as GetLinkerConnectionToConcepts, __webpack_exports__GetRelation as GetRelation, __webpack_exports__GetRelationLocal as GetRelationLocal, __webpack_exports__GetRelationRaw as GetRelationRaw, __webpack_exports__GetTheConcept as GetTheConcept, __webpack_exports__GetTheConceptLocal as GetTheConceptLocal, __webpack_exports__GetUserGhostId as GetUserGhostId, __webpack_exports__JUSTDATA as JUSTDATA, __webpack_exports__LConcept as LConcept, __webpack_exports__LConnection as LConnection, __webpack_exports__LISTNORMAL as LISTNORMAL, __webpack_exports__LocalConceptsData as LocalConceptsData, __webpack_exports__LocalSyncData as LocalSyncData, __webpack_exports__LocalTransaction as LocalTransaction, __webpack_exports__Logger as Logger, __webpack_exports__LoginToBackend as LoginToBackend, __webpack_exports__MakeTheInstanceConcept as MakeTheInstanceConcept, __webpack_exports__MakeTheInstanceConceptLocal as MakeTheInstanceConceptLocal, __webpack_exports__MakeTheTimestamp as MakeTheTimestamp, __webpack_exports__MakeTheTypeConcept as MakeTheTypeConcept, __webpack_exports__MakeTheTypeConceptApi as MakeTheTypeConceptApi, __webpack_exports__MakeTheTypeConceptLocal as MakeTheTypeConceptLocal, __webpack_exports__NORMAL as NORMAL, __webpack_exports__PRIVATE as PRIVATE, __webpack_exports__PUBLIC as PUBLIC, __webpack_exports__PatcherStructure as PatcherStructure, __webpack_exports__RAW as RAW, __webpack_exports__RecursiveSearchApi as RecursiveSearchApi, __webpack_exports__RecursiveSearchApiNewRawFullLinker as RecursiveSearchApiNewRawFullLinker, __webpack_exports__RecursiveSearchApiRaw as RecursiveSearchApiRaw, __webpack_exports__RecursiveSearchApiRawFullLinker as RecursiveSearchApiRawFullLinker, __webpack_exports__RecursiveSearchApiWithInternalConnections as RecursiveSearchApiWithInternalConnections, __webpack_exports__RecursiveSearchListener as RecursiveSearchListener, __webpack_exports__SchemaQueryListener as SchemaQueryListener, __webpack_exports__SearchAllConcepts as SearchAllConcepts, __webpack_exports__SearchLinkInternal as SearchLinkInternal, __webpack_exports__SearchLinkInternalAll as SearchLinkInternalAll, __webpack_exports__SearchLinkMultipleAll as SearchLinkMultipleAll, __webpack_exports__SearchLinkMultipleAllObservable as SearchLinkMultipleAllObservable, __webpack_exports__SearchLinkMultipleApi as SearchLinkMultipleApi, __webpack_exports__SearchQuery as SearchQuery, __webpack_exports__SearchStructure as SearchStructure, __webpack_exports__SearchWithLinker as SearchWithLinker, __webpack_exports__SearchWithTypeAndLinker as SearchWithTypeAndLinker, __webpack_exports__SearchWithTypeAndLinkerApi as SearchWithTypeAndLinkerApi, __webpack_exports__SessionData as SessionData, __webpack_exports__Signin as Signin, __webpack_exports__Signup as Signup, __webpack_exports__SignupEntity as SignupEntity, __webpack_exports__SplitStrings as SplitStrings, __webpack_exports__StatefulWidget as StatefulWidget, __webpack_exports__SyncData as SyncData, __webpack_exports__TrashTheConcept as TrashTheConcept, __webpack_exports__UpdateComposition as UpdateComposition, __webpack_exports__UpdateCompositionLocal as UpdateCompositionLocal, __webpack_exports__UserBinaryTree as UserBinaryTree, __webpack_exports__Validator as Validator, __webpack_exports__ViewInternalData as ViewInternalData, __webpack_exports__ViewInternalDataApi as ViewInternalDataApi, __webpack_exports__WidgetTree as WidgetTree, __webpack_exports__convertFromConceptToLConcept as convertFromConceptToLConcept, __webpack_exports__convertFromLConceptToConcept as convertFromLConceptToConcept, __webpack_exports__createFormFieldData as createFormFieldData, __webpack_exports__dispatchIdEvent as dispatchIdEvent, __webpack_exports__getFromDatabaseWithType as getFromDatabaseWithType, __webpack_exports__getObjectsFromIndexDb as getObjectsFromIndexDb, __webpack_exports__init as init, __webpack_exports__recursiveFetch as recursiveFetch, __webpack_exports__recursiveFetchNew as recursiveFetchNew, __webpack_exports__searchLinkMultipleListener as searchLinkMultipleListener, __webpack_exports__sendMessage as sendMessage, __webpack_exports__serviceWorker as serviceWorker, __webpack_exports__storeToDatabase as storeToDatabase, __webpack_exports__subscribedListeners as subscribedListeners, __webpack_exports__updateAccessToken as updateAccessToken };
 /******/ 
 
 //# sourceMappingURL=main.bundle.js.map
