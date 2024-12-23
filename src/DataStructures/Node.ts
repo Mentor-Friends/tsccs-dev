@@ -378,8 +378,8 @@ export class Node{
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode),this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = Math.max(this.getHeight(x.leftNode),this.getHeight(x.rightNode)) + 1;
+                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode))  + 1;
                 return y;
             }
             //return y;

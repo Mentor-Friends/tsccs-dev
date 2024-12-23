@@ -57,7 +57,7 @@ export class ConceptsData{
 
     static AddConcept(concept: Concept){
         if (serviceWorker) {
-            const res: any = sendMessage('AddConcept', {concept}) // is async function
+            const res: any = sendMessage('ConceptsData__AddConcept', {concept}) // is async function
             // console.log('data received from sw', res)
             // return res.data // remove comment when this function is async
           }

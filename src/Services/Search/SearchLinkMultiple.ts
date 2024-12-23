@@ -8,7 +8,7 @@ import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
   if (serviceWorker) {
     const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
-    console.log('data received search from sw', res)
+    // console.log('data received search from sw', res)
     return res.data
   }
 
@@ -299,7 +299,10 @@ export async function FormatConceptsAndConnections(connections: Connection[], co
 
   for(let i=0 ; i< mainComposition.length; i++){
     let mymainData = compositionData[mainComposition[i]];
-    mainData.push(mymainData);
+    if(mymainData){
+      mainData.push(mymainData);
+
+    }
     
   }
   return mainData;
@@ -404,7 +407,10 @@ export async function FormatFromConnectionsAlteredArray(connections:Connection[]
   }
   for(let i=0 ; i< mainComposition.length; i++){
     let mymainData = compositionData[mainComposition[i]];
-    mainData.push(mymainData);
+    if(mymainData){
+      mainData.push(mymainData);
+
+    }
     
   }
   return mainData;

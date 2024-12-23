@@ -1,7 +1,7 @@
 import { Connection } from "../DataStructures/Connection";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { SearchQuery } from "../DataStructures/SearchQuery";
-import { GetCompositionFromConnectionsWithDataId } from "../Services/GetCompositionBulk";
+import { GetCompositionFromConnectionsWithDataId, GetCompositionFromConnectionsWithDataIdFromConnections } from "../Services/GetCompositionBulk";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { resolveObjectURL } from "buffer";
@@ -10,6 +10,7 @@ import {
   HandleInternalError,
 } from "../Services/Common/ErrorPosting";
 import { sendMessage, serviceWorker } from "../app";
+import { formatConnectionsDataId } from "../Services/Search/SearchWithTypeAndLinker";
 
 export async function RecursiveSearchApi(
   composition: number = 0,
@@ -50,6 +51,63 @@ export async function RecursiveSearchApi(
         conceptIds,
         connections
       );
+
+    } else {
+      console.log("recursive search error ", response.status);
+      HandleHttpError(response);
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log("recursive search error message: ", error.message);
+    } else {
+      console.log("recursive search unexpected error: ", error);
+    }
+    HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
+  }
+  return concepts;
+}
+
+
+export async function RecursiveSearchApiWithInternalConnections(
+  composition: number = 0,
+  listLinkers: string[] = [],
+  textSearch: string = ""
+) {
+  if (serviceWorker) {
+    const res: any = await sendMessage("RecursiveSearchApiWithInternalConnections", {
+      composition,
+      listLinkers,
+      textSearch,
+    });
+    // console.log("data received from sw", res);
+    return res.data;
+  }
+
+  let concepts: any[] = [];
+
+  try {
+    let searchQuery = new SearchQuery();
+    searchQuery.composition = composition;
+    searchQuery.listLinkers = listLinkers;
+    searchQuery.textSearch = textSearch;
+    let raw = JSON.stringify(searchQuery);
+    let Connections: Connection[] = [];
+    let myHeaders = GetRequestHeader();
+    const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+    });
+    if (response.ok) {
+      const result = await response.json();
+      let conceptIds = result.compositionIds;
+      let connections = result.internalConnections;
+      let externalConnections = result.externalConnections;
+      concepts = await GetCompositionFromConnectionsWithDataIdFromConnections(
+        conceptIds,
+        connections
+      );
+
     } else {
       console.log("recursive search error ", response.status);
       HandleHttpError(response);
