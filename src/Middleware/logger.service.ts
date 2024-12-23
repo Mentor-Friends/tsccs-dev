@@ -69,7 +69,7 @@ export class Logger {
     /**
      * Logs a message with optional additional structured data.
      */
-    public static log(
+    public static formatLogData(
         level: string,
         message: string,
         data?: LogData
@@ -87,6 +87,18 @@ export class Logger {
         console.log("Log Data in Logger Class : ", Logger.logs);
         this.saveToLocalStorage(logEntry)
         
+    }
+
+    public static log(
+        type: 'INFO' | 'ERROR' | 'DEBUG' | 'WARNING',
+        message: string,
+        data:any
+    ) : void {
+        try{
+            Logger.formatLogData(this.logLevel, message, data)
+        } catch(error){
+            console.error("Error on Logger Log : ", error);
+        }
     }
 
     public static logInfo(
@@ -155,7 +167,7 @@ export class Logger {
             conceptsUsed,
         };
     
-        Logger.log("ERROR", `Information logged for ${functionName}`, logData);
+        Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);
 
     }
 
@@ -191,7 +203,7 @@ export class Logger {
             conceptsUsed,
         };
     
-        Logger.log("WARNING", `Information logged for ${functionName}`, logData);
+        Logger.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
 
     }
 
@@ -227,10 +239,86 @@ export class Logger {
             conceptsUsed,
         };
     
-        Logger.log("DEBUG", `Information logged for ${functionName}`, logData);
+        Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
     
     }
 
+    // Log Event
+    public static logErrorEvent(
+        message?: any,
+        error?: string, 
+        source?: string, 
+        line?: any, 
+        column?: any, 
+        stack?: any
+    ) {
+        const logData = {
+            message: message || "Unknown error",
+            error: error || "No error message provided",
+            source: source || "Unknown source",
+            line: line || "Unknown line",
+            column: column || "Unknown column",
+            stack: stack || "No stack trace available",
+            timestamp: new Date().toISOString(),
+        };
+        
+        console.error("Error Logged:", logData);
+        this.saveEventToLocalStorage(JSON.stringify(logData))
+
+        // send the error data to an external service or save it
+        // sendToLoggingService(logData);
+    }
+
+    // Log Network Error
+    public static logNetwork(logData: {
+        type: 'REQUEST' | 'RESPONSE' | 'ERROR';
+        message: string;
+        method?: string;
+        url:string;
+        body?: any;
+        status?: number;
+        error?: string;
+    }) {
+        if(logData.type === 'REQUEST'){
+            let networkLog = (
+                logData.message,
+                logData.method,
+                logData.url,
+                logData.body,
+                new Date().toISOString()
+            )
+            console.log("NETWORK REQUEST LOG : ", networkLog);
+            this.saveEventToLocalStorage(JSON.stringify(logData))
+        }
+
+        if(logData.type === 'RESPONSE'){
+            let networkLog = (
+                logData.message,
+                logData.method,
+                logData.url,
+                logData.body,
+                new Date().toISOString()
+            )
+            console.log("NETWORK RESPONSE LOG : ", networkLog);
+            this.saveEventToLocalStorage(JSON.stringify(logData))
+
+        }
+
+        if(logData.type === 'ERROR'){
+            let networkLog = (
+                logData.message,
+                logData.url,
+                logData.error,
+                new Date().toISOString()
+            )
+            console.log("NETWORK ERROR LOG : ", networkLog);
+            this.saveEventToLocalStorage(JSON.stringify(logData))
+
+        }
+           
+    }
+    
+    
 
 
     /**
@@ -238,11 +326,21 @@ export class Logger {
      */
     private static saveToLocalStorage(logMessage: string): void {
         try {
-        const logs = JSON.parse(localStorage.getItem("logs") || "[]");
-        logs.push(logMessage);
-        localStorage.setItem("logs", JSON.stringify(logs));
+            const logs = JSON.parse(localStorage.getItem("logs") || "[]");
+            logs.push(logMessage);
+            localStorage.setItem("logs", JSON.stringify(logs));
         } catch (error) {
-        console.error("Failed to save log to localStorage:", error);
+            console.error("Failed to save log to localStorage:", error);
+        }
+    }
+
+    private static saveEventToLocalStorage(logMessage:string): void {
+        try {
+            const logs = JSON.parse(localStorage.getItem("EventLogs") || "[]");
+            logs.push(logMessage);
+            localStorage.setItem("EventLogs", JSON.stringify(logs));
+        } catch (error) {
+            console.error("Failed to save log to localStorage:", error);
         }
     }
 
@@ -255,14 +353,14 @@ export class Logger {
             
             const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
             if (storedLogs.length === 0) return;
-            console.log("Stored Logs : ", storedLogs);
+            // console.log("Stored Logs : ", storedLogs);
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
 
-                console.log("Sending logs chunk:", chunk);
-                console.log("Payload chunk:", JSON.stringify(chunk)); 
+                // console.log("Sending logs chunk:", chunk);
+                // console.log("Payload chunk:", JSON.stringify(chunk)); 
 
                 const response = await fetch(Logger.SERVER_URL, {
                     method: "POST",
@@ -272,7 +370,7 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                    console.log("Response Body on failed request : ", responseBody);
+                    // console.log("Response Body on failed request : ", responseBody);
                     console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
                 }

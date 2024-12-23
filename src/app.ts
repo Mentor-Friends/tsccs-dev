@@ -117,6 +117,7 @@ import { broadcastChannel } from "./Constants/general.const";
 export { Logger } from "./Middleware/logger.service";
 import { WidgetTree } from "./Widgets/WidgetTree";
 import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPosting";
+import { EventLogger } from "./Middleware/EventLogger";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -195,6 +196,7 @@ async function init(
       IdentifierFlags.isConnectionLoaded = true;
       IdentifierFlags.isConnectionTypeLoaded = true;
       IdentifierFlags.isLocalConnectionLoaded = true;
+      EventLogger.initialize()
       return true;
     }
 

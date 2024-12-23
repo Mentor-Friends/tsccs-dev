@@ -11025,6 +11025,109 @@ function InsertUniqueNumber(Array, toInsert) {
 
 /***/ }),
 
+/***/ "./src/Middleware/EventLogger.ts":
+/*!***************************************!*\
+  !*** ./src/Middleware/EventLogger.ts ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   EventLogger: () => (/* binding */ EventLogger)
+/* harmony export */ });
+/* harmony import */ var _logger_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./logger.service */ "./src/Middleware/logger.service.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+class EventLogger {
+    static initialize() {
+        console.log("Initialized Event Logger...");
+        // Log unhandled errors
+        window.addEventListener("error", (event) => {
+            var _a, _b;
+            console.log("error called...");
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logErrorEvent({
+                message: "Unhandled Error",
+                error: ((_a = event.error) === null || _a === void 0 ? void 0 : _a.message) || event.message,
+                source: event.filename,
+                line: event.lineno,
+                column: event.colno,
+                stack: (_b = event.error) === null || _b === void 0 ? void 0 : _b.stack,
+            });
+        });
+        // Log unhandled promise rejections
+        window.addEventListener("unhandledrejection", (event) => {
+            var _a;
+            console.log("unhandledrejection called...");
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logErrorEvent({
+                message: "Unhandled Promise Rejection",
+                reason: event.reason,
+                stack: (_a = event.reason) === null || _a === void 0 ? void 0 : _a.stack,
+            });
+        });
+        // Log user interactions
+        document.addEventListener("click", (event) => {
+            var _a;
+            const target = event.target;
+            console.log("Click Event called...");
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logErrorEvent({
+                message: "User Click",
+                element: target.tagName,
+                id: target.id,
+                classes: target.className,
+                text: (_a = target.innerText) === null || _a === void 0 ? void 0 : _a.slice(0, 50),
+            });
+        });
+        // Log network requests (requires interception with Service Worker or monkey-patching)
+        this.logNetworkRequests();
+    }
+    static logNetworkRequests() {
+        const originalFetch = window.fetch;
+        window.fetch = (...args) => __awaiter(this, void 0, void 0, function* () {
+            const [url, options] = args;
+            const urlString = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
+            console.log("Custom fetch called for:", urlString);
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logNetwork({
+                type: "REQUEST",
+                message: "Network Request",
+                method: (options === null || options === void 0 ? void 0 : options.method) || "GET",
+                url: urlString,
+                body: options === null || options === void 0 ? void 0 : options.body,
+            });
+            try {
+                const response = yield originalFetch(...args);
+                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logNetwork({
+                    type: "RESPONSE",
+                    message: "Network Response",
+                    url: urlString,
+                    status: response.status,
+                });
+                return response;
+            }
+            catch (error) {
+                console.error("Fetch failed for:", urlString, error); // Debugging log
+                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logNetwork({
+                    type: "ERROR",
+                    message: "Network Request Failed",
+                    url: urlString,
+                    error: error instanceof Error ? error.message : String(error),
+                });
+                throw error;
+            }
+        });
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/Middleware/logger.service.ts":
 /*!******************************************!*\
   !*** ./src/Middleware/logger.service.ts ***!
@@ -11091,7 +11194,7 @@ class Logger {
     /**
      * Logs a message with optional additional structured data.
      */
-    static log(level, message, data) {
+    static formatLogData(level, message, data) {
         if (!Logger.shouldLog(level))
             return;
         const logEntry = Object.assign({ timestamp: new Date().toISOString(), level,
@@ -11099,6 +11202,14 @@ class Logger {
         Logger.logs.push(logEntry);
         console.log("Log Data in Logger Class : ", Logger.logs);
         this.saveToLocalStorage(logEntry);
+    }
+    static log(type, message, data) {
+        try {
+            Logger.formatLogData(this.logLevel, message, data);
+        }
+        catch (error) {
+            console.error("Error on Logger Log : ", error);
+        }
     }
     static logInfo(startTime, userId, operationType, requestFrom, requestIP, responseStatus, responseData, functionName, functionParameters, userAgent, conceptsUsed) {
         const sessionId = getCookie("SessionId");
@@ -11138,7 +11249,7 @@ class Logger {
             userAgent,
             conceptsUsed,
         };
-        Logger.log("ERROR", `Information logged for ${functionName}`, logData);
+        Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);
     }
     static logWarning(startTime, userId, operationType, requestFrom, requestIP, responseStatus, responseData, functionName, functionParameters, userAgent, conceptsUsed) {
         const sessionId = getCookie("SessionId");
@@ -11158,7 +11269,7 @@ class Logger {
             userAgent,
             conceptsUsed,
         };
-        Logger.log("WARNING", `Information logged for ${functionName}`, logData);
+        Logger.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
     }
     static logDebug(startTime, userId, operationType, requestFrom, requestIP, responseStatus, responseData, functionName, functionParameters, userAgent, conceptsUsed) {
         const sessionId = getCookie("SessionId");
@@ -11178,7 +11289,52 @@ class Logger {
             userAgent,
             conceptsUsed,
         };
-        Logger.log("DEBUG", `Information logged for ${functionName}`, logData);
+        Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
+    }
+    // Log Event
+    static logErrorEvent(message, error, source, line, column, stack) {
+        const logData = {
+            message: message || "Unknown error",
+            error: error || "No error message provided",
+            source: source || "Unknown source",
+            line: line || "Unknown line",
+            column: column || "Unknown column",
+            stack: stack || "No stack trace available",
+            timestamp: new Date().toISOString(),
+        };
+        console.error("Error Logged:", logData);
+        this.saveEventToLocalStorage(JSON.stringify(logData));
+        // send the error data to an external service or save it
+        // sendToLoggingService(logData);
+    }
+    // Log Network Error
+    static logNetwork(logData) {
+        if (logData.type === 'REQUEST') {
+            let networkLog = (logData.message,
+                logData.method,
+                logData.url,
+                logData.body,
+                new Date().toISOString());
+            console.log("NETWORK REQUEST LOG : ", networkLog);
+            this.saveEventToLocalStorage(JSON.stringify(logData));
+        }
+        if (logData.type === 'RESPONSE') {
+            let networkLog = (logData.message,
+                logData.method,
+                logData.url,
+                logData.body,
+                new Date().toISOString());
+            console.log("NETWORK RESPONSE LOG : ", networkLog);
+            this.saveEventToLocalStorage(JSON.stringify(logData));
+        }
+        if (logData.type === 'ERROR') {
+            let networkLog = (logData.message,
+                logData.url,
+                logData.error,
+                new Date().toISOString());
+            console.log("NETWORK ERROR LOG : ", networkLog);
+            this.saveEventToLocalStorage(JSON.stringify(logData));
+        }
     }
     /**
      * Helper method to save logs to localStorage.
@@ -11188,6 +11344,16 @@ class Logger {
             const logs = JSON.parse(localStorage.getItem("logs") || "[]");
             logs.push(logMessage);
             localStorage.setItem("logs", JSON.stringify(logs));
+        }
+        catch (error) {
+            console.error("Failed to save log to localStorage:", error);
+        }
+    }
+    static saveEventToLocalStorage(logMessage) {
+        try {
+            const logs = JSON.parse(localStorage.getItem("EventLogs") || "[]");
+            logs.push(logMessage);
+            localStorage.setItem("EventLogs", JSON.stringify(logs));
         }
         catch (error) {
             console.error("Failed to save log to localStorage:", error);
@@ -11203,12 +11369,12 @@ class Logger {
                 const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
                 if (storedLogs.length === 0)
                     return;
-                console.log("Stored Logs : ", storedLogs);
+                // console.log("Stored Logs : ", storedLogs);
                 const chunkSize = 50;
                 for (let i = 0; i < storedLogs.length; i += chunkSize) {
                     const chunk = storedLogs.slice(i, i + chunkSize);
-                    console.log("Sending logs chunk:", chunk);
-                    console.log("Payload chunk:", JSON.stringify(chunk));
+                    // console.log("Sending logs chunk:", chunk);
+                    // console.log("Payload chunk:", JSON.stringify(chunk)); 
                     const response = yield fetch(Logger.SERVER_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -11216,7 +11382,7 @@ class Logger {
                     });
                     if (!response.ok) {
                         const responseBody = yield response.text();
-                        console.log("Response Body on failed request : ", responseBody);
+                        // console.log("Response Body on failed request : ", responseBody);
                         console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                         return;
                     }
@@ -20802,12 +20968,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ADMIN: () => (/* reexport safe */ _Constants_AccessConstants__WEBPACK_IMPORTED_MODULE_66__.ADMIN),
 /* harmony export */   ALLID: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.ALLID),
-/* harmony export */   AccessTracker: () => (/* reexport safe */ _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_114__.AccessTracker),
+/* harmony export */   AccessTracker: () => (/* reexport safe */ _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_115__.AccessTracker),
 /* harmony export */   AddGhostConcept: () => (/* reexport safe */ _Services_User_UserTranslation__WEBPACK_IMPORTED_MODULE_50__.AddGhostConcept),
-/* harmony export */   Anomaly: () => (/* reexport safe */ _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_105__.Anomaly),
+/* harmony export */   Anomaly: () => (/* reexport safe */ _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_106__.Anomaly),
 /* harmony export */   BaseUrl: () => (/* reexport safe */ _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl),
 /* harmony export */   BinaryTree: () => (/* reexport safe */ _DataStructures_BinaryTree__WEBPACK_IMPORTED_MODULE_83__.BinaryTree),
-/* harmony export */   BuilderStatefulWidget: () => (/* reexport safe */ _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_103__.BuilderStatefulWidget),
+/* harmony export */   BuilderStatefulWidget: () => (/* reexport safe */ _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_104__.BuilderStatefulWidget),
 /* harmony export */   Composition: () => (/* reexport safe */ _DataStructures_Composition_Composition__WEBPACK_IMPORTED_MODULE_87__.Composition),
 /* harmony export */   CompositionBinaryTree: () => (/* reexport safe */ _DataStructures_Composition_CompositionBinaryTree__WEBPACK_IMPORTED_MODULE_88__.CompositionBinaryTree),
 /* harmony export */   CompositionNode: () => (/* reexport safe */ _DataStructures_Composition_CompositionNode__WEBPACK_IMPORTED_MODULE_89__.CompositionNode),
@@ -20834,17 +21000,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   DeleteConceptById: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__.DeleteConceptById),
 /* harmony export */   DeleteConceptLocal: () => (/* reexport safe */ _Services_Local_DeleteConceptLocal__WEBPACK_IMPORTED_MODULE_61__.DeleteConceptLocal),
 /* harmony export */   DeleteConnectionById: () => (/* reexport safe */ _Services_DeleteConnection__WEBPACK_IMPORTED_MODULE_25__.DeleteConnectionById),
-/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_109__.DeleteConnectionByType),
+/* harmony export */   DeleteConnectionByType: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_110__.DeleteConnectionByType),
 /* harmony export */   DeleteUser: () => (/* reexport safe */ _Services_DeleteConcept__WEBPACK_IMPORTED_MODULE_24__.DeleteUser),
 /* harmony export */   DependencyObserver: () => (/* reexport safe */ _WrapperFunctions_DepenedencyObserver__WEBPACK_IMPORTED_MODULE_68__.DependencyObserver),
 /* harmony export */   FilterSearch: () => (/* reexport safe */ _DataStructures_FilterSearch__WEBPACK_IMPORTED_MODULE_92__.FilterSearch),
 /* harmony export */   FormatFromConnections: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnections),
 /* harmony export */   FormatFromConnectionsAltered: () => (/* reexport safe */ _Services_Search_SearchLinkMultiple__WEBPACK_IMPORTED_MODULE_51__.FormatFromConnectionsAltered),
-/* harmony export */   FreeschemaQuery: () => (/* reexport safe */ _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_110__.FreeschemaQuery),
-/* harmony export */   FreeschemaQueryApi: () => (/* reexport safe */ _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_111__.FreeschemaQueryApi),
+/* harmony export */   FreeschemaQuery: () => (/* reexport safe */ _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_111__.FreeschemaQuery),
+/* harmony export */   FreeschemaQueryApi: () => (/* reexport safe */ _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_112__.FreeschemaQueryApi),
 /* harmony export */   GetAllConnectionsOfComposition: () => (/* reexport safe */ _Api_GetAllConnectionsOfComposition__WEBPACK_IMPORTED_MODULE_6__.GetAllConnectionsOfComposition),
 /* harmony export */   GetAllConnectionsOfCompositionBulk: () => (/* reexport safe */ _Api_GetAllConnectionsOfCompositionBulk__WEBPACK_IMPORTED_MODULE_33__.GetAllConnectionsOfCompositionBulk),
-/* harmony export */   GetAllTheConnectionsByTypeAndOfTheConcept: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_109__.GetAllTheConnectionsByTypeAndOfTheConcept),
+/* harmony export */   GetAllTheConnectionsByTypeAndOfTheConcept: () => (/* reexport safe */ _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_110__.GetAllTheConnectionsByTypeAndOfTheConcept),
 /* harmony export */   GetComposition: () => (/* reexport safe */ _Services_GetComposition__WEBPACK_IMPORTED_MODULE_7__.GetComposition),
 /* harmony export */   GetCompositionBulk: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionBulk),
 /* harmony export */   GetCompositionBulkWithDataId: () => (/* reexport safe */ _Services_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_30__.GetCompositionBulkWithDataId),
@@ -20899,7 +21065,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   LISTNORMAL: () => (/* reexport safe */ _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_65__.LISTNORMAL),
 /* harmony export */   LocalConceptsData: () => (/* reexport safe */ _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_94__.LocalConceptsData),
 /* harmony export */   LocalSyncData: () => (/* reexport safe */ _DataStructures_Local_LocalSyncData__WEBPACK_IMPORTED_MODULE_90__.LocalSyncData),
-/* harmony export */   LocalTransaction: () => (/* reexport safe */ _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_104__.LocalTransaction),
+/* harmony export */   LocalTransaction: () => (/* reexport safe */ _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_105__.LocalTransaction),
 /* harmony export */   Logger: () => (/* reexport safe */ _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_101__.Logger),
 /* harmony export */   LoginToBackend: () => (/* reexport safe */ _Api_Login__WEBPACK_IMPORTED_MODULE_34__.LoginToBackend),
 /* harmony export */   MakeTheInstanceConcept: () => (/* reexport safe */ _Services_MakeTheInstanceConcept__WEBPACK_IMPORTED_MODULE_13__["default"]),
@@ -20919,7 +21085,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   RecursiveSearchApiRawFullLinker: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiRawFullLinker),
 /* harmony export */   RecursiveSearchApiWithInternalConnections: () => (/* reexport safe */ _Api_RecursiveSearch__WEBPACK_IMPORTED_MODULE_29__.RecursiveSearchApiWithInternalConnections),
 /* harmony export */   RecursiveSearchListener: () => (/* reexport safe */ _WrapperFunctions_RecursiveSearchObservable__WEBPACK_IMPORTED_MODULE_74__.RecursiveSearchListener),
-/* harmony export */   SchemaQueryListener: () => (/* reexport safe */ _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_112__.SchemaQueryListener),
+/* harmony export */   SchemaQueryListener: () => (/* reexport safe */ _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_113__.SchemaQueryListener),
 /* harmony export */   SearchAllConcepts: () => (/* reexport safe */ _Api_Search_Search__WEBPACK_IMPORTED_MODULE_39__.SearchAllConcepts),
 /* harmony export */   SearchLinkInternal: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternal),
 /* harmony export */   SearchLinkInternalAll: () => (/* reexport safe */ _Services_Search_SearchLinkInternal__WEBPACK_IMPORTED_MODULE_59__.SearchLinkInternalAll),
@@ -20936,19 +21102,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Signup: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_36__["default"]),
 /* harmony export */   SignupEntity: () => (/* reexport safe */ _Api_Signup__WEBPACK_IMPORTED_MODULE_36__.SignupEntity),
 /* harmony export */   SplitStrings: () => (/* reexport safe */ _Services_SplitStrings__WEBPACK_IMPORTED_MODULE_3__.SplitStrings),
-/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_108__.StatefulWidget),
+/* harmony export */   StatefulWidget: () => (/* reexport safe */ _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_109__.StatefulWidget),
 /* harmony export */   SyncData: () => (/* reexport safe */ _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_76__.SyncData),
 /* harmony export */   TrashTheConcept: () => (/* reexport safe */ _Api_Delete_DeleteConceptInBackend__WEBPACK_IMPORTED_MODULE_26__.TrashTheConcept),
 /* harmony export */   UpdateComposition: () => (/* reexport safe */ _Services_UpdateComposition__WEBPACK_IMPORTED_MODULE_38__["default"]),
 /* harmony export */   UpdateCompositionLocal: () => (/* reexport safe */ _Services_Local_UpdateCompositionLocal__WEBPACK_IMPORTED_MODULE_53__.UpdateCompositionLocal),
 /* harmony export */   UserBinaryTree: () => (/* reexport safe */ _DataStructures_User_UserBinaryTree__WEBPACK_IMPORTED_MODULE_91__.UserBinaryTree),
-/* harmony export */   Validator: () => (/* reexport safe */ _Validator_validator__WEBPACK_IMPORTED_MODULE_106__.Validator),
+/* harmony export */   Validator: () => (/* reexport safe */ _Validator_validator__WEBPACK_IMPORTED_MODULE_107__.Validator),
 /* harmony export */   ViewInternalData: () => (/* reexport safe */ _Services_View_ViewInternalData__WEBPACK_IMPORTED_MODULE_56__.ViewInternalData),
 /* harmony export */   ViewInternalDataApi: () => (/* reexport safe */ _Api_View_ViewInternalDataApi__WEBPACK_IMPORTED_MODULE_57__.ViewInternalDataApi),
-/* harmony export */   WidgetTree: () => (/* reexport safe */ _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_113__.WidgetTree),
+/* harmony export */   WidgetTree: () => (/* reexport safe */ _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_114__.WidgetTree),
 /* harmony export */   convertFromConceptToLConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromConceptToLConcept),
 /* harmony export */   convertFromLConceptToConcept: () => (/* reexport safe */ _Services_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_58__.convertFromLConceptToConcept),
-/* harmony export */   createFormFieldData: () => (/* reexport safe */ _Validator_utils__WEBPACK_IMPORTED_MODULE_107__.createFormFieldData),
+/* harmony export */   createFormFieldData: () => (/* reexport safe */ _Validator_utils__WEBPACK_IMPORTED_MODULE_108__.createFormFieldData),
 /* harmony export */   dispatchIdEvent: () => (/* binding */ dispatchIdEvent),
 /* harmony export */   getFromDatabaseWithType: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getFromDatabaseWithType),
 /* harmony export */   getObjectsFromIndexDb: () => (/* reexport safe */ _Database_NoIndexDb__WEBPACK_IMPORTED_MODULE_15__.getObjectsFromIndexDb),
@@ -21065,18 +21231,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__ = __webpack_require__(/*! ./Constants/general.const */ "./src/Constants/general.const.ts");
 /* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Middleware/logger.service */ "./src/Middleware/logger.service.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
-/* harmony import */ var _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Widgets/BuilderStatefulWidget */ "./src/Widgets/BuilderStatefulWidget.ts");
-/* harmony import */ var _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./Services/Transaction/LocalTransaction */ "./src/Services/Transaction/LocalTransaction.ts");
-/* harmony import */ var _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_105__ = __webpack_require__(/*! ./Anomaly/anomaly */ "./src/Anomaly/anomaly.ts");
-/* harmony import */ var _Validator_validator__WEBPACK_IMPORTED_MODULE_106__ = __webpack_require__(/*! ./Validator/validator */ "./src/Validator/validator.ts");
-/* harmony import */ var _Validator_utils__WEBPACK_IMPORTED_MODULE_107__ = __webpack_require__(/*! ./Validator/utils */ "./src/Validator/utils.ts");
-/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_108__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
-/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_109__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
-/* harmony import */ var _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_110__ = __webpack_require__(/*! ./DataStructures/Search/FreeschemaQuery */ "./src/DataStructures/Search/FreeschemaQuery.ts");
-/* harmony import */ var _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_111__ = __webpack_require__(/*! ./Api/Search/FreeschemaQueryApi */ "./src/Api/Search/FreeschemaQueryApi.ts");
-/* harmony import */ var _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_112__ = __webpack_require__(/*! ./WrapperFunctions/SchemaQueryObservable */ "./src/WrapperFunctions/SchemaQueryObservable.ts");
-/* harmony import */ var _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_113__ = __webpack_require__(/*! ./Widgets/WidgetTree */ "./src/Widgets/WidgetTree.ts");
-/* harmony import */ var _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_114__ = __webpack_require__(/*! ./AccessTracker/accessTracker */ "./src/AccessTracker/accessTracker.ts");
+/* harmony import */ var _Middleware_EventLogger__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Middleware/EventLogger */ "./src/Middleware/EventLogger.ts");
+/* harmony import */ var _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./Widgets/BuilderStatefulWidget */ "./src/Widgets/BuilderStatefulWidget.ts");
+/* harmony import */ var _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_105__ = __webpack_require__(/*! ./Services/Transaction/LocalTransaction */ "./src/Services/Transaction/LocalTransaction.ts");
+/* harmony import */ var _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_106__ = __webpack_require__(/*! ./Anomaly/anomaly */ "./src/Anomaly/anomaly.ts");
+/* harmony import */ var _Validator_validator__WEBPACK_IMPORTED_MODULE_107__ = __webpack_require__(/*! ./Validator/validator */ "./src/Validator/validator.ts");
+/* harmony import */ var _Validator_utils__WEBPACK_IMPORTED_MODULE_108__ = __webpack_require__(/*! ./Validator/utils */ "./src/Validator/utils.ts");
+/* harmony import */ var _Widgets_StatefulWidget__WEBPACK_IMPORTED_MODULE_109__ = __webpack_require__(/*! ./Widgets/StatefulWidget */ "./src/Widgets/StatefulWidget.ts");
+/* harmony import */ var _Services_DeleteConnectionByType__WEBPACK_IMPORTED_MODULE_110__ = __webpack_require__(/*! ./Services/DeleteConnectionByType */ "./src/Services/DeleteConnectionByType.ts");
+/* harmony import */ var _DataStructures_Search_FreeschemaQuery__WEBPACK_IMPORTED_MODULE_111__ = __webpack_require__(/*! ./DataStructures/Search/FreeschemaQuery */ "./src/DataStructures/Search/FreeschemaQuery.ts");
+/* harmony import */ var _Api_Search_FreeschemaQueryApi__WEBPACK_IMPORTED_MODULE_112__ = __webpack_require__(/*! ./Api/Search/FreeschemaQueryApi */ "./src/Api/Search/FreeschemaQueryApi.ts");
+/* harmony import */ var _WrapperFunctions_SchemaQueryObservable__WEBPACK_IMPORTED_MODULE_113__ = __webpack_require__(/*! ./WrapperFunctions/SchemaQueryObservable */ "./src/WrapperFunctions/SchemaQueryObservable.ts");
+/* harmony import */ var _Widgets_WidgetTree__WEBPACK_IMPORTED_MODULE_114__ = __webpack_require__(/*! ./Widgets/WidgetTree */ "./src/Widgets/WidgetTree.ts");
+/* harmony import */ var _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_115__ = __webpack_require__(/*! ./AccessTracker/accessTracker */ "./src/AccessTracker/accessTracker.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -21086,6 +21253,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -21258,6 +21426,7 @@ function init() {
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionLoaded = true;
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionTypeLoaded = true;
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
+                _Middleware_EventLogger__WEBPACK_IMPORTED_MODULE_103__.EventLogger.initialize();
                 return true;
             }
             if (!("serviceWorker" in navigator)) {
