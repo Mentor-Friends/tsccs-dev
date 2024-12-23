@@ -1,4 +1,4 @@
-import { BaseUrl } from "../app";
+import { BaseUrl, ConceptsData, ConnectionData } from "../app";
 import { BASE_URL } from "../Constants/ApiConstants";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
@@ -165,11 +165,17 @@ export class AccessTracker {
     /**
      * Fetch suggested concepts from the server with proper error handling.
      */
-    public static async GetSuggestedConcepts() {
+    public static async GetSuggestedConcepts(top?:number) {
         try {
             const accessToken = TokenStorage.BearerAccessToken;
 
-            const response = await fetch(BaseUrl.GetSuggestedConcepts(), {
+            // Construct the URL with the top parameter if it exists
+            const url = new URL(BaseUrl.GetSuggestedConcepts());
+            if (top !== undefined) {
+                url.searchParams.append('top', top.toString());
+            }
+
+            const response = await fetch(url.toString(), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -181,8 +187,10 @@ export class AccessTracker {
                 const errorDetails = await response.text();
                 throw new Error(`Failed to load concepts: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
             }
-
+            
             const concepts = await response.json() || [];
+
+            await this.addConceptToBinaryTree(concepts.data)
             return concepts;
         } catch (error) {
             if (error instanceof Error) {
@@ -199,11 +207,17 @@ export class AccessTracker {
     /**
      * Fetch suggested connections from the server with proper error handling.
      */
-    public static async GetSuggestedConnections() {
+    public static async GetSuggestedConnections(top?:number) {
         try {
             const accessToken = TokenStorage.BearerAccessToken;
+            
+            // Construct the URL with the top parameter if it exists
+            const url = new URL(BaseUrl.GetSuggestedConnections());
+            if (top !== undefined) {
+                url.searchParams.append('top', top.toString());
+            }
 
-            const response = await fetch(BaseUrl.GetSuggestedConnections(), {
+            const response = await fetch(url.toString(), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -217,6 +231,8 @@ export class AccessTracker {
             }
 
             const connections = await response.json() || [];
+            
+            await this.addConnectionToBinaryTree(connections.data)
             return connections;
         } catch (error:any) {
             if (error instanceof Error) {
@@ -229,5 +245,38 @@ export class AccessTracker {
         }
     }
 
-    
+    /**
+     * Add Concepts to Binary Tree
+     */
+    private static async addConceptToBinaryTree(conceptsDataArray:[]){
+        console.log("Concepts Data Array : ", conceptsDataArray);
+        
+        try{
+            console.log("Start Adding Concepts to Binary Tree...");
+            
+            conceptsDataArray.forEach(conceptObject => {
+                console.log("Concept Object : ", conceptObject);
+                ConceptsData.AddConcept(conceptObject);
+            });
+        } catch(error) {
+            console.error("Error on adding Concepts Data into tree");
+        }
+    }
+
+    /**
+     * Add Concepts to Binary Tree
+     */
+    private static async addConnectionToBinaryTree(connectionsDataArray:[]){
+        try{
+            console.log("Start Adding Connections to Binary Tree...");
+
+            connectionsDataArray.forEach(connectionObject => {
+                console.log("Connection Object : ", connectionObject);
+                ConnectionData.AddConnection(connectionObject);
+            });
+        } catch(error) {
+            console.error("Error on adding Connections Data into tree");
+        }
+    }
+
 }
