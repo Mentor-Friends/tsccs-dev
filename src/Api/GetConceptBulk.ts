@@ -12,10 +12,12 @@ export async function GetConceptBulk(conceptIds: number[]){
             let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
             if(conceptUse.id == 0){
                 bulkConceptFetch.push(conceptIds[i]);
+            } else {
+              result.push(conceptUse)
             }
         }
         if(bulkConceptFetch.length == 0){
-
+            
             return result;
         }
         else{
@@ -26,10 +28,11 @@ export async function GetConceptBulk(conceptIds: number[]){
                 body: JSON.stringify(bulkConceptFetch)
             });
             if(response.ok){
-                result = await response.json();
-                if(result.length > 0){
-                    for(let i=0 ; i<result.length; i++){
-                        let concept = result[i] as Concept;
+                let output = await response.json();
+                if(output.length > 0){
+                    for(let i=0 ; i<output.length; i++){
+                        let concept = output[i] as Concept;
+                        result.push(concept);
                         ConceptsData.AddConcept(concept);
                     }
     
@@ -39,7 +42,6 @@ export async function GetConceptBulk(conceptIds: number[]){
                 console.log("Get Concept Bulk error", response.status);
                 HandleHttpError(response);
             }
-
             return result;
 
         }

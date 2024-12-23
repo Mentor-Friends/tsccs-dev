@@ -85,7 +85,6 @@ import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTre
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
-import { from } from 'readable-stream';
 export {BaseUrl} from './DataStructures/BaseUrl';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
