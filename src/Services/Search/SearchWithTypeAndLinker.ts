@@ -1,8 +1,9 @@
+import { Console } from 'console';
 import { GetConcept } from '../../Api/GetConcept';
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept} from '../../app';
 import { recursiveFetchConceptSingleLoop } from '../GetComposition';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
-import { FormatConceptsAndConnectionsNormalList, FormatFromConnectionsAlteredArrayExternal, formatFunction, FormatFunctionData, FormatFunctionDataForData, formatFunctionForData } from './FormatData';
+import { FormatConceptsAndConnectionsNormalList, FormatFromConnectionsAlteredArrayExternal, FormatFromConnectionsAlteredArrayExternalJustId, formatFunction, FormatFunctionData, FormatFunctionDataForData, FormatFunctionDataForDataJustId, formatFunctionForData } from './FormatData';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
 
 /**
@@ -121,6 +122,27 @@ export async function formatConnections(linkers: number[], conceptIds: number []
 
 
 /**
+ * ## Format JustId ##
+ * This function fetches all the connections and then converts all the connections to the single level connections 
+ * Then those single level objects are then stiched together to create a complex json/ array.
+ * @param linkers 
+ * @param conceptIds 
+ * @param mainCompositionIds 
+ * @param reverse 
+ * @returns 
+ */
+export async function formatConnectionsJustId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[]){
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let compositionData: any [] = [];
+    let newCompositionData: any [] = [];
+    compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
+    compositionData = await FormatFunctionDataForDataJustId(prefetchConnections, compositionData, reverse);
+    let output:any  = await FormatFromConnectionsAlteredArrayExternalJustId(prefetchConnections, compositionData, mainCompositionIds, reverse );
+    return output;
+}
+
+
+/**
  * ## Format DATA-ID ##
  * This function fetches all the connections and then converts all the connections to the single level connections 
  * Then those single level objects are then stiched together to create a complex json/ array.
@@ -136,7 +158,6 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
     let newCompositionData: any [] = [];
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
     compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
-    console.log("this is the composition data", compositionData);
      let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse );
      return output;
 }
