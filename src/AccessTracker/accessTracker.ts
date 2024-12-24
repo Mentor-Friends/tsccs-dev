@@ -119,7 +119,7 @@ export class AccessTracker {
     private static setNextSyncTime(): void {
         // Calculate next sync time (current time + TimeToSync interval)
         this.nextSyncTime = Date.now() + this.TimeToSync;
-        // console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
+        console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
     }
 
     /**
@@ -135,16 +135,16 @@ export class AccessTracker {
         }
 
         setInterval(() => {
-        const currentTime = Date.now();
-        // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
+            const currentTime = Date.now();
+            // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
 
-        if (currentTime >= this.nextSyncTime) {
-            // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
-            this.syncNow().catch(console.error);
-        } else {
-            // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
-        }
-        }, 1000); // Check every second
+            if (currentTime >= this.nextSyncTime) {
+                // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
+                this.syncNow().catch(console.error);
+            } else {
+                // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
+            }
+        }, 300000); // Check every 5 minutes
     }
 
 
