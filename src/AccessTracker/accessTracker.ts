@@ -136,7 +136,7 @@ export class AccessTracker {
 
         setInterval(() => {
         const currentTime = Date.now();
-        console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
+        // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
 
         if (currentTime >= this.nextSyncTime) {
             // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
@@ -254,7 +254,7 @@ export class AccessTracker {
             // console.log("Start Adding Concepts to Binary Tree...");
             
             conceptsDataArray.forEach(conceptObject => {
-                console.log("Concept Object : ", conceptObject);
+                // console.log("Concept Object : ", conceptObject);
                 ConceptsData.AddConcept(conceptObject);
             });
         } catch(error) {
