@@ -103,8 +103,8 @@ export class AccessTracker {
             }
 
             const serverData = await response.json();
-            this.conceptsData = serverData.concepts;
-            this.connectionsData = serverData.connections;
+            // this.conceptsData = serverData.concepts;
+            // this.connectionsData = serverData.connections;
             this.saveDataToLocalStorage();
             // console.log(`Sync successful at ${new Date().toISOString()}`);
             this.setNextSyncTime();
