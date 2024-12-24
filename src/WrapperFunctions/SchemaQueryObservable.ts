@@ -1,7 +1,7 @@
 import { FreeschemaQuery, FreeschemaQueryApi } from "../app";
-import { ALLID, DATAID, NORMAL } from "../Constants/FormatConstants";
+import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
 import { FormatFromConnectionsAlteredArrayExternal } from "../Services/Search/FormatData";
-import { formatConnections, formatConnectionsDataId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
+import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
 import { DependencyObserver } from "./DepenedencyObserver";
 
 export class SearchLinkMultipleAllObservable extends DependencyObserver{
@@ -30,6 +30,9 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     async build(){
         if(this.format == DATAID){
             this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+        }
+        else if(this.format == JUSTDATA){
+            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
         }
         else{
             this.data = await formatConnections(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
