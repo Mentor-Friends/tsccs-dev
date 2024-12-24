@@ -130,8 +130,7 @@ export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {WidgetTree} from './Widgets/WidgetTree';
 export { DeleteUser } from './Services/DeleteConcept';
-
-
+export { AccessTracker } from './AccessTracker/accessTracker'
 
 type listeners = {
   listenerId: string | number
@@ -468,7 +467,7 @@ export async function sendMessage(type: string, payload: any) {
   
       // Timeout for waiting for the response (e.g., 5 seconds)
       setTimeout(() => {
-        reject("No response from service worker after timeout");
+        reject(`No response from service worker after timeout: ${type}`);
         navigator.serviceWorker.removeEventListener("message", responseHandler);
       }, 90000); // 90 sec
     } else {

@@ -1,3 +1,4 @@
+import { AccessTracker } from "../AccessTracker/accessTracker";
 import { sendMessage, serviceWorker } from "../app";
 import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { IndexDbUpdate } from "../Database/IndexUpdate";
@@ -138,6 +139,8 @@ export class ConnectionData {
   }
 
   static async GetConnection(id: number) {
+    // Increment Connection
+    AccessTracker.incrementConnection(id)
     if (serviceWorker) {
       const res: any = await sendMessage('ConnectionData__GetConnection', {id})
       // console.log('data received from sw', res)
