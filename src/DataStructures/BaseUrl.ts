@@ -93,6 +93,19 @@ export class BaseUrl{
        // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
 
+    static PostPrefetchConceptConnections(){
+        return this.NODE_URL + '/api/v1/access-tracker/sync-access-tracker'
+    }
+
+    static GetSuggestedConcepts(){
+        return this.NODE_URL + '/api/v1/access-tracker/list-concepts-file'
+    }
+
+    static GetSuggestedConnections(){
+        return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
+    }
+
+
     static GetAllPrefetchConnectionsUrl(){
         return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';
     }

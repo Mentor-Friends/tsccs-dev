@@ -1,8 +1,10 @@
+import { AccessTracker } from "../AccessTracker/accessTracker";
 import { GetConcept } from "../Api/GetConcept";
 import { convertFromLConceptToConcept, GetUserGhostId, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
+
 
 /**
  * 
@@ -12,6 +14,8 @@ import { CreateDefaultConcept } from "./CreateDefaultConcept";
  */
 export default async function GetTheConcept(id: number, userId: number = 999){
     try{
+        // Increment count of the concept
+        AccessTracker.incrementConcept(id);
         if (serviceWorker) {
             const res: any = await sendMessage('GetTheConcept', {id, userId})
             // console.log('data received from sw', res)
