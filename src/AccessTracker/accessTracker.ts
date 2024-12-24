@@ -11,7 +11,7 @@ export class AccessTracker {
     private static nextSyncTime: number = Date.now(); 
         
     static {
-        console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toISOString()}`);
+        // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toISOString()}`);
         this.startAutoSync();
     }
 
@@ -79,13 +79,12 @@ export class AccessTracker {
      */
     public static async syncToServer(accessToken: string): Promise<void> {
         try {
-            console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
+            // console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
             // Ensure conceptsData and connectionsData are not undefined or null
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
             const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
 
-            // const response = await fetch(`http://localhost:5000/api/v1/access-tracker/sync-access-tracker`, {
-            console.log("I am getting url : ", BaseUrl.PostPrefetchConceptConnections());
+            // console.log("I am getting url : ", BaseUrl.PostPrefetchConceptConnections());
             
             const response = await fetch(BaseUrl.PostPrefetchConceptConnections(), {
                 method: 'POST',
@@ -107,7 +106,7 @@ export class AccessTracker {
             this.conceptsData = serverData.concepts;
             this.connectionsData = serverData.connections;
             this.saveDataToLocalStorage();
-            console.log(`Sync successful at ${new Date().toISOString()}`);
+            // console.log(`Sync successful at ${new Date().toISOString()}`);
             this.setNextSyncTime();
         } catch (error) {
             console.error('Sync error:', error);
@@ -120,7 +119,7 @@ export class AccessTracker {
     private static setNextSyncTime(): void {
         // Calculate next sync time (current time + TimeToSync interval)
         this.nextSyncTime = Date.now() + this.TimeToSync;
-        console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
+        // console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
     }
 
     /**
@@ -131,7 +130,7 @@ export class AccessTracker {
         const tokenString = TokenStorage.BearerAccessToken;
 
         if (tokenString) {
-        console.log("[AUTO-SYNC] Auto-sync initialized.");
+        // console.log("[AUTO-SYNC] Auto-sync initialized.");
         this.syncNow().catch(console.error);
         }
 
@@ -140,10 +139,10 @@ export class AccessTracker {
         console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
 
         if (currentTime >= this.nextSyncTime) {
-            console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
+            // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
             this.syncNow().catch(console.error);
         } else {
-            console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
+            // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
         }
         }, 1000); // Check every second
     }
@@ -155,7 +154,7 @@ export class AccessTracker {
     private static async syncNow(): Promise<void> {
         const tokenString = TokenStorage.BearerAccessToken;
         if (tokenString) {
-          console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
+        //   console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
           await this.syncToServer(tokenString);
         } else {
           console.warn("[MANUAL SYNC] No valid access token found. Sync aborted.");
@@ -249,10 +248,10 @@ export class AccessTracker {
      * Add Concepts to Binary Tree
      */
     private static async addConceptToBinaryTree(conceptsDataArray:[]){
-        console.log("Concepts Data Array : ", conceptsDataArray);
+        // console.log("Concepts Data Array : ", conceptsDataArray);
         
         try{
-            console.log("Start Adding Concepts to Binary Tree...");
+            // console.log("Start Adding Concepts to Binary Tree...");
             
             conceptsDataArray.forEach(conceptObject => {
                 console.log("Concept Object : ", conceptObject);
@@ -268,10 +267,10 @@ export class AccessTracker {
      */
     private static async addConnectionToBinaryTree(connectionsDataArray:[]){
         try{
-            console.log("Start Adding Connections to Binary Tree...");
+            // console.log("Start Adding Connections to Binary Tree...");
 
             connectionsDataArray.forEach(connectionObject => {
-                console.log("Connection Object : ", connectionObject);
+                // console.log("Connection Object : ", connectionObject);
                 ConnectionData.AddConnection(connectionObject);
             });
         } catch(error) {
