@@ -10,8 +10,8 @@ export class AccessTracker {
     private static TimeToSync: number = 300000;
     private static nextSyncTime: number = Date.now(); 
         
-    static {
-        // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toISOString()}`);
+    static {        
+        // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toLocaleString()}`);
         this.startAutoSync();
     }
 
@@ -19,16 +19,22 @@ export class AccessTracker {
      * Increments the count for a specific conceptId.
      */
     public static incrementConcept(conceptId: number): void {
-        this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
-        this.saveDataToLocalStorage()
+        // console.log("Inside incrementConcept with : ", conceptId);
+        if(conceptId){
+            this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
+            // this.saveDataToLocalStorage()
+        }
     }
 
     /**
      * Increments the count for a specific connectionId.
      */
     public static incrementConnection(connectionId: number): void {
-        this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
-        this.saveDataToLocalStorage()
+        // console.log("Inside incrementConnection with : ", connectionId);
+        if(connectionId){
+            this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
+            // this.saveDataToLocalStorage()
+        }
     }
 
     /**
@@ -59,14 +65,15 @@ export class AccessTracker {
             concepts: this.conceptsData,
             connections: this.connectionsData
         };
-        localStorage.setItem('trackerData', JSON.stringify(data));
+        
+        localStorage?.setItem('trackerData', JSON.stringify(data));
     }
 
     /**
      * Loads the concept and connection data from localStorage.
      */
     public static loadDataFromLocalStorage(): void {
-        const savedData = localStorage.getItem('trackerData');
+        const savedData = localStorage?.getItem('trackerData');
         if (savedData) {
             const data = JSON.parse(savedData);
             this.conceptsData = data.concepts || {};
@@ -78,7 +85,12 @@ export class AccessTracker {
      * Syncs the concept and connection data with the server.
      */
     public static async syncToServer(accessToken: string): Promise<void> {
+        if (!Object.keys(this.conceptsData).length && !Object.keys(this.connectionsData).length) {
+            // console.log("No data to sync. Skipping...");
+            return;
+        }
         try {
+
             // console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
             // Ensure conceptsData and connectionsData are not undefined or null
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
@@ -103,6 +115,10 @@ export class AccessTracker {
             }
 
             const serverData = await response.json();
+            console.log("Server Data after sync : ", serverData);
+            this.conceptsData = {}
+            this.connectionsData = {}
+            
             // this.conceptsData = serverData.concepts;
             // this.connectionsData = serverData.connections;
             this.saveDataToLocalStorage();
@@ -119,7 +135,7 @@ export class AccessTracker {
     private static setNextSyncTime(): void {
         // Calculate next sync time (current time + TimeToSync interval)
         this.nextSyncTime = Date.now() + this.TimeToSync;
-        console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
+        // console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toLocaleString()}`); // Log next sync time
     }
 
     /**
@@ -127,11 +143,12 @@ export class AccessTracker {
      * This will automatically call `syncToServer` every 5 minutes
      */
     private static startAutoSync(): void {
+
         const tokenString = TokenStorage.BearerAccessToken;
 
         if (tokenString) {
-        // console.log("[AUTO-SYNC] Auto-sync initialized.");
-        this.syncNow().catch(console.error);
+            // console.log("[AUTO-SYNC] Auto-sync initialized.");
+            this.syncNow().catch(console.error);
         }
 
         setInterval(() => {
@@ -144,7 +161,7 @@ export class AccessTracker {
             } else {
                 // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
             }
-        }, 300000); // Check every 5 minutes
+        }, 10000); // Check every 10 Seconds
     }
 
 
