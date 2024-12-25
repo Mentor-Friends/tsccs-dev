@@ -15,6 +15,12 @@ import { CreateDefaultConcept } from "./CreateDefaultConcept";
 export default async function GetTheConcept(id: number, userId: number = 999){
     let startTime = performance.now()
     try{
+        // Add concept id in access tracker
+        try{
+            AccessTracker.incrementConcept(id)
+        } catch {
+            console.error("Error adding concepts in access tracker");
+        }
         // Increment count of the concept
         try{
             AccessTracker.incrementConcept(id);

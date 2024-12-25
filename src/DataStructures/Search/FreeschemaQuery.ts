@@ -19,4 +19,5 @@ export class FreeschemaQuery{
     name: string = "";
     reverse: boolean = false;
     includeInFilter: boolean = false;
+    isOldConnectionType: boolean = false;
 }

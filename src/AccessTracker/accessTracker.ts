@@ -1,4 +1,4 @@
-import { BaseUrl } from "../app";
+import { BaseUrl, ConceptsData, ConnectionData } from "../app";
 import { BASE_URL } from "../Constants/ApiConstants";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
@@ -10,8 +10,8 @@ export class AccessTracker {
     private static TimeToSync: number = 300000;
     private static nextSyncTime: number = Date.now(); 
         
-    static {
-        console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toISOString()}`);
+    static {        
+        // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toLocaleString()}`);
         this.startAutoSync();
     }
 
@@ -19,16 +19,22 @@ export class AccessTracker {
      * Increments the count for a specific conceptId.
      */
     public static incrementConcept(conceptId: number): void {
-        this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
-        this.saveDataToLocalStorage()
+        // console.log("Inside incrementConcept with : ", conceptId);
+        if(conceptId){
+            this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
+            // this.saveDataToLocalStorage()
+        }
     }
 
     /**
      * Increments the count for a specific connectionId.
      */
     public static incrementConnection(connectionId: number): void {
-        this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
-        this.saveDataToLocalStorage()
+        // console.log("Inside incrementConnection with : ", connectionId);
+        if(connectionId){
+            this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
+            // this.saveDataToLocalStorage()
+        }
     }
 
     /**
@@ -59,14 +65,15 @@ export class AccessTracker {
             concepts: this.conceptsData,
             connections: this.connectionsData
         };
-        localStorage.setItem('trackerData', JSON.stringify(data));
+        
+        localStorage?.setItem('trackerData', JSON.stringify(data));
     }
 
     /**
      * Loads the concept and connection data from localStorage.
      */
     public static loadDataFromLocalStorage(): void {
-        const savedData = localStorage.getItem('trackerData');
+        const savedData = localStorage?.getItem('trackerData');
         if (savedData) {
             const data = JSON.parse(savedData);
             this.conceptsData = data.concepts || {};
@@ -78,14 +85,18 @@ export class AccessTracker {
      * Syncs the concept and connection data with the server.
      */
     public static async syncToServer(accessToken: string): Promise<void> {
+        if (!Object.keys(this.conceptsData).length && !Object.keys(this.connectionsData).length) {
+            // console.log("No data to sync. Skipping...");
+            return;
+        }
         try {
-            console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
+
+            // console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
             // Ensure conceptsData and connectionsData are not undefined or null
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
             const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
 
-            // const response = await fetch(`http://localhost:5000/api/v1/access-tracker/sync-access-tracker`, {
-            console.log("I am getting url : ", BaseUrl.PostPrefetchConceptConnections());
+            // console.log("I am getting url : ", BaseUrl.PostPrefetchConceptConnections());
             
             const response = await fetch(BaseUrl.PostPrefetchConceptConnections(), {
                 method: 'POST',
@@ -104,10 +115,14 @@ export class AccessTracker {
             }
 
             const serverData = await response.json();
-            this.conceptsData = serverData.concepts;
-            this.connectionsData = serverData.connections;
-            this.saveDataToLocalStorage();
-            console.log(`Sync successful at ${new Date().toISOString()}`);
+            console.log("Server Data after sync : ", serverData);
+            this.conceptsData = {}
+            this.connectionsData = {}
+            
+            // this.conceptsData = serverData.concepts;
+            // this.connectionsData = serverData.connections;
+            // this.saveDataToLocalStorage();
+            // console.log(`Sync successful at ${new Date().toISOString()}`);
             this.setNextSyncTime();
         } catch (error) {
             console.error('Sync error:', error);
@@ -120,7 +135,7 @@ export class AccessTracker {
     private static setNextSyncTime(): void {
         // Calculate next sync time (current time + TimeToSync interval)
         this.nextSyncTime = Date.now() + this.TimeToSync;
-        console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
+        // console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toLocaleString()}`); // Log next sync time
     }
 
     /**
@@ -128,24 +143,25 @@ export class AccessTracker {
      * This will automatically call `syncToServer` every 5 minutes
      */
     private static startAutoSync(): void {
+
         const tokenString = TokenStorage.BearerAccessToken;
 
         if (tokenString) {
-        console.log("[AUTO-SYNC] Auto-sync initialized.");
-        this.syncNow().catch(console.error);
+            // console.log("[AUTO-SYNC] Auto-sync initialized.");
+            this.syncNow().catch(console.error);
         }
 
         setInterval(() => {
-        const currentTime = Date.now();
-        console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
+            const currentTime = Date.now();
+            // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
 
-        if (currentTime >= this.nextSyncTime) {
-            console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
-            this.syncNow().catch(console.error);
-        } else {
-            console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
-        }
-        }, 1000); // Check every second
+            if (currentTime >= this.nextSyncTime) {
+                // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
+                this.syncNow().catch(console.error);
+            } else {
+                // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
+            }
+        }, 10000); // Check every 10 Seconds
     }
 
 
@@ -155,7 +171,7 @@ export class AccessTracker {
     private static async syncNow(): Promise<void> {
         const tokenString = TokenStorage.BearerAccessToken;
         if (tokenString) {
-          console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
+        //   console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
           await this.syncToServer(tokenString);
         } else {
           console.warn("[MANUAL SYNC] No valid access token found. Sync aborted.");
@@ -165,11 +181,17 @@ export class AccessTracker {
     /**
      * Fetch suggested concepts from the server with proper error handling.
      */
-    public static async GetSuggestedConcepts() {
+    public static async GetSuggestedConcepts(top?:number) {
         try {
             const accessToken = TokenStorage.BearerAccessToken;
 
-            const response = await fetch(BaseUrl.GetSuggestedConcepts(), {
+            // Construct the URL with the top parameter if it exists
+            const url = new URL(BaseUrl.GetSuggestedConcepts());
+            if (top !== undefined) {
+                url.searchParams.append('top', top.toString());
+            }
+
+            const response = await fetch(url.toString(), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -181,8 +203,10 @@ export class AccessTracker {
                 const errorDetails = await response.text();
                 throw new Error(`Failed to load concepts: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
             }
-
+            
             const concepts = await response.json() || [];
+
+            await this.addConceptToBinaryTree(concepts.data)
             return concepts;
         } catch (error) {
             if (error instanceof Error) {
@@ -199,11 +223,17 @@ export class AccessTracker {
     /**
      * Fetch suggested connections from the server with proper error handling.
      */
-    public static async GetSuggestedConnections() {
+    public static async GetSuggestedConnections(top?:number) {
         try {
             const accessToken = TokenStorage.BearerAccessToken;
+            
+            // Construct the URL with the top parameter if it exists
+            const url = new URL(BaseUrl.GetSuggestedConnections());
+            if (top !== undefined) {
+                url.searchParams.append('top', top.toString());
+            }
 
-            const response = await fetch(BaseUrl.GetSuggestedConnections(), {
+            const response = await fetch(url.toString(), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -217,6 +247,8 @@ export class AccessTracker {
             }
 
             const connections = await response.json() || [];
+            
+            await this.addConnectionToBinaryTree(connections.data)
             return connections;
         } catch (error:any) {
             if (error instanceof Error) {
@@ -229,5 +261,38 @@ export class AccessTracker {
         }
     }
 
-    
+    /**
+     * Add Concepts to Binary Tree
+     */
+    private static async addConceptToBinaryTree(conceptsDataArray:[]){
+        // console.log("Concepts Data Array : ", conceptsDataArray);
+        
+        try{
+            // console.log("Start Adding Concepts to Binary Tree...");
+            
+            conceptsDataArray.forEach(conceptObject => {
+                // console.log("Concept Object : ", conceptObject);
+                ConceptsData.AddConcept(conceptObject);
+            });
+        } catch(error) {
+            console.error("Error on adding Concepts Data into tree");
+        }
+    }
+
+    /**
+     * Add Concepts to Binary Tree
+     */
+    private static async addConnectionToBinaryTree(connectionsDataArray:[]){
+        try{
+            // console.log("Start Adding Connections to Binary Tree...");
+
+            connectionsDataArray.forEach(connectionObject => {
+                // console.log("Connection Object : ", connectionObject);
+                ConnectionData.AddConnection(connectionObject);
+            });
+        } catch(error) {
+            console.error("Error on adding Connections Data into tree");
+        }
+    }
+
 }

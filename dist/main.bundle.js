@@ -29,15 +29,21 @@ class AccessTracker {
      * Increments the count for a specific conceptId.
      */
     static incrementConcept(conceptId) {
-        this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
-        this.saveDataToLocalStorage();
+        // console.log("Inside incrementConcept with : ", conceptId);
+        if (conceptId) {
+            this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
+            // this.saveDataToLocalStorage()
+        }
     }
     /**
      * Increments the count for a specific connectionId.
      */
     static incrementConnection(connectionId) {
-        this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
-        this.saveDataToLocalStorage();
+        // console.log("Inside incrementConnection with : ", connectionId);
+        if (connectionId) {
+            this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
+            // this.saveDataToLocalStorage()
+        }
     }
     /**
      * Retrieves the top N concepts by their counts.
@@ -65,13 +71,13 @@ class AccessTracker {
             concepts: this.conceptsData,
             connections: this.connectionsData
         };
-        localStorage.setItem('trackerData', JSON.stringify(data));
+        localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem('trackerData', JSON.stringify(data));
     }
     /**
      * Loads the concept and connection data from localStorage.
      */
     static loadDataFromLocalStorage() {
-        const savedData = localStorage.getItem('trackerData');
+        const savedData = localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem('trackerData');
         if (savedData) {
             const data = JSON.parse(savedData);
             this.conceptsData = data.concepts || {};
@@ -83,13 +89,16 @@ class AccessTracker {
      */
     static syncToServer(accessToken) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!Object.keys(this.conceptsData).length && !Object.keys(this.connectionsData).length) {
+                // console.log("No data to sync. Skipping...");
+                return;
+            }
             try {
-                console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
+                // console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
                 // Ensure conceptsData and connectionsData are not undefined or null
                 const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
                 const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
-                // const response = await fetch(`http://localhost:5000/api/v1/access-tracker/sync-access-tracker`, {
-                console.log("I am getting url : ", _app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostPrefetchConceptConnections());
+                // console.log("I am getting url : ", BaseUrl.PostPrefetchConceptConnections());
                 const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostPrefetchConceptConnections(), {
                     method: 'POST',
                     headers: {
@@ -105,10 +114,13 @@ class AccessTracker {
                     throw new Error('Failed to sync data to the server.');
                 }
                 const serverData = yield response.json();
-                this.conceptsData = serverData.concepts;
-                this.connectionsData = serverData.connections;
-                this.saveDataToLocalStorage();
-                console.log(`Sync successful at ${new Date().toISOString()}`);
+                console.log("Server Data after sync : ", serverData);
+                this.conceptsData = {};
+                this.connectionsData = {};
+                // this.conceptsData = serverData.concepts;
+                // this.connectionsData = serverData.connections;
+                // this.saveDataToLocalStorage();
+                // console.log(`Sync successful at ${new Date().toISOString()}`);
                 this.setNextSyncTime();
             }
             catch (error) {
@@ -122,7 +134,7 @@ class AccessTracker {
     static setNextSyncTime() {
         // Calculate next sync time (current time + TimeToSync interval)
         this.nextSyncTime = Date.now() + this.TimeToSync;
-        console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
+        // console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toLocaleString()}`); // Log next sync time
     }
     /**
      * Starts auto-syncing to the server every specified time interval.
@@ -131,20 +143,20 @@ class AccessTracker {
     static startAutoSync() {
         const tokenString = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
         if (tokenString) {
-            console.log("[AUTO-SYNC] Auto-sync initialized.");
+            // console.log("[AUTO-SYNC] Auto-sync initialized.");
             this.syncNow().catch(console.error);
         }
         setInterval(() => {
             const currentTime = Date.now();
-            console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
+            // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
             if (currentTime >= this.nextSyncTime) {
-                console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
+                // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
                 this.syncNow().catch(console.error);
             }
             else {
-                console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
+                // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
             }
-        }, 1000); // Check every second
+        }, 10000); // Check every 10 Seconds
     }
     /**
      * Sync immediately (called by setInterval when time to sync has arrived).
@@ -153,7 +165,7 @@ class AccessTracker {
         return __awaiter(this, void 0, void 0, function* () {
             const tokenString = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
             if (tokenString) {
-                console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
+                //   console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
                 yield this.syncToServer(tokenString);
             }
             else {
@@ -164,11 +176,16 @@ class AccessTracker {
     /**
      * Fetch suggested concepts from the server with proper error handling.
      */
-    static GetSuggestedConcepts() {
+    static GetSuggestedConcepts(top) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const accessToken = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
-                const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.GetSuggestedConcepts(), {
+                // Construct the URL with the top parameter if it exists
+                const url = new URL(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.GetSuggestedConcepts());
+                if (top !== undefined) {
+                    url.searchParams.append('top', top.toString());
+                }
+                const response = yield fetch(url.toString(), {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -180,6 +197,7 @@ class AccessTracker {
                     throw new Error(`Failed to load concepts: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
                 }
                 const concepts = (yield response.json()) || [];
+                yield this.addConceptToBinaryTree(concepts.data);
                 return concepts;
             }
             catch (error) {
@@ -197,11 +215,16 @@ class AccessTracker {
     /**
      * Fetch suggested connections from the server with proper error handling.
      */
-    static GetSuggestedConnections() {
+    static GetSuggestedConnections(top) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const accessToken = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
-                const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.GetSuggestedConnections(), {
+                // Construct the URL with the top parameter if it exists
+                const url = new URL(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.GetSuggestedConnections());
+                if (top !== undefined) {
+                    url.searchParams.append('top', top.toString());
+                }
+                const response = yield fetch(url.toString(), {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -213,6 +236,7 @@ class AccessTracker {
                     throw new Error(`Failed to load connections: ${response.status} ${response.statusText}. Details: ${errorDetails}`);
                 }
                 const connections = (yield response.json()) || [];
+                yield this.addConnectionToBinaryTree(connections.data);
                 return connections;
             }
             catch (error) {
@@ -227,6 +251,41 @@ class AccessTracker {
             }
         });
     }
+    /**
+     * Add Concepts to Binary Tree
+     */
+    static addConceptToBinaryTree(conceptsDataArray) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // console.log("Concepts Data Array : ", conceptsDataArray);
+            try {
+                // console.log("Start Adding Concepts to Binary Tree...");
+                conceptsDataArray.forEach(conceptObject => {
+                    // console.log("Concept Object : ", conceptObject);
+                    _app__WEBPACK_IMPORTED_MODULE_0__.ConceptsData.AddConcept(conceptObject);
+                });
+            }
+            catch (error) {
+                console.error("Error on adding Concepts Data into tree");
+            }
+        });
+    }
+    /**
+     * Add Concepts to Binary Tree
+     */
+    static addConnectionToBinaryTree(connectionsDataArray) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // console.log("Start Adding Connections to Binary Tree...");
+                connectionsDataArray.forEach(connectionObject => {
+                    // console.log("Connection Object : ", connectionObject);
+                    _app__WEBPACK_IMPORTED_MODULE_0__.ConnectionData.AddConnection(connectionObject);
+                });
+            }
+            catch (error) {
+                console.error("Error on adding Connections Data into tree");
+            }
+        });
+    }
 }
 _a = AccessTracker;
 AccessTracker.conceptsData = {};
@@ -234,7 +293,7 @@ AccessTracker.connectionsData = {};
 AccessTracker.TimeToSync = 300000;
 AccessTracker.nextSyncTime = Date.now();
 (() => {
-    console.log(`[INIT] Next Sync Time set to: ${new Date(_a.nextSyncTime).toISOString()}`);
+    // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toLocaleString()}`);
     _a.startAutoSync();
 })();
 
@@ -9347,6 +9406,7 @@ class FreeschemaQuery {
         this.name = "";
         this.reverse = false;
         this.includeInFilter = false;
+        this.isOldConnectionType = false;
     }
 }
 
@@ -11528,6 +11588,26 @@ function HandleInternalError(error, url = "") {
         throw errorResponse;
     }
     throw error;
+}
+
+
+/***/ }),
+
+/***/ "./src/Services/Common/RegexFunction.ts":
+/*!**********************************************!*\
+  !*** ./src/Services/Common/RegexFunction.ts ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   removeThePrefix: () => (/* binding */ removeThePrefix)
+/* harmony export */ });
+function removeThePrefix(inputString) {
+    if (inputString.startsWith("the_")) {
+        return inputString.slice(4); // Removes the first 4 characters
+    }
+    return inputString; // Return as-is if it doesn't start with "the_"
 }
 
 
@@ -14982,6 +15062,13 @@ function GetTheConcept(id_1) {
     return __awaiter(this, arguments, void 0, function* (id, userId = 999) {
         let startTime = performance.now();
         try {
+            // Add concept id in access tracker
+            try {
+                _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__.AccessTracker.incrementConcept(id);
+            }
+            catch (_a) {
+                console.error("Error adding concepts in access tracker");
+            }
             // Increment count of the concept
             try {
                 _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__.AccessTracker.incrementConcept(id);
@@ -17049,12 +17136,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   FormatConceptsAndConnectionsNormalList: () => (/* binding */ FormatConceptsAndConnectionsNormalList),
 /* harmony export */   FormatFromConnectionsAlteredArrayExternal: () => (/* binding */ FormatFromConnectionsAlteredArrayExternal),
+/* harmony export */   FormatFromConnectionsAlteredArrayExternalJustId: () => (/* binding */ FormatFromConnectionsAlteredArrayExternalJustId),
 /* harmony export */   FormatFunctionData: () => (/* binding */ FormatFunctionData),
 /* harmony export */   FormatFunctionDataForData: () => (/* binding */ FormatFunctionDataForData),
+/* harmony export */   FormatFunctionDataForDataJustId: () => (/* binding */ FormatFunctionDataForDataJustId),
 /* harmony export */   formatFunction: () => (/* binding */ formatFunction),
 /* harmony export */   formatFunctionForData: () => (/* binding */ formatFunctionForData)
 /* harmony export */ });
 /* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _Common_RegexFunction__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Common/RegexFunction */ "./src/Services/Common/RegexFunction.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -17064,6 +17154,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 /**
  * ######### Format is normal ######### used for listing. This only provides type connections.
@@ -17140,6 +17231,10 @@ function FormatConceptsAndConnectionsNormalList(connections_1, compositionData_1
                         let key = (_d = (_c = ofTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "self";
                         if (connections[i].ofTheConceptId in compositionData) {
                             newData = compositionData[connections[i].ofTheConceptId];
+                            let newType = typeof newData[key];
+                            if (newType == "string") {
+                                newData[key] = {};
+                            }
                         }
                         else {
                             newData = {};
@@ -17224,6 +17319,10 @@ function FormatFromConnectionsAlteredArrayExternal(connections_1, compositionDat
                         }
                         if (connections[i].toTheConceptId in compositionData) {
                             newData = compositionData[connections[i].toTheConceptId];
+                            let newType = typeof newData[key];
+                            if (newType == "string") {
+                                newData[key] = {};
+                            }
                         }
                         else {
                             newData = {};
@@ -17270,6 +17369,10 @@ function FormatFromConnectionsAlteredArrayExternal(connections_1, compositionDat
                         }
                         if (connections[i].ofTheConceptId in compositionData) {
                             newData = compositionData[connections[i].ofTheConceptId];
+                            let newType = typeof newData[key];
+                            if (newType == "string") {
+                                newData[key] = {};
+                            }
                         }
                         else {
                             newData = {};
@@ -17308,6 +17411,144 @@ function FormatFromConnectionsAlteredArrayExternal(connections_1, compositionDat
             let mymainData = {};
             mymainData["id"] = mainComposition[i];
             mymainData["data"] = compositionData[mainComposition[i]];
+            mainData.push(mymainData);
+        }
+        return mainData;
+    });
+}
+/**
+* ############ Format is Just Id and is used for list. ############
+* This is helpful in building a format that has multiple mainCompositions i.e. in the context of the list
+* The list format is helpful because you do not have to go over each individual query.
+* @param connections the type connections that need (external connections) to be passed
+* @param compositionData  this is a dictionary type of format that has all the build compositions {id: { actual data}}
+* @param mainComposition this is list of  ids of the main composition that builds the tree
+* @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
+* @returns
+*/
+function FormatFromConnectionsAlteredArrayExternalJustId(connections_1, compositionData_1, mainComposition_1) {
+    return __awaiter(this, arguments, void 0, function* (connections, compositionData, mainComposition, reverse = []) {
+        var _a, _b, _c, _d;
+        let startTime = new Date().getTime();
+        let mainData = [];
+        let myConcepts = [];
+        for (let i = 0; i < connections.length; i++) {
+            myConcepts.push(connections[i].toTheConceptId);
+            myConcepts.push(connections[i].ofTheConceptId);
+            myConcepts.push(connections[i].typeId);
+        }
+        connections.sort(function (x, y) {
+            return y.id - x.id;
+        });
+        for (let i = 0; i < connections.length; i++) {
+            let reverseFlag = false;
+            let ofTheConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].ofTheConceptId);
+            let toTheConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].toTheConceptId);
+            if (reverse.includes(connections[i].id)) {
+                reverseFlag = true;
+            }
+            if (reverseFlag == true) {
+                if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
+                    if (toTheConcept.id in compositionData) {
+                        let newData;
+                        let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
+                        let key = (_b = (_a = toTheConcept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "self";
+                        let flag = false;
+                        if (connections[i].toTheConceptId in compositionData) {
+                            flag = true;
+                        }
+                        if (connections[i].toTheConceptId in compositionData) {
+                            newData = compositionData[connections[i].toTheConceptId];
+                            let newType = typeof newData[key];
+                            if (newType == "string") {
+                                newData[key] = {};
+                            }
+                        }
+                        else {
+                            newData = {};
+                            newData[key] = {};
+                            compositionData[connections[i].toTheConceptId] = newData;
+                        }
+                        try {
+                            let isComp = compositionData[connections[i].ofTheConceptId];
+                            if (isComp) {
+                                let data = compositionData[connections[i].ofTheConceptId];
+                                data["id"] = ofTheConcept.id;
+                                let reverseCharater = linkerConcept.characterValue + "_reverse";
+                                if (Array.isArray(newData[key][reverseCharater])) {
+                                    newData[key][reverseCharater].push(data);
+                                }
+                                else {
+                                    if (reverseCharater.includes("_s_")) {
+                                        newData[key][reverseCharater] = [];
+                                        newData[key][reverseCharater].push(data);
+                                    }
+                                    else {
+                                        newData[key][reverseCharater] = data;
+                                    }
+                                }
+                            }
+                        }
+                        catch (ex) {
+                            console.log("this is error", ex);
+                        }
+                    }
+                }
+            }
+            else {
+                if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
+                    if (ofTheConcept.id in compositionData) {
+                        let newData;
+                        let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
+                        let key = (_d = (_c = ofTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "self";
+                        let flag = false;
+                        if (connections[i].toTheConceptId in compositionData) {
+                            flag = true;
+                        }
+                        if (connections[i].ofTheConceptId in compositionData) {
+                            newData = compositionData[connections[i].ofTheConceptId];
+                            let newType = typeof newData[key];
+                            if (newType == "string") {
+                                newData[key] = {};
+                            }
+                        }
+                        else {
+                            newData = {};
+                            newData[key] = {};
+                            compositionData[connections[i].ofTheConceptId] = newData;
+                        }
+                        try {
+                            let isComp = compositionData[connections[i].toTheConceptId];
+                            if (isComp) {
+                                let data = compositionData[connections[i].toTheConceptId];
+                                data["id"] = toTheConcept.id;
+                                if (Array.isArray(newData[key][linkerConcept.characterValue])) {
+                                    newData[key][linkerConcept.characterValue].push(data);
+                                }
+                                else {
+                                    if (linkerConcept.characterValue.includes("_s_")) {
+                                        newData[key][linkerConcept.characterValue] = [];
+                                        newData[key][linkerConcept.characterValue].push(data);
+                                    }
+                                    else {
+                                        newData[key][linkerConcept.characterValue] = data;
+                                    }
+                                }
+                            }
+                        }
+                        catch (ex) {
+                            console.log("this is error", ex);
+                        }
+                    }
+                }
+            }
+        }
+        console.log("this is the main compositions", mainComposition);
+        for (let i = 0; i < mainComposition.length; i++) {
+            let mymainData = {};
+            console.log("this is the main compositions DATA", compositionData[mainComposition[i]]);
+            mymainData = compositionData[mainComposition[i]];
+            mymainData["id"] = mainComposition[i];
             mainData.push(mymainData);
         }
         return mainData;
@@ -17449,13 +17690,17 @@ function formatFunctionForData(connections, compositionData, reverse) {
                     try {
                         let mytype = (_d = (_c = ofTheConcept === null || ofTheConcept === void 0 ? void 0 : ofTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "none";
                         let value = ofTheConcept.characterValue;
+                        let dataCharacter = linkerConcept.characterValue;
+                        if (dataCharacter == "") {
+                            dataCharacter = mytype;
+                            dataCharacter = (0,_Common_RegexFunction__WEBPACK_IMPORTED_MODULE_1__.removeThePrefix)(dataCharacter);
+                        }
                         let data = {
                             [mytype]: value
                         };
-                        let reverseCharater = linkerConcept.characterValue + "_reverse";
+                        let reverseCharater = dataCharacter + "_reverse";
                         if (linkerConcept.characterValue.includes("_s_")) {
-                            // newData[key][reverseCharater] = [];
-                            // newData[key][reverseCharater].push(data);
+                            // do nothing
                         }
                         else {
                             if (typeof newData[key] == "string") {
@@ -17488,18 +17733,22 @@ function formatFunctionForData(connections, compositionData, reverse) {
                     try {
                         let mytype = (_h = (_g = toTheConcept === null || toTheConcept === void 0 ? void 0 : toTheConcept.type) === null || _g === void 0 ? void 0 : _g.characterValue) !== null && _h !== void 0 ? _h : "none";
                         let value = toTheConcept.characterValue;
+                        let dataCharacter = linkerConcept.characterValue;
+                        if (dataCharacter == "") {
+                            dataCharacter = mytype;
+                            dataCharacter = (0,_Common_RegexFunction__WEBPACK_IMPORTED_MODULE_1__.removeThePrefix)(dataCharacter);
+                        }
                         let data = {
                             [mytype]: value
                         };
                         if (linkerConcept.characterValue.includes("_s_")) {
-                            //   newData[key][linkerConcept.characterValue] = [];
-                            // newData[key][linkerConcept.characterValue].push(data);
+                            // do nothing
                         }
                         else {
                             if (typeof newData[key] == "string") {
                                 newData[key] = {};
                             }
-                            newData[key][linkerConcept.characterValue] = data;
+                            newData[key][dataCharacter] = data;
                         }
                     }
                     catch (ex) {
@@ -17647,13 +17896,19 @@ function FormatFunctionDataForData(connections_1, compositionData_1) {
                     try {
                         let mytype = (_d = (_c = ofTheConcept === null || ofTheConcept === void 0 ? void 0 : ofTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "none";
                         let value = ofTheConcept.characterValue;
+                        let dataCharacter = linkerConcept.characterValue;
+                        // if there is not connection type defined then put the type of the destination concept.
+                        if (dataCharacter == "") {
+                            dataCharacter = mytype;
+                            dataCharacter = (0,_Common_RegexFunction__WEBPACK_IMPORTED_MODULE_1__.removeThePrefix)(dataCharacter);
+                        }
                         let data = {
                             "id": ofTheConcept.id,
                             "data": {
                                 [mytype]: value
                             }
                         };
-                        let reverseCharater = linkerConcept.characterValue + "_reverse";
+                        let reverseCharater = dataCharacter + "_reverse";
                         if (reverseCharater.includes("_s_")) {
                             // do nothing
                         }
@@ -17688,20 +17943,147 @@ function FormatFunctionDataForData(connections_1, compositionData_1) {
                     try {
                         let mytype = (_h = (_g = toTheConcept === null || toTheConcept === void 0 ? void 0 : toTheConcept.type) === null || _g === void 0 ? void 0 : _g.characterValue) !== null && _h !== void 0 ? _h : "none";
                         let value = toTheConcept.characterValue;
+                        let dataCharacter = linkerConcept.characterValue;
+                        // if there is not connection type defined then put the type of the destination concept.
+                        if (dataCharacter == "") {
+                            dataCharacter = mytype;
+                            dataCharacter = (0,_Common_RegexFunction__WEBPACK_IMPORTED_MODULE_1__.removeThePrefix)(dataCharacter);
+                        }
                         let data = {
                             "id": toTheConcept.id,
                             "data": {
                                 [mytype]: value
                             }
                         };
-                        if (linkerConcept.characterValue.includes("_s_")) {
+                        if (dataCharacter.includes("_s_")) {
                             // do nothing
                         }
                         else {
                             if (typeof newData[key] == "string") {
                                 newData[key] = {};
                             }
-                            newData[key][linkerConcept.characterValue] = data;
+                            newData[key][dataCharacter] = data;
+                        }
+                    }
+                    catch (ex) {
+                        console.log("this is error", ex);
+                    }
+                }
+            }
+        }
+        return compositionData;
+    });
+}
+/**
+* ## Format Just-Id ##
+* this function takes in connections and creates a single level objects so that all the data are added to its object/ array.
+* This is then passed on further for stiching.
+* @param connections
+* @param compositionData
+* @param reverse
+* @returns
+*/
+function FormatFunctionDataForDataJustId(connections_1, compositionData_1) {
+    return __awaiter(this, arguments, void 0, function* (connections, compositionData, reverse = []) {
+        var _a, _b, _c, _d, _e, _f, _g, _h;
+        let myConcepts = [];
+        for (let i = 0; i < connections.length; i++) {
+            myConcepts.push(connections[i].toTheConceptId);
+            myConcepts.push(connections[i].ofTheConceptId);
+            myConcepts.push(connections[i].typeId);
+        }
+        connections.sort(function (x, y) {
+            return y.id - x.id;
+        });
+        for (let i = 0; i < connections.length; i++) {
+            let reverseFlag = false;
+            let ofTheConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].ofTheConceptId);
+            let toTheConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].toTheConceptId);
+            if (reverse.includes(connections[i].id)) {
+                reverseFlag = true;
+            }
+            if (reverseFlag == true) {
+                if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
+                    let newData;
+                    let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
+                    let key = (_b = (_a = toTheConcept.type) === null || _a === void 0 ? void 0 : _a.characterValue) !== null && _b !== void 0 ? _b : "self";
+                    if (connections[i].toTheConceptId in compositionData) {
+                        newData = compositionData[connections[i].toTheConceptId];
+                        if (!(key in newData)) {
+                            newData[key] = {};
+                        }
+                    }
+                    else {
+                        newData = {};
+                        newData[key] = {};
+                        compositionData[connections[i].toTheConceptId] = newData;
+                    }
+                    try {
+                        let mytype = (_d = (_c = ofTheConcept === null || ofTheConcept === void 0 ? void 0 : ofTheConcept.type) === null || _c === void 0 ? void 0 : _c.characterValue) !== null && _d !== void 0 ? _d : "none";
+                        let value = ofTheConcept.characterValue;
+                        let dataCharacter = linkerConcept.characterValue;
+                        // if there is not connection type defined then put the type of the destination concept.
+                        if (dataCharacter == "") {
+                            dataCharacter = mytype;
+                            dataCharacter = (0,_Common_RegexFunction__WEBPACK_IMPORTED_MODULE_1__.removeThePrefix)(dataCharacter);
+                        }
+                        let data = {
+                            "id": ofTheConcept.id,
+                            [mytype]: value
+                        };
+                        let reverseCharater = dataCharacter + "_reverse";
+                        if (reverseCharater.includes("_s_")) {
+                            // do nothing
+                        }
+                        else {
+                            if (typeof newData[key] == "string") {
+                                newData[key] = {};
+                            }
+                            newData[key][reverseCharater] = data;
+                        }
+                    }
+                    catch (ex) {
+                        console.log("this is error", ex);
+                    }
+                }
+            }
+            else {
+                if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
+                    let newData;
+                    let linkerConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetTheConcept)(connections[i].typeId);
+                    let key = (_f = (_e = ofTheConcept.type) === null || _e === void 0 ? void 0 : _e.characterValue) !== null && _f !== void 0 ? _f : "self";
+                    if (connections[i].ofTheConceptId in compositionData) {
+                        newData = compositionData[connections[i].ofTheConceptId];
+                        if (!(key in newData)) {
+                            newData[key] = {};
+                        }
+                    }
+                    else {
+                        newData = {};
+                        newData[key] = {};
+                        compositionData[connections[i].ofTheConceptId] = newData;
+                    }
+                    try {
+                        let mytype = (_h = (_g = toTheConcept === null || toTheConcept === void 0 ? void 0 : toTheConcept.type) === null || _g === void 0 ? void 0 : _g.characterValue) !== null && _h !== void 0 ? _h : "none";
+                        let value = toTheConcept.characterValue;
+                        let dataCharacter = linkerConcept.characterValue;
+                        // if there is not connection type defined then put the type of the destination concept.
+                        if (dataCharacter == "") {
+                            dataCharacter = mytype;
+                            dataCharacter = (0,_Common_RegexFunction__WEBPACK_IMPORTED_MODULE_1__.removeThePrefix)(dataCharacter);
+                        }
+                        let data = {
+                            "id": toTheConcept.id,
+                            [mytype]: value
+                        };
+                        if (dataCharacter.includes("_s_")) {
+                            // do nothing
+                        }
+                        else {
+                            if (typeof newData[key] == "string") {
+                                newData[key] = {};
+                            }
+                            newData[key][dataCharacter] = data;
                         }
                     }
                     catch (ex) {
@@ -18258,6 +18640,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   SearchWithTypeAndLinkerDataId: () => (/* binding */ SearchWithTypeAndLinkerDataId),
 /* harmony export */   formatConnections: () => (/* binding */ formatConnections),
 /* harmony export */   formatConnectionsDataId: () => (/* binding */ formatConnectionsDataId),
+/* harmony export */   formatConnectionsJustId: () => (/* binding */ formatConnectionsJustId),
 /* harmony export */   formatDataArrayDataId: () => (/* binding */ formatDataArrayDataId),
 /* harmony export */   formatDataArrayNormal: () => (/* binding */ formatDataArrayNormal),
 /* harmony export */   formatLinkersNormal: () => (/* binding */ formatLinkersNormal)
@@ -18390,6 +18773,27 @@ function formatConnections(linkers, conceptIds, mainCompositionIds, reverse) {
         compositionData = yield (0,_FormatData__WEBPACK_IMPORTED_MODULE_2__.formatFunction)(prefetchConnections, compositionData, reverse);
         compositionData = yield (0,_FormatData__WEBPACK_IMPORTED_MODULE_2__.formatFunctionForData)(prefetchConnections, compositionData, reverse);
         let output = yield (0,_FormatData__WEBPACK_IMPORTED_MODULE_2__.FormatConceptsAndConnectionsNormalList)(prefetchConnections, compositionData, mainCompositionIds, newCompositionData, reverse);
+        return output;
+    });
+}
+/**
+ * ## Format JustId ##
+ * This function fetches all the connections and then converts all the connections to the single level connections
+ * Then those single level objects are then stiched together to create a complex json/ array.
+ * @param linkers
+ * @param conceptIds
+ * @param mainCompositionIds
+ * @param reverse
+ * @returns
+ */
+function formatConnectionsJustId(linkers, conceptIds, mainCompositionIds, reverse) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let prefetchConnections = yield (0,_GetCompositionBulk__WEBPACK_IMPORTED_MODULE_1__.GetConnectionDataPrefetch)(linkers);
+        let compositionData = [];
+        let newCompositionData = [];
+        compositionData = yield (0,_FormatData__WEBPACK_IMPORTED_MODULE_2__.formatFunction)(prefetchConnections, compositionData, reverse);
+        compositionData = yield (0,_FormatData__WEBPACK_IMPORTED_MODULE_2__.FormatFunctionDataForDataJustId)(prefetchConnections, compositionData, reverse);
+        let output = yield (0,_FormatData__WEBPACK_IMPORTED_MODULE_2__.FormatFromConnectionsAlteredArrayExternalJustId)(prefetchConnections, compositionData, mainCompositionIds, reverse);
         return output;
     });
 }
@@ -20878,6 +21282,9 @@ class SearchLinkMultipleAllObservable extends _DepenedencyObserver__WEBPACK_IMPO
             if (this.format == _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.DATAID) {
                 this.data = yield (0,_Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_2__.formatConnectionsDataId)(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
             }
+            else if (this.format == _Constants_FormatConstants__WEBPACK_IMPORTED_MODULE_1__.JUSTDATA) {
+                this.data = yield (0,_Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_2__.formatConnectionsJustId)(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+            }
             else {
                 this.data = yield (0,_Services_Search_SearchWithTypeAndLinker__WEBPACK_IMPORTED_MODULE_2__.formatConnections)(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
                 //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
@@ -21692,7 +22099,7 @@ function sendMessage(type, payload) {
                 }
                 // Timeout for waiting for the response (e.g., 5 seconds)
                 setTimeout(() => {
-                    reject("No response from service worker after timeout");
+                    reject(`No response from service worker after timeout: ${type}`);
                     navigator.serviceWorker.removeEventListener("message", responseHandler);
                 }, 90000); // 90 sec
             }
