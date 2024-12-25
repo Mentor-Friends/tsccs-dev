@@ -121,7 +121,7 @@ export class AccessTracker {
             
             // this.conceptsData = serverData.concepts;
             // this.connectionsData = serverData.connections;
-            this.saveDataToLocalStorage();
+            // this.saveDataToLocalStorage();
             // console.log(`Sync successful at ${new Date().toISOString()}`);
             this.setNextSyncTime();
         } catch (error) {
