@@ -27,6 +27,8 @@ export declare class BaseUrl {
     static PostPrefetchConceptConnections(): string;
     static GetSuggestedConcepts(): string;
     static GetSuggestedConnections(): string;
+    static PostLogger(): string;
+    static GetLogger(): string;
     static GetAllPrefetchConnectionsUrl(): string;
     static GetAllLinkerConnectionOfConceptUrl(): string;
     static GetAllLinkerConnectionToConceptUrl(): string;

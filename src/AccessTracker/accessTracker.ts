@@ -1,5 +1,4 @@
 import { BaseUrl, ConceptsData, ConnectionData } from "../app";
-import { BASE_URL } from "../Constants/ApiConstants";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 type CountMap = Record<number, number>;
@@ -161,7 +160,7 @@ export class AccessTracker {
             } else {
                 // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
             }
-        }, 10000); // Check every 10 Seconds
+        }, 300000); // Check every 10 Seconds
     }
 
 

@@ -1,4 +1,4 @@
-import { EventLogger } from "./EventLogger";
+import { ApplicationMonitor } from "./ApplicationMonitor";
 import { Logger } from "./logger.service";
 
 /**

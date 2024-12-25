@@ -156,7 +156,7 @@ class AccessTracker {
             else {
                 // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
             }
-        }, 10000); // Check every 10 Seconds
+        }, 300000); // Check every 10 Seconds
     }
     /**
      * Sync immediately (called by setInterval when time to sync has arrived).
@@ -4071,6 +4071,12 @@ class BaseUrl {
     }
     static GetSuggestedConnections() {
         return this.NODE_URL + '/api/v1/access-tracker/list-connections-file';
+    }
+    static PostLogger() {
+        return this.BASE_URL + '/api/v1/logger/logs';
+    }
+    static GetLogger() {
+        return this.BASE_URL + '/api/v1/logger/logs';
     }
     static GetAllPrefetchConnectionsUrl() {
         return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';
@@ -11085,15 +11091,15 @@ function InsertUniqueNumber(Array, toInsert) {
 
 /***/ }),
 
-/***/ "./src/Middleware/EventLogger.ts":
-/*!***************************************!*\
-  !*** ./src/Middleware/EventLogger.ts ***!
-  \***************************************/
+/***/ "./src/Middleware/ApplicationMonitor.ts":
+/*!**********************************************!*\
+  !*** ./src/Middleware/ApplicationMonitor.ts ***!
+  \**********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   EventLogger: () => (/* binding */ EventLogger)
+/* harmony export */   ApplicationMonitor: () => (/* binding */ ApplicationMonitor)
 /* harmony export */ });
 /* harmony import */ var _logger_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./logger.service */ "./src/Middleware/logger.service.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -11106,47 +11112,52 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
-class EventLogger {
+class ApplicationMonitor {
     static initialize() {
-        console.log("Initialized Event Logger...");
+        console.log("Initialized Application Moniroring...");
         // Log unhandled errors
         window.addEventListener("error", (event) => {
             var _a, _b;
             console.log("error called...");
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logErrorEvent({
-                message: "Unhandled Error",
+            const errorDetails = {
                 error: ((_a = event.error) === null || _a === void 0 ? void 0 : _a.message) || event.message,
                 source: event.filename,
                 line: event.lineno,
                 column: event.colno,
-                stack: (_b = event.error) === null || _b === void 0 ? void 0 : _b.stack,
-            });
+                stack: (_b = event.error) === null || _b === void 0 ? void 0 : _b.stack
+            };
+            const message = "Unhandled Error";
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Error", message, errorDetails);
         });
         // Log unhandled promise rejections
         window.addEventListener("unhandledrejection", (event) => {
             var _a;
             console.log("unhandledrejection called...");
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logErrorEvent({
-                message: "Unhandled Promise Rejection",
+            const errorDetails = {
                 reason: event.reason,
                 stack: (_a = event.reason) === null || _a === void 0 ? void 0 : _a.stack,
-            });
+            };
+            const message = "Unhandled Promise Rejection";
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Unhandled", message, errorDetails);
         });
         // Log user interactions
         document.addEventListener("click", (event) => {
             var _a;
             const target = event.target;
             console.log("Click Event called...");
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logErrorEvent({
-                message: "User Click",
+            const errorDetails = {
                 element: target.tagName,
                 id: target.id,
                 classes: target.className,
                 text: (_a = target.innerText) === null || _a === void 0 ? void 0 : _a.slice(0, 50),
-            });
+            };
+            const message = "User Click";
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Event Click", message, errorDetails);
         });
-        // Log network requests (requires interception with Service Worker or monkey-patching)
+        // Log network requests requires interception with Service Worker or monkey-patching
         this.logNetworkRequests();
+        // Log application state changes for SPAs
+        this.logRouteChanges();
     }
     static logNetworkRequests() {
         const originalFetch = window.fetch;
@@ -11154,33 +11165,69 @@ class EventLogger {
             const [url, options] = args;
             const urlString = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
             console.log("Custom fetch called for:", urlString);
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logNetwork({
-                type: "REQUEST",
-                message: "Network Request",
-                method: (options === null || options === void 0 ? void 0 : options.method) || "GET",
-                url: urlString,
-                body: options === null || options === void 0 ? void 0 : options.body,
-            });
+            let networkDetails = {
+                "request": {
+                    type: "REQUEST",
+                    message: "Network Request",
+                    method: (options === null || options === void 0 ? void 0 : options.method) || "GET",
+                    url: urlString,
+                    body: options === null || options === void 0 ? void 0 : options.body,
+                }
+            };
             try {
                 const response = yield originalFetch(...args);
-                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logNetwork({
+                // Add response details to the network log
+                networkDetails["response"] = {
                     type: "RESPONSE",
                     message: "Network Response",
                     url: urlString,
                     status: response.status,
-                });
+                };
+                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Network", "Network Request", networkDetails);
                 return response;
             }
             catch (error) {
                 console.error("Fetch failed for:", urlString, error); // Debugging log
-                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logNetwork({
+                // Add error details to the network log
+                networkDetails["response"] = {
                     type: "ERROR",
                     message: "Network Request Failed",
                     url: urlString,
                     error: error instanceof Error ? error.message : String(error),
-                });
-                throw error;
+                };
+                // Log or process networkDetails if needed
+                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Network", "Network Request", networkDetails);
+                // Throw a standard Error object (not the networkDetails object)
+                throw new Error(`Network request failed for ${urlString}: ${error.message}`);
             }
+        });
+    }
+    static logPerformanceMetrics() {
+        window.addEventListener("load", () => {
+            const timing = performance.timing;
+            const details = {
+                loadTime: timing.loadEventEnd - timing.navigationStart,
+                domContentLoadedTime: timing.domContentLoadedEventEnd - timing.navigationStart,
+            };
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Load", "Performance Metrics", details);
+        });
+    }
+    // Log route changes (SPAs)
+    static logRouteChanges() {
+        const pushState = history.pushState;
+        history.pushState = function (...args) {
+            var _a;
+            const urlChange = {
+                url: (_a = args[2]) === null || _a === void 0 ? void 0 : _a.toString(),
+            };
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Route Changed", "Route Change", urlChange);
+            return pushState.apply(this, args);
+        };
+        window.addEventListener("popstate", () => {
+            const urlChange = {
+                url: location.href
+            };
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Route Changed", "Route Changed (Back/Forward)", urlChange);
         });
     }
 }
@@ -11199,6 +11246,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   Logger: () => (/* binding */ Logger),
 /* harmony export */   getCookie: () => (/* binding */ getCookie)
 /* harmony export */ });
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11208,6 +11256,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 class Logger {
     /**
      * Automatically starts the auto-sync mechanism.
@@ -11226,8 +11275,9 @@ class Logger {
             if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
                 Logger.nextSyncTime = currentTime + Logger.SYNC_INTERVAL_MS; // Reset for the next interval
                 Logger.sendLogsToServer();
+                Logger.sendApplicationLogsToServer();
             }
-        }, 1000); // Check every second
+        }, 1000); // Check every minute
     }
     /**
      * Automatically stops the auto-sync mechanism when required.
@@ -11257,15 +11307,15 @@ class Logger {
     static formatLogData(level, message, data) {
         if (!Logger.shouldLog(level))
             return;
-        const logEntry = Object.assign({ timestamp: new Date().toISOString(), level,
+        const logEntry = Object.assign({ timestamp: new Date().toLocaleString(), level,
             message }, data);
         Logger.logs.push(logEntry);
         console.log("Log Data in Logger Class : ", Logger.logs);
         this.saveToLocalStorage(logEntry);
     }
-    static log(type, message, data) {
+    static log(level, message, data) {
         try {
-            Logger.formatLogData(this.logLevel, message, data);
+            Logger.formatLogData(level, message, data || null);
         }
         catch (error) {
             console.error("Error on Logger Log : ", error);
@@ -11351,59 +11401,67 @@ class Logger {
         };
         Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
     }
-    // Log Event
-    static logErrorEvent(message, error, source, line, column, stack) {
-        const logData = {
-            message: message || "Unknown error",
-            error: error || "No error message provided",
-            source: source || "Unknown source",
-            line: line || "Unknown line",
-            column: column || "Unknown column",
-            stack: stack || "No stack trace available",
-            timestamp: new Date().toISOString(),
-        };
-        console.error("Error Logged:", logData);
-        this.saveEventToLocalStorage(JSON.stringify(logData));
-        // send the error data to an external service or save it
-        // sendToLoggingService(logData);
+    // Log Application Activity
+    static logApplication(type, message, data) {
+        try {
+            const timestamp = new Date().toLocaleString();
+            const logEntry = {
+                timestamp: timestamp,
+                type: type,
+                message: message,
+                data: data || null,
+            };
+            const existingLogs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(this.appLogs)) || "[]");
+            console.debug("Log before update:", existingLogs);
+            existingLogs.push(logEntry);
+            localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem(this.appLogs, JSON.stringify(existingLogs));
+            console.debug("Log after update:", existingLogs);
+        }
+        catch (error) {
+            console.error("Failed to log application activity:", error);
+        }
     }
-    // Log Network Error
-    static logNetwork(logData) {
-        if (logData.type === 'REQUEST') {
-            let networkLog = (logData.message,
-                logData.method,
-                logData.url,
-                logData.body,
-                new Date().toISOString());
-            console.log("NETWORK REQUEST LOG : ", networkLog);
-            this.saveEventToLocalStorage(JSON.stringify(logData));
-        }
-        if (logData.type === 'RESPONSE') {
-            let networkLog = (logData.message,
-                logData.method,
-                logData.url,
-                logData.body,
-                new Date().toISOString());
-            console.log("NETWORK RESPONSE LOG : ", networkLog);
-            this.saveEventToLocalStorage(JSON.stringify(logData));
-        }
-        if (logData.type === 'ERROR') {
-            let networkLog = (logData.message,
-                logData.url,
-                logData.error,
-                new Date().toISOString());
-            console.log("NETWORK ERROR LOG : ", networkLog);
-            this.saveEventToLocalStorage(JSON.stringify(logData));
-        }
+    static sendApplicationLogsToServer() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log("Application Log sending to server...");
+                const storedLogs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(this.appLogs)) || "[]");
+                if (storedLogs.length === 0)
+                    return;
+                // console.log("Stored Logs : ", storedLogs);
+                const chunkSize = 50;
+                for (let i = 0; i < storedLogs.length; i += chunkSize) {
+                    const chunk = storedLogs.slice(i, i + chunkSize);
+                    const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.NODE_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            logType: this.appLogs,
+                            logData: chunk
+                        })
+                    });
+                    if (!response.ok) {
+                        const responseBody = yield response.text();
+                        console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
+                        return;
+                    }
+                }
+                localStorage === null || localStorage === void 0 ? void 0 : localStorage.removeItem(this.appLogs);
+                console.log("Logs successfully sent and cleared.");
+            }
+            catch (error) {
+                console.error("Error while sending logs to server:", error);
+            }
+        });
     }
     /**
      * Helper method to save logs to localStorage.
      */
     static saveToLocalStorage(logMessage) {
         try {
-            const logs = JSON.parse(localStorage.getItem("logs") || "[]");
+            const logs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem("logs")) || "[]");
             logs.push(logMessage);
-            localStorage.setItem("logs", JSON.stringify(logs));
+            localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem("logs", JSON.stringify(logs));
         }
         catch (error) {
             console.error("Failed to save log to localStorage:", error);
@@ -11411,9 +11469,9 @@ class Logger {
     }
     static saveEventToLocalStorage(logMessage) {
         try {
-            const logs = JSON.parse(localStorage.getItem("EventLogs") || "[]");
+            const logs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem("EventLogs")) || "[]");
             logs.push(logMessage);
-            localStorage.setItem("EventLogs", JSON.stringify(logs));
+            localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem("EventLogs", JSON.stringify(logs));
         }
         catch (error) {
             console.error("Failed to save log to localStorage:", error);
@@ -11426,19 +11484,21 @@ class Logger {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log("Log sending to server...");
-                const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
+                const storedLogs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem("logs")) || "[]");
                 if (storedLogs.length === 0)
                     return;
                 // console.log("Stored Logs : ", storedLogs);
                 const chunkSize = 50;
                 for (let i = 0; i < storedLogs.length; i += chunkSize) {
                     const chunk = storedLogs.slice(i, i + chunkSize);
-                    // console.log("Sending logs chunk:", chunk);
-                    // console.log("Payload chunk:", JSON.stringify(chunk)); 
-                    const response = yield fetch(Logger.SERVER_URL, {
+                    // const response = await fetch(Logger.SERVER_URL, {
+                    const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.NODE_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(chunk),
+                        body: JSON.stringify({
+                            logType: this.mftsccsBrowser,
+                            logData: chunk
+                        }),
                     });
                     if (!response.ok) {
                         const responseBody = yield response.text();
@@ -11447,7 +11507,7 @@ class Logger {
                         return;
                     }
                 }
-                localStorage.removeItem("logs");
+                localStorage === null || localStorage === void 0 ? void 0 : localStorage.removeItem("logs");
                 console.log("Logs successfully sent and cleared.");
             }
             catch (error) {
@@ -11462,6 +11522,8 @@ Logger.SERVER_URL = "https://devai.freeschema.com/api/v1/add-logs";
 Logger.LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
 Logger.SYNC_INTERVAL_MS = 300 * 1000;
 Logger.nextSyncTime = null;
+Logger.appLogs = "app-logs";
+Logger.mftsccsBrowser = "mftsccs-browser";
 // Private auto-sync interval management
 Logger.autoSyncInterval = null;
 // Ensure logs are managed automatically
@@ -21638,7 +21700,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Constants_general_const__WEBPACK_IMPORTED_MODULE_100__ = __webpack_require__(/*! ./Constants/general.const */ "./src/Constants/general.const.ts");
 /* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_101__ = __webpack_require__(/*! ./Middleware/logger.service */ "./src/Middleware/logger.service.ts");
 /* harmony import */ var _Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_102__ = __webpack_require__(/*! ./Services/Common/ErrorPosting */ "./src/Services/Common/ErrorPosting.ts");
-/* harmony import */ var _Middleware_EventLogger__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Middleware/EventLogger */ "./src/Middleware/EventLogger.ts");
+/* harmony import */ var _Middleware_ApplicationMonitor__WEBPACK_IMPORTED_MODULE_103__ = __webpack_require__(/*! ./Middleware/ApplicationMonitor */ "./src/Middleware/ApplicationMonitor.ts");
 /* harmony import */ var _Widgets_BuilderStatefulWidget__WEBPACK_IMPORTED_MODULE_104__ = __webpack_require__(/*! ./Widgets/BuilderStatefulWidget */ "./src/Widgets/BuilderStatefulWidget.ts");
 /* harmony import */ var _Services_Transaction_LocalTransaction__WEBPACK_IMPORTED_MODULE_105__ = __webpack_require__(/*! ./Services/Transaction/LocalTransaction */ "./src/Services/Transaction/LocalTransaction.ts");
 /* harmony import */ var _Anomaly_anomaly__WEBPACK_IMPORTED_MODULE_106__ = __webpack_require__(/*! ./Anomaly/anomaly */ "./src/Anomaly/anomaly.ts");
@@ -21812,7 +21874,7 @@ function updateAccessToken(accessToken = "") {
  * @param enableSW {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined - This is for enabling service worker with its scope
  */
 function init() {
-    return __awaiter(this, arguments, void 0, function* (url = "", aiurl = "", accessToken = "", nodeUrl = "", enableAi = true, applicationName = "", enableSW = undefined, isTest = false) {
+    return __awaiter(this, arguments, void 0, function* (url = "", aiurl = "", accessToken = "", nodeUrl = "", enableAi = true, applicationName = "", enableSW = undefined, isTest = true) {
         try {
             _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_URL = url;
             _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.AI_URL = aiurl;
@@ -21833,7 +21895,7 @@ function init() {
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionLoaded = true;
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionTypeLoaded = true;
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
-                _Middleware_EventLogger__WEBPACK_IMPORTED_MODULE_103__.EventLogger.initialize();
+                _Middleware_ApplicationMonitor__WEBPACK_IMPORTED_MODULE_103__.ApplicationMonitor.initialize();
                 return true;
             }
             if (!("serviceWorker" in navigator)) {

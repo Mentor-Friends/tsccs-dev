@@ -105,6 +105,14 @@ export class BaseUrl{
         return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
     }
 
+    static PostLogger(){
+        return this.BASE_URL + '/api/v1/logger/logs'
+    }
+
+    static GetLogger(){
+        return this.BASE_URL + '/api/v1/logger/logs'
+    }
+
 
     static GetAllPrefetchConnectionsUrl(){
         return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';

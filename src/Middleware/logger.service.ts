@@ -1,3 +1,5 @@
+import { BaseUrl } from "../app";
+
 export class Logger {
 
     private static logLevel: string = "INFO";
@@ -6,6 +8,8 @@ export class Logger {
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
     private static readonly SYNC_INTERVAL_MS = 300 * 1000;
     private static nextSyncTime: number | null = null;
+    private static appLogs:string = "app-logs"
+    private static mftsccsBrowser:string = "mftsccs-browser"
 
     // Private auto-sync interval management
     private static autoSyncInterval: number | null = null;
@@ -35,8 +39,9 @@ export class Logger {
             if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
                 Logger.nextSyncTime = currentTime + Logger.SYNC_INTERVAL_MS; // Reset for the next interval
                 Logger.sendLogsToServer();
+                Logger.sendApplicationLogsToServer();
             }
-        }, 1000); // Check every second
+        }, 1000); // Check every minute
     }
 
     /**
@@ -77,7 +82,7 @@ export class Logger {
         if (!Logger.shouldLog(level)) return;
 
         const logEntry : any = {
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toLocaleString(),
             level,
             message,
             ...data,
@@ -90,12 +95,12 @@ export class Logger {
     }
 
     public static log(
-        type: 'INFO' | 'ERROR' | 'DEBUG' | 'WARNING',
+        level: 'INFO' | 'ERROR' | 'DEBUG' | 'WARNING',
         message: string,
-        data:any
+        data?:any | null
     ) : void {
         try{
-            Logger.formatLogData(this.logLevel, message, data)
+            Logger.formatLogData(level, message, data || null)
         } catch(error){
             console.error("Error on Logger Log : ", error);
         }
@@ -241,84 +246,66 @@ export class Logger {
     
         Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
     
+    }    
+
+   // Log Application Activity
+    public static logApplication(type: string, message: string, data?: any): void {
+        try {
+            const timestamp = new Date().toLocaleString();
+            
+            const logEntry = {
+                timestamp: timestamp,
+                type: type,
+                message: message,
+                data: data || null,
+            };
+
+            const existingLogs = JSON.parse(localStorage?.getItem(this.appLogs) || "[]");
+            console.debug("Log before update:", existingLogs);
+            existingLogs.push(logEntry);
+
+            localStorage?.setItem(this.appLogs, JSON.stringify(existingLogs));
+            console.debug("Log after update:", existingLogs);
+
+        } catch (error) {
+            console.error("Failed to log application activity:", error);
+        }
     }
 
-    // Log Event
-    public static logErrorEvent(
-        message?: any,
-        error?: string, 
-        source?: string, 
-        line?: any, 
-        column?: any, 
-        stack?: any
-    ) {
-        const logData = {
-            message: message || "Unknown error",
-            error: error || "No error message provided",
-            source: source || "Unknown source",
-            line: line || "Unknown line",
-            column: column || "Unknown column",
-            stack: stack || "No stack trace available",
-            timestamp: new Date().toISOString(),
-        };
-        
-        console.error("Error Logged:", logData);
-        this.saveEventToLocalStorage(JSON.stringify(logData))
+    public static async sendApplicationLogsToServer(): Promise<void> {
+        try {
+            console.log("Application Log sending to server...");
+            
+            const storedLogs = JSON.parse(localStorage?.getItem(this.appLogs) || "[]");
+            if (storedLogs.length === 0) return;
+            // console.log("Stored Logs : ", storedLogs);
+            
+            const chunkSize = 50;
+            for (let i = 0; i < storedLogs.length; i += chunkSize) {
+                const chunk = storedLogs.slice(i, i + chunkSize);
 
-        // send the error data to an external service or save it
-        // sendToLoggingService(logData);
+                const response = await fetch(BaseUrl.NODE_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        logType : this.appLogs,
+                        logData : chunk
+                    })
+                });
+
+                if (!response.ok) {
+                    const responseBody = await response.text();
+                    console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
+                    return;
+                }
+            }
+
+            localStorage?.removeItem(this.appLogs);
+            console.log("Logs successfully sent and cleared.");
+        } catch (error) {
+            console.error("Error while sending logs to server:", error);
+        }
     }
-
-    // Log Network Error
-    public static logNetwork(logData: {
-        type: 'REQUEST' | 'RESPONSE' | 'ERROR';
-        message: string;
-        method?: string;
-        url:string;
-        body?: any;
-        status?: number;
-        error?: string;
-    }) {
-        if(logData.type === 'REQUEST'){
-            let networkLog = (
-                logData.message,
-                logData.method,
-                logData.url,
-                logData.body,
-                new Date().toISOString()
-            )
-            console.log("NETWORK REQUEST LOG : ", networkLog);
-            this.saveEventToLocalStorage(JSON.stringify(logData))
-        }
-
-        if(logData.type === 'RESPONSE'){
-            let networkLog = (
-                logData.message,
-                logData.method,
-                logData.url,
-                logData.body,
-                new Date().toISOString()
-            )
-            console.log("NETWORK RESPONSE LOG : ", networkLog);
-            this.saveEventToLocalStorage(JSON.stringify(logData))
-
-        }
-
-        if(logData.type === 'ERROR'){
-            let networkLog = (
-                logData.message,
-                logData.url,
-                logData.error,
-                new Date().toISOString()
-            )
-            console.log("NETWORK ERROR LOG : ", networkLog);
-            this.saveEventToLocalStorage(JSON.stringify(logData))
-
-        }
-           
-    }
-    
-    
 
 
     /**
@@ -326,9 +313,9 @@ export class Logger {
      */
     private static saveToLocalStorage(logMessage: string): void {
         try {
-            const logs = JSON.parse(localStorage.getItem("logs") || "[]");
+            const logs = JSON.parse(localStorage?.getItem("logs") || "[]");
             logs.push(logMessage);
-            localStorage.setItem("logs", JSON.stringify(logs));
+            localStorage?.setItem("logs", JSON.stringify(logs));
         } catch (error) {
             console.error("Failed to save log to localStorage:", error);
         }
@@ -336,9 +323,9 @@ export class Logger {
 
     private static saveEventToLocalStorage(logMessage:string): void {
         try {
-            const logs = JSON.parse(localStorage.getItem("EventLogs") || "[]");
+            const logs = JSON.parse(localStorage?.getItem("EventLogs") || "[]");
             logs.push(logMessage);
-            localStorage.setItem("EventLogs", JSON.stringify(logs));
+            localStorage?.setItem("EventLogs", JSON.stringify(logs));
         } catch (error) {
             console.error("Failed to save log to localStorage:", error);
         }
@@ -351,7 +338,7 @@ export class Logger {
         try {
             console.log("Log sending to server...");
             
-            const storedLogs = JSON.parse(localStorage.getItem("logs") || "[]");
+            const storedLogs = JSON.parse(localStorage?.getItem("logs") || "[]");
             if (storedLogs.length === 0) return;
             // console.log("Stored Logs : ", storedLogs);
             
@@ -359,13 +346,15 @@ export class Logger {
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
 
-                // console.log("Sending logs chunk:", chunk);
-                // console.log("Payload chunk:", JSON.stringify(chunk)); 
-
-                const response = await fetch(Logger.SERVER_URL, {
+                // const response = await fetch(Logger.SERVER_URL, {
+                const response = await fetch(BaseUrl.NODE_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify( chunk ),
+                    body: JSON.stringify( {
+                        logType : this.mftsccsBrowser,
+                        logData : chunk
+                    }
+                ),
                 });
 
                 if (!response.ok) {
@@ -376,7 +365,7 @@ export class Logger {
                 }
             }
 
-            localStorage.removeItem("logs");
+            localStorage?.removeItem("logs");
             console.log("Logs successfully sent and cleared.");
         } catch (error) {
             console.error("Error while sending logs to server:", error);

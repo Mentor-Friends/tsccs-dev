@@ -117,7 +117,7 @@ import { broadcastChannel } from "./Constants/general.const";
 export { Logger } from "./Middleware/logger.service";
 import { WidgetTree } from "./Widgets/WidgetTree";
 import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPosting";
-import { EventLogger } from "./Middleware/EventLogger";
+import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -173,7 +173,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  isTest: boolean = false,
+  isTest: boolean = true,
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -196,7 +196,7 @@ async function init(
       IdentifierFlags.isConnectionLoaded = true;
       IdentifierFlags.isConnectionTypeLoaded = true;
       IdentifierFlags.isLocalConnectionLoaded = true;
-      EventLogger.initialize()
+      ApplicationMonitor.initialize()
       return true;
     }
 
