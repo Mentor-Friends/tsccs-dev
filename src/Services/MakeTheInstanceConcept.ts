@@ -148,11 +148,11 @@ export default async function MakeTheInstanceConcept(
   // }
   concept.type = typeConcept;
   // Add Log
-  Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 200, concept, "MakeTheInstanceConcept", 
-    ['type', 'referent', 'composition', 'userId', 'passedAccessId', 'passedSessionId', 'referentId'], 
-    "unknown", 
-    undefined 
-  )
+  // Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 200, concept, "MakeTheInstanceConcept", 
+  //   ['type', 'referent', 'composition', 'userId', 'passedAccessId', 'passedSessionId', 'referentId'], 
+  //   "unknown", 
+  //   undefined 
+  // )
     
   return concept;
 }

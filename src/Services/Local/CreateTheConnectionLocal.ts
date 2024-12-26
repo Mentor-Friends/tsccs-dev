@@ -48,27 +48,23 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
                  actions.connections.push(connection)
                  //storeToDatabase("localconnection", connection);
              }
-             /**
-             * Add to Logger
-             */
-            console.log("CreateTheConnectionLocal...");
-            Logger.logInfo(
-                startTime, 
-                userId, 
-                "create",
-                "Unknown",
-                "Unknown",
-                200,
-                connection,
-                "CreateTheConnectionLocal",
-                ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'],
-                "UnknownUserAgent",
-                []
-            );
-            /**
-             * End of Logger
-             */
-             return connection;
+
+            //  Add Log
+            // Logger.logInfo(
+            //     startTime, 
+            //     userId, 
+            //     "create",
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     connection,
+            //     "CreateTheConnectionLocal",
+            //     ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'],
+            //     "UnknownUserAgent",
+            //     []
+            // );
+            
+            return connection;
         }
         catch(error){
             throw error;

@@ -66,12 +66,12 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
         }
 
       }
-      // Add Log
-      Logger.logInfo(startTime, userId || "unknown", "create", "unknown", undefined, 200, MainConcept, "CreateTheCompositionLocal", 
-        ['json', 'ofTheConceptId', 'ofTheConceptUserId', 'mainKey', 'userId', 'accessId', 'sessionInformationId', 'automaticSync' ], 
-        "unknown", 
-        undefined 
-    )
+    // Add Log
+    // Logger.logInfo(startTime, userId || "unknown", "create", "unknown", undefined, 200, MainConcept, "CreateTheCompositionLocal", 
+    //     ['json', 'ofTheConceptId', 'ofTheConceptUserId', 'mainKey', 'userId', 'accessId', 'sessionInformationId', 'automaticSync' ], 
+    //     "unknown", 
+    //     undefined 
+    // )
    
       return MainConcept;
 }

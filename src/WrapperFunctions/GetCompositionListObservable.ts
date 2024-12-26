@@ -110,20 +110,19 @@ export function GetCompositionListListener(compositionName:string, userId: numbe
     const compositionResult = new GetCompositionListObservable(compositionName, userId, inpage, page,format);
     
     // Add Log
-    console.log("GetCompositionListListener...");
-    Logger.logInfo(
-        startTime, 
-        userId,
-        "read",
-        "Unknown",
-        "Unknown",
-        200,
-        compositionResult,
-        "GetCompositionListListener",
-        ['compositionName', 'userId', 'inpage', 'page', 'format'],
-        "UnknownUserAgent",
-        []
-    );
+    // Logger.logInfo(
+    //     startTime, 
+    //     userId,
+    //     "read",
+    //     "Unknown",
+    //     "Unknown",
+    //     200,
+    //     compositionResult,
+    //     "GetCompositionListListener",
+    //     ['compositionName', 'userId', 'inpage', 'page', 'format'],
+    //     "UnknownUserAgent",
+    //     []
+    // );
     
 
     return compositionResult

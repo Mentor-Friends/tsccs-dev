@@ -131,20 +131,19 @@ export class Validator {
         }
 
         // Add Log
-        console.log("validateField...");
-        Logger.logInfo(
-            startTime,
-            "",
-            undefined,
-            "Unknown",
-            "Unknown",
-            200,
-            errors,
-            "validateField",
-            ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'],  // Function parameters
-            "UnknownUserAgent",
-            []
-        );
+        // Logger.logInfo(
+        //     startTime,
+        //     "",
+        //     undefined,
+        //     "Unknown",
+        //     "Unknown",
+        //     200,
+        //     errors,
+        //     "validateField",
+        //     ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'],  // Function parameters
+        //     "UnknownUserAgent",
+        //     []
+        // );
 
         return errors
     }
@@ -179,20 +178,19 @@ export class Validator {
         }
 
         // Add Log
-        console.log("validateForm...");
-        Logger.logInfo(
-            startTime,
-            "",
-            undefined,
-            "Unknown",
-            "Unknown",
-            200,
-            validationErrors,
-            "validateForm",
-            ['formData'],
-            "UnknownUserAgent",
-            []
-        );
+        // Logger.logInfo(
+        //     startTime,
+        //     "",
+        //     undefined,
+        //     "Unknown",
+        //     "Unknown",
+        //     200,
+        //     validationErrors,
+        //     "validateForm",
+        //     ['formData'],
+        //     "UnknownUserAgent",
+        //     []
+        // );
 
 
         return validationErrors;

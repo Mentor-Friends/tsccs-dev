@@ -76,10 +76,10 @@ export async function CreateConnectionBetweenTwoConcepts(
   );
   SyncData.AddConnection(newConnection);
   // Add Log
-  Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 500, newConnection, "CreateConnectionBetweenTwoConcepts", 
-    [ofTheConcept, toTheConcept, linker, both, count], 
-    "unknown", undefined 
-  )
+  // Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 500, newConnection, "CreateConnectionBetweenTwoConcepts", 
+  //   [ofTheConcept, toTheConcept, linker, both, count], 
+  //   "unknown", undefined 
+  // )
 
   return newConnection;
 }

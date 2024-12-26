@@ -185,7 +185,7 @@ export async function UpdateCompositionLocal(
   }
 
   // Add Log
-  Logger.logInfo(startTime, userId, "update", "unknown", undefined, 200, object, "UpdateCompositionLocal", ['patcherStructure'], "unknown", undefined )
+  // Logger.logInfo(startTime, userId, "update", "unknown", undefined, 200, object, "UpdateCompositionLocal", ['patcherStructure'], "unknown", undefined )
     
   await LocalSyncData.SyncDataOnline(undefined, actions);
 }

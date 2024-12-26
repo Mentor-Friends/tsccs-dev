@@ -4,9 +4,8 @@ export class Logger {
 
     private static logLevel: string = "INFO";
     private static logs: any[] = [];
-    private static readonly SERVER_URL = "https://devai.freeschema.com/api/v1/add-logs";
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 300 * 1000;
+    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app-logs"
     private static mftsccsBrowser:string = "mftsccs-browser"
@@ -284,7 +283,7 @@ export class Logger {
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
 
-                const response = await fetch(BaseUrl.NODE_URL, {
+                const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -308,6 +307,16 @@ export class Logger {
     }
 
 
+    private static saveLogToLocalStorage(logType:string, logMessage:string):void{
+        try{
+            const logs = JSON.parse(localStorage?.getItem(logType) || "[]");
+            logs.push(logMessage)
+            localStorage?.setItem(logType, JSON.stringify(logs));
+        } catch(error){
+            console.error("Error on saving log in localstorage");
+            Logger.log("ERROR", "Error while saving log in local storage")
+        }
+    }
     /**
      * Helper method to save logs to localStorage.
      */
@@ -347,7 +356,7 @@ export class Logger {
                 const chunk = storedLogs.slice(i, i + chunkSize);
 
                 // const response = await fetch(Logger.SERVER_URL, {
-                const response = await fetch(BaseUrl.NODE_URL, {
+                const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify( {

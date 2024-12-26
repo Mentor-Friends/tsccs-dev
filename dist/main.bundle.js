@@ -1884,12 +1884,12 @@ function GetConceptBulk(passedConcepts) {
                         }
                         console.log("added the concepts");
                         // Add Log
-                        _app__WEBPACK_IMPORTED_MODULE_4__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, result, "GetConceptBulk", ['passedConcepts'], "unknown", undefined);
+                        // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, result, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
                     }
                     else {
                         console.log("Get Concept Bulk error", response.status);
                         // Add Log
-                        _app__WEBPACK_IMPORTED_MODULE_4__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", ['passedConcepts'], "unknown", undefined);
+                        _app__WEBPACK_IMPORTED_MODULE_4__.Logger.logError(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", ['passedConcepts'], "unknown", undefined);
                         (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_3__.HandleHttpError)(response);
                     }
                 }
@@ -1903,7 +1903,7 @@ function GetConceptBulk(passedConcepts) {
                 console.log('Get Concept Bulk  unexpected error: ', error);
             }
             // Add Log
-            _app__WEBPACK_IMPORTED_MODULE_4__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined);
+            // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
             (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_3__.HandleInternalError)(error, _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_1__.BaseUrl.GetConceptBulkUrl());
         }
         return result;
@@ -3320,7 +3320,7 @@ function SearchLinkMultipleApi(searchQuery_1) {
             if (response.ok) {
                 let result = yield response.json();
                 // Add Log
-                _app__WEBPACK_IMPORTED_MODULE_0__.Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined);
+                // Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
                 return result;
             }
             else {
@@ -8354,8 +8354,7 @@ class LocalSyncData {
                     _LocalConnectionData__WEBPACK_IMPORTED_MODULE_4__.LocalConnectionData.AddPermanentConnection(connections[i]);
                 }
                 //}
-                // Add Log
-                _app__WEBPACK_IMPORTED_MODULE_3__.Logger.logInfo(startTime, "unknown", undefined, "unknown", undefined, 200, conceptsArray, "SyncDataOnline", [], "unknown", undefined);
+                // Logger.logInfo(startTime, "unknown", undefined, "unknown", undefined, 200, conceptsArray, "SyncDataOnline", [], "unknown", undefined )
                 return conceptsArray;
             }
             catch (error) {
@@ -11432,7 +11431,7 @@ class Logger {
                 const chunkSize = 50;
                 for (let i = 0; i < storedLogs.length; i += chunkSize) {
                     const chunk = storedLogs.slice(i, i + chunkSize);
-                    const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.NODE_URL, {
+                    const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostLogger(), {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -11453,6 +11452,17 @@ class Logger {
                 console.error("Error while sending logs to server:", error);
             }
         });
+    }
+    static saveLogToLocalStorage(logType, logMessage) {
+        try {
+            const logs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(logType)) || "[]");
+            logs.push(logMessage);
+            localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem(logType, JSON.stringify(logs));
+        }
+        catch (error) {
+            console.error("Error on saving log in localstorage");
+            Logger.log("ERROR", "Error while saving log in local storage");
+        }
     }
     /**
      * Helper method to save logs to localStorage.
@@ -11492,7 +11502,7 @@ class Logger {
                 for (let i = 0; i < storedLogs.length; i += chunkSize) {
                     const chunk = storedLogs.slice(i, i + chunkSize);
                     // const response = await fetch(Logger.SERVER_URL, {
-                    const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.NODE_URL, {
+                    const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostLogger(), {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -11518,9 +11528,8 @@ class Logger {
 }
 Logger.logLevel = "INFO";
 Logger.logs = [];
-Logger.SERVER_URL = "https://devai.freeschema.com/api/v1/add-logs";
 Logger.LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-Logger.SYNC_INTERVAL_MS = 300 * 1000;
+Logger.SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
 Logger.nextSyncTime = null;
 Logger.appLogs = "app-logs";
 Logger.mftsccsBrowser = "mftsccs-browser";
@@ -12395,7 +12404,10 @@ function CreateConnectionBetweenTwoConcepts(ofTheConcept_1, toTheConcept_1, link
         let newConnection = new _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_2__.Connection(0, ofTheConcept.id, toTheConcept.id, userId, connectionConcept.id, 1000, accessId);
         _DataStructures_SyncData__WEBPACK_IMPORTED_MODULE_3__.SyncData.AddConnection(newConnection);
         // Add Log
-        _app__WEBPACK_IMPORTED_MODULE_1__.Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 500, newConnection, "CreateConnectionBetweenTwoConcepts", [ofTheConcept, toTheConcept, linker, both, count], "unknown", undefined);
+        // Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 500, newConnection, "CreateConnectionBetweenTwoConcepts", 
+        //   [ofTheConcept, toTheConcept, linker, both, count], 
+        //   "unknown", undefined 
+        // )
         return newConnection;
     });
 }
@@ -14760,7 +14772,7 @@ function GetConnectionById(id) {
             connection = connectionString;
         }
         // Add Log
-        _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, connection, "GetConnectionById", [id], "unknown", undefined);
+        // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, connection, "GetConnectionById", [id], "unknown", undefined )
         return connection;
     });
 }
@@ -14882,7 +14894,7 @@ function GetLink(id_1, linker_1) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_5__.sendMessage)('GetLink', { id, linker, inpage, page });
             console.log('data received from sw', res);
             // Add Log
-            _app__WEBPACK_IMPORTED_MODULE_5__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, res, "GetLink", ['id', 'linker', 'inpage', 'page'], "unknown", undefined);
+            // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, res, "GetLink", ['id', 'linker', 'inpage', 'page'], "unknown", undefined )
             // console.log('data received from sw', res)
             return res.data;
         }
@@ -14907,7 +14919,7 @@ function GetLink(id_1, linker_1) {
             }
         }
         // Add Log
-        _app__WEBPACK_IMPORTED_MODULE_5__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, output, "GetLink", ['id', 'linker', 'inpage', 'page'], "unknown", undefined);
+        // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, output, "GetLink", ['id', 'linker', 'inpage', 'page'], "unknown", undefined )
         return output;
     });
 }
@@ -15165,7 +15177,7 @@ function GetTheConcept(id_1) {
                 }
             }
             // Add Log
-            _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined);
+            // Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined )
             return concept;
         }
         catch (err) {
@@ -15330,7 +15342,19 @@ function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1,
             var connectionConcept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheInstanceConceptLocal)("connection", forwardLinker, false, 999, 999, 999, undefined, actions);
             let newConnection = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.CreateTheConnectionLocal)(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000, undefined, undefined, actions);
             // Add Log
-            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_1__.Logger.logInfo(startTime, userId, 'create', undefined, undefined, 200, newConnection, 'CreateConnectionBetweenTwoConceptsLocal', ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], undefined, undefined);
+            // Logger.logInfo(
+            //     startTime, 
+            //     userId, 
+            //     'create', 
+            //     undefined, 
+            //     undefined, 
+            //     200, 
+            //     newConnection, 
+            //     'CreateConnectionBetweenTwoConceptsLocal',
+            //     ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], 
+            //     undefined,
+            //     undefined
+            // )
             return newConnection;
         }
         catch (ex) {
@@ -15631,7 +15655,11 @@ function CreateTheCompositionLocal(json_1) {
             }
         }
         // Add Log
-        _app__WEBPACK_IMPORTED_MODULE_0__.Logger.logInfo(startTime, userId || "unknown", "create", "unknown", undefined, 200, MainConcept, "CreateTheCompositionLocal", ['json', 'ofTheConceptId', 'ofTheConceptUserId', 'mainKey', 'userId', 'accessId', 'sessionInformationId', 'automaticSync'], "unknown", undefined);
+        // Logger.logInfo(startTime, userId || "unknown", "create", "unknown", undefined, 200, MainConcept, "CreateTheCompositionLocal", 
+        //     ['json', 'ofTheConceptId', 'ofTheConceptUserId', 'mainKey', 'userId', 'accessId', 'sessionInformationId', 'automaticSync' ], 
+        //     "unknown", 
+        //     undefined 
+        // )
         return MainConcept;
     });
 }
@@ -15653,7 +15681,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../DataStructures/Concept */ "./src/DataStructures/Concept.ts");
 /* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
 /* harmony import */ var _DataStructures_Local_LocalId__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../DataStructures/Local/LocalId */ "./src/DataStructures/Local/LocalId.ts");
-/* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../Middleware/logger.service */ "./src/Middleware/logger.service.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15663,7 +15690,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 
 
 
@@ -15719,7 +15745,7 @@ function CreateTheConceptLocal(referent_1, typecharacter_1, userId_1, categoryId
             actions.concepts.push(concept);
             //storeToDatabase("localconcept",concept);
             // Add Log
-            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_4__.Logger.logInfo(startTime, userId, "create", "unknown", "unknown", 200, concept, "createTheConceptLocal", ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId'], undefined);
+            // Logger.logInfo(startTime, userId, "create", "unknown", "unknown", 200, concept, "createTheConceptLocal", ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId'], undefined)
             return concept;
         }
         catch (error) {
@@ -15744,8 +15770,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../DataStructures/Connection */ "./src/DataStructures/Connection.ts");
 /* harmony import */ var _DataStructures_Local_LocalConnectionData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConnectionData */ "./src/DataStructures/Local/LocalConnectionData.ts");
 /* harmony import */ var _DataStructures_Local_LocalId__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../DataStructures/Local/LocalId */ "./src/DataStructures/Local/LocalId.ts");
-/* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../Middleware/logger.service */ "./src/Middleware/logger.service.ts");
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15755,7 +15780,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 
 
 
@@ -15777,8 +15801,8 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
     return __awaiter(this, arguments, void 0, function* (ofTheConceptId, toTheConceptId, typeId, orderId = 1, typeString = "", userId = 999, actions = { concepts: [], connections: [] }) {
         var _a, _b, _c, _d;
         let startTime = performance.now();
-        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions });
+        if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions });
             // console.log('data received from sw', res)
             if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                 actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
@@ -15801,19 +15825,25 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
                 connection = new _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_0__.Connection(randomid, realOfTheConceptId, realToTheConceptId, userId, typeId, orderId, accessId);
                 connection.isTemp = true;
                 connection.typeCharacter = typeString;
-                _app__WEBPACK_IMPORTED_MODULE_4__.LocalSyncData.AddConnection(connection);
+                _app__WEBPACK_IMPORTED_MODULE_3__.LocalSyncData.AddConnection(connection);
                 _DataStructures_Local_LocalConnectionData__WEBPACK_IMPORTED_MODULE_1__.LocalConnectionData.AddConnection(connection);
                 actions.connections.push(connection);
                 //storeToDatabase("localconnection", connection);
             }
-            /**
-            * Add to Logger
-            */
-            console.log("CreateTheConnectionLocal...");
-            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_3__.Logger.logInfo(startTime, userId, "create", "Unknown", "Unknown", 200, connection, "CreateTheConnectionLocal", ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'], "UnknownUserAgent", []);
-            /**
-             * End of Logger
-             */
+            //  Add Log
+            // Logger.logInfo(
+            //     startTime, 
+            //     userId, 
+            //     "create",
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     connection,
+            //     "CreateTheConnectionLocal",
+            //     ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'],
+            //     "UnknownUserAgent",
+            //     []
+            // );
             return connection;
         }
         catch (error) {
@@ -16363,7 +16393,7 @@ function GetTheConceptLocal(id) {
                 lconcept = (0,_Conversion_ConvertConcepts__WEBPACK_IMPORTED_MODULE_3__.convertFromConceptToLConcept)(concept);
             }
             // Add Log
-            _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, lconcept, "GetTheConceptLocal", [id], "unknown", undefined);
+            // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, lconcept, "GetTheConceptLocal", [id], "unknown", undefined )
             return lconcept;
         }
         catch (error) {
@@ -16530,7 +16560,19 @@ function MakeTheInstanceConceptLocal(type_1, referent_1) {
             concept.type = typeConcept;
             _app__WEBPACK_IMPORTED_MODULE_3__.LocalSyncData.AddConcept(concept);
             // Add Log
-            _app__WEBPACK_IMPORTED_MODULE_3__.Logger.logInfo(startTime, userId, "create", "Unknown", "Unknown", 200, concept, "MakeTheInstanceConceptLocal", ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId'], "UnknownUserAgent", []);
+            // Logger.logInfo(
+            //     startTime,
+            //     userId,
+            //     "create",
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     concept,
+            //     "MakeTheInstanceConceptLocal",
+            //     ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId'],
+            //     "UnknownUserAgent",
+            //     []
+            // );
             actions.concepts.push(concept);
             return concept;
         }
@@ -16766,7 +16808,7 @@ function UpdateCompositionLocal(patcherStructure_1) {
             yield (0,_DeleteConnection__WEBPACK_IMPORTED_MODULE_4__.DeleteConnectionById)(toDeleteConnections[j].id);
         }
         // Add Log
-        _app__WEBPACK_IMPORTED_MODULE_7__.Logger.logInfo(startTime, userId, "update", "unknown", undefined, 200, object, "UpdateCompositionLocal", ['patcherStructure'], "unknown", undefined);
+        // Logger.logInfo(startTime, userId, "update", "unknown", undefined, 200, object, "UpdateCompositionLocal", ['patcherStructure'], "unknown", undefined )
         yield _app__WEBPACK_IMPORTED_MODULE_7__.LocalSyncData.SyncDataOnline(undefined, actions);
     });
 }
@@ -17035,7 +17077,11 @@ function MakeTheInstanceConcept(type_1, referent_1) {
         // }
         concept.type = typeConcept;
         // Add Log
-        _app__WEBPACK_IMPORTED_MODULE_4__.Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 200, concept, "MakeTheInstanceConcept", ['type', 'referent', 'composition', 'userId', 'passedAccessId', 'passedSessionId', 'referentId'], "unknown", undefined);
+        // Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 200, concept, "MakeTheInstanceConcept", 
+        //   ['type', 'referent', 'composition', 'userId', 'passedAccessId', 'passedSessionId', 'referentId'], 
+        //   "unknown", 
+        //   undefined 
+        // )
         return concept;
     });
 }
@@ -19526,9 +19572,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Validator: () => (/* binding */ Validator)
 /* harmony export */ });
-/* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Middleware/logger.service */ "./src/Middleware/logger.service.ts");
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
-/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant */ "./src/Validator/constant.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constant */ "./src/Validator/constant.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -19538,7 +19583,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 
 
 class Validator {
@@ -19558,10 +19602,10 @@ class Validator {
             const sessionUserId = 999;
             const userId = 999;
             // Create the type concept based on session data
-            let type_concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptApi)(type, userId);
+            let type_concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheTypeConceptApi)(type, userId);
             let type_concept_id = type_concept.id;
             // Check if the concept exists for the provided value and type_concept_id
-            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConceptByCharacterAndType)(value, type_concept_id);
+            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterAndType)(value, type_concept_id);
             console.log("This is the concept for validator", concept);
             if (concept.id > 0) {
                 return false;
@@ -19596,7 +19640,7 @@ class Validator {
             }
             // 2. Validate using regex pattern for the data type
             if (dataType && value) {
-                let pattern = _constant__WEBPACK_IMPORTED_MODULE_2__.DATA_TYPES_RULES[dataType];
+                let pattern = _constant__WEBPACK_IMPORTED_MODULE_1__.DATA_TYPES_RULES[dataType];
                 if (pattern && value !== '' && !pattern.test(value)) {
                     errors['dataType'] = `Invalid value for ${dataType}`;
                 }
@@ -19642,9 +19686,19 @@ class Validator {
                 }
             }
             // Add Log
-            console.log("validateField...");
-            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logInfo(startTime, "", undefined, "Unknown", "Unknown", 200, errors, "validateField", ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'], // Function parameters
-            "UnknownUserAgent", []);
+            // Logger.logInfo(
+            //     startTime,
+            //     "",
+            //     undefined,
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     errors,
+            //     "validateField",
+            //     ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'],  // Function parameters
+            //     "UnknownUserAgent",
+            //     []
+            // );
             return errors;
         });
     }
@@ -19671,8 +19725,19 @@ class Validator {
                     validationErrors[fieldName] = fieldErrors;
             }
             // Add Log
-            console.log("validateForm...");
-            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logInfo(startTime, "", undefined, "Unknown", "Unknown", 200, validationErrors, "validateForm", ['formData'], "UnknownUserAgent", []);
+            // Logger.logInfo(
+            //     startTime,
+            //     "",
+            //     undefined,
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     validationErrors,
+            //     "validateForm",
+            //     ['formData'],
+            //     "UnknownUserAgent",
+            //     []
+            // );
             return validationErrors;
         });
     }
@@ -20640,9 +20705,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _Api_GetAllConceptsByType__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Api/GetAllConceptsByType */ "./src/Api/GetAllConceptsByType.ts");
 /* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
-/* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Middleware/logger.service */ "./src/Middleware/logger.service.ts");
-/* harmony import */ var _Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Services/GetComposition */ "./src/Services/GetComposition.ts");
-/* harmony import */ var _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DepenedencyObserver */ "./src/WrapperFunctions/DepenedencyObserver.ts");
+/* harmony import */ var _Services_GetComposition__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Services/GetComposition */ "./src/Services/GetComposition.ts");
+/* harmony import */ var _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./DepenedencyObserver */ "./src/WrapperFunctions/DepenedencyObserver.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -20656,11 +20720,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
 /**
  * This wrapper will wrap the listing function and then allow users to return the list.
  */
-class GetCompositionListObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_4__.DependencyObserver {
+class GetCompositionListObservable extends _DepenedencyObserver__WEBPACK_IMPORTED_MODULE_3__.DependencyObserver {
     constructor(compositionName, userId, inpage, page, format) {
         super();
         this.data = [];
@@ -20706,7 +20769,7 @@ class GetCompositionListObservable extends _DepenedencyObserver__WEBPACK_IMPORTE
             if (this.format == _app__WEBPACK_IMPORTED_MODULE_1__.JUSTDATA) {
                 for (let i = this.startPage; i < this.startPage + this.inpage; i++) {
                     if (this.compositionIds[i]) {
-                        let compositionJson = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionFromMemory)(this.compositionIds[i]);
+                        let compositionJson = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_2__.GetCompositionFromMemory)(this.compositionIds[i]);
                         this.data.push(compositionJson);
                     }
                 }
@@ -20714,7 +20777,7 @@ class GetCompositionListObservable extends _DepenedencyObserver__WEBPACK_IMPORTE
             else if (this.format == _app__WEBPACK_IMPORTED_MODULE_1__.DATAID) {
                 for (let i = this.startPage; i < this.startPage + this.inpage; i++) {
                     if (this.compositionIds[i]) {
-                        let compositionJson = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionWithIdFromMemory)(this.compositionIds[i]);
+                        let compositionJson = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_2__.GetCompositionWithIdFromMemory)(this.compositionIds[i]);
                         this.data.push(compositionJson);
                     }
                 }
@@ -20722,7 +20785,7 @@ class GetCompositionListObservable extends _DepenedencyObserver__WEBPACK_IMPORTE
             else if (this.format == _app__WEBPACK_IMPORTED_MODULE_1__.NORMAL) {
                 for (let i = this.startPage; i < this.startPage + this.inpage; i++) {
                     if (this.compositionIds[i]) {
-                        let compositionJson = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionFromMemoryNormal)(this.compositionIds[i]);
+                        let compositionJson = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_2__.GetCompositionFromMemoryNormal)(this.compositionIds[i]);
                         this.data.push(compositionJson);
                     }
                 }
@@ -20730,7 +20793,7 @@ class GetCompositionListObservable extends _DepenedencyObserver__WEBPACK_IMPORTE
             else {
                 for (let i = this.startPage; i < this.startPage + this.inpage; i++) {
                     if (this.compositionIds[i]) {
-                        let compositionJson = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_3__.GetCompositionFromMemory)(this.compositionIds[i]);
+                        let compositionJson = yield (0,_Services_GetComposition__WEBPACK_IMPORTED_MODULE_2__.GetCompositionFromMemory)(this.compositionIds[i]);
                         this.data.push(compositionJson);
                     }
                 }
@@ -20746,8 +20809,19 @@ function GetCompositionListListener(compositionName, userId, inpage, page, forma
     let startTime = performance.now();
     const compositionResult = new GetCompositionListObservable(compositionName, userId, inpage, page, format);
     // Add Log
-    console.log("GetCompositionListListener...");
-    _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_2__.Logger.logInfo(startTime, userId, "read", "Unknown", "Unknown", 200, compositionResult, "GetCompositionListListener", ['compositionName', 'userId', 'inpage', 'page', 'format'], "UnknownUserAgent", []);
+    // Logger.logInfo(
+    //     startTime, 
+    //     userId,
+    //     "read",
+    //     "Unknown",
+    //     "Unknown",
+    //     200,
+    //     compositionResult,
+    //     "GetCompositionListListener",
+    //     ['compositionName', 'userId', 'inpage', 'page', 'format'],
+    //     "UnknownUserAgent",
+    //     []
+    // );
     return compositionResult;
 }
 

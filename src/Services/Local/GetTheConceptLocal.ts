@@ -39,7 +39,7 @@ export async function GetTheConceptLocal(id: number){
             lconcept = convertFromConceptToLConcept(concept);
         }
         // Add Log
-        Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, lconcept, "GetTheConceptLocal", [id], "unknown", undefined )
+        // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, lconcept, "GetTheConceptLocal", [id], "unknown", undefined )
         return lconcept;
     }
     catch(error){

@@ -25,7 +25,7 @@ export  async function GetConnectionById(id:number){
         connection = connectionString as Connection;
        }
       // Add Log
-      Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, connection, "GetConnectionById", [id], "unknown", undefined )
+      // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, connection, "GetConnectionById", [id], "unknown", undefined )
 
        return connection;
 

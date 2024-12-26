@@ -19,7 +19,7 @@ export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: s
         if(response.ok){
             let result = await response.json();
             // Add Log
-            Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
+            // Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
             return result;
 
         }

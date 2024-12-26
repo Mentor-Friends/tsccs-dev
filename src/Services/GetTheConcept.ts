@@ -57,7 +57,7 @@ export default async function GetTheConcept(id: number, userId: number = 999){
             }
         }
         // Add Log
-        Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined )
+        // Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined )
     
         return concept;
     }

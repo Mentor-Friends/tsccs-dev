@@ -36,19 +36,19 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
         var connectionConcept = await MakeTheInstanceConceptLocal("connection",forwardLinker,false,999,999,999, undefined, actions);
         let newConnection = await CreateTheConnectionLocal(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000, undefined, undefined, actions)
         // Add Log
-        Logger.logInfo(
-            startTime, 
-            userId, 
-            'create', 
-            undefined, 
-            undefined, 
-            200, 
-            newConnection, 
-            'CreateConnectionBetweenTwoConceptsLocal',
-            ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], 
-            undefined,
-            undefined
-        )
+        // Logger.logInfo(
+        //     startTime, 
+        //     userId, 
+        //     'create', 
+        //     undefined, 
+        //     undefined, 
+        //     200, 
+        //     newConnection, 
+        //     'CreateConnectionBetweenTwoConceptsLocal',
+        //     ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], 
+        //     undefined,
+        //     undefined
+        // )
         
         return newConnection;
     }

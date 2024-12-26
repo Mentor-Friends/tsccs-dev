@@ -88,19 +88,19 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
             LocalSyncData.AddConcept(concept);
              
             // Add Log
-            Logger.logInfo(
-                startTime,
-                userId,
-                "create",
-                "Unknown",
-                "Unknown",
-                200,
-                concept,
-                "MakeTheInstanceConceptLocal",
-                ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId'],
-                "UnknownUserAgent",
-                []
-            );
+            // Logger.logInfo(
+            //     startTime,
+            //     userId,
+            //     "create",
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     concept,
+            //     "MakeTheInstanceConceptLocal",
+            //     ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId'],
+            //     "UnknownUserAgent",
+            //     []
+            // );
 
             actions.concepts.push(concept)
             return concept;

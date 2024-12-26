@@ -57,7 +57,7 @@ accessId:number, isComposition: boolean = false, referentId:number = 0, actions:
         //storeToDatabase("localconcept",concept);
 
         // Add Log
-        Logger.logInfo(startTime, userId, "create", "unknown", "unknown", 200, concept, "createTheConceptLocal", ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId'], undefined)
+        // Logger.logInfo(startTime, userId, "create", "unknown", "unknown", 200, concept, "createTheConceptLocal", ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId'], undefined)
 
         return concept;
     }
