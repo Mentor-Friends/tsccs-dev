@@ -669,7 +669,6 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
   if (serviceWorker) {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
-    console.log("event fired from", event);
     dispatchEvent(event);
   } else {
     broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
