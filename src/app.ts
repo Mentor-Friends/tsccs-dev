@@ -289,7 +289,7 @@ async function init(
                             serviceWorkerReady = false
                           }
                           // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                          if ((newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
+                          if ((newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
                             // && navigator.serviceWorker.controller) {
                             console.log(
                               "New Service Worker is active",
