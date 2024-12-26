@@ -273,49 +273,7 @@ async function init(
                       "Service Worker registered:",
                       registration
                     );
-                    
-                    // If the service worker is already active, mark it as ready
-                    if (registration.active) {
-                      serviceWorkerReady = true;
-                      console.log("active sw");
-                      serviceWorker = registration.active;
-
-                      await sendMessage("init", {
-                        url,
-                        aiurl,
-                        accessToken,
-                        nodeUrl,
-                        enableAi,
-                        applicationName,
-                        isTest,
-                      });
-                      processMessageQueue();
-                      resolve();
-                    } else {
-                      // Handle if on state change didn't trigger
-                      setTimeout(() => {
-                        if (!success) reject("Not Completed Initialization");
-                      }, 5000);
-                    }
-
-                    // state change 
-                    if (registration.installing || registration.waiting || registration.active) {
-                      registration.addEventListener('statechange', async (event: any) => {
-                        if (event?.target?.state === 'activating') {
-                          serviceWorker = navigator.serviceWorker.controller
-                          console.log('Service Worker is activating statechange');
-                          await sendMessage("init", {
-                            url,
-                            aiurl,
-                            accessToken,
-                            nodeUrl,
-                            enableAi,
-                            applicationName,
-                            isTest,
-                          });
-                        }
-                      });
-                    }
+                    // Add Listeners before initializing the service worker
 
                     // Listen for updates to the service worker
                     console.log("update listen start");
@@ -325,6 +283,11 @@ async function init(
                       if (newWorker) {
                         newWorker.onstatechange = async () => {
                           console.log("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
+                          if (newWorker.state === "installing") {
+                            console.log("Service Worker installing");
+                            serviceWorker = undefined
+                            serviceWorkerReady = false
+                          }
                           // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
                           if ((newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
                             // && navigator.serviceWorker.controller) {
@@ -372,6 +335,51 @@ async function init(
                         // You can reload the page if necessary or handle the update process here
                       }
                     });
+
+                    // state change 
+                    if (registration.installing || registration.waiting || registration.active) {
+                      registration.addEventListener('statechange', async (event: any) => {
+                        if (event?.target?.state === 'activating') {
+                          serviceWorker = navigator.serviceWorker.controller
+                          console.log('Service Worker is activating statechange');
+                          await sendMessage("init", {
+                            url,
+                            aiurl,
+                            accessToken,
+                            nodeUrl,
+                            enableAi,
+                            applicationName,
+                            isTest,
+                          });
+                        }
+                      });
+                    }
+                    
+                    // If the service worker is already active, mark it as ready
+                    if (registration.active) {
+                      serviceWorkerReady = true;
+                      console.log("active sw");
+                      serviceWorker = registration.active;
+
+                      await sendMessage("init", {
+                        url,
+                        aiurl,
+                        accessToken,
+                        nodeUrl,
+                        enableAi,
+                        applicationName,
+                        isTest,
+                      });
+                      processMessageQueue();
+                      resolve();
+                    } else {
+                      // Handle if on state change didn't trigger
+                      setTimeout(() => {
+                        if (!success) reject("Not Completed Initialization");
+                      }, 5000);
+                    }
+
+
                   })
                   .catch(async (error) => {
                     await initConceptConnection();
