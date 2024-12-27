@@ -21,12 +21,6 @@ export default async function GetTheConcept(id: number, userId: number = 999){
         } catch {
             console.error("Error adding concepts in access tracker");
         }
-        // Increment count of the concept
-        try{
-            AccessTracker.incrementConcept(id);
-        } catch(error){
-            console.error("Error adding concept in access tracker:", error);            
-        }
         if (serviceWorker) {
             const res: any = await sendMessage('GetTheConcept', {id, userId})
             // console.log('data received from sw', res)
@@ -64,7 +58,7 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     catch(err){
         console.error("this is the error in the getting concept", err);
         // Add Log
-        Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", ['id', 'userId'], "unknown", undefined )
+        Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", [id, userId], "unknown", undefined )
         throw err;
     }
 

@@ -173,7 +173,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  isTest: boolean = true,
+  flag: { logApplication?: boolean; isTest?: boolean } = { logApplication: false, isTest: false }
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -186,7 +186,7 @@ async function init(
     // BaseUrl.BASE_RANDOMIZER = 999;
     
     BaseUrl.setRandomizer(randomizer)
-    if (isTest) {
+    if (flag.isTest) {
       IdentifierFlags.isDataLoaded = true;
       IdentifierFlags.isCharacterLoaded = true;
       IdentifierFlags.isTypeLoaded = true;
@@ -196,8 +196,12 @@ async function init(
       IdentifierFlags.isConnectionLoaded = true;
       IdentifierFlags.isConnectionTypeLoaded = true;
       IdentifierFlags.isLocalConnectionLoaded = true;
-      ApplicationMonitor.initialize()
       return true;
+    }
+
+    if(flag.logApplication){
+      ApplicationMonitor.initialize()
+      console.log("Application log started...");
     }
 
     if (!("serviceWorker" in navigator)) {
@@ -220,7 +224,7 @@ async function init(
             nodeUrl,
             enableAi,
             applicationName,
-            isTest,
+            flag
           });
           resolve('done')
         })
@@ -290,7 +294,7 @@ async function init(
                         nodeUrl,
                         enableAi,
                         applicationName,
-                        isTest,
+                        flag
                       });
                       processMessageQueue();
                       resolve();
@@ -314,7 +318,7 @@ async function init(
                             nodeUrl,
                             enableAi,
                             applicationName,
-                            isTest,
+                            flag
                           });
                         }
                       });
@@ -345,7 +349,7 @@ async function init(
                               nodeUrl,
                               enableAi,
                               applicationName,
-                              isTest,
+                              flag
                             });
                             success = true;
                             serviceWorkerReady = true;
@@ -369,7 +373,7 @@ async function init(
                           nodeUrl,
                           enableAi,
                           applicationName,
-                          isTest,
+                          flag                          
                         });
                         // The new service worker is now controlling the page
                         // You can reload the page if necessary or handle the update process here

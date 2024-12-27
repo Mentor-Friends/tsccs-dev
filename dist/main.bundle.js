@@ -29,20 +29,28 @@ class AccessTracker {
      * Increments the count for a specific conceptId.
      */
     static incrementConcept(conceptId) {
-        // console.log("Inside incrementConcept with : ", conceptId);
-        if (conceptId) {
-            this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
-            // this.saveDataToLocalStorage()
+        try {
+            if (conceptId) {
+                this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
+                this.saveDataToLocalStorage();
+            }
+        }
+        catch (error) {
+            console.error("Failed on increment concept");
         }
     }
     /**
      * Increments the count for a specific connectionId.
      */
     static incrementConnection(connectionId) {
-        // console.log("Inside incrementConnection with : ", connectionId);
-        if (connectionId) {
-            this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
-            // this.saveDataToLocalStorage()
+        try {
+            if (connectionId) {
+                this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
+                this.saveDataToLocalStorage();
+            }
+        }
+        catch (error) {
+            console.error("Failed on increment connection");
         }
     }
     /**
@@ -71,34 +79,42 @@ class AccessTracker {
             concepts: this.conceptsData,
             connections: this.connectionsData
         };
-        localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem('trackerData', JSON.stringify(data));
+        localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem(this.accessData, JSON.stringify(data));
     }
     /**
      * Loads the concept and connection data from localStorage.
      */
     static loadDataFromLocalStorage() {
-        const savedData = localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem('trackerData');
+        const savedData = localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(this.accessData);
         if (savedData) {
             const data = JSON.parse(savedData);
             this.conceptsData = data.concepts || {};
             this.connectionsData = data.connections || {};
         }
     }
+    static sendToServer() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const accessToken = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
+                yield this.syncToServer(accessToken);
+            }
+            catch (error) {
+                console.error("Failed to process Access Tracker Sync with Server");
+            }
+        });
+    }
     /**
      * Syncs the concept and connection data with the server.
      */
     static syncToServer(accessToken) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!Object.keys(this.conceptsData).length && !Object.keys(this.connectionsData).length) {
-                // console.log("No data to sync. Skipping...");
-                return;
-            }
             try {
-                // console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
+                if (!Object.keys(this.conceptsData).length && !Object.keys(this.connectionsData).length) {
+                    return;
+                }
                 // Ensure conceptsData and connectionsData are not undefined or null
                 const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
                 const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
-                // console.log("I am getting url : ", BaseUrl.PostPrefetchConceptConnections());
                 const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostPrefetchConceptConnections(), {
                     method: 'POST',
                     headers: {
@@ -114,14 +130,11 @@ class AccessTracker {
                     throw new Error('Failed to sync data to the server.');
                 }
                 const serverData = yield response.json();
-                console.log("Server Data after sync : ", serverData);
+                // console.log("Server Data after sync : ", serverData);
                 this.conceptsData = {};
                 this.connectionsData = {};
-                // this.conceptsData = serverData.concepts;
-                // this.connectionsData = serverData.connections;
-                // this.saveDataToLocalStorage();
-                // console.log(`Sync successful at ${new Date().toISOString()}`);
                 this.setNextSyncTime();
+                localStorage === null || localStorage === void 0 ? void 0 : localStorage.removeItem(this.accessData);
             }
             catch (error) {
                 console.error('Sync error:', error);
@@ -132,9 +145,8 @@ class AccessTracker {
      * Sets the next sync time based on the current time and sync interval.
      */
     static setNextSyncTime() {
-        // Calculate next sync time (current time + TimeToSync interval)
-        this.nextSyncTime = Date.now() + this.TimeToSync;
-        // console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toLocaleString()}`); // Log next sync time
+        // Calculate next sync time (current time + time interval)
+        this.nextSyncTime = Date.now() + this.SYNC_INTERVAL_MS;
     }
     /**
      * Starts auto-syncing to the server every specified time interval.
@@ -143,20 +155,16 @@ class AccessTracker {
     static startAutoSync() {
         const tokenString = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
         if (tokenString) {
-            // console.log("[AUTO-SYNC] Auto-sync initialized.");
             this.syncNow().catch(console.error);
         }
         setInterval(() => {
             const currentTime = Date.now();
-            // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
+            console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
             if (currentTime >= this.nextSyncTime) {
                 // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
                 this.syncNow().catch(console.error);
             }
-            else {
-                // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
-            }
-        }, 300000); // Check every 10 Seconds
+        }, 30000); // Check every 30 Seconds
     }
     /**
      * Sync immediately (called by setInterval when time to sync has arrived).
@@ -165,7 +173,6 @@ class AccessTracker {
         return __awaiter(this, void 0, void 0, function* () {
             const tokenString = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
             if (tokenString) {
-                //   console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
                 yield this.syncToServer(tokenString);
             }
             else {
@@ -256,11 +263,8 @@ class AccessTracker {
      */
     static addConceptToBinaryTree(conceptsDataArray) {
         return __awaiter(this, void 0, void 0, function* () {
-            // console.log("Concepts Data Array : ", conceptsDataArray);
             try {
-                // console.log("Start Adding Concepts to Binary Tree...");
                 conceptsDataArray.forEach(conceptObject => {
-                    // console.log("Concept Object : ", conceptObject);
                     _app__WEBPACK_IMPORTED_MODULE_0__.ConceptsData.AddConcept(conceptObject);
                 });
             }
@@ -275,9 +279,7 @@ class AccessTracker {
     static addConnectionToBinaryTree(connectionsDataArray) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // console.log("Start Adding Connections to Binary Tree...");
                 connectionsDataArray.forEach(connectionObject => {
-                    // console.log("Connection Object : ", connectionObject);
                     _app__WEBPACK_IMPORTED_MODULE_0__.ConnectionData.AddConnection(connectionObject);
                 });
             }
@@ -290,8 +292,9 @@ class AccessTracker {
 _a = AccessTracker;
 AccessTracker.conceptsData = {};
 AccessTracker.connectionsData = {};
-AccessTracker.TimeToSync = 300000;
+AccessTracker.SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
 AccessTracker.nextSyncTime = Date.now();
+AccessTracker.accessData = "Access Data";
 (() => {
     // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toLocaleString()}`);
     _a.startAutoSync();
@@ -1903,7 +1906,7 @@ function GetConceptBulk(passedConcepts) {
                 console.log('Get Concept Bulk  unexpected error: ', error);
             }
             // Add Log
-            // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
+            _app__WEBPACK_IMPORTED_MODULE_4__.Logger.logError(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined);
             (0,_Services_Common_ErrorPosting__WEBPACK_IMPORTED_MODULE_3__.HandleInternalError)(error, _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_1__.BaseUrl.GetConceptBulkUrl());
         }
         return result;
@@ -4073,10 +4076,10 @@ class BaseUrl {
         return this.NODE_URL + '/api/v1/access-tracker/list-connections-file';
     }
     static PostLogger() {
-        return this.BASE_URL + '/api/v1/logger/logs';
+        return this.NODE_URL + '/api/v1/logger/logs';
     }
     static GetLogger() {
-        return this.BASE_URL + '/api/v1/logger/logs';
+        return this.NODE_URL + '/api/v1/logger/logs';
     }
     static GetAllPrefetchConnectionsUrl() {
         return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';
@@ -11117,7 +11120,7 @@ class ApplicationMonitor {
         // Log unhandled errors
         window.addEventListener("error", (event) => {
             var _a, _b;
-            console.log("error called...");
+            // console.log("error called...");
             const errorDetails = {
                 error: ((_a = event.error) === null || _a === void 0 ? void 0 : _a.message) || event.message,
                 source: event.filename,
@@ -11131,39 +11134,59 @@ class ApplicationMonitor {
         // Log unhandled promise rejections
         window.addEventListener("unhandledrejection", (event) => {
             var _a;
-            console.log("unhandledrejection called...");
+            // console.log("unhandledrejection called...");
             const errorDetails = {
                 reason: event.reason,
                 stack: (_a = event.reason) === null || _a === void 0 ? void 0 : _a.stack,
             };
             const message = "Unhandled Promise Rejection";
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Unhandled", message, errorDetails);
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Error", message, errorDetails);
         });
         // Log user interactions
+        this.logUserInteractions();
+        // Log network requests requires interception with Service Worker or monkey-patching
+        this.logNetworkRequests();
+        // Log application state changes for SPAs
+        this.logRouteChanges();
+    }
+    // Log user interactions
+    static logUserInteractions() {
         document.addEventListener("click", (event) => {
             var _a;
             const target = event.target;
-            console.log("Click Event called...");
-            const errorDetails = {
+            const message = "User Click";
+            const details = {
                 element: target.tagName,
                 id: target.id,
                 classes: target.className,
                 text: (_a = target.innerText) === null || _a === void 0 ? void 0 : _a.slice(0, 50),
             };
-            const message = "User Click";
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Event Click", message, errorDetails);
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", message, details);
         });
-        // Log network requests requires interception with Service Worker or monkey-patching
-        this.logNetworkRequests();
-        // Log application state changes for SPAs
-        this.logRouteChanges();
+        document.addEventListener("input", (event) => {
+            const target = event.target;
+            const message = "User Input";
+            const details = {
+                element: target.tagName,
+                id: target.id,
+                value: target.value,
+            };
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", message, details);
+        });
+        window.addEventListener("scroll", () => {
+            const message = "User Scroll";
+            const details = {
+                position: window.scrollY,
+            };
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", message, details);
+        });
     }
     static logNetworkRequests() {
         const originalFetch = window.fetch;
         window.fetch = (...args) => __awaiter(this, void 0, void 0, function* () {
             const [url, options] = args;
             const urlString = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
-            console.log("Custom fetch called for:", urlString);
+            // console.log("Custom fetch called for:", urlString);
             let networkDetails = {
                 "request": {
                     type: "REQUEST",
@@ -11182,7 +11205,7 @@ class ApplicationMonitor {
                     url: urlString,
                     status: response.status,
                 };
-                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Network", "Network Request", networkDetails);
+                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", "Network Request", networkDetails);
                 return response;
             }
             catch (error) {
@@ -11195,7 +11218,7 @@ class ApplicationMonitor {
                     error: error instanceof Error ? error.message : String(error),
                 };
                 // Log or process networkDetails if needed
-                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Network", "Network Request", networkDetails);
+                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("ERROR", "Network Request", networkDetails);
                 // Throw a standard Error object (not the networkDetails object)
                 throw new Error(`Network request failed for ${urlString}: ${error.message}`);
             }
@@ -11208,7 +11231,7 @@ class ApplicationMonitor {
                 loadTime: timing.loadEventEnd - timing.navigationStart,
                 domContentLoadedTime: timing.domContentLoadedEventEnd - timing.navigationStart,
             };
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Load", "Performance Metrics", details);
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", "Performance Metrics", details);
         });
     }
     // Log route changes (SPAs)
@@ -11219,16 +11242,129 @@ class ApplicationMonitor {
             const urlChange = {
                 url: (_a = args[2]) === null || _a === void 0 ? void 0 : _a.toString(),
             };
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Route Changed", "Route Change", urlChange);
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", "Route Change", urlChange);
             return pushState.apply(this, args);
         };
         window.addEventListener("popstate", () => {
             const urlChange = {
                 url: location.href
             };
-            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("Route Changed", "Route Changed (Back/Forward)", urlChange);
+            _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", "Route Changed (Back/Forward)", urlChange);
         });
     }
+    // Log WebSocket events
+    static logWebSocketEvents() {
+        const originalWebSocket = WebSocket;
+        window.WebSocket = class extends originalWebSocket {
+            constructor(url, protocols) {
+                super(url, protocols);
+                const message = "WebSocket Open";
+                const data = {
+                    "url": url.toString()
+                };
+                _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", message, data);
+                this.addEventListener("message", (event) => {
+                    const message = "WebSocket Message";
+                    const data = {
+                        "url": url,
+                        "data": event.data
+                    };
+                    _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", message, data);
+                });
+                this.addEventListener("error", (error) => {
+                    const message = "WebSocket Error";
+                    const data = {
+                        "url": url,
+                        "error": error instanceof Error ? error.message : String(error),
+                    };
+                    _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", message, data);
+                });
+                this.addEventListener("close", () => {
+                    const message = "WebSocket Closed";
+                    const data = {
+                        "url": url,
+                    };
+                    _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", message, data);
+                });
+            }
+        };
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/Middleware/ErrorHandling.ts":
+/*!*****************************************!*\
+  !*** ./src/Middleware/ErrorHandling.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   HandleEventError: () => (/* binding */ HandleEventError),
+/* harmony export */   HandleFunctionError: () => (/* binding */ HandleFunctionError),
+/* harmony export */   HandleNetworkError: () => (/* binding */ HandleNetworkError)
+/* harmony export */ });
+/* harmony import */ var _logger_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./logger.service */ "./src/Middleware/logger.service.ts");
+
+/**
+ * Handles errors in function execution by logging relevant details.
+ * @param error The error object caught during execution.
+ * @param data Additional context or data to log with the error.
+ */
+function HandleFunctionError(error, data) {
+    if (error) {
+        const errorDetails = {
+            message: error.message || "Unknown function error",
+            stack: error.stack || "No stack trace",
+            context: data || "No context provided",
+        };
+        _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.log("ERROR", "Function Error", errorDetails);
+    }
+}
+/**
+ * Handles network errors by logging request and response details.
+ * Extend this to handle network-specific errors in `fetch` or `XMLHttpRequest`.
+ * @param request Details of the network request.
+ * @param error The error object or response details.
+ */
+function HandleNetworkError(request, error) {
+    const networkErrorDetails = {
+        message: "Network Error",
+        request: {
+            method: request.method || "Unknown",
+            url: request.url || "Unknown URL",
+            body: request.body || "No body provided",
+        },
+        response: error.response || "No response details",
+        stack: error.stack || "No stack trace",
+    };
+    _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.log("ERROR", "Network Error", networkErrorDetails);
+}
+/**
+ * Handles errors during DOM or event interactions by logging event-specific details.
+ * @param event The event object where the error occurred.
+ * @param error The error object caught during execution.
+ */
+function HandleEventError(event, error) {
+    var _a;
+    const target = event.target;
+    const eventErrorDetails = {
+        message: "Event Error",
+        eventType: event.type,
+        element: {
+            tagName: (target === null || target === void 0 ? void 0 : target.tagName) || "Unknown",
+            id: (target === null || target === void 0 ? void 0 : target.id) || "No ID",
+            classes: (target === null || target === void 0 ? void 0 : target.className) || "No classes",
+            text: ((_a = target === null || target === void 0 ? void 0 : target.innerText) === null || _a === void 0 ? void 0 : _a.slice(0, 50)) || "No text",
+        },
+        errorDetails: {
+            message: (error === null || error === void 0 ? void 0 : error.message) || "Unknown error",
+            stack: (error === null || error === void 0 ? void 0 : error.stack) || "No stack trace",
+        },
+    };
+    _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.log("ERROR", "Event Error", eventErrorDetails);
 }
 
 
@@ -11246,6 +11382,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getCookie: () => (/* binding */ getCookie)
 /* harmony export */ });
 /* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../DataStructures/Security/TokenStorage */ "./src/DataStructures/Security/TokenStorage.ts");
+/* harmony import */ var _ErrorHandling__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ErrorHandling */ "./src/Middleware/ErrorHandling.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11255,6 +11393,8 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
+
 
 class Logger {
     /**
@@ -11267,16 +11407,16 @@ class Logger {
             return;
         }
         Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
-        console.log("AutoSync running every 1 second. Next sync at:", Logger.nextSyncTime);
-        Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
+        // console.log("NextTimeToSync for Upcoming : ", this.nextSyncTime)
         this.autoSyncInterval = window.setInterval(() => {
             const currentTime = Date.now();
+            // console.log("Current Time : ",currentTime);
             if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
-                Logger.nextSyncTime = currentTime + Logger.SYNC_INTERVAL_MS; // Reset for the next interval
+                Logger.nextSyncTime = currentTime + Logger.SYNC_INTERVAL_MS;
                 Logger.sendLogsToServer();
                 Logger.sendApplicationLogsToServer();
             }
-        }, 1000); // Check every minute
+        }, 60000); // Check every minute
     }
     /**
      * Automatically stops the auto-sync mechanism when required.
@@ -11309,8 +11449,8 @@ class Logger {
         const logEntry = Object.assign({ timestamp: new Date().toLocaleString(), level,
             message }, data);
         Logger.logs.push(logEntry);
-        console.log("Log Data in Logger Class : ", Logger.logs);
-        this.saveToLocalStorage(logEntry);
+        // this.saveToLocalStorage(logEntry)
+        this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry);
     }
     static log(level, message, data) {
         try {
@@ -11410,49 +11550,18 @@ class Logger {
                 message: message,
                 data: data || null,
             };
-            const existingLogs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(this.appLogs)) || "[]");
-            console.debug("Log before update:", existingLogs);
-            existingLogs.push(logEntry);
-            localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem(this.appLogs, JSON.stringify(existingLogs));
-            console.debug("Log after update:", existingLogs);
+            // const existingLogs = JSON.parse(localStorage?.getItem(this.appLogs) || "[]");
+            // existingLogs.push(logEntry);
+            // localStorage?.setItem(this.appLogs, JSON.stringify(existingLogs));
+            this.saveLogToLocalStorage(this.appLogs, logEntry);
         }
         catch (error) {
             console.error("Failed to log application activity:", error);
         }
     }
-    static sendApplicationLogsToServer() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                console.log("Application Log sending to server...");
-                const storedLogs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(this.appLogs)) || "[]");
-                if (storedLogs.length === 0)
-                    return;
-                // console.log("Stored Logs : ", storedLogs);
-                const chunkSize = 50;
-                for (let i = 0; i < storedLogs.length; i += chunkSize) {
-                    const chunk = storedLogs.slice(i, i + chunkSize);
-                    const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostLogger(), {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            logType: this.appLogs,
-                            logData: chunk
-                        })
-                    });
-                    if (!response.ok) {
-                        const responseBody = yield response.text();
-                        console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
-                        return;
-                    }
-                }
-                localStorage === null || localStorage === void 0 ? void 0 : localStorage.removeItem(this.appLogs);
-                console.log("Logs successfully sent and cleared.");
-            }
-            catch (error) {
-                console.error("Error while sending logs to server:", error);
-            }
-        });
-    }
+    /**
+     * Helper method to save logs to localStorage.
+    */
     static saveLogToLocalStorage(logType, logMessage) {
         try {
             const logs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(logType)) || "[]");
@@ -11465,46 +11574,64 @@ class Logger {
         }
     }
     /**
-     * Helper method to save logs to localStorage.
-     */
-    static saveToLocalStorage(logMessage) {
-        try {
-            const logs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem("logs")) || "[]");
-            logs.push(logMessage);
-            localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem("logs", JSON.stringify(logs));
-        }
-        catch (error) {
-            console.error("Failed to save log to localStorage:", error);
-        }
-    }
-    static saveEventToLocalStorage(logMessage) {
-        try {
-            const logs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem("EventLogs")) || "[]");
-            logs.push(logMessage);
-            localStorage === null || localStorage === void 0 ? void 0 : localStorage.setItem("EventLogs", JSON.stringify(logs));
-        }
-        catch (error) {
-            console.error("Failed to save log to localStorage:", error);
-        }
-    }
-    /**
      * Helper method to send logs to the server.
-     */
-    static sendLogsToServer() {
+    */
+    static sendApplicationLogsToServer() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("Log sending to server...");
-                const storedLogs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem("logs")) || "[]");
+                if (this.logs.length < 0) {
+                    return;
+                }
+                const accessToken = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
+                const storedLogs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(this.appLogs)) || "[]");
                 if (storedLogs.length === 0)
                     return;
                 // console.log("Stored Logs : ", storedLogs);
                 const chunkSize = 50;
                 for (let i = 0; i < storedLogs.length; i += chunkSize) {
                     const chunk = storedLogs.slice(i, i + chunkSize);
+                    const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostLogger(), {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({
+                            logType: this.appLogs,
+                            logData: chunk
+                        })
+                    });
+                    if (!response.ok) {
+                        const responseBody = yield response.text();
+                        console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
+                        return;
+                    }
+                }
+                localStorage === null || localStorage === void 0 ? void 0 : localStorage.removeItem(this.appLogs);
+            }
+            catch (error) {
+                console.error("Error while sending logs to server:", error);
+            }
+        });
+    }
+    static sendLogsToServer() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log("Log sending to server...");
+                const accessToken = _DataStructures_Security_TokenStorage__WEBPACK_IMPORTED_MODULE_1__.TokenStorage.BearerAccessToken;
+                const storedLogs = JSON.parse((localStorage === null || localStorage === void 0 ? void 0 : localStorage.getItem(this.mftsccsBrowser)) || "[]");
+                if (storedLogs.length === 0)
+                    return;
+                const chunkSize = 50;
+                for (let i = 0; i < storedLogs.length; i += chunkSize) {
+                    const chunk = storedLogs.slice(i, i + chunkSize);
                     // const response = await fetch(Logger.SERVER_URL, {
                     const response = yield fetch(_app__WEBPACK_IMPORTED_MODULE_0__.BaseUrl.PostLogger(), {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${accessToken}`
+                        },
                         body: JSON.stringify({
                             logType: this.mftsccsBrowser,
                             logData: chunk
@@ -11512,16 +11639,15 @@ class Logger {
                     });
                     if (!response.ok) {
                         const responseBody = yield response.text();
-                        // console.log("Response Body on failed request : ", responseBody);
                         console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                         return;
                     }
                 }
-                localStorage === null || localStorage === void 0 ? void 0 : localStorage.removeItem("logs");
-                console.log("Logs successfully sent and cleared.");
+                localStorage === null || localStorage === void 0 ? void 0 : localStorage.removeItem(this.mftsccsBrowser);
             }
             catch (error) {
                 console.error("Error while sending logs to server:", error);
+                (0,_ErrorHandling__WEBPACK_IMPORTED_MODULE_2__.HandleNetworkError)("Request", error);
             }
         });
     }
@@ -11531,13 +11657,13 @@ Logger.logs = [];
 Logger.LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
 Logger.SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
 Logger.nextSyncTime = null;
-Logger.appLogs = "app-logs";
-Logger.mftsccsBrowser = "mftsccs-browser";
+Logger.appLogs = "app";
+Logger.mftsccsBrowser = "mftsccs";
 // Private auto-sync interval management
 Logger.autoSyncInterval = null;
 // Ensure logs are managed automatically
 (() => {
-    console.log("Initializing Logger with auto-sync mechanism.");
+    // console.log("Initializing Logger with auto-sync mechanism.");
     Logger.startAutoSync();
 })();
 /**
@@ -14759,7 +14885,8 @@ function GetConnectionById(id) {
             _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__.AccessTracker.incrementConnection(id);
         }
         catch (_a) {
-            console.error("Error adding connections in access tracker");
+            console.error("Error adding connection in access tracker");
+            _app__WEBPACK_IMPORTED_MODULE_2__.Logger.log("ERROR", "Error Adding Connection");
         }
         if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
             const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetConnectionById', { id });
@@ -15143,13 +15270,6 @@ function GetTheConcept(id_1) {
             catch (_a) {
                 console.error("Error adding concepts in access tracker");
             }
-            // Increment count of the concept
-            try {
-                _AccessTracker_accessTracker__WEBPACK_IMPORTED_MODULE_0__.AccessTracker.incrementConcept(id);
-            }
-            catch (error) {
-                console.error("Error adding concept in access tracker:", error);
-            }
             if (_app__WEBPACK_IMPORTED_MODULE_2__.serviceWorker) {
                 const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_2__.sendMessage)('GetTheConcept', { id, userId });
                 // console.log('data received from sw', res)
@@ -15183,7 +15303,7 @@ function GetTheConcept(id_1) {
         catch (err) {
             console.error("this is the error in the getting concept", err);
             // Add Log
-            _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", ['id', 'userId'], "unknown", undefined);
+            _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", [id, userId], "unknown", undefined);
             throw err;
         }
     });
@@ -15359,7 +15479,7 @@ function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept_1, toTheConcept_1,
         }
         catch (ex) {
             // Add Log
-            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_1__.Logger.logError(startTime, ofTheConcept.userId, 'create', undefined, undefined, 500, ex, 'CreateConnectionBetweenTwoConceptsLocal', ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], undefined, undefined);
+            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_1__.Logger.logError(startTime, ofTheConcept.userId, 'create', undefined, undefined, 500, ex, 'CreateConnectionBetweenTwoConceptsLocal', [ofTheConcept, toTheConcept, linker, both], undefined, undefined);
             throw ex;
         }
     });
@@ -15681,6 +15801,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_Concept__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../DataStructures/Concept */ "./src/DataStructures/Concept.ts");
 /* harmony import */ var _DataStructures_Local_LocalConceptData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConceptData */ "./src/DataStructures/Local/LocalConceptData.ts");
 /* harmony import */ var _DataStructures_Local_LocalId__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../DataStructures/Local/LocalId */ "./src/DataStructures/Local/LocalId.ts");
+/* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../Middleware/logger.service */ "./src/Middleware/logger.service.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15690,6 +15811,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -15749,6 +15871,7 @@ function CreateTheConceptLocal(referent_1, typecharacter_1, userId_1, categoryId
             return concept;
         }
         catch (error) {
+            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_4__.Logger.logError(startTime, userId, "create", "unknown", "unknown", 500, undefined, "createTheConceptLocal", [referent, typecharacter, userId, categoryId, typeId, accessId, isComposition], undefined);
             throw error;
         }
     });
@@ -15770,7 +15893,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../DataStructures/Connection */ "./src/DataStructures/Connection.ts");
 /* harmony import */ var _DataStructures_Local_LocalConnectionData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../DataStructures/Local/LocalConnectionData */ "./src/DataStructures/Local/LocalConnectionData.ts");
 /* harmony import */ var _DataStructures_Local_LocalId__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../DataStructures/Local/LocalId */ "./src/DataStructures/Local/LocalId.ts");
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
+/* harmony import */ var _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../Middleware/logger.service */ "./src/Middleware/logger.service.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../app */ "./src/app.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15780,6 +15904,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -15801,8 +15926,8 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
     return __awaiter(this, arguments, void 0, function* (ofTheConceptId, toTheConceptId, typeId, orderId = 1, typeString = "", userId = 999, actions = { concepts: [], connections: [] }) {
         var _a, _b, _c, _d;
         let startTime = performance.now();
-        if (_app__WEBPACK_IMPORTED_MODULE_3__.serviceWorker) {
-            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_3__.sendMessage)('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions });
+        if (_app__WEBPACK_IMPORTED_MODULE_4__.serviceWorker) {
+            const res = yield (0,_app__WEBPACK_IMPORTED_MODULE_4__.sendMessage)('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions });
             // console.log('data received from sw', res)
             if ((_b = (_a = res === null || res === void 0 ? void 0 : res.actions) === null || _a === void 0 ? void 0 : _a.concepts) === null || _b === void 0 ? void 0 : _b.length)
                 actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
@@ -15825,7 +15950,7 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
                 connection = new _DataStructures_Connection__WEBPACK_IMPORTED_MODULE_0__.Connection(randomid, realOfTheConceptId, realToTheConceptId, userId, typeId, orderId, accessId);
                 connection.isTemp = true;
                 connection.typeCharacter = typeString;
-                _app__WEBPACK_IMPORTED_MODULE_3__.LocalSyncData.AddConnection(connection);
+                _app__WEBPACK_IMPORTED_MODULE_4__.LocalSyncData.AddConnection(connection);
                 _DataStructures_Local_LocalConnectionData__WEBPACK_IMPORTED_MODULE_1__.LocalConnectionData.AddConnection(connection);
                 actions.connections.push(connection);
                 //storeToDatabase("localconnection", connection);
@@ -15847,6 +15972,7 @@ function CreateTheConnectionLocal(ofTheConceptId_1, toTheConceptId_1, typeId_1) 
             return connection;
         }
         catch (error) {
+            _Middleware_logger_service__WEBPACK_IMPORTED_MODULE_3__.Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "CreateTheConnectionLocal", [ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId], "UnknownUserAgent", []);
             throw error;
         }
     });
@@ -16397,6 +16523,7 @@ function GetTheConceptLocal(id) {
             return lconcept;
         }
         catch (error) {
+            _app__WEBPACK_IMPORTED_MODULE_2__.Logger.logError(startTime, "unknown", "read", "unknown", undefined, 200, undefined, "GetTheConceptLocal", [id], "unknown", undefined);
             throw error;
         }
     });
@@ -16577,6 +16704,7 @@ function MakeTheInstanceConceptLocal(type_1, referent_1) {
             return concept;
         }
         catch (error) {
+            _app__WEBPACK_IMPORTED_MODULE_3__.Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "MakeTheInstanceConceptLocal", [type, referent, composition, userId, accessId, sessionInformationId, referentId], "UnknownUserAgent", []);
             throw error;
         }
     });
@@ -19572,8 +19700,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Validator: () => (/* binding */ Validator)
 /* harmony export */ });
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../app */ "./src/app.ts");
-/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./constant */ "./src/Validator/constant.ts");
+/* harmony import */ var _Middleware_ErrorHandling__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Middleware/ErrorHandling */ "./src/Middleware/ErrorHandling.ts");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../app */ "./src/app.ts");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constant */ "./src/Validator/constant.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -19583,6 +19712,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 class Validator {
@@ -19602,10 +19732,10 @@ class Validator {
             const sessionUserId = 999;
             const userId = 999;
             // Create the type concept based on session data
-            let type_concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.MakeTheTypeConceptApi)(type, userId);
+            let type_concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.MakeTheTypeConceptApi)(type, userId);
             let type_concept_id = type_concept.id;
             // Check if the concept exists for the provided value and type_concept_id
-            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_0__.GetConceptByCharacterAndType)(value, type_concept_id);
+            let concept = yield (0,_app__WEBPACK_IMPORTED_MODULE_1__.GetConceptByCharacterAndType)(value, type_concept_id);
             console.log("This is the concept for validator", concept);
             if (concept.id > 0) {
                 return false;
@@ -19632,74 +19762,81 @@ class Validator {
     validateField(fieldName_1, fieldType_1, dataType_1, value_1, pattern_1, conceptType_1, maxLength_1, minLength_1, minValue_1, maxValue_1, accept_1, file_1, required_1) {
         return __awaiter(this, arguments, void 0, function* (fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique = false) {
             var _a;
-            let startTime = performance.now();
-            const errors = {};
-            // 1. Validate required field (must not be empty)
-            if (required && (value === null || value === '')) {
-                errors['required'] = `This is required field`;
-            }
-            // 2. Validate using regex pattern for the data type
-            if (dataType && value) {
-                let pattern = _constant__WEBPACK_IMPORTED_MODULE_1__.DATA_TYPES_RULES[dataType];
-                if (pattern && value !== '' && !pattern.test(value)) {
-                    errors['dataType'] = `Invalid value for ${dataType}`;
+            try {
+                let startTime = performance.now();
+                const errors = {};
+                // 1. Validate required field (must not be empty)
+                if (required && (value === null || value === '')) {
+                    errors['required'] = `This is required field`;
                 }
-            }
-            // 3. Check if the provided pattern match with the value or not
-            if (pattern && value) {
-                const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-                if (value !== '' && !regex.test(value)) {
-                    errors['pattern'] = `Pattern doesn't match with value`;
-                }
-            }
-            // 4. Validate maxLength
-            if (value && maxLength !== null && value.length > maxLength) {
-                errors['maxLength'] = `Length exceeds the maximum length of ${maxLength}`;
-            }
-            // 5. Validate minLength
-            if (value && minLength !== null && value.length < minLength) {
-                errors['minLength'] = `Length must be at least ${minLength} characters long`;
-            }
-            // 6. Validate minValue (only for numeric fields)
-            if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
-                errors['minValue'] = `Value must be greater than or equal to ${minValue}`;
-            }
-            // 7. Validate maxValue (only for numeric fields)
-            if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
-                errors['maxValue'] = `Value must be less than or equal to ${maxValue}`;
-            }
-            // 8. File validation: Check if this is a file input
-            if (file) {
-                if (fieldType && accept) {
-                    const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
-                    const fileExtension = (_a = file.name.split('.').pop()) === null || _a === void 0 ? void 0 : _a.toLowerCase();
-                    if (fileExtension && !acceptedTypes.includes(fileExtension)) {
-                        errors['accept'] = `File must be a valid file type: ${acceptedTypes.join(', ')}`;
+                // 2. Validate using regex pattern for the data type
+                if (dataType && value) {
+                    let pattern = _constant__WEBPACK_IMPORTED_MODULE_2__.DATA_TYPES_RULES[dataType];
+                    if (pattern && value !== '' && !pattern.test(value)) {
+                        errors['dataType'] = `Invalid value for ${dataType}`;
                     }
                 }
-            }
-            // 9. Check if the field needs to be unique and perform uniqueness validation
-            if (conceptType && isUnique && value) {
-                const isUniqueValue = yield this.checkUniqueness(conceptType, value);
-                if (!isUniqueValue) {
-                    errors['unique'] = `Value is not unique`;
+                // 3. Check if the provided pattern match with the value or not
+                if (pattern && value) {
+                    const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
+                    if (value !== '' && !regex.test(value)) {
+                        errors['pattern'] = `Pattern doesn't match with value`;
+                    }
                 }
+                // 4. Validate maxLength
+                if (value && maxLength !== null && value.length > maxLength) {
+                    errors['maxLength'] = `Length exceeds the maximum length of ${maxLength}`;
+                }
+                // 5. Validate minLength
+                if (value && minLength !== null && value.length < minLength) {
+                    errors['minLength'] = `Length must be at least ${minLength} characters long`;
+                }
+                // 6. Validate minValue (only for numeric fields)
+                if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
+                    errors['minValue'] = `Value must be greater than or equal to ${minValue}`;
+                }
+                // 7. Validate maxValue (only for numeric fields)
+                if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
+                    errors['maxValue'] = `Value must be less than or equal to ${maxValue}`;
+                }
+                // 8. File validation: Check if this is a file input
+                if (file) {
+                    if (fieldType && accept) {
+                        const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
+                        const fileExtension = (_a = file.name.split('.').pop()) === null || _a === void 0 ? void 0 : _a.toLowerCase();
+                        if (fileExtension && !acceptedTypes.includes(fileExtension)) {
+                            errors['accept'] = `File must be a valid file type: ${acceptedTypes.join(', ')}`;
+                        }
+                    }
+                }
+                // 9. Check if the field needs to be unique and perform uniqueness validation
+                if (conceptType && isUnique && value) {
+                    const isUniqueValue = yield this.checkUniqueness(conceptType, value);
+                    if (!isUniqueValue) {
+                        errors['unique'] = `Value is not unique`;
+                    }
+                }
+                // Add Log
+                // Logger.logInfo(
+                //     startTime,
+                //     "",
+                //     undefined,
+                //     "Unknown",
+                //     "Unknown",
+                //     200,
+                //     errors,
+                //     "validateField",
+                //     ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'],  // Function parameters
+                //     "UnknownUserAgent",
+                //     []
+                // );
+                return errors;
             }
-            // Add Log
-            // Logger.logInfo(
-            //     startTime,
-            //     "",
-            //     undefined,
-            //     "Unknown",
-            //     "Unknown",
-            //     200,
-            //     errors,
-            //     "validateField",
-            //     ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'],  // Function parameters
-            //     "UnknownUserAgent",
-            //     []
-            // );
-            return errors;
+            catch (error) {
+                console.error("Error on validate field..");
+                (0,_Middleware_ErrorHandling__WEBPACK_IMPORTED_MODULE_0__.HandleFunctionError)(error, "Validation Field Error");
+                throw error;
+            }
         });
     }
     /**
@@ -19714,31 +19851,23 @@ class Validator {
      */
     validateForm(formData) {
         return __awaiter(this, void 0, void 0, function* () {
-            let startTime = performance.now();
-            const validationErrors = {};
-            // Iterate through the fields in the form data
-            for (const fieldName in formData) {
-                const { value, fieldType, dataType, pattern, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
-                // Call the validateField function to validate each field
-                const fieldErrors = yield this.validateField(fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique);
-                if (Object.keys(fieldErrors).length > 0)
-                    validationErrors[fieldName] = fieldErrors;
+            try {
+                let startTime = performance.now();
+                const validationErrors = {};
+                // Iterate through the fields in the form data
+                for (const fieldName in formData) {
+                    const { value, fieldType, dataType, pattern, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
+                    // Call the validateField function to validate each field
+                    const fieldErrors = yield this.validateField(fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique);
+                    if (Object.keys(fieldErrors).length > 0)
+                        validationErrors[fieldName] = fieldErrors;
+                }
+                return validationErrors;
             }
-            // Add Log
-            // Logger.logInfo(
-            //     startTime,
-            //     "",
-            //     undefined,
-            //     "Unknown",
-            //     "Unknown",
-            //     200,
-            //     validationErrors,
-            //     "validateForm",
-            //     ['formData'],
-            //     "UnknownUserAgent",
-            //     []
-            // );
-            return validationErrors;
+            catch (error) {
+                (0,_Middleware_ErrorHandling__WEBPACK_IMPORTED_MODULE_0__.HandleFunctionError)(error, "");
+                throw error;
+            }
         });
     }
     /**
@@ -19770,6 +19899,7 @@ class Validator {
                 error['status'] = true;
             }
         });
+        console.error("Error on validate object");
         return error;
     }
 }
@@ -21948,7 +22078,7 @@ function updateAccessToken(accessToken = "") {
  * @param enableSW {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined - This is for enabling service worker with its scope
  */
 function init() {
-    return __awaiter(this, arguments, void 0, function* (url = "", aiurl = "", accessToken = "", nodeUrl = "", enableAi = true, applicationName = "", enableSW = undefined, isTest = true) {
+    return __awaiter(this, arguments, void 0, function* (url = "", aiurl = "", accessToken = "", nodeUrl = "", enableAi = true, applicationName = "", enableSW = undefined, flag = { logApplication: false, isTest: false }) {
         try {
             _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.BASE_URL = url;
             _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.AI_URL = aiurl;
@@ -21959,7 +22089,7 @@ function init() {
             // BaseUrl.BASE_RANDOMIZER = randomizer;
             // BaseUrl.BASE_RANDOMIZER = 999;
             _DataStructures_BaseUrl__WEBPACK_IMPORTED_MODULE_98__.BaseUrl.setRandomizer(randomizer);
-            if (isTest) {
+            if (flag.isTest) {
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isDataLoaded = true;
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isCharacterLoaded = true;
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isTypeLoaded = true;
@@ -21969,8 +22099,11 @@ function init() {
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionLoaded = true;
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isConnectionTypeLoaded = true;
                 _DataStructures_IdentifierFlags__WEBPACK_IMPORTED_MODULE_1__.IdentifierFlags.isLocalConnectionLoaded = true;
-                _Middleware_ApplicationMonitor__WEBPACK_IMPORTED_MODULE_103__.ApplicationMonitor.initialize();
                 return true;
+            }
+            if (flag.logApplication) {
+                _Middleware_ApplicationMonitor__WEBPACK_IMPORTED_MODULE_103__.ApplicationMonitor.initialize();
+                console.log("Application log started...");
             }
             if (!("serviceWorker" in navigator)) {
                 yield initConceptConnection();
@@ -21991,7 +22124,7 @@ function init() {
                             nodeUrl,
                             enableAi,
                             applicationName,
-                            isTest,
+                            flag
                         });
                         resolve('done');
                     }))
@@ -22053,7 +22186,7 @@ function init() {
                                     nodeUrl,
                                     enableAi,
                                     applicationName,
-                                    isTest,
+                                    flag
                                 });
                                 processMessageQueue();
                                 resolve();
@@ -22079,7 +22212,7 @@ function init() {
                                             nodeUrl,
                                             enableAi,
                                             applicationName,
-                                            isTest,
+                                            flag
                                         });
                                     }
                                 }));
@@ -22106,7 +22239,7 @@ function init() {
                                                 nodeUrl,
                                                 enableAi,
                                                 applicationName,
-                                                isTest,
+                                                flag
                                             });
                                             success = true;
                                             serviceWorkerReady = true;
@@ -22129,7 +22262,7 @@ function init() {
                                         nodeUrl,
                                         enableAi,
                                         applicationName,
-                                        isTest,
+                                        flag
                                     });
                                     // The new service worker is now controlling the page
                                     // You can reload the page if necessary or handle the update process here

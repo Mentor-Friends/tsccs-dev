@@ -98,7 +98,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
       }
 
       // Add Log
-      // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
+      Logger.logError(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
       
       HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
       }

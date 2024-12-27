@@ -5,7 +5,7 @@ export class ApplicationMonitor {
     console.log("Initialized Application Moniroring...");
     // Log unhandled errors
     window.addEventListener("error", (event) => {
-      console.log("error called...");
+      // console.log("error called...");
       const errorDetails = {
         error: event.error?.message || event.message,
         source: event.filename,
@@ -19,44 +19,69 @@ export class ApplicationMonitor {
 
     // Log unhandled promise rejections
     window.addEventListener("unhandledrejection", (event) => {
-      console.log("unhandledrejection called...");
+      // console.log("unhandledrejection called...");
       const errorDetails = {
         reason: event.reason,
         stack: event.reason?.stack,
       }
       const message = "Unhandled Promise Rejection"
-      Logger.logApplication("Unhandled", message, errorDetails)
+      Logger.logApplication("Error", message, errorDetails)
     });
 
     // Log user interactions
-    document.addEventListener("click", (event) => {
-      const target = event.target as HTMLElement;
-      console.log("Click Event called...");
-      const errorDetails = {
-        element: target.tagName,
-        id: target.id,
-        classes: target.className,
-        text: target.innerText?.slice(0, 50),
-      }
-      const message = "User Click"
-      Logger.logApplication("Event Click", message, errorDetails)
-     
-    });
+    this.logUserInteractions()
 
     // Log network requests requires interception with Service Worker or monkey-patching
     this.logNetworkRequests();
 
     // Log application state changes for SPAs
     this.logRouteChanges();
+
+
+  }
+
+   // Log user interactions
+   static logUserInteractions() {
+    document.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement;
+      const message = "User Click"
+      const details = {
+        element: target.tagName,
+        id: target.id,
+        classes: target.className,
+        text: target.innerText?.slice(0, 50),
+      }
+      Logger.logApplication("INFO", message, details)
+    });
+
+    document.addEventListener("input", (event) => {
+      const target = event.target as HTMLElement;
+      const message = "User Input"
+      const details = {
+        element: target.tagName,
+        id: target.id,
+        value: (target as HTMLInputElement).value,
+      }
+      Logger.logApplication("INFO", message, details)
+
+    });
+
+    window?.addEventListener("scroll", () => {
+      const message = "User Scroll"
+      const details = {
+        position: window.scrollY,
+      }
+      Logger.logApplication("INFO", message, details)
+    });
   }
 
   static logNetworkRequests() {
-    const originalFetch = window.fetch;
+    const originalFetch = window?.fetch;
     window.fetch = async (...args) => {
       const [url, options] = args;
       const urlString = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
   
-      console.log("Custom fetch called for:", urlString);
+      // console.log("Custom fetch called for:", urlString);
   
       let networkDetails:any = {
         "request": {
@@ -79,7 +104,7 @@ export class ApplicationMonitor {
           status: response.status,
         };
   
-        Logger.logApplication("Network", "Network Request", networkDetails)
+        Logger.logApplication("INFO", "Network Request", networkDetails)
         return response;
       } catch (error:any) {
         console.error("Fetch failed for:", urlString, error); // Debugging log
@@ -93,7 +118,7 @@ export class ApplicationMonitor {
         };
   
         // Log or process networkDetails if needed
-        Logger.logApplication("Network", "Network Request", networkDetails)
+        Logger.logApplication("ERROR", "Network Request", networkDetails)
   
         // Throw a standard Error object (not the networkDetails object)
         throw new Error(`Network request failed for ${urlString}: ${error.message}`);
@@ -102,13 +127,13 @@ export class ApplicationMonitor {
   }
   
   static logPerformanceMetrics() {
-    window.addEventListener("load", () => {
+    window?.addEventListener("load", () => {
       const timing = performance.timing;
       const details = {
         loadTime: timing.loadEventEnd - timing.navigationStart,
         domContentLoadedTime: timing.domContentLoadedEventEnd - timing.navigationStart,
       }
-      Logger.logApplication("Load", "Performance Metrics", details)
+      Logger.logApplication("INFO", "Performance Metrics", details)
     });
   }
 
@@ -119,16 +144,59 @@ export class ApplicationMonitor {
       const urlChange = {
         url: args[2]?.toString(),
       }
-      Logger.logApplication("Route Changed", "Route Change", urlChange )
+      Logger.logApplication("INFO", "Route Change", urlChange )
       return pushState.apply(this, args);
     };
 
-    window.addEventListener("popstate", () => {
+    window?.addEventListener("popstate", () => {
       const urlChange = {
         url: location.href
       }
-      Logger.logApplication("Route Changed", "Route Changed (Back/Forward)", urlChange)
+      Logger.logApplication("INFO", "Route Changed (Back/Forward)", urlChange)
     });
+  }
+
+  // Log WebSocket events
+  static logWebSocketEvents() {
+    const originalWebSocket = WebSocket;
+    window.WebSocket = class extends originalWebSocket {
+      constructor(url: string | URL, protocols?: string | string[]) {
+        super(url, protocols);
+  
+        const message = "WebSocket Open"
+        const data = {
+          "url" : url.toString()
+        }
+        Logger.logApplication("INFO", message, data)
+
+        this.addEventListener("message", (event) => {
+          const message = "WebSocket Message"
+          const data = {
+            "url" : url,
+            "data" : event.data
+          }
+          Logger.logApplication("INFO", message, data)
+
+        });
+
+        this.addEventListener("error", (error) => {
+          const message = "WebSocket Error"
+          const data = {
+            "url" : url,
+            "error" : error instanceof Error ? error.message : String(error),
+          }
+          Logger.logApplication("INFO", message, data)
+        });
+
+        this.addEventListener("close", () => {
+          const message = "WebSocket Closed"
+          const data = {
+            "url" : url,
+          }
+          Logger.logApplication("INFO", message, data)
+        });
+      }
+    };
   }
 
 }

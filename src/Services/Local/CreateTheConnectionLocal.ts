@@ -67,6 +67,11 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
             return connection;
         }
         catch(error){
+            Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "CreateTheConnectionLocal",
+                [ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId],
+                "UnknownUserAgent",
+                []
+            );
             throw error;
         }
 

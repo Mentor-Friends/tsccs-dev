@@ -12,7 +12,8 @@ export  async function GetConnectionById(id:number){
    try{
       AccessTracker.incrementConnection(id)
    } catch {
-      console.error("Error adding connections in access tracker");
+      console.error("Error adding connection in access tracker");
+      Logger.log("ERROR", "Error Adding Connection")
    }
    if (serviceWorker) {
       const res: any = await sendMessage('GetConnectionById', { id })

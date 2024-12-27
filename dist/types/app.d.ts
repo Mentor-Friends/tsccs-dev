@@ -147,7 +147,10 @@ declare function init(url?: string, aiurl?: string, accessToken?: string, nodeUr
     scope?: string;
     pathToSW?: string;
     manual?: boolean;
-} | undefined, isTest?: boolean): Promise<true | undefined>;
+} | undefined, flag?: {
+    logApplication?: boolean;
+    isTest?: boolean;
+}): Promise<true | undefined>;
 /**
  * Method to send message to the service worker from main thread
  * @param type string

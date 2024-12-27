@@ -123,7 +123,6 @@ export function GetCompositionListListener(compositionName:string, userId: numbe
     //     "UnknownUserAgent",
     //     []
     // );
-    
 
     return compositionResult
 }

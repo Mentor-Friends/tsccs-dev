@@ -106,11 +106,11 @@ export class BaseUrl{
     }
 
     static PostLogger(){
-        return this.BASE_URL + '/api/v1/logger/logs'
+        return this.NODE_URL + '/api/v1/logger/logs'
     }
 
     static GetLogger(){
-        return this.BASE_URL + '/api/v1/logger/logs'
+        return this.NODE_URL + '/api/v1/logger/logs'
     }
 
 

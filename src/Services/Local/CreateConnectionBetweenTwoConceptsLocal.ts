@@ -55,7 +55,7 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
     catch(ex){
         // Add Log
         Logger.logError(startTime, ofTheConcept.userId, 'create', undefined, undefined, 500, ex, 'CreateConnectionBetweenTwoConceptsLocal',
-            ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], 
+            [ofTheConcept, toTheConcept, linker, both], 
             undefined,
             undefined
          )

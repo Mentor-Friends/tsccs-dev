@@ -106,6 +106,11 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
             return concept;
         }
         catch(error){
+            Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "MakeTheInstanceConceptLocal",
+                [type, referent, composition, userId, accessId, sessionInformationId, referentId],
+                "UnknownUserAgent",
+                []
+            );
             throw error;
         }
 
