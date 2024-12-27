@@ -1,5 +1,6 @@
 import { GetAllConceptsByType } from "../Api/GetAllConceptsByType";
 import { ConceptsData, Connection, ConnectionData, DATAID, GetAllConnectionsOfCompositionBulk, GetComposition, GetCompositionList, GetConceptByCharacter, JUSTDATA, NORMAL } from "../app";
+import { getCookie, LogData, Logger } from "../Middleware/logger.service";
 import { GetCompositionById, GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionWithIdFromMemory, RecursiveFetchBuildLayer } from "../Services/GetComposition";
 import { DependencyObserver } from "./DepenedencyObserver";
 import { GetCompositionListener, GetCompositionObservable } from "./GetCompositionObservable";
@@ -103,5 +104,25 @@ export class GetCompositionListObservable extends DependencyObserver{
  * This function will give you the list of the concepts by composition name with a listener to any data change.
  */
 export function GetCompositionListListener(compositionName:string, userId: number, inpage: number, page: number, format:number = JUSTDATA){
-    return new GetCompositionListObservable(compositionName, userId, inpage, page,format);
+
+    let startTime = performance.now()
+    
+    const compositionResult = new GetCompositionListObservable(compositionName, userId, inpage, page,format);
+    
+    // Add Log
+    // Logger.logInfo(
+    //     startTime, 
+    //     userId,
+    //     "read",
+    //     "Unknown",
+    //     "Unknown",
+    //     200,
+    //     compositionResult,
+    //     "GetCompositionListListener",
+    //     ['compositionName', 'userId', 'inpage', 'page', 'format'],
+    //     "UnknownUserAgent",
+    //     []
+    // );
+
+    return compositionResult
 }

@@ -1,6 +1,7 @@
 import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
+import { Logger } from "../../Middleware/logger.service";
 import { InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
 
 /**
@@ -19,6 +20,7 @@ import { InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../a
 export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, 
      typeId: number,orderId:number = 1, typeString: string = "", userId: number = 999, actions: InnerActions = {concepts: [], connections: []}
     ){  
+        let startTime = performance.now()
         if (serviceWorker) {
             const res: any = await sendMessage('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions })
             // console.log('data received from sw', res)
@@ -46,9 +48,30 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
                  actions.connections.push(connection)
                  //storeToDatabase("localconnection", connection);
              }
-             return connection;
+
+            //  Add Log
+            // Logger.logInfo(
+            //     startTime, 
+            //     userId, 
+            //     "create",
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     connection,
+            //     "CreateTheConnectionLocal",
+            //     ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'],
+            //     "UnknownUserAgent",
+            //     []
+            // );
+            
+            return connection;
         }
         catch(error){
+            Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "CreateTheConnectionLocal",
+                [ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId],
+                "UnknownUserAgent",
+                []
+            );
             throw error;
         }
 

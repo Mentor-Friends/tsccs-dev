@@ -2,6 +2,7 @@ import { InnerActions, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
+import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
 
 /**
  * This function creates the concept in the local system (Local memory and IndexDb) but not in the backend database
@@ -26,6 +27,7 @@ import { LocalId } from "../../DataStructures/Local/LocalId";
 export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, 
 typeId:number, 
 accessId:number, isComposition: boolean = false, referentId:number = 0, actions: InnerActions = {concepts: [], connections: []}){
+    let startTime = performance.now()
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
@@ -53,9 +55,15 @@ accessId:number, isComposition: boolean = false, referentId:number = 0, actions:
         LocalConceptsData.AddConcept(concept);
         actions.concepts.push(concept)
         //storeToDatabase("localconcept",concept);
+
+        // Add Log
+        // Logger.logInfo(startTime, userId, "create", "unknown", "unknown", 200, concept, "createTheConceptLocal", ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId'], undefined)
+
         return concept;
     }
     catch(error){
+        Logger.logError(startTime, userId, "create", "unknown", "unknown", 500, undefined, "createTheConceptLocal", [referent, typecharacter, userId, categoryId, typeId, accessId, isComposition], undefined)
+
         throw error;
     }
 

@@ -3,6 +3,12 @@ import { GetAllLinkerConnectionsToTheConcept } from "../Api/GetAllLinkerConnecti
 import { Connection, ConnectionData, CreateTheConnectionLocal, DeleteConnectionById, GetAllConnectionsOfComposition, GetConceptByCharacter, GetConnectionBulk, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 import { GetCompositionById } from "./GetComposition";
 
+/**
+ * 
+ * @param id 
+ * @param linker 
+ * @returns 
+ */
 export async function DeleteConnectionByType(id: number, linker: string){
     if (serviceWorker) {
         const res: any = await sendMessage('DeleteConnectionByType', { id, linker })

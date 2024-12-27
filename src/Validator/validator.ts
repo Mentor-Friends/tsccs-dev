@@ -1,3 +1,5 @@
+import { HandleFunctionError } from "../Middleware/ErrorHandling";
+import { getCookie, LogData, Logger } from "../Middleware/logger.service";
 import { GetConceptByCharacterAndType, MakeTheTypeConcept, MakeTheTypeConceptApi } from "../app";
 import { DATA_TYPES_RULES } from "./constant";
 import { FormErrors, FormFieldData } from "./interface";
@@ -65,70 +67,91 @@ export class Validator {
         required: boolean,
         isUnique: boolean = false
     ): Promise< {[fieldName:string] : string } > {
-        const errors: { [fieldName: string]: string } = {};
-
-        // 1. Validate required field (must not be empty)
-        if (required && (value === null || value === '')) {
-            errors['required'] = `this is required field`;
-        }
-
-        // 2. Validate using regex pattern for the data type
-        if (dataType && value) {
-            let pattern = DATA_TYPES_RULES[dataType];
-            
-            if (pattern && value !== '' && !pattern.test(value)) {
-                errors['dataType'] = `Invalid value for ${dataType}`;
+        try {
+            let startTime = performance.now()
+            const errors: { [fieldName: string]: string } = {};
+    
+            // 1. Validate required field (must not be empty)
+            if (required && (value === null || value === '')) {
+                errors['required'] = `This is required field`;
             }
-        }
-
-        // 3. Check if the provided pattern match with the value or not
-        if (pattern && value) {
-            const regex = typeof pattern  === 'string' ? new RegExp(pattern) : pattern
-            if (value !== '' && !regex.test(value)) {
-                errors['pattern'] = `Pattern doesn't match with data`;
-            }
-        }
-
-        // 4. Validate maxLength
-        if (value && maxLength !== null && value.length > maxLength) {
-            errors['maxLength'] = `length exceeds the maximum length of ${maxLength}`;
-        }
-
-        // 5. Validate minLength
-        if (value && minLength !== null && value.length < minLength) {
-            errors['minLength'] = `length must be at least ${minLength} characters long`;
-        }
-
-        // 6. Validate minValue (only for numeric fields)
-        if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
-            errors['minValue'] = `value must be greater than or equal to ${minValue}`;
-        }
-
-        // 7. Validate maxValue (only for numeric fields)
-        if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
-            errors['maxValue'] = `value must be less than or equal to ${maxValue}`;
-        }
-
-        // 8. File validation: Check if this is a file input
-        if (file) {
-            if (fieldType && accept) {
-                const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
-                const fileExtension = file.name.split('.').pop()?.toLowerCase();
-                if (fileExtension && !acceptedTypes.includes(fileExtension)) {
-                    errors['accept'] = `file must be a valid file type: ${acceptedTypes.join(', ')}`;
+    
+            // 2. Validate using regex pattern for the data type
+            if (dataType && value) {
+                let pattern = DATA_TYPES_RULES[dataType];
+                
+                if (pattern && value !== '' && !pattern.test(value)) {
+                    errors['dataType'] = `Invalid value for ${dataType}`;
                 }
             }
-        }
-
-        // 9. Check if the field needs to be unique and perform uniqueness validation
-        if (conceptType && isUnique && value) {
-            const isUniqueValue = await this.checkUniqueness(conceptType, value);
-            if (!isUniqueValue) {
-                errors['unique'] = `value is not unique`;
+    
+            // 3. Check if the provided pattern match with the value or not
+            if (pattern && value) {
+                const regex = typeof pattern  === 'string' ? new RegExp(pattern) : pattern
+                if (value !== '' && !regex.test(value)) {
+                    errors['pattern'] = `Pattern doesn't match with value`;
+                }
             }
-        }        
+    
+            // 4. Validate maxLength
+            if (value && maxLength !== null && value.length > maxLength) {
+                errors['maxLength'] = `Length exceeds the maximum length of ${maxLength}`;
+            }
+    
+            // 5. Validate minLength
+            if (value && minLength !== null && value.length < minLength) {
+                errors['minLength'] = `Length must be at least ${minLength} characters long`;
+            }
+    
+            // 6. Validate minValue (only for numeric fields)
+            if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
+                errors['minValue'] = `Value must be greater than or equal to ${minValue}`;
+            }
+    
+            // 7. Validate maxValue (only for numeric fields)
+            if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
+                errors['maxValue'] = `Value must be less than or equal to ${maxValue}`;
+            }
+    
+            // 8. File validation: Check if this is a file input
+            if (file) {
+                if (fieldType && accept) {
+                    const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
+                    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+                    if (fileExtension && !acceptedTypes.includes(fileExtension)) {
+                        errors['accept'] = `File must be a valid file type: ${acceptedTypes.join(', ')}`;
+                    }
+                }
+            }
+    
+            // 9. Check if the field needs to be unique and perform uniqueness validation
+            if (conceptType && isUnique && value) {
+                const isUniqueValue = await this.checkUniqueness(conceptType, value);
+                if (!isUniqueValue) {
+                    errors['unique'] = `Value is not unique`;
+                }
+            }
+            // Add Log
+            // Logger.logInfo(
+            //     startTime,
+            //     "",
+            //     undefined,
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     errors,
+            //     "validateField",
+            //     ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'],  // Function parameters
+            //     "UnknownUserAgent",
+            //     []
+            // );
 
-        return errors
+            return errors
+        } catch (error) {
+            console.error("Error on validate field..");
+            HandleFunctionError(error, "Validation Field Error")
+            throw error
+        }
     }
 
     /**
@@ -144,22 +167,76 @@ export class Validator {
     public async validateForm(formData: { 
         [key: string]: FormFieldData
     }): Promise<FormErrors> {
-        const validationErrors: FormErrors = {};
-        
-
-        // Iterate through the fields in the form data
-        for (const fieldName in formData) {
-            const { value, fieldType, dataType, pattern, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
-
-            // Call the validateField function to validate each field
-            const fieldErrors = await this.validateField(
-                fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
-            );
-
-            if (Object.keys(fieldErrors).length > 0) validationErrors[fieldName] = fieldErrors;
-
+        try{
+            let startTime = performance.now()
+            const validationErrors: FormErrors = {};
+    
+            // Iterate through the fields in the form data
+            for (const fieldName in formData) {
+                const { value, fieldType, dataType, pattern, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
+    
+                // Call the validateField function to validate each field
+                const fieldErrors = await this.validateField(
+                    fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
+                );
+    
+                if (Object.keys(fieldErrors).length > 0) validationErrors[fieldName] = fieldErrors;
+    
+            }    
+            return validationErrors
+        } catch(error){
+            HandleFunctionError(error, "")
+            throw error
         }
+    }
 
-        return validationErrors;
+    /**
+     * 
+     * @param fieldName 
+     * @param fieldType 
+     * @param dataType 
+     * @param value 
+     * @param pattern 
+     * @param conceptType 
+     * @param maxLength 
+     * @param minLength 
+     * @param minValue 
+     * @param maxValue 
+     * @param accept 
+     * @param file 
+     * @param required 
+     * @param isUnique 
+     * @returns Object with status and details
+     */
+    public validate(
+        fieldName: string,
+        fieldType: string | null,
+        dataType: string | null,
+        value: string | null,
+        pattern:string | null,
+        conceptType: string | null,
+        maxLength: number | null,
+        minLength: number | null,
+        minValue: number | null,
+        maxValue: number | null,
+        accept: string | null,
+        file: File | null,
+        required: boolean,
+        isUnique: boolean = false
+    ){
+        let error:any = {};
+        this.validateField(
+            fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
+        ).then((err) => {
+            if (Object.keys(err).length > 0) {
+                error['status'] = false
+                error['details'] = err;
+            } else {
+                error['status'] = true
+            }
+        })
+        console.error("Error on validate object");
+        return error;
+    
     }
 }

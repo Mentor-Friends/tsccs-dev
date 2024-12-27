@@ -1,7 +1,10 @@
-import { Concept, CreateDefaultConcept, CreateTheConnectionLocal, InnerActions, MakeTheInstanceConceptLocal, sendMessage, serviceWorker } from "../../app";
+import { Concept, CreateTheConnectionLocal, MakeTheInstanceConceptLocal, sendMessage, serviceWorker } from "../../app";
+import { InnerActions } from "../../Constants/general.const";
+import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
 import { HandleInternalError } from "../Common/ErrorPosting";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, actions: InnerActions = {concepts: [], connections: []}){
+    let startTime = performance.now()
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('CreateConnectionBetweenTwoConceptsLocal', {ofTheConcept, toTheConcept, linker, both, actions})
@@ -29,12 +32,34 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
         // if(count){
         // // await CountRelationship(linkerAdd, ofTheConcept, userId);
         // }
+        
         var connectionConcept = await MakeTheInstanceConceptLocal("connection",forwardLinker,false,999,999,999, undefined, actions);
         let newConnection = await CreateTheConnectionLocal(ofTheConcept.id, toTheConcept.id, connectionConcept.id, 1000, undefined, undefined, actions)
+        // Add Log
+        // Logger.logInfo(
+        //     startTime, 
+        //     userId, 
+        //     'create', 
+        //     undefined, 
+        //     undefined, 
+        //     200, 
+        //     newConnection, 
+        //     'CreateConnectionBetweenTwoConceptsLocal',
+        //     ['ofTheConceptId', 'toTheConceptId', 'linker', 'both'], 
+        //     undefined,
+        //     undefined
+        // )
+        
         return newConnection;
     }
     catch(ex){
+        // Add Log
+        Logger.logError(startTime, ofTheConcept.userId, 'create', undefined, undefined, 500, ex, 'CreateConnectionBetweenTwoConceptsLocal',
+            [ofTheConcept, toTheConcept, linker, both], 
+            undefined,
+            undefined
+         )
         throw ex;
     }
 
-    }
+}
