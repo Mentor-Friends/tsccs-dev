@@ -359,7 +359,10 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
             let isComp = compositionData[connections[i].ofTheConceptId];
             if(isComp){
               let data =  compositionData[connections[i].ofTheConceptId]
-              data["id"] =  ofTheConcept.id;
+              if(data){
+                data["id"] =  ofTheConcept.id;
+
+              }
 
               let reverseCharater = linkerConcept.characterValue + "_reverse";
                 if(Array.isArray(newData[key][reverseCharater])){
@@ -418,7 +421,10 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
             if(isComp){
                 
                 let data =  compositionData[connections[i].toTheConceptId]
-                data["id"] =  toTheConcept.id;
+                if(data){
+                  data["id"] =  toTheConcept.id;
+
+                }
       
                 if(Array.isArray(newData[key][linkerConcept.characterValue])){
                   newData[key][linkerConcept.characterValue].push(data);
@@ -452,8 +458,12 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
   for(let i=0 ; i< mainComposition.length; i++){
     let mymainData: any = {};
     console.log("this is the main compositions DATA", compositionData[mainComposition[i]]);
+    
     mymainData = compositionData[mainComposition[i]];
-    mymainData["id"] = mainComposition[i];
+    if(mymainData){
+      mymainData["id"] = mainComposition[i];
+
+    }
     mainData.push(mymainData);
     
   }

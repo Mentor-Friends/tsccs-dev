@@ -323,6 +323,7 @@ async function init(
                         }
                       });
                     }
+                    // Add Listeners before initializing the service worker
 
                     // Listen for updates to the service worker
                     console.log("update listen start");
@@ -332,8 +333,13 @@ async function init(
                       if (newWorker) {
                         newWorker.onstatechange = async () => {
                           console.log("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
+                          if (newWorker.state === "installing") {
+                            console.log("Service Worker installing");
+                            serviceWorker = undefined
+                            serviceWorkerReady = false
+                          }
                           // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                          if ((newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
+                          if ((newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
                             // && navigator.serviceWorker.controller) {
                             console.log(
                               "New Service Worker is active",
@@ -379,6 +385,51 @@ async function init(
                         // You can reload the page if necessary or handle the update process here
                       }
                     });
+
+                    // state change 
+                    if (registration.installing || registration.waiting || registration.active) {
+                      registration.addEventListener('statechange', async (event: any) => {
+                        if (event?.target?.state === 'activating') {
+                          serviceWorker = navigator.serviceWorker.controller
+                          console.log('Service Worker is activating statechange');
+                          await sendMessage("init", {
+                            url,
+                            aiurl,
+                            accessToken,
+                            nodeUrl,
+                            enableAi,
+                            applicationName,
+                            flag,
+                          });
+                        }
+                      });
+                    }
+                    
+                    // If the service worker is already active, mark it as ready
+                    if (registration.active) {
+                      serviceWorkerReady = true;
+                      console.log("active sw");
+                      serviceWorker = registration.active;
+
+                      await sendMessage("init", {
+                        url,
+                        aiurl,
+                        accessToken,
+                        nodeUrl,
+                        enableAi,
+                        applicationName,
+                        flag,
+                      });
+                      processMessageQueue();
+                      resolve();
+                    } else {
+                      // Handle if on state change didn't trigger
+                      setTimeout(() => {
+                        if (!success) reject("Not Completed Initialization");
+                      }, 5000);
+                    }
+
+
                   })
                   .catch(async (error) => {
                     await initConceptConnection();
@@ -668,7 +719,6 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
   if (serviceWorker) {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
-    console.log("event fired from", event);
     dispatchEvent(event);
   } else {
     broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})

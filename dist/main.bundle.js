@@ -11173,7 +11173,7 @@ class ApplicationMonitor {
             };
             _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", message, details);
         });
-        window.addEventListener("scroll", () => {
+        window === null || window === void 0 ? void 0 : window.addEventListener("scroll", () => {
             const message = "User Scroll";
             const details = {
                 position: window.scrollY,
@@ -11182,7 +11182,7 @@ class ApplicationMonitor {
         });
     }
     static logNetworkRequests() {
-        const originalFetch = window.fetch;
+        const originalFetch = window === null || window === void 0 ? void 0 : window.fetch;
         window.fetch = (...args) => __awaiter(this, void 0, void 0, function* () {
             const [url, options] = args;
             const urlString = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
@@ -11225,7 +11225,7 @@ class ApplicationMonitor {
         });
     }
     static logPerformanceMetrics() {
-        window.addEventListener("load", () => {
+        window === null || window === void 0 ? void 0 : window.addEventListener("load", () => {
             const timing = performance.timing;
             const details = {
                 loadTime: timing.loadEventEnd - timing.navigationStart,
@@ -11245,7 +11245,7 @@ class ApplicationMonitor {
             _logger_service__WEBPACK_IMPORTED_MODULE_0__.Logger.logApplication("INFO", "Route Change", urlChange);
             return pushState.apply(this, args);
         };
-        window.addEventListener("popstate", () => {
+        window === null || window === void 0 ? void 0 : window.addEventListener("popstate", () => {
             const urlChange = {
                 url: location.href
             };
@@ -11408,7 +11408,7 @@ class Logger {
         }
         Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
         // console.log("NextTimeToSync for Upcoming : ", this.nextSyncTime)
-        this.autoSyncInterval = window.setInterval(() => {
+        this.autoSyncInterval = window === null || window === void 0 ? void 0 : window.setInterval(() => {
             const currentTime = Date.now();
             // console.log("Current Time : ",currentTime);
             if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
@@ -17709,7 +17709,9 @@ function FormatFromConnectionsAlteredArrayExternalJustId(connections_1, composit
                             let isComp = compositionData[connections[i].ofTheConceptId];
                             if (isComp) {
                                 let data = compositionData[connections[i].ofTheConceptId];
-                                data["id"] = ofTheConcept.id;
+                                if (data) {
+                                    data["id"] = ofTheConcept.id;
+                                }
                                 let reverseCharater = linkerConcept.characterValue + "_reverse";
                                 if (Array.isArray(newData[key][reverseCharater])) {
                                     newData[key][reverseCharater].push(data);
@@ -17757,7 +17759,9 @@ function FormatFromConnectionsAlteredArrayExternalJustId(connections_1, composit
                             let isComp = compositionData[connections[i].toTheConceptId];
                             if (isComp) {
                                 let data = compositionData[connections[i].toTheConceptId];
-                                data["id"] = toTheConcept.id;
+                                if (data) {
+                                    data["id"] = toTheConcept.id;
+                                }
                                 if (Array.isArray(newData[key][linkerConcept.characterValue])) {
                                     newData[key][linkerConcept.characterValue].push(data);
                                 }
@@ -17784,7 +17788,9 @@ function FormatFromConnectionsAlteredArrayExternalJustId(connections_1, composit
             let mymainData = {};
             console.log("this is the main compositions DATA", compositionData[mainComposition[i]]);
             mymainData = compositionData[mainComposition[i]];
-            mymainData["id"] = mainComposition[i];
+            if (mymainData) {
+                mymainData["id"] = mainComposition[i];
+            }
             mainData.push(mymainData);
         }
         return mainData;
@@ -22217,6 +22223,7 @@ function init() {
                                     }
                                 }));
                             }
+                            // Add Listeners before initializing the service worker
                             // Listen for updates to the service worker
                             console.log("update listen start");
                             registration.onupdatefound = () => {
@@ -22225,8 +22232,13 @@ function init() {
                                 if (newWorker) {
                                     newWorker.onstatechange = () => __awaiter(this, void 0, void 0, function* () {
                                         console.log("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
+                                        if (newWorker.state === "installing") {
+                                            console.log("Service Worker installing");
+                                            serviceWorker = undefined;
+                                            serviceWorkerReady = false;
+                                        }
                                         // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                                        if ((newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
+                                        if ((newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
                                             // && navigator.serviceWorker.controller) {
                                             console.log("New Service Worker is active", registration);
                                             serviceWorker = newWorker;
@@ -22268,6 +22280,49 @@ function init() {
                                     // You can reload the page if necessary or handle the update process here
                                 }
                             }));
+                            // state change 
+                            if (registration.installing || registration.waiting || registration.active) {
+                                registration.addEventListener('statechange', (event) => __awaiter(this, void 0, void 0, function* () {
+                                    var _a;
+                                    if (((_a = event === null || event === void 0 ? void 0 : event.target) === null || _a === void 0 ? void 0 : _a.state) === 'activating') {
+                                        serviceWorker = navigator.serviceWorker.controller;
+                                        console.log('Service Worker is activating statechange');
+                                        yield sendMessage("init", {
+                                            url,
+                                            aiurl,
+                                            accessToken,
+                                            nodeUrl,
+                                            enableAi,
+                                            applicationName,
+                                            flag,
+                                        });
+                                    }
+                                }));
+                            }
+                            // If the service worker is already active, mark it as ready
+                            if (registration.active) {
+                                serviceWorkerReady = true;
+                                console.log("active sw");
+                                serviceWorker = registration.active;
+                                yield sendMessage("init", {
+                                    url,
+                                    aiurl,
+                                    accessToken,
+                                    nodeUrl,
+                                    enableAi,
+                                    applicationName,
+                                    flag,
+                                });
+                                processMessageQueue();
+                                resolve();
+                            }
+                            else {
+                                // Handle if on state change didn't trigger
+                                setTimeout(() => {
+                                    if (!success)
+                                        reject("Not Completed Initialization");
+                                }, 5000);
+                            }
                         }))
                             .catch((error) => __awaiter(this, void 0, void 0, function* () {
                             yield initConceptConnection();
@@ -22556,7 +22611,6 @@ function dispatchIdEvent(id, data = {}) {
     if (serviceWorker) {
         // let event = new Event(`${id}`);
         let event = new CustomEvent(`${id}`, data);
-        console.log("event fired from", event);
         dispatchEvent(event);
     }
     else {
