@@ -1,6 +1,5 @@
 import { FreeschemaQuery, FreeschemaQueryApi } from "../app";
 import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
-import { FormatFromConnectionsAlteredArrayExternal } from "../Services/Search/FormatData";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
 import { DependencyObserver } from "./DepenedencyObserver";
 
