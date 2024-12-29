@@ -1,5 +1,4 @@
 import { BaseUrl, ConceptsData, ConnectionData } from "../app";
-import { BASE_URL } from "../Constants/ApiConstants";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 type CountMap = Record<number, number>;
@@ -7,11 +6,13 @@ type CountMap = Record<number, number>;
 export class AccessTracker {
     private static conceptsData: CountMap = {};
     private static connectionsData: CountMap = {};
-    private static TimeToSync: number = 300000;
+    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
     private static nextSyncTime: number = Date.now(); 
+
+    private static readonly accessData = "Access Data"
         
-    static {
-        // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toISOString()}`);
+    static {        
+        // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toLocaleString()}`);
         this.startAutoSync();
     }
 
@@ -19,16 +20,29 @@ export class AccessTracker {
      * Increments the count for a specific conceptId.
      */
     public static incrementConcept(conceptId: number): void {
-        this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
-        this.saveDataToLocalStorage()
+        try{
+            if(conceptId){
+                this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
+                this.saveDataToLocalStorage()
+            }
+        } catch(error){
+            console.error("Failed on increment concept");
+        }
     }
 
     /**
      * Increments the count for a specific connectionId.
      */
     public static incrementConnection(connectionId: number): void {
-        this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
-        this.saveDataToLocalStorage()
+        try{
+            if(connectionId){
+                this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
+                this.saveDataToLocalStorage()
+            }
+        } catch(error){
+            console.error("Failed on increment connection");
+        }
+
     }
 
     /**
@@ -59,14 +73,15 @@ export class AccessTracker {
             concepts: this.conceptsData,
             connections: this.connectionsData
         };
-        localStorage.setItem('trackerData', JSON.stringify(data));
+        
+        localStorage?.setItem(this.accessData, JSON.stringify(data));
     }
 
     /**
      * Loads the concept and connection data from localStorage.
      */
     public static loadDataFromLocalStorage(): void {
-        const savedData = localStorage.getItem('trackerData');
+        const savedData = localStorage?.getItem(this.accessData);
         if (savedData) {
             const data = JSON.parse(savedData);
             this.conceptsData = data.concepts || {};
@@ -74,18 +89,29 @@ export class AccessTracker {
         }
     }
 
+    public static async sendToServer(){
+        try{
+            const accessToken = TokenStorage.BearerAccessToken
+            await this.syncToServer(accessToken)
+        } catch(error) {
+            console.error("Failed to process Access Tracker Sync with Server");
+        }
+
+    }
+
     /**
      * Syncs the concept and connection data with the server.
      */
     public static async syncToServer(accessToken: string): Promise<void> {
         try {
-            // console.log(`Sync started at ${new Date().toISOString()} with token: ${accessToken}`);
+            if (!Object.keys(this.conceptsData).length && !Object.keys(this.connectionsData).length) {
+                return;
+            }
+    
             // Ensure conceptsData and connectionsData are not undefined or null
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
             const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
 
-            // console.log("I am getting url : ", BaseUrl.PostPrefetchConceptConnections());
-            
             const response = await fetch(BaseUrl.PostPrefetchConceptConnections(), {
                 method: 'POST',
                 headers: {
@@ -103,11 +129,13 @@ export class AccessTracker {
             }
 
             const serverData = await response.json();
-            // this.conceptsData = serverData.concepts;
-            // this.connectionsData = serverData.connections;
-            this.saveDataToLocalStorage();
-            // console.log(`Sync successful at ${new Date().toISOString()}`);
+            // console.log("Server Data after sync : ", serverData);
+            this.conceptsData = {}
+            this.connectionsData = {}
+            
             this.setNextSyncTime();
+
+            localStorage?.removeItem(this.accessData)
         } catch (error) {
             console.error('Sync error:', error);
         }
@@ -117,9 +145,8 @@ export class AccessTracker {
      * Sets the next sync time based on the current time and sync interval.
      */
     private static setNextSyncTime(): void {
-        // Calculate next sync time (current time + TimeToSync interval)
-        this.nextSyncTime = Date.now() + this.TimeToSync;
-        console.log(`Next sync scheduled at: ${new Date(this.nextSyncTime).toISOString()}`); // Log next sync time
+        // Calculate next sync time (current time + time interval)
+        this.nextSyncTime = Date.now() + this.SYNC_INTERVAL_MS;
     }
 
     /**
@@ -127,24 +154,22 @@ export class AccessTracker {
      * This will automatically call `syncToServer` every 5 minutes
      */
     private static startAutoSync(): void {
+
         const tokenString = TokenStorage.BearerAccessToken;
 
         if (tokenString) {
-        // console.log("[AUTO-SYNC] Auto-sync initialized.");
-        this.syncNow().catch(console.error);
+            this.syncNow().catch(console.error);
         }
-
+        
         setInterval(() => {
             const currentTime = Date.now();
-            // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
+            console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
 
             if (currentTime >= this.nextSyncTime) {
                 // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
                 this.syncNow().catch(console.error);
-            } else {
-                // console.log(`[WAIT] Not time to sync yet. Next Sync Time: ${new Date(this.nextSyncTime).toISOString()}`);
             }
-        }, 300000); // Check every 5 minutes
+        }, 30000); // Check every 30 Seconds
     }
 
 
@@ -154,7 +179,6 @@ export class AccessTracker {
     private static async syncNow(): Promise<void> {
         const tokenString = TokenStorage.BearerAccessToken;
         if (tokenString) {
-        //   console.log(`[MANUAL SYNC] Sync manually triggered at: ${new Date().toISOString()}`);
           await this.syncToServer(tokenString);
         } else {
           console.warn("[MANUAL SYNC] No valid access token found. Sync aborted.");
@@ -248,13 +272,8 @@ export class AccessTracker {
      * Add Concepts to Binary Tree
      */
     private static async addConceptToBinaryTree(conceptsDataArray:[]){
-        // console.log("Concepts Data Array : ", conceptsDataArray);
-        
         try{
-            // console.log("Start Adding Concepts to Binary Tree...");
-            
             conceptsDataArray.forEach(conceptObject => {
-                // console.log("Concept Object : ", conceptObject);
                 ConceptsData.AddConcept(conceptObject);
             });
         } catch(error) {
@@ -267,10 +286,7 @@ export class AccessTracker {
      */
     private static async addConnectionToBinaryTree(connectionsDataArray:[]){
         try{
-            // console.log("Start Adding Connections to Binary Tree...");
-
             connectionsDataArray.forEach(connectionObject => {
-                // console.log("Connection Object : ", connectionObject);
                 ConnectionData.AddConnection(connectionObject);
             });
         } catch(error) {

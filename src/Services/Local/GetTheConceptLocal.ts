@@ -1,6 +1,6 @@
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalGhostIdTree } from "../../DataStructures/Local/LocalGhostIdTree";
-import { Concept, CreateDefaultLConcept, GetTheConcept, sendMessage, serviceWorker } from "../../app";
+import { Concept, CreateDefaultLConcept, GetTheConcept, Logger, sendMessage, serviceWorker } from "../../app";
 import { convertFromConceptToLConcept } from "../Conversion/ConvertConcepts";
 
 /**
@@ -12,6 +12,7 @@ import { convertFromConceptToLConcept } from "../Conversion/ConvertConcepts";
  * @returns LConcept with either (-ve or +ve id)
  */
 export async function GetTheConceptLocal(id: number){
+    let startTime = performance.now()
     try{
         if (serviceWorker) {
             const res: any = await sendMessage('GetTheConceptLocal', {id})
@@ -37,10 +38,12 @@ export async function GetTheConceptLocal(id: number){
             let concept:Concept =  await GetTheConcept(id);
             lconcept = convertFromConceptToLConcept(concept);
         }
-    
+        // Add Log
+        // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, lconcept, "GetTheConceptLocal", [id], "unknown", undefined )
         return lconcept;
     }
     catch(error){
+        Logger.logError(startTime, "unknown", "read", "unknown", undefined, 200, undefined, "GetTheConceptLocal", [id], "unknown", undefined )
         throw error;
     }
 

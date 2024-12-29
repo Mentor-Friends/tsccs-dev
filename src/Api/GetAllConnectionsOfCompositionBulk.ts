@@ -28,7 +28,6 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
       await FindConceptsFromConnections(connectionList);
       return connectionList;
         
-     
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_ids: number[] = []){

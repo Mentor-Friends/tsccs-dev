@@ -1,4 +1,4 @@
-import { BaseUrl } from "../app";
+import { BaseUrl, Logger } from "../app";
 import { ConceptsData } from "./ConceptData";
 
 export  class Concept{
@@ -42,6 +42,7 @@ export  class Concept{
         this.entryTimeStamp = entryTimeStamp;
         this.updatedTimeStamp = updatedTimeStamp;
        // ConceptsData.AddConcept(this);
+   
     }
 
     getType(){

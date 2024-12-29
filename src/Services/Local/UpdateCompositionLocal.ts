@@ -18,6 +18,7 @@ import {
   InnerActions,
   LConnection,
   LocalSyncData,
+  Logger,
   sendMessage,
   serviceWorker,
 } from "../../app";
@@ -31,6 +32,7 @@ export async function UpdateCompositionLocal(
   patcherStructure: PatcherStructure, 
   actions: InnerActions = {concepts: [], connections: []}
 ) {
+  let startTime = performance.now()
   if (serviceWorker) {
     const res: any = await sendMessage("UpdateCompositionLocal", {
       patcherStructure,
@@ -182,5 +184,8 @@ export async function UpdateCompositionLocal(
     await DeleteConnectionById(toDeleteConnections[j].id);
   }
 
+  // Add Log
+  // Logger.logInfo(startTime, userId, "update", "unknown", undefined, 200, object, "UpdateCompositionLocal", ['patcherStructure'], "unknown", undefined )
+    
   await LocalSyncData.SyncDataOnline(undefined, actions);
 }

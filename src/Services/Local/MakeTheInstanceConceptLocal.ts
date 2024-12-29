@@ -2,7 +2,8 @@ import { Concept } from "../../DataStructures/Concept";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
-import { Connection, InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
+import { InnerActions } from "../../Constants/general.const";
+import { Connection, LocalSyncData, Logger, sendMessage, serviceWorker } from "../../app";
 
 
 /**
@@ -23,6 +24,7 @@ import { Connection, InnerActions, LocalSyncData, sendMessage, serviceWorker } f
  */
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
+        let startTime = performance.now()
         if (serviceWorker) {
             const res: any = await sendMessage('MakeTheInstanceConceptLocal', {type, referent, composition, userId, accessId, sessionInformationId, referentId, actions})
             // console.log('data received from sw', res)
@@ -84,10 +86,31 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     
             concept.type = typeConcept;
             LocalSyncData.AddConcept(concept);
+             
+            // Add Log
+            // Logger.logInfo(
+            //     startTime,
+            //     userId,
+            //     "create",
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     concept,
+            //     "MakeTheInstanceConceptLocal",
+            //     ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId'],
+            //     "UnknownUserAgent",
+            //     []
+            // );
+
             actions.concepts.push(concept)
             return concept;
         }
         catch(error){
+            Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "MakeTheInstanceConceptLocal",
+                [type, referent, composition, userId, accessId, sessionInformationId, referentId],
+                "UnknownUserAgent",
+                []
+            );
             throw error;
         }
 

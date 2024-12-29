@@ -114,8 +114,10 @@ import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
+export { Logger } from "./Middleware/logger.service";
 import { WidgetTree } from "./Widgets/WidgetTree";
 import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPosting";
+import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -171,7 +173,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  isTest: boolean = false,
+  flag: { logApplication?: boolean; isTest?: boolean } = { logApplication: false, isTest: false }
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -184,7 +186,7 @@ async function init(
     // BaseUrl.BASE_RANDOMIZER = 999;
     
     BaseUrl.setRandomizer(randomizer)
-    if (isTest) {
+    if (flag.isTest) {
       IdentifierFlags.isDataLoaded = true;
       IdentifierFlags.isCharacterLoaded = true;
       IdentifierFlags.isTypeLoaded = true;
@@ -195,6 +197,11 @@ async function init(
       IdentifierFlags.isConnectionTypeLoaded = true;
       IdentifierFlags.isLocalConnectionLoaded = true;
       return true;
+    }
+
+    if(flag.logApplication){
+      ApplicationMonitor.initialize()
+      console.log("Application log started...");
     }
 
     if (!("serviceWorker" in navigator)) {
@@ -217,7 +224,7 @@ async function init(
             nodeUrl,
             enableAi,
             applicationName,
-            isTest,
+            flag
           });
           resolve('done')
         })
@@ -287,7 +294,7 @@ async function init(
                         nodeUrl,
                         enableAi,
                         applicationName,
-                        isTest,
+                        flag
                       });
                       processMessageQueue();
                       resolve();
@@ -311,11 +318,12 @@ async function init(
                             nodeUrl,
                             enableAi,
                             applicationName,
-                            isTest,
+                            flag
                           });
                         }
                       });
                     }
+                    // Add Listeners before initializing the service worker
 
                     // Listen for updates to the service worker
                     console.log("update listen start");
@@ -325,8 +333,13 @@ async function init(
                       if (newWorker) {
                         newWorker.onstatechange = async () => {
                           console.log("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
+                          if (newWorker.state === "installing") {
+                            console.log("Service Worker installing");
+                            serviceWorker = undefined
+                            serviceWorkerReady = false
+                          }
                           // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-                          if ((newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
+                          if ((newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
                             // && navigator.serviceWorker.controller) {
                             console.log(
                               "New Service Worker is active",
@@ -342,7 +355,7 @@ async function init(
                               nodeUrl,
                               enableAi,
                               applicationName,
-                              isTest,
+                              flag
                             });
                             success = true;
                             serviceWorkerReady = true;
@@ -366,12 +379,57 @@ async function init(
                           nodeUrl,
                           enableAi,
                           applicationName,
-                          isTest,
+                          flag                          
                         });
                         // The new service worker is now controlling the page
                         // You can reload the page if necessary or handle the update process here
                       }
                     });
+
+                    // state change 
+                    if (registration.installing || registration.waiting || registration.active) {
+                      registration.addEventListener('statechange', async (event: any) => {
+                        if (event?.target?.state === 'activating') {
+                          serviceWorker = navigator.serviceWorker.controller
+                          console.log('Service Worker is activating statechange');
+                          await sendMessage("init", {
+                            url,
+                            aiurl,
+                            accessToken,
+                            nodeUrl,
+                            enableAi,
+                            applicationName,
+                            flag,
+                          });
+                        }
+                      });
+                    }
+                    
+                    // If the service worker is already active, mark it as ready
+                    if (registration.active) {
+                      serviceWorkerReady = true;
+                      console.log("active sw");
+                      serviceWorker = registration.active;
+
+                      await sendMessage("init", {
+                        url,
+                        aiurl,
+                        accessToken,
+                        nodeUrl,
+                        enableAi,
+                        applicationName,
+                        flag,
+                      });
+                      processMessageQueue();
+                      resolve();
+                    } else {
+                      // Handle if on state change didn't trigger
+                      setTimeout(() => {
+                        if (!success) reject("Not Completed Initialization");
+                      }, 5000);
+                    }
+
+
                   })
                   .catch(async (error) => {
                     await initConceptConnection();
@@ -661,7 +719,6 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
   if (serviceWorker) {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
-    console.log("event fired from", event);
     dispatchEvent(event);
   } else {
     broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
