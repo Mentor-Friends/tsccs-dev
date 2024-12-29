@@ -282,12 +282,13 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                     try{
                         let mytype = toTheConcept?.type?.characterValue ?? "none";
                       let myData = compositionData[connections[i].toTheConceptId];
-                      let testData:any = {};
-                      testData[mytype] = {
-                        "data": myData[mytype],
-                        "id": toTheConcept.id
-                      };
+
                         if(myData){
+                          let testData:any = {};
+                          testData[mytype] = {
+                            "data": myData[mytype],
+                            "id": toTheConcept.id
+                          };
                             if(Array.isArray(newData[key])){
                                 if(isComp){
                                     newData[key].push(myData[linkerConceptValue]);
