@@ -78,35 +78,39 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
  * @returns 
  */
 export async function DataIdBuildLayer(linkers: number [], conceptIds: number[], connections: number[], reverse:number[], mainCompositionId: number, searchQuery: SearchQuery, format: number = DATAID){
-  let startTime = new Date().getTime();
-  let prefetchConnections = await GetConnectionDataPrefetch(linkers);
-  let concepts: any;
-  let out: any;
-  if(format == JUSTDATA){
-    concepts = await GetCompositionFromConnectionsInObject(conceptIds, connections);
-     out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
-
-  } 
-  else if (format == NORMAL){
-     concepts = await GetCompositionFromConnectionsInObjectNormal(conceptIds, connections);
-     out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
+  try {
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let concepts: any;
+    let out: any;
+    if(format == JUSTDATA){
+      concepts = await GetCompositionFromConnectionsInObject(conceptIds, connections);
+       out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
+  
+    } 
+    else if (format == NORMAL){
+       concepts = await GetCompositionFromConnectionsInObjectNormal(conceptIds, connections);
+       out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
+    }
+    else if(format == 100){
+      concepts = await GetCompositionFromConnectionsWithDataIdInObjectNew(conceptIds, connections);
+  
+  
+      out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
+    }
+    else if(format == LISTNORMAL){
+        out = await formatDataArrayNormal(linkers, conceptIds, connections, searchQuery.ofCompositions , reverse );
+  
+    }
+    else{
+      concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds, connections);
+       out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
+   }
+  
+    return out;
+  } catch (err) {
+    console.log('Error Occured in build layer', err)
+    return undefined
   }
-  else if(format == 100){
-    concepts = await GetCompositionFromConnectionsWithDataIdInObjectNew(conceptIds, connections);
-
-
-    out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
-  }
-  else if(format == LISTNORMAL){
-      out = await formatDataArrayNormal(linkers, conceptIds, connections, searchQuery.ofCompositions , reverse );
-
-  }
-  else{
-    concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds, connections);
-     out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
- }
-
-  return out;
 }
 
 
