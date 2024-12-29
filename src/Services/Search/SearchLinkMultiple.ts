@@ -6,20 +6,20 @@ import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInO
 import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
-  if (serviceWorker) {
-    const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
-    // console.log('data received search from sw', res)
-    return res.data
-  }
-
-  let conceptIds: number[] = [];
-  let linkers: number [] = [];
-  let connections: number[] = [];
-  let reverse: number[] = [];
-  let mainCompositionId: number = searchQuery[0].composition;
-  let conceptsConnections: any = {} ;
-  let result: any = {};
   try{
+    if (serviceWorker) {
+      const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
+      // console.log('data received search from sw', res)
+      return res.data
+    }
+  
+    let conceptIds: number[] = [];
+    let linkers: number [] = [];
+    let connections: number[] = [];
+    let reverse: number[] = [];
+    let mainCompositionId: number = searchQuery[0].composition;
+    let conceptsConnections: any = {} ;
+    let result: any = {};
 
     if(caller?.isDataLoaded){
         conceptsConnections.compositionIds = caller.conceptIds?.slice();
