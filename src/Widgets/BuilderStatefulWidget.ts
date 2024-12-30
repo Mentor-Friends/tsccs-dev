@@ -168,7 +168,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
     return this.elementIdentifier;
   }
 
-  async mountChildWidgets() {
+  async mount_child() {
 
     const dynamicAsyncFunction = new Function("tsccs",`
       return (async function() {
@@ -223,8 +223,8 @@ export class BuilderStatefulWidget extends StatefulWidget {
       this.parentElement = parent.id;
       if (this.componentMounted == false || this.widgetMounted == false) {
         // Simulate componentDidMount by calling it after the component is inserted into the DOM
-        this.componentDidMount();
-        this.mountChildWidgets();
+        this.before_render();
+        this.mount_child();
         this.widgetMounted = true;
         this.componentMounted = true;
       }
@@ -242,7 +242,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   /**
    * This function will be called after the component mounts.
    */
-  componentDidMount() {
+  before_render() {
     //console.log("onmountVal", onmountVal);
     const dynamicAsyncFunction = new Function("tsccs",`
       return (async function() {
@@ -261,7 +261,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
     // renderOnmount.call(this, tsccs);
   }
 
-  addEvents() {
+  after_render() {
     // const AsyncFunction = Object.getPrototypeOf(
     //   async function () {}
     // ).constructor;

@@ -57,13 +57,13 @@ export class StatefulWidget extends BaseWidget{
     let passedWidget = widget;
     passedWidget.data = value;
     passedWidget.render();
-    passedWidget.updateWidget();
+    passedWidget.update();
    }
 
    /**
     * This is called after the data has been udpated by some other component.
     */
-   updateWidget(){}
+   update(){}
 
 
     /**
@@ -102,7 +102,7 @@ export class StatefulWidget extends BaseWidget{
         }
       //console.log("added-widget-container",this.childWidgetElement);
       // addEvents is called after the element has been mounted.
-      this.addEvents();
+      this.after_render();
 
       // then after the child widgets are again loaded.
       if(this.widgetMounted){
@@ -126,7 +126,7 @@ export class StatefulWidget extends BaseWidget{
     /**
      * This is the function that needs to be called.
      */
-    mountChildWidgets(){
+    mount_child(){
     }
   
     /**
@@ -156,11 +156,11 @@ export class StatefulWidget extends BaseWidget{
           // then after the widget has been mounted for the first time call this function
           // user can update this function as per their requirement 
           //this will mostly be used to bind data / call data 
-          this.widgetDidMount();
+          this.before_render();
 
           // since this is the first time the widget is being created. then all the child widgets are being mounted 
           // as well here.
-          this.mountChildWidgets();
+          this.mount_child();
   
           // after the widget has been mounted for the first time then the widget has been updated.
           this.widgetMounted = true;
@@ -178,7 +178,7 @@ export class StatefulWidget extends BaseWidget{
     /**
      * This function will be called after the component mounts.
      */
-    widgetDidMount(){
+    before_render(){
       this.render();
     }
 
@@ -186,7 +186,7 @@ export class StatefulWidget extends BaseWidget{
      * This is called after the render function has been called. So this is used for the user functions to be added
      * for the widget and its html element. User can add any logic here.
      */
-    addEvents(){
+    after_render(){
 
     }
   
