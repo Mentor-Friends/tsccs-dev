@@ -119,6 +119,7 @@ import { WidgetTree } from "./Widgets/WidgetTree";
 import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPosting";
 import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
+import { AccessTracker } from "./app";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -174,7 +175,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flag: { logApplication?: boolean; isTest?: boolean } = { logApplication: false, isTest: false }
+  flag: { logApplication?: boolean; accessTracker?:boolean; isTest?: boolean } = { logApplication: false, accessTracker:false, isTest: false }
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -202,7 +203,12 @@ async function init(
 
     if(flag.logApplication){
       ApplicationMonitor.initialize()
-      console.log("Application log started...");
+      console.warn("Application log started...");
+    }
+
+    if(flag.accessTracker){
+      AccessTracker.activateStatus = true
+      console.warn("Access Tracker Activated...");
     }
 
     if (!("serviceWorker" in navigator)) {

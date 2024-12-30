@@ -16,11 +16,14 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     let startTime = performance.now()
     try{
         // Add concept id in access tracker
-        try{
-            AccessTracker.incrementConcept(id)
-        } catch {
-            console.error("Error adding concepts in access tracker");
+        if(AccessTracker.activateStatus === true){
+            try{
+                AccessTracker.incrementConcept(id)
+            } catch {
+                console.error("Error adding concepts in access tracker");
+            }            
         }
+
         if (serviceWorker) {
             try {
                 const res: any = await sendMessage('GetTheConcept', {id, userId})

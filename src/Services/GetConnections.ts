@@ -9,12 +9,15 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 export  async function GetConnectionById(id:number){
    let startTime = performance.now()
    // Add connection id in access tracker
-   try{
-      AccessTracker.incrementConnection(id)
-   } catch {
-      console.error("Error adding connection in access tracker");
-      Logger.log("ERROR", "Error Adding Connection")
+   if(AccessTracker.activateStatus === true){
+      try{
+         AccessTracker.incrementConnection(id)
+      } catch {
+         console.error("Error adding connection in access tracker");
+         Logger.log("ERROR", "Error Adding Connection")
+      }
    }
+
    if (serviceWorker) {
       try {
          const res: any = await sendMessage('GetConnectionById', { id })
