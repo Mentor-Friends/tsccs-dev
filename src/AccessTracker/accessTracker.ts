@@ -6,9 +6,9 @@ type CountMap = Record<number, number>;
 export class AccessTracker {
     private static conceptsData: CountMap = {};
     private static connectionsData: CountMap = {};
-    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
+    private static readonly SYNC_INTERVAL_MS = 30 * 1000; // 120 Sec
     private static nextSyncTime: number = Date.now(); 
-
+    public static activateStatus:boolean = false;
     private static readonly accessData = "Access Data"
         
     static {        
@@ -23,7 +23,7 @@ export class AccessTracker {
         try{
             if(conceptId){
                 this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
-                this.saveDataToLocalStorage()
+                // this.saveDataToLocalStorage()
             }
         } catch(error){
             console.error("Failed on increment concept");
@@ -37,7 +37,7 @@ export class AccessTracker {
         try{
             if(connectionId){
                 this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
-                this.saveDataToLocalStorage()
+                // this.saveDataToLocalStorage()
             }
         } catch(error){
             console.error("Failed on increment connection");
@@ -134,8 +134,9 @@ export class AccessTracker {
             this.connectionsData = {}
             
             this.setNextSyncTime();
-
-            localStorage?.removeItem(this.accessData)
+            console.log("Access Tracker Sent to SERVER..", conceptsToSend, connectionsToSend);
+            
+            // localStorage?.removeItem(this.accessData)
         } catch (error) {
             console.error('Sync error:', error);
         }
@@ -163,13 +164,13 @@ export class AccessTracker {
         
         setInterval(() => {
             const currentTime = Date.now();
-            console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
+            // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
 
-            if (currentTime >= this.nextSyncTime) {
+            if (this.nextSyncTime && currentTime >= this.nextSyncTime) {
                 // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
                 this.syncNow().catch(console.error);
             }
-        }, 30000); // Check every 30 Seconds
+        }, 10000); // Check every 30 Seconds
     }
 
 
@@ -178,6 +179,7 @@ export class AccessTracker {
      */
     private static async syncNow(): Promise<void> {
         const tokenString = TokenStorage.BearerAccessToken;
+        
         if (tokenString) {
           await this.syncToServer(tokenString);
         } else {
