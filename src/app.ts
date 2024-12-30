@@ -118,6 +118,7 @@ export { Logger } from "./Middleware/logger.service";
 import { WidgetTree } from "./Widgets/WidgetTree";
 import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPosting";
 import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
+import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 import { AccessTracker } from "./app";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -487,9 +488,10 @@ export async function sendMessage(type: string, payload: any) {
             if (event?.data?.status == 401) {
               reject(HandleHttpError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
             } else if (event?.data?.status == 500) {
-              reject(HandleInternalError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
+              reject(HandleInternalError(new Response('Internal Server Error', {status: 500, statusText: event?.data?.statusText})))
             } else {
-              reject(`Failed to handle action ${type} ${JSON.stringify(payload)}`)
+              console.error('Error in the response from worker:', event)
+              reject(`Failed to handle action ${type} ${JSON.stringify(payload)}, Response: ${JSON.stringify(event.data)}`)
             }
           }
           if (event.data?.actions) {
@@ -505,7 +507,10 @@ export async function sendMessage(type: string, payload: any) {
       // serviceWorker?.postMessage({ type, payload });
   
       // Send the message to the service worker
-      if (serviceWorker) {
+      if (navigator.serviceWorker.controller) {
+        serviceWorker.postMessage({ type, payload: newPayload })
+      } else if (serviceWorker) {
+        console.warn(`controller not found but serviceWorker is available. messageId: ${messageId}, type: ${type}`)
         try {
           serviceWorker.postMessage({ type, payload: newPayload })
         } catch(err) {
@@ -515,8 +520,12 @@ export async function sendMessage(type: string, payload: any) {
         }
         // navigator.serviceWorker.controller.postMessage({ type, payload });
       } else {
+        console.warn(`Service Worker hasn't loaded yet. messageId: ${messageId}, type: ${type}`)
+
+        if (serviceWorkerReady) console.warn('service worker was registered already but is not available NOW!!!')
         // wait one second before checking again
         setTimeout(() => {
+          console.warn(`Re-Trying after certain time. messageId: ${messageId}, type: ${type}`)
           // if (navigator.serviceWorker.controller) {
           if (serviceWorker) {
             // serviceWorker.postMessage({ type, payload });
@@ -526,7 +535,7 @@ export async function sendMessage(type: string, payload: any) {
             console.log('not ready', type)
             reject("Service worker not ready");
           }
-        }, 90000) // 90 seconds
+        }, 30000) // 30 seconds
       }
   
       // Timeout for waiting for the response (e.g., 5 seconds)
@@ -537,6 +546,7 @@ export async function sendMessage(type: string, payload: any) {
     } else {
       messageQueue.push({message: {type, payload: newPayload}})
       console.log('Message Queued', type, payload)
+      console.log((navigator.serviceWorker.controller || serviceWorker), (serviceWorkerReady || type == 'init'))
       if (type == 'init') resolve(null)
     }
       // })
@@ -736,4 +746,12 @@ async function processMessageQueue() {
     const { message, resolve, reject } = messageQueue.shift();
     await sendMessage(message.type, message.payload)
   }
+}
+
+export const handleServiceWorkerException = (error: any) => {
+  if (error instanceof FreeSchemaResponse) {
+    console.error('FreeSchemaResponse Error', error)
+    throw error
+  }
+  console.error('Service Worker Error', error)
 }

@@ -1,7 +1,6 @@
 import { GetAllLinkerConnectionsFromTheConcept } from "../Api/GetAllLinkerConnectionsFromTheConcept";
 import { GetAllLinkerConnectionsToTheConcept } from "../Api/GetAllLinkerConnectionsToTheConcept";
-import { Connection, ConnectionData, CreateTheConnectionLocal, DeleteConnectionById, GetAllConnectionsOfComposition, GetConceptByCharacter, GetConnectionBulk, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
-import { GetCompositionById } from "./GetComposition";
+import { Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter, handleServiceWorkerException, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 
 /**
  * 
@@ -11,10 +10,14 @@ import { GetCompositionById } from "./GetComposition";
  */
 export async function DeleteConnectionByType(id: number, linker: string){
     if (serviceWorker) {
-        const res: any = await sendMessage('DeleteConnectionByType', { id, linker })
-        // console.log('data received from sw', res)
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('DeleteConnectionByType', { id, linker })
+            return res.data
+        } catch (error) {
+            console.error('DeleteConnectionByType sw error: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
     let externalConnections = await GetAllLinkerConnectionsFromTheConcept(id);
     for(let i=0 ; i< externalConnections.length; i++){
         ConnectionData.AddConnection(externalConnections[i]);
@@ -30,7 +33,6 @@ export async function DeleteConnectionByType(id: number, linker: string){
     for(let i=0 ;i < toDelete.length; i++){
         DeleteConnectionById(toDelete[i].id);
     }
-
 }
 
 
@@ -42,9 +44,13 @@ export async function DeleteConnectionByType(id: number, linker: string){
  */
 export async function GetAllTheConnectionsByTypeAndOfTheConcept(id: number, linker: string, reverse: boolean = false){
     if (serviceWorker) {
-        const res: any = await sendMessage('GetAllTheConnectionsByTypeAndOfTheConcept', { id, linker, reverse })
-        // console.log('data received from sw', res)
-        return res.data
+        try {
+            const res: any = await sendMessage('GetAllTheConnectionsByTypeAndOfTheConcept', { id, linker, reverse })
+            return res.data
+        } catch (error) {
+            console.error('GetAllTheConnectionsByTypeAndOfTheConcept sw error: ', error)
+            handleServiceWorkerException(error)
+        }
     }
     let toDelete: Connection[] = [];
 

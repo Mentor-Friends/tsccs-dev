@@ -6,7 +6,7 @@ import { ConceptsData } from "./ConceptData";
 import { Connection } from "./Connection";
 import { ConnectionData } from "./ConnectionData";
 import { ReservedIds } from "./ReservedIds";
-import { sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
@@ -76,10 +76,14 @@ export class SyncData{
      }
 
      static async SyncDataOnline(){
-        console.log('sw triggered')
         if (serviceWorker) {
-            const res: any = await sendMessage('SyncData__SyncDataOnline', {})
-            return res.data
+            try {
+                const res: any = await sendMessage('SyncData__SyncDataOnline', {})
+                return res.data
+            } catch (error) {
+                console.error('SyncData__SyncDataOnline sw error: ', error);
+                handleServiceWorkerException(error);
+            }
         }
         for(let i=0;i<this.conceptsSyncArray.length;i++){
             ConceptsData.AddConcept(this.conceptsSyncArray[i]);
@@ -94,7 +98,7 @@ export class SyncData{
             this.conceptsSyncArray = [];
             CreateTheConceptApi(conceptsArray);
         }
-         if(this.connectionSyncArray.length > 0){
+        if(this.connectionSyncArray.length > 0){
 
             // for(let i =0 ; i<this.connectionSyncArray.length ; i++){
             //     console.log("create the connection in backend", this.connectionSyncArray[i].ofTheConceptId + "====" + this.connectionSyncArray[i].toTheConceptId);

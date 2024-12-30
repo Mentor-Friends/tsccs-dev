@@ -1,5 +1,5 @@
 import { GetConnectionOfTheConcept } from "../Api/GetConnectionOfTheConcept";
-import { Logger, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { Connection } from "../DataStructures/Connection";
 import { SyncData } from "../DataStructures/SyncData";
@@ -16,12 +16,15 @@ export async function CreateConnectionBetweenTwoConcepts(
   both: boolean = false,
   count: boolean = false
 ) {
-  let startTime = performance.now()
-   if (serviceWorker) {
+  if (serviceWorker) {
+    try {
       const res: any = await sendMessage('CreateConnectionBetweenTwoConcepts', { ofTheConcept, toTheConcept, linker, both, count })
-      // console.log('data received from sw', res)
       return res.data
+    } catch (error) {
+      console.error('CreateConnectionBetweenTwoConcepts sw error: ', error);
+      handleServiceWorkerException(error);
     }
+  }
     
   let userId: number = ofTheConcept.userId;
   let accessId: number = 4;
