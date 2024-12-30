@@ -8,7 +8,7 @@ export class Logger {
     private static logsData: any[] = [];
     private static applicationLogsData: any[] = [];
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 30 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app"
     private static mftsccsBrowser:string = "mftsccs"
@@ -43,7 +43,7 @@ export class Logger {
                 Logger.sendLogsToServer();
                 Logger.sendApplicationLogsToServer();
             }
-        }, 10000); // Check every minute
+        }, 60000); // Check every minute
     }
 
     /**
@@ -284,6 +284,8 @@ export class Logger {
 
             const accessToken = TokenStorage.BearerAccessToken;
             const storedLogs = this.applicationLogsData
+
+            if(!accessToken) return;
             
             if (storedLogs.length === 0) return;
             // console.log("Stored Logs : ", storedLogs);
@@ -332,6 +334,8 @@ export class Logger {
             const storedLogs = this.logsData
             // console.log("Stored Logs for syncing... ", storedLogs);
             
+            if(!accessToken) return;
+
             // const storedLogs = this.logs
             if (storedLogs.length === 0) return;
             

@@ -6,7 +6,7 @@ type CountMap = Record<number, number>;
 export class AccessTracker {
     private static conceptsData: CountMap = {};
     private static connectionsData: CountMap = {};
-    private static readonly SYNC_INTERVAL_MS = 30 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
     private static nextSyncTime: number = Date.now(); 
     public static activateStatus:boolean = false;
     private static readonly accessData = "Access Data"
@@ -92,6 +92,7 @@ export class AccessTracker {
     public static async sendToServer(){
         try{
             const accessToken = TokenStorage.BearerAccessToken
+            if(!accessToken) return;
             await this.syncToServer(accessToken)
         } catch(error) {
             console.error("Failed to process Access Tracker Sync with Server");
@@ -170,7 +171,7 @@ export class AccessTracker {
                 // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
                 this.syncNow().catch(console.error);
             }
-        }, 10000); // Check every 30 Seconds
+        }, 60000); // Check every 60 Seconds
     }
 
 
