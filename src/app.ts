@@ -506,7 +506,10 @@ export async function sendMessage(type: string, payload: any) {
       // serviceWorker?.postMessage({ type, payload });
   
       // Send the message to the service worker
-      if (serviceWorker) {
+      if (navigator.serviceWorker.controller) {
+        serviceWorker.postMessage({ type, payload: newPayload })
+      } else if (serviceWorker) {
+        console.warn(`controller not found but serviceWorker is available. messageId: ${messageId}, type: ${type}`)
         try {
           serviceWorker.postMessage({ type, payload: newPayload })
         } catch(err) {
@@ -516,8 +519,12 @@ export async function sendMessage(type: string, payload: any) {
         }
         // navigator.serviceWorker.controller.postMessage({ type, payload });
       } else {
+        console.warn(`Service Worker hasn't loaded yet. messageId: ${messageId}, type: ${type}`)
+
+        if (serviceWorkerReady) console.warn('service worker was registered already but is not available NOW!!!')
         // wait one second before checking again
         setTimeout(() => {
+          console.warn(`Re-Trying after certain time. messageId: ${messageId}, type: ${type}`)
           // if (navigator.serviceWorker.controller) {
           if (serviceWorker) {
             // serviceWorker.postMessage({ type, payload });
@@ -527,7 +534,7 @@ export async function sendMessage(type: string, payload: any) {
             console.log('not ready', type)
             reject("Service worker not ready");
           }
-        }, 90000) // 90 seconds
+        }, 30000) // 30 seconds
       }
   
       // Timeout for waiting for the response (e.g., 5 seconds)
@@ -538,6 +545,7 @@ export async function sendMessage(type: string, payload: any) {
     } else {
       messageQueue.push({message: {type, payload: newPayload}})
       console.log('Message Queued', type, payload)
+      console.log((navigator.serviceWorker.controller || serviceWorker), (serviceWorkerReady || type == 'init'))
       if (type == 'init') resolve(null)
     }
       // })
