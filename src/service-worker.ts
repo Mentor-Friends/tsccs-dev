@@ -143,7 +143,7 @@ self.addEventListener("message", async (event: any) => {
     } else if (actions[type]) {
         responseData = await actions[type](payload);
     } else {
-      console.log(`Unable to handle "${type}" case in service worker`)
+      console.warn(`Unable to handle "${type}" case in service worker`)
     }
     responseData.messageId = payload.messageId
     
@@ -174,10 +174,10 @@ self.addEventListener("message", async (event: any) => {
     
     event.source.postMessage(responseData)
   } catch (error: any) {
+    console.log('Service worker Message Handle Error: ', type, error)
     if (error?.status == 401 || error?.status == 500) {
       responseData = {success: false, data: {status: error.status, statusText: error?.url}, messageId: payload.messageId}
     }
-    console.log('Service worker Message Handle Error: ', type, error)
     event.source.postMessage(responseData)
   }
 });

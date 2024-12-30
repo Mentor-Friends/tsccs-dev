@@ -1,16 +1,21 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { DATAID, JUSTDATA, LISTNORMAL, NORMAL } from "../../Constants/FormatConstants";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
-import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept, sendMessage, serviceWorker } from "../../app";
+import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept, handleServiceWorkerException, sendMessage, serviceWorker } from "../../app";
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetCompositionFromConnectionsWithDataIdInObjectNew, GetConnectionDataPrefetch } from "../GetCompositionBulk";
 import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
   try{
-    if (serviceWorker) {
-      const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
-      // console.log('data received search from sw', res)
-      return res.data
+    try {
+      if (serviceWorker) {
+        const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
+        // console.log('data received search from sw', res)
+        return res.data
+      }
+    } catch (error) { 
+      console.error('SearchLinkMultipleAll error sw: ', error)
+      handleServiceWorkerException(error)
     }
   
     let conceptIds: number[] = [];

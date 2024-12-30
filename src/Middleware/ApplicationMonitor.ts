@@ -1,8 +1,9 @@
+import { BaseUrl } from "../app";
 import { Logger } from "./logger.service";
 
 export class ApplicationMonitor {
   static initialize() {
-    console.log("Initialized Application Moniroring...");
+    console.warn("Initialized Application Moniroring...");
     // Log unhandled errors
     window.addEventListener("error", (event) => {
       // console.log("error called...");
@@ -66,7 +67,7 @@ export class ApplicationMonitor {
 
     });
 
-    window?.addEventListener("scroll", () => {
+    document.addEventListener("scroll", () => {
       const message = "User Scroll"
       const details = {
         position: window.scrollY,
@@ -76,12 +77,29 @@ export class ApplicationMonitor {
   }
 
   static logNetworkRequests() {
+    if(typeof window === undefined){
+      return
+    }
     const originalFetch = window?.fetch;
+    // console.log("Original Fetch is equals to : ", originalFetch);
+    
+    if (!originalFetch) {
+      throw new Error("Original fetch is not available.");
+    }
+
+    // Define ignored URLs
+    // const ignoredUrls = [BaseUrl.PostLogger(), BaseUrl.PostPrefetchConceptConnections()];
+    
     window.fetch = async (...args) => {
+
       const [url, options] = args;
-      const urlString = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
-  
-      // console.log("Custom fetch called for:", urlString);
+      const urlString: string = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
+
+      // Check if the URL is in the ignored URLs list
+      // if (ignoredUrls.includes(urlString)) {
+      //   console.log("Ignored URLs detected : ", urlString);
+      //   return new Response(null, { status: 200 });
+      // }
   
       let networkDetails:any = {
         "request": {
@@ -94,10 +112,10 @@ export class ApplicationMonitor {
       };
   
       try {
-        const response = await originalFetch(...args);
+        const response: Response = await originalFetch(...args) as Response;
   
         // Add response details to the network log
-        networkDetails["response"] = {
+        networkDetails.response = {
           type: "RESPONSE",
           message: "Network Response",
           url: urlString,
@@ -107,10 +125,16 @@ export class ApplicationMonitor {
         Logger.logApplication("INFO", "Network Request", networkDetails)
         return response;
       } catch (error:any) {
-        console.error("Fetch failed for:", urlString, error); // Debugging log
+        // Log full error message
+        if (error instanceof Error) {
+          console.error("Error message:", error.message);
+          console.error("Stack trace:", error.stack);
+        }
+
+        console.error("Fetch failed for:", urlString, error);
   
         // Add error details to the network log
-        networkDetails["response"] = {
+        networkDetails.response = {
           type: "ERROR",
           message: "Network Request Failed",
           url: urlString,
@@ -124,9 +148,13 @@ export class ApplicationMonitor {
         throw new Error(`Network request failed for ${urlString}: ${error.message}`);
       }
     };
+
   }
   
   static logPerformanceMetrics() {
+    if(typeof window === undefined){
+      return
+    }
     window?.addEventListener("load", () => {
       const timing = performance.timing;
       const details = {
@@ -158,6 +186,9 @@ export class ApplicationMonitor {
 
   // Log WebSocket events
   static logWebSocketEvents() {
+    if(typeof window === undefined){
+      return
+    }
     const originalWebSocket = WebSocket;
     window.WebSocket = class extends originalWebSocket {
       constructor(url: string | URL, protocols?: string | string[]) {

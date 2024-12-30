@@ -1,6 +1,6 @@
 import { AccessTracker } from "../AccessTracker/accessTracker";
 import { GetConcept } from "../Api/GetConcept";
-import { convertFromLConceptToConcept, GetUserGhostId, Logger, sendMessage, serviceWorker } from "../app";
+import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
@@ -16,16 +16,23 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     let startTime = performance.now()
     try{
         // Add concept id in access tracker
-        try{
-            AccessTracker.incrementConcept(id)
-        } catch {
-            console.error("Error adding concepts in access tracker");
+        if(AccessTracker.activateStatus === true){
+            try{
+                AccessTracker.incrementConcept(id)
+            } catch {
+                console.error("Error adding concepts in access tracker");
+            }            
         }
+
         if (serviceWorker) {
-            const res: any = await sendMessage('GetTheConcept', {id, userId})
-            // console.log('data received from sw', res)
-            return res.data
-          }
+            try {
+                const res: any = await sendMessage('GetTheConcept', {id, userId})
+                return res.data
+            } catch (error) {
+                console.error('GetTheConcept sw error: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
 
         let concept = CreateDefaultConcept();
         if(id < 0){

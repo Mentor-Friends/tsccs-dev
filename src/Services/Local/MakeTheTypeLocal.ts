@@ -3,7 +3,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import { GetConceptByCharacterAndCategoryLocal } from "./GetConceptByCharacterLocal";
 import { SplitStrings } from "../SplitStrings";
 import MakeTheConceptLocal from "./MakeTheConceptLocal";
-import { sendMessage, serviceWorker } from "../../app";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../../app";
 import { InnerActions } from "../../Constants/general.const";
 
 /**
@@ -23,14 +23,18 @@ export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: n
     ): Promise<Concept>
 {
     if (serviceWorker) {
-        const res: any = await sendMessage("MakeTheTypeConceptLocal", {
-          typeString, sessionId, sessionUserId, userId, actions
-        });
-        // console.log("data received from sw", res);
-        if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
-        if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
-        return res.data;
-      }
+        try {
+            const res: any = await sendMessage("MakeTheTypeConceptLocal", {
+              typeString, sessionId, sessionUserId, userId, actions
+            });
+            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+            return res.data;
+        } catch (error) {
+            console.error("MakeTheTypeConceptLocal error sw: ", error);
+            handleServiceWorkerException(error)
+        }
+    }
 
     let accessId: number = 4;
 

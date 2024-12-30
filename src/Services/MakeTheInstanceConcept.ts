@@ -3,7 +3,7 @@ import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndTyp
 import { MakeTheNameInBackend } from "../Api/MakeTheNameInBackend";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
-import { Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
 
@@ -32,17 +32,21 @@ export default async function MakeTheInstanceConcept(
 ) {
   let startTime = performance.now()
   if (serviceWorker) {
-    const res: any = await sendMessage("MakeTheInstanceConcept", {
-      type,
-      referent,
-      composition,
-      userId,
-      passedAccessId,
-      passedSessionId,
-      referentId,
-    });
-    // console.log("data received from sw", res);
-    return res.data;
+    try {
+      const res: any = await sendMessage("MakeTheInstanceConcept", {
+        type,
+        referent,
+        composition,
+        userId,
+        passedAccessId,
+        passedSessionId,
+        referentId,
+      });
+      return res.data;
+    } catch (error) {
+      console.error("MakeTheInstanceConcept sw error: ", error);
+      handleServiceWorkerException(error);
+    }
   }
 
   let sessionInformationId: number = passedSessionId;

@@ -1,13 +1,10 @@
-import { Concept } from "./../DataStructures/Concept";
 import { ConnectionData } from "./../DataStructures/ConnectionData";
-import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
-import { sendMessage, serviceWorker } from "../app";
-import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 
 /**
  * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched
@@ -15,14 +12,18 @@ import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/Con
  * @returns the list of  connections that have been fetched
  */
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
-    if (serviceWorker) {
-        const res: any = await sendMessage('GetConnectionBulk', {connectionIds})
-        // console.log('data received from sw', res)
-        return res.data
-    }
-    
     let connectionList:Connection[] = [];
+    
     try{
+        if (serviceWorker) {
+            try {
+                const res: any = await sendMessage('GetConnectionBulk', {connectionIds})
+                return res.data
+            } catch (error) {
+                console.error('GetConnectionBulk sw error: ', error);
+                handleServiceWorkerException(error);
+            }
+        }
         if(connectionIds.length > 0){
             let bulkConnectionFetch:number[] = [];
            // if the connections are already present in the local memory then take it from there 
