@@ -143,7 +143,7 @@ self.addEventListener("message", async (event: any) => {
     } else if (actions[type]) {
         responseData = await actions[type](payload);
     } else {
-      console.log(`Unable to handle "${type}" case in service worker`)
+      console.warn(`Unable to handle "${type}" case in service worker`)
     }
     responseData.messageId = payload.messageId
     

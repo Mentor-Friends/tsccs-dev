@@ -490,6 +490,7 @@ export async function sendMessage(type: string, payload: any) {
             } else if (event?.data?.status == 500) {
               reject(HandleInternalError(new Response('Internal Server Error', {status: 500, statusText: event?.data?.statusText})))
             } else {
+              console.error('Error in the response from worker:', event)
               reject(`Failed to handle action ${type} ${JSON.stringify(payload)}, Response: ${JSON.stringify(event.data)}`)
             }
           }
