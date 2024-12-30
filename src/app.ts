@@ -689,7 +689,11 @@ async function initConceptConnection() {
   await PopulateTheLocalConnectionToMemory().catch((event) => {
     console.log("This is the error in populating binary tree");
    throw event;
- });;
+ });
+
+//  await PopulateTheLocalConceptsToMemory().catch((event)=>{
+//   console.log("This is the error in populating binary tree");
+//  });
 
   /**
    * This process gets the connections from indexdb and loads it to the connections array which is inside of

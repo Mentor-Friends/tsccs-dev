@@ -70,7 +70,7 @@ export async function PopulateTheLocalConceptsToMemory(){
 
                         // update the indexdb with the new concept value that other programs can use and
                         // reserve the 10 ids for this program.
-                     //   await UpdateToDatabase("localid", {"id": 0, "value": localConceptIdValue - 10});
+                        await UpdateToDatabase("localid", {"id": 0, "value": localConceptIdValue - 10});
                     }
                     else{
                         // incase there is invalid id then choose a random id .
