@@ -118,6 +118,7 @@ export { Logger } from "./Middleware/logger.service";
 import { WidgetTree } from "./Widgets/WidgetTree";
 import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPosting";
 import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
+import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -481,9 +482,9 @@ export async function sendMessage(type: string, payload: any) {
             if (event?.data?.status == 401) {
               reject(HandleHttpError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
             } else if (event?.data?.status == 500) {
-              reject(HandleInternalError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
+              reject(HandleInternalError(new Response('Internal Server Error', {status: 500, statusText: event?.data?.statusText})))
             } else {
-              reject(`Failed to handle action ${type} ${JSON.stringify(payload)}`)
+              reject(`Failed to handle action ${type} ${JSON.stringify(payload)}, Response: ${JSON.stringify(event.data)}`)
             }
           }
           if (event.data?.actions) {
@@ -730,4 +731,12 @@ async function processMessageQueue() {
     const { message, resolve, reject } = messageQueue.shift();
     await sendMessage(message.type, message.payload)
   }
+}
+
+export const handleServiceWorkerException = (error: any) => {
+  if (error instanceof FreeSchemaResponse) {
+    console.error('FreeSchemaResponse Error', error)
+    throw error
+  }
+  console.error('Service Worker Error', error)
 }

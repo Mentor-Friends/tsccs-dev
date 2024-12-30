@@ -3,7 +3,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { InnerActions } from "../../Constants/general.const";
-import { Connection, LocalSyncData, Logger, sendMessage, serviceWorker } from "../../app";
+import { Connection, handleServiceWorkerException, LocalSyncData, Logger, sendMessage, serviceWorker } from "../../app";
 
 
 /**
@@ -26,12 +26,16 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
         let startTime = performance.now()
         if (serviceWorker) {
-            const res: any = await sendMessage('MakeTheInstanceConceptLocal', {type, referent, composition, userId, accessId, sessionInformationId, referentId, actions})
-            // console.log('data received from sw', res)
-            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
-            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
-            return res.data
-          }
+            try {
+                const res: any = await sendMessage('MakeTheInstanceConceptLocal', {type, referent, composition, userId, accessId, sessionInformationId, referentId, actions})
+                if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                return res.data
+            } catch (error) {
+                console.error('MakeTheInstanceConceptLocal error sw: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
 
         try{
             let sessionInformationId: number = 999;

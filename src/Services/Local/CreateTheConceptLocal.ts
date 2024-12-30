@@ -1,4 +1,4 @@
-import { InnerActions, sendMessage, serviceWorker } from "../../app";
+import { handleServiceWorkerException, InnerActions, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
@@ -24,18 +24,21 @@ import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
  * @param referentId if this concept refers to any other concept then this needs to be passed.
  * @returns 
  */
-export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, 
-typeId:number, 
+export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, typeId:number, 
 accessId:number, isComposition: boolean = false, referentId:number = 0, actions: InnerActions = {concepts: [], connections: []}){
     let startTime = performance.now()
     try{
         if (serviceWorker) {
-            const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
-            // console.log('data received from sw', res)
-            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
-            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
-            return res.data
-          }
+            try {
+                const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
+                if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                return res.data
+            } catch (error) {
+                console.error('CreateTheConceptLocal error sw: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
 
         //let id = -Math.floor(Math.random() * 100000000);
         let id = await LocalId.getConceptId();

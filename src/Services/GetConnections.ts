@@ -1,6 +1,6 @@
 import { AccessTracker } from "../AccessTracker/accessTracker";
 import { GetConnection } from "../Api/GetConnection";
-import { Logger, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree";
@@ -16,10 +16,14 @@ export  async function GetConnectionById(id:number){
       Logger.log("ERROR", "Error Adding Connection")
    }
    if (serviceWorker) {
-      const res: any = await sendMessage('GetConnectionById', { id })
-      // console.log('data received from sw', res)
-      return res.data
-    }
+      try {
+         const res: any = await sendMessage('GetConnectionById', { id })
+         return res.data
+      } catch (error) {
+         console.error('GetConnectionById sw error: ', error)
+         handleServiceWorkerException(error)
+      }
+   }
      let connection =   await ConnectionData.GetConnection(id);
      if((connection == null || connection.id == 0) && id != null && id != undefined){
         let connectionString = await  GetConnection(id);

@@ -1,17 +1,20 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
-import { GetConceptByCharacterAndTypeUrl } from './../Constants/ApiConstants';
 import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
-import { sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
   try{
     if (serviceWorker) {
-      const res: any = await sendMessage('GetConceptByCharacterAndType', {characterValue, typeId})
-      // console.log('data received from sw', res)
-      return res.data
+      try {
+        const res: any = await sendMessage('GetConceptByCharacterAndType', {characterValue, typeId})
+        return res.data
+      } catch (error) {
+        console.error('GetConceptByCharacterAndType sw error: ', error);
+        handleServiceWorkerException(error);
+      }
     }
       let concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
       if(concept == null || concept.id == 0){

@@ -1,5 +1,5 @@
 import { AccessTracker } from "../AccessTracker/accessTracker";
-import { sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { IndexDbUpdate } from "../Database/IndexUpdate";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
@@ -88,23 +88,35 @@ export class ConnectionData {
     ofTheConceptId: number,
     typeId: number
   ) {
-    if (serviceWorker) {
-      const res: any = await sendMessage(
-        "ConnectionData__GetConnectionByOfTheConceptAndType",
-        { ofTheConceptId, typeId }
+    try {
+      if (serviceWorker) {
+        try {
+          const res: any = await sendMessage(
+            "ConnectionData__GetConnectionByOfTheConceptAndType",
+            { ofTheConceptId, typeId }
+          );
+          return res.data;
+        } catch (error) {
+          console.error(
+            "GetConnectionByOfTheConceptAndType sw error: ",
+            error
+          );
+          handleServiceWorkerException(error);
+        }
+      }
+      
+      let connections = ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(
+        ofTheConceptId,
+        typeId
       );
-      // console.log("data received from sw", res);
-      return res.data;
+      if (connections) {
+        return connections;
+      }
+      return [];
+    } catch (error) { 
+      console.log("this is the error in GetConnectionByOfTheConceptAndType", error); 
+      return [] 
     }
-    
-    let connections = ConnectionOfTheTree.GetConnectionByOfTheConceptAndTypeId(
-      ofTheConceptId,
-      typeId
-    );
-    if (connections) {
-      return connections;
-    }
-    return [];
   }
 
   static GetConnectionByOfType(ofTheConceptId: number, typeId: number) {
@@ -141,11 +153,6 @@ export class ConnectionData {
   static async GetConnection(id: number) {
     // Increment Connection
     AccessTracker.incrementConnection(id)
-    if (serviceWorker) {
-      const res: any = await sendMessage('ConnectionData__GetConnection', {id})
-      // console.log('data received from sw', res)
-      return res.data
-    }
 
     //    var  myConcept: Connection|null;
     //    myConcept = null;
@@ -157,40 +164,61 @@ export class ConnectionData {
     //     return myConcept;
 
     let myConnection: Connection = new Connection(0, 0, 0, 0, 0, 0, 0);
-    let node = await ConnectionBinaryTree.getNodeFromTree(id);
-    if (node?.value) {
-      let returnedConcept = node.value;
-      if (returnedConcept) {
-        myConnection = returnedConcept as Connection;
-        //if(myConnection.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
-        // IndexDbUpdate.UpdateConnectionIndexDb(myConnection);
-        //}
+    try {    
+      if (serviceWorker) {
+        try {
+          const res: any = await sendMessage('ConnectionData__GetConnection', {id})
+          return res.data
+        } catch (error) {
+          console.error('GetConnection sw error: ', error);
+          handleServiceWorkerException(error);
+        }
       }
-    }
-    // if(myConcept.id == 0 || myConcept == null){
-    //     for(var i=0; i<this.conceptsArray.length; i++){
-    //         if(this.conceptsArray[i].id == id){
-    //             myConcept = this.conceptsArray[i];
-    //         }
-    //     }
-    // }
 
-    return myConnection;
+      let node = await ConnectionBinaryTree.getNodeFromTree(id);
+      if (node?.value) {
+        let returnedConcept = node.value;
+        if (returnedConcept) {
+          myConnection = returnedConcept as Connection;
+          //if(myConnection.count > IndexDbUpdate.MIN_USE_FOR_INDEX_DB){
+          // IndexDbUpdate.UpdateConnectionIndexDb(myConnection);
+          //}
+        }
+      }
+      // if(myConcept.id == 0 || myConcept == null){
+      //     for(var i=0; i<this.conceptsArray.length; i++){
+      //         if(this.conceptsArray[i].id == id){
+      //             myConcept = this.conceptsArray[i];
+      //         }
+      //     }
+      // }
+  
+      return myConnection;
+
+    } catch (error) {
+      console.log("this is the error in GetConnection", error);
+      return myConnection;
+    }
   }
 
   // commented
   static async GetConnectionsOfCompositionLocal(id: number) {
-    if (serviceWorker) {
-      const res: any = await sendMessage(
-        "ConnectionData__GetConnectionsOfCompositionLocal",
-        { id }
-      );
-      // console.log("data received from sw", res);
-      return res.data;
-    }
+
     let connections: Connection[] = [];
 
-    try{
+    try{    
+      if (serviceWorker) {
+        try {
+          const res: any = await sendMessage(
+            "ConnectionData__GetConnectionsOfCompositionLocal",
+            { id }
+          );
+          return res.data;
+        } catch (error) {
+          console.error("GetConnectionsOfCompositionLocal sw error: ", error);
+          handleServiceWorkerException(error);
+        }
+      }
       let connectionIds: number[] = [];
       connectionIds = ConnectionData.GetConnectionByOfType(id, id);
       for (let i = 0; i < connectionIds.length; i++) {
@@ -221,13 +249,18 @@ export class ConnectionData {
 
 
     static async GetConnectionsOfConcept(id: number){
-      if (serviceWorker) {
-        const res: any = await sendMessage("ConnectionData__GetConnectionsOfConcept", { id });
-        // console.log("data received from sw", res);
-        return res.data;
-      }
-        let connectionIds: number [] = [];
-        let connections: Connection[] = [];
+      let connectionIds: number [] = [];
+      let connections: Connection[] = [];
+      try {
+        if (serviceWorker) {
+          try {
+            const res: any = await sendMessage("ConnectionData__GetConnectionsOfConcept", { id });
+            return res.data;
+          } catch (error) {
+            console.error("GetConnectionsOfConcept sw error: ", error);
+            handleServiceWorkerException(error);
+          }
+        }
         connectionIds = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
 
         for(let i=0; i< connectionIds.length; i++){
@@ -238,6 +271,10 @@ export class ConnectionData {
         }
 
         return connections;
+      } catch (error) {
+        console.log("this is the error in GetConnectionsOfConcept", error);
+        return connections;
+      }
     } 
 
     getName(){

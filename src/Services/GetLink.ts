@@ -5,17 +5,18 @@ import { Concept } from "./../DataStructures/Concept";
 import { GetCompositionWithIdAndDateFromMemory, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
-import { Logger, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1){
   let startTime = performance.now()
   if (serviceWorker) {
-    const res: any = await sendMessage('GetLink', {id, linker, inpage, page})
-    console.log('data received from sw', res)
-    // Add Log
-    // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, res, "GetLink", ['id', 'linker', 'inpage', 'page'], "unknown", undefined )
-    // console.log('data received from sw', res)
-    return res.data
+    try {
+      const res: any = await sendMessage('GetLink', {id, linker, inpage, page})
+      return res.data
+    } catch (error) {
+      console.error('GetLink sw error: ', error)
+      handleServiceWorkerException(error)
+    }
   }
 
     let output: any[] = [];

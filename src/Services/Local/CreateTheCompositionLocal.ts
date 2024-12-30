@@ -1,4 +1,4 @@
-import { InnerActions, Logger, sendMessage, serviceWorker } from "../../app";
+import { handleServiceWorkerException, InnerActions, Logger, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept";
 import {CreateTheConnectionLocal} from "./CreateTheConnectionLocal";
@@ -18,14 +18,17 @@ import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
  */
 export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null, automaticSync: boolean  = false, actions: InnerActions = {concepts: [], connections: []})
 {
-    let startTime = performance.now()
     if (serviceWorker) {
-        const res: any = await sendMessage('CreateTheCompositionLocal', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, actions })
-        // console.log('data received from sw', res)
-        if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
-        if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('CreateTheCompositionLocal', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, actions })
+            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+            return res.data
+        } catch (error) {
+            console.error('CreateTheCompositionLocal error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
       
     let localUserId:number = userId ?? 999;
     let localAccessId: number = accessId ?? 999;
