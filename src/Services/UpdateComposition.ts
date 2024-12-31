@@ -21,18 +21,22 @@ import { SyncData } from "../DataStructures/SyncData";
 import { CompositionBinaryTree } from "../DataStructures/Composition/CompositionBinaryTree";
 import { Composition } from "../DataStructures/Composition/Composition";
 import { CreateTheCompositionWithCache } from "./Composition/CreateCompositionCache";
-import { sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 
 // function to update the cache composition
 export default async function UpdateComposition(
   patcherStructure: PatcherStructure
 ) {
   if (serviceWorker) {
-    const res: any = await sendMessage("UpdateComposition", {
-      patcherStructure,
-    });
-    // console.log("data received from sw", res);
-    return res.data;
+    try {
+      const res: any = await sendMessage("UpdateComposition", {
+        patcherStructure,
+      });
+      return res.data;
+    } catch (error) {
+      console.error("UpdateComposition sw error: ", error);
+      handleServiceWorkerException(error);
+    }
   }
   // get all the default userId, sessionId, accessId passed by the patcherStructure
   const userId = patcherStructure.userId;

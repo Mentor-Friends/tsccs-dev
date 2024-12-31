@@ -1,7 +1,7 @@
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConnectionBulk } from "../Api/GetConnectionBulk";
 import { Connection } from "../DataStructures/Connection";
-import { ConnectionData, GetConceptBulk, sendMessage, serviceWorker } from "../app";
+import { ConnectionData, GetConceptBulk, handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 import { CheckForConnectionDeletionWithIds } from "./CheckForConnectionDeletion";
 import { FindConnectionsOfCompositionsBulkInMemory } from "./FindConnectionsOfCompositionBulkInMemory";
 import { GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionFromMemoryWithConnections, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryFromConnection, GetCompositionWithIdFromMemoryNew } from "./GetComposition";
@@ -49,13 +49,17 @@ export async function GetCompositionBulkWithDataId(conceptIds:number[]=[]){
  */
 export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[]=[], connectionIds:number[] = []){
     if (serviceWorker) {
-        const res: any = await sendMessage('GetCompositionFromConnectionsWithDataId', {conceptIds, connectionIds})
-        // console.log('data received from sw', res)
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('GetCompositionFromConnectionsWithDataId', {conceptIds, connectionIds})
+            return res.data
+        } catch (error) {
+            console.error('GetCompositionFromConnectionsWithDataId error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
       
-    let newConnections = await GetConnectionBulk(connectionIds);
-    let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
+    // let newConnections = await GetConnectionBulk(connectionIds);
+    // let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
     //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
     let compositions: any[] = [];
     for(let i=0; i< conceptIds.length;i++){
@@ -76,10 +80,14 @@ export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[
  */
 export async function GetCompositionFromConnectionsWithDataIdFromConnections(conceptIds:number[]=[], connectionIds:number[] = []){
     if (serviceWorker) {
-        const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdFromConnections', {conceptIds, connectionIds})
-        // console.log('data received from sw', res)
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdFromConnections', {conceptIds, connectionIds})
+            return res.data
+        } catch (error) {
+            console.error('GetCompositionFromConnectionsWithDataIdFromConnections error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
       
     let newConnections = await GetConnectionBulk(connectionIds);
     //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
@@ -101,10 +109,14 @@ export async function GetCompositionFromConnectionsWithDataIdFromConnections(con
  */
 export async function GetCompositionFromConnectionsWithDataIdIndex(conceptIds:number[]=[], connectionIds:number[] = []){
     if (serviceWorker) {
-        const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdIndex', {conceptIds, connectionIds})
-        // console.log('data received from sw', res)
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdIndex', {conceptIds, connectionIds})
+            return res.data
+        } catch (error) {
+            console.error('GetCompositionFromConnectionsWithDataIdIndex error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
 
     let newConnections = await GetConnectionBulk(connectionIds);
     let myNewConnections = newConnections as Connection[];
@@ -151,10 +163,14 @@ export async function GetCompositionFromConnectionsWithIndex(conceptIds:number[]
  */
 export async function GetCompositionFromConnectionsWithIndexFromConnections(conceptIds:number[]=[], connectionIds:number[] = []){
     if (serviceWorker) {
-        const res: any = await sendMessage('GetCompositionFromConnectionsWithIndexFromConnections', {conceptIds, connectionIds})
-        // console.log('data received from sw', res)
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('GetCompositionFromConnectionsWithIndexFromConnections', {conceptIds, connectionIds})
+            return res.data
+        } catch (error) {
+            console.error('GetCompositionFromConnectionsWithIndexFromConnections error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
       
     let newConnections = await GetConnectionBulk(connectionIds);
     //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
@@ -173,10 +189,14 @@ export async function GetCompositionFromConnectionsWithIndexFromConnections(conc
  */
 export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise<Connection[]>{
     if (serviceWorker) {
-        const res: any = await sendMessage('GetConnectionDataPrefetch', {connectionIds})
-        // console.log('data received from sw', res)
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('GetConnectionDataPrefetch', {connectionIds})
+            return res.data
+        } catch (error) {
+            console.error('GetConnectionDataPrefetch error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
     let remainingConnections: number[] = [];
     let connectionsAll:Connection[] = [];
     let remainingIds: any = {};

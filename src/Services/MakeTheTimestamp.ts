@@ -1,5 +1,5 @@
 import { Concept } from "../DataStructures/Concept";
-import { MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import MakeTheConcept from "./MakeTheConcept";
 import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
@@ -7,10 +7,14 @@ import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
 export async function MakeTheTimestamp(type:string, referent:string, userId: number, 
     accessId:number = 4, sessionInformationId: number=999){
         if (serviceWorker) {
-            const res: any = await sendMessage('MakeTheTimestamp', {type, referent, userId, accessId, sessionInformationId})
-            // console.log('data received from sw', res)
-            return res.data
-          }
+            try {
+                const res: any = await sendMessage('MakeTheTimestamp', {type, referent, userId, accessId, sessionInformationId})
+                return res.data
+            } catch (error) {
+                console.error('MakeTheTimestamp sw error: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
         let categoryId: number = 4;
         let referentId: number = 0;
         // change this

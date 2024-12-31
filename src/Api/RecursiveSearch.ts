@@ -9,7 +9,7 @@ import {
   HandleHttpError,
   HandleInternalError,
 } from "../Services/Common/ErrorPosting";
-import { sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 import { formatConnectionsDataId } from "../Services/Search/SearchWithTypeAndLinker";
 
 export async function RecursiveSearchApi(
@@ -17,19 +17,24 @@ export async function RecursiveSearchApi(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  if (serviceWorker) {
-    const res: any = await sendMessage("RecursiveSearchApi", {
-      composition,
-      listLinkers,
-      textSearch,
-    });
-    // console.log("data received from sw", res);
-    return res.data;
-  }
 
   let concepts: any[] = [];
 
   try {
+    if (serviceWorker) {
+      try {
+        const res: any = await sendMessage("RecursiveSearchApi", {
+          composition,
+          listLinkers,
+          textSearch,
+        });
+        return res.data;
+      } catch (error) {
+        console.error("RecursiveSearchApi sw error: ", error);
+        handleServiceWorkerException(error);
+      }
+    }
+
     let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.listLinkers = listLinkers;
@@ -73,19 +78,23 @@ export async function RecursiveSearchApiWithInternalConnections(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  if (serviceWorker) {
-    const res: any = await sendMessage("RecursiveSearchApiWithInternalConnections", {
-      composition,
-      listLinkers,
-      textSearch,
-    });
-    // console.log("data received from sw", res);
-    return res.data;
-  }
 
   let concepts: any[] = [];
 
-  try {
+  try {  
+    if (serviceWorker) {
+      try {
+        const res: any = await sendMessage("RecursiveSearchApiWithInternalConnections", {
+          composition,
+          listLinkers,
+          textSearch,
+        });
+        return res.data;
+      } catch (error) {
+        console.error("RecursiveSearchApiWithInternalConnections sw error: ", error);
+        handleServiceWorkerException(error);
+      }
+    }
     let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.listLinkers = listLinkers;
@@ -128,19 +137,23 @@ export async function RecursiveSearchApiRaw(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  if (serviceWorker) {
-    const res: any = await sendMessage("RecursiveSearchApiRaw", {
-      composition,
-      listLinkers,
-      textSearch,
-    });
-    // console.log("data received from sw", res);
-    return res.data;
-  }
 
   let concepts: any[] = [];
 
   try {
+    if (serviceWorker) {
+      try {
+        const res: any = await sendMessage("RecursiveSearchApiRaw", {
+          composition,
+          listLinkers,
+          textSearch,
+        });
+        return res.data;
+      } catch (error) {
+        console.error("RecursiveSearchApiRaw sw error: ", error);
+        handleServiceWorkerException(error);
+      }
+    }
     let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.listLinkers = listLinkers;
@@ -179,19 +192,23 @@ export async function RecursiveSearchApiRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  if (serviceWorker) {
-    const res: any = await sendMessage("RecursiveSearchApiRawFullLinker", {
-      composition,
-      fullLinkers,
-      textSearch,
-    });
-    // console.log("data received from sw", res);
-    return res.data;
-  }
 
   let concepts: any[] = [];
 
   try {
+    if (serviceWorker) {
+      try {
+        const res: any = await sendMessage("RecursiveSearchApiRawFullLinker", {
+          composition,
+          fullLinkers,
+          textSearch,
+        });
+        return res.data;
+      } catch (error) {
+        console.error("RecursiveSearchApiRawFullLinker sw error: ", error);
+        handleServiceWorkerException(error);
+      }
+    }
     let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.fullLinkers = fullLinkers;
@@ -230,18 +247,22 @@ export async function RecursiveSearchApiNewRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  if (serviceWorker) {
-    const res: any = await sendMessage("RecursiveSearchApiNewRawFullLinker", {
-      composition,
-      fullLinkers,
-      textSearch,
-    });
-    // console.log("data received from sw", res);
-    return res.data;
-  }
   let concepts: any[] = [];
 
   try {
+    if (serviceWorker) {
+      try {
+        const res: any = await sendMessage("RecursiveSearchApiNewRawFullLinker", {
+          composition,
+          fullLinkers,
+          textSearch,
+        });
+        return res.data;
+      } catch (error) {
+        console.error("RecursiveSearchApiNewRawFullLinker sw error: ", error);
+        handleServiceWorkerException(error);
+      }
+    }
     let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.fullLinkers = fullLinkers;

@@ -1,13 +1,14 @@
-import { BaseUrl } from "../app";
+import { AccessTracker, BaseUrl } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 import { HandleNetworkError } from "./ErrorHandling";
 
 export class Logger {
 
     private static logLevel: string = "INFO";
-    private static logs: any[] = [];
+    private static logsData: any[] = [];
+    private static applicationLogsData: any[] = [];
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
+    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app"
     private static mftsccsBrowser:string = "mftsccs"
@@ -33,7 +34,8 @@ export class Logger {
 
         Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
         // console.log("NextTimeToSync for Upcoming : ", this.nextSyncTime)
-        this.autoSyncInterval = window?.setInterval(() => {
+        // this.autoSyncInterval = window?.setInterval(() => {
+        setInterval(() => {
             const currentTime = Date.now();
             // console.log("Current Time : ",currentTime);
             if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
@@ -88,9 +90,8 @@ export class Logger {
             ...data,
         };
 
-        Logger.logs.push(logEntry);
-        // this.saveToLocalStorage(logEntry)
-        this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
+        Logger.logsData.push(logEntry);
+        // this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
         
     }
 
@@ -260,42 +261,31 @@ export class Logger {
                 data: data || null,
             };
 
-            // const existingLogs = JSON.parse(localStorage?.getItem(this.appLogs) || "[]");
-            // existingLogs.push(logEntry);
-
-            // localStorage?.setItem(this.appLogs, JSON.stringify(existingLogs));
-            this.saveLogToLocalStorage(this.appLogs, logEntry)
+            Logger.applicationLogsData.push(logEntry);
+            // this.saveLogToLocalStorage(this.appLogs, logEntry)
 
         } catch (error) {
             console.error("Failed to log application activity:", error);
         }
     }
 
-    /**
-     * Helper method to save logs to localStorage.
-    */
-    private static saveLogToLocalStorage(logType:string, logMessage:any):void{
-        try{
-            const logs = JSON.parse(localStorage?.getItem(logType) || "[]");
-            logs.push(logMessage)
-            localStorage?.setItem(logType, JSON.stringify(logs));
-        } catch(error){
-            console.error("Error on saving log in localstorage");
-            Logger.log("ERROR", "Error while saving log in local storage")
-        }
-    }
 
     /**
      * Helper method to send logs to the server.
     */
     public static async sendApplicationLogsToServer(): Promise<void> {
         try {
-            if(this.logs.length < 0){
+            console.log("Application Log To Server : \n");
+            // console.log("Log To Server : \n", this.applicationLogsData);
+
+            if(this.applicationLogsData.length < 0){
                 return
             }
 
             const accessToken = TokenStorage.BearerAccessToken;
-            const storedLogs = JSON.parse(localStorage?.getItem(this.appLogs) || "[]");
+            const storedLogs = this.applicationLogsData
+
+            if(!accessToken) return;
             
             if (storedLogs.length === 0) return;
             // console.log("Stored Logs : ", storedLogs);
@@ -303,6 +293,7 @@ export class Logger {
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
+                // console.log("The PostLogger URL on Applciation Log : ", BaseUrl.PostLogger());
 
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
@@ -322,24 +313,38 @@ export class Logger {
                     return;
                 }
             }
+            
+            // this.clearLogs(this.appLogs)
 
-            localStorage?.removeItem(this.appLogs);
         } catch (error) {
             console.error("Error while sending logs to server:", error);
         }
     }
 
-   
     public static async sendLogsToServer(): Promise<void> {
         try {
-            console.log("Log sending to server...");
+            console.warn("Log sending to server...");
+            // console.log("Log To Server : \n", this.logsData);
+            
+            if(this.logsData.length > 0){
+                return
+            }
             const accessToken = TokenStorage.BearerAccessToken;
-            const storedLogs = JSON.parse(localStorage?.getItem(this.mftsccsBrowser) || "[]");
+            // const storedLogs = JSON.parse(localStorage?.getItem(this.mftsccsBrowser) || "[]");
+            const storedLogs = this.logsData
+            // console.log("Stored Logs for syncing... ", storedLogs);
+            
+            if(!accessToken) return;
+
+            // const storedLogs = this.logs
             if (storedLogs.length === 0) return;
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
+
+                // console.log("The PostLogger URL on Logs is : ", BaseUrl.PostLogger());
+                
 
                 // const response = await fetch(Logger.SERVER_URL, {
                 const response = await fetch(BaseUrl.PostLogger(), {
@@ -362,12 +367,44 @@ export class Logger {
                 }
             }
 
-            localStorage?.removeItem(this.mftsccsBrowser);
+            // localStorage?.removeItem(this.mftsccsBrowser);
+            // this.clearLogs(this.mftsccsBrowser)
         } catch (error) {
             console.error("Error while sending logs to server:", error);
-            HandleNetworkError("Request", error)
+            // HandleNetworkError("Request", error)
         }
     }
+
+    
+    /**
+     * Helper method to save logs to localStorage.
+    */
+    private static saveLogToLocalStorage(logType:string, logMessage:any):void{
+        try{
+            if (typeof localStorage === undefined) {
+                console.warn("Local Storage type undefined");
+                return
+            } else {
+                const logs = JSON.parse(localStorage?.getItem(logType) || "[]");
+                logs.push(logMessage)
+                localStorage?.setItem(logType, JSON.stringify(logs));
+            }
+        } catch(error){
+            console.error("Error on saving log in localstorage");
+            Logger.log("ERROR", "Error while saving log in local storage")
+        }
+    }
+
+    private static clearLogs(logType:string) {
+        if (typeof localStorage === undefined) {
+            console.warn('localStorage is not available');
+            return;
+        } else {
+            localStorage?.removeItem(logType);
+            // console.log('Logs removed from localStorage');
+        }
+    }
+
 }
 
 
