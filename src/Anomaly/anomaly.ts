@@ -1,6 +1,6 @@
 import { DATA_TYPES_RULES } from "../Validator/constant";
 import { FormFieldData } from "../Validator/interface";
-
+import * as main  from '../../src/app';
 
 /**
  * Class representing the Anomaly detection logic for checking data validity based on predefined rules.
@@ -237,4 +237,21 @@ export class Anomaly {
             throw error;
         }
     }
+
+    /**
+     * List all the exported functions of the package
+     * @returns Keys of the Object which has exported functions
+     */
+    public static getExportedFunction(){
+        console.log("Main : ", main);
+        const the_exported_list = Object.keys(main);
+        let the_function_s_name: string[] = [];
+        // the_exported_list.forEach(the_function_name => {
+        //     if (typeof main[the_function_name] === 'function') {
+        //         the_function_s_name.push(the_function_name);
+        //     }
+        // });
+        return the_function_s_name;
+    }
+
 }
