@@ -52,7 +52,7 @@ export class ApplicationMonitor {
         classes: target.className,
         text: target.innerText?.slice(0, 50),
       }
-      Logger.logApplication("INFO", message, details)
+      // Logger.logApplication("INFO", message, details)
     });
 
     document.addEventListener("input", (event) => {
@@ -63,7 +63,7 @@ export class ApplicationMonitor {
         id: target.id,
         value: (target as HTMLInputElement).value,
       }
-      Logger.logApplication("INFO", message, details)
+      // Logger.logApplication("INFO", message, details)
 
     });
 
@@ -72,7 +72,7 @@ export class ApplicationMonitor {
       const details = {
         position: window.scrollY,
       }
-      Logger.logApplication("INFO", message, details)
+      // Logger.logApplication("INFO", message, details)
     });
   }
 
@@ -122,7 +122,7 @@ export class ApplicationMonitor {
           status: response.status,
         };
   
-        Logger.logApplication("INFO", "Network Request", networkDetails)
+        // Logger.logApplication("INFO", "Network Request", networkDetails)
         return response;
       } catch (error:any) {
         // Log full error message
@@ -161,7 +161,7 @@ export class ApplicationMonitor {
         loadTime: timing.loadEventEnd - timing.navigationStart,
         domContentLoadedTime: timing.domContentLoadedEventEnd - timing.navigationStart,
       }
-      Logger.logApplication("INFO", "Performance Metrics", details)
+      // Logger.logApplication("INFO", "Performance Metrics", details)
     });
   }
 
@@ -172,7 +172,7 @@ export class ApplicationMonitor {
       const urlChange = {
         url: args[2]?.toString(),
       }
-      Logger.logApplication("INFO", "Route Change", urlChange )
+      // Logger.logApplication("INFO", "Route Change", urlChange )
       return pushState.apply(this, args);
     };
 
@@ -180,7 +180,7 @@ export class ApplicationMonitor {
       const urlChange = {
         url: location.href
       }
-      Logger.logApplication("INFO", "Route Changed (Back/Forward)", urlChange)
+      // Logger.logApplication("INFO", "Route Changed (Back/Forward)", urlChange)
     });
   }
 
@@ -198,7 +198,7 @@ export class ApplicationMonitor {
         const data = {
           "url" : url.toString()
         }
-        Logger.logApplication("INFO", message, data)
+        // Logger.logApplication("INFO", message, data)
 
         this.addEventListener("message", (event) => {
           const message = "WebSocket Message"
@@ -206,7 +206,7 @@ export class ApplicationMonitor {
             "url" : url,
             "data" : event.data
           }
-          Logger.logApplication("INFO", message, data)
+          // Logger.logApplication("INFO", message, data)
 
         });
 
@@ -216,7 +216,7 @@ export class ApplicationMonitor {
             "url" : url,
             "error" : error instanceof Error ? error.message : String(error),
           }
-          Logger.logApplication("INFO", message, data)
+          Logger.logApplication("ERROR", message, data)
         });
 
         this.addEventListener("close", () => {
@@ -224,7 +224,7 @@ export class ApplicationMonitor {
           const data = {
             "url" : url,
           }
-          Logger.logApplication("INFO", message, data)
+          // Logger.logApplication("INFO", message, data)
         });
       }
     };

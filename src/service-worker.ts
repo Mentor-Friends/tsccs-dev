@@ -117,7 +117,7 @@ self.addEventListener("message", async (event: any) => {
   try {
     if (!type || !payload.TABID) return;
   
-    if (!checkSWInitialization()) {
+    if (type != 'init' && !checkSWInitialization()) {
       console.warn('Message received before sw initialization', type)
       event.source.postMessage(responseData)
     }
