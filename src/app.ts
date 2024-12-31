@@ -508,9 +508,10 @@ export async function sendMessage(type: string, payload: any) {
   
       // Send the message to the service worker
       if (navigator.serviceWorker.controller) {
-        serviceWorker.postMessage({ type, payload: newPayload })
+        navigator.serviceWorker.controller.postMessage({ type, payload: newPayload })
       } else if (serviceWorker) {
         console.warn(`controller not found but serviceWorker is available. messageId: ${messageId}, type: ${type}`)
+        if (serviceWorkerReady) console.warn('service worker was registered already but navigator is empty!!!', serviceWorker)
         try {
           serviceWorker.postMessage({ type, payload: newPayload })
         } catch(err) {
