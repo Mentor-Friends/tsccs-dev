@@ -1,4 +1,4 @@
-import { Concept, CreateTheConnectionLocal, MakeTheInstanceConceptLocal, sendMessage, serviceWorker } from "../../app";
+import { Concept, CreateTheConnectionLocal, handleServiceWorkerException, MakeTheInstanceConceptLocal, sendMessage, serviceWorker } from "../../app";
 import { InnerActions } from "../../Constants/general.const";
 import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
 import { HandleInternalError } from "../Common/ErrorPosting";
@@ -7,11 +7,15 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
     let startTime = performance.now()
     try{
         if (serviceWorker) {
-            const res: any = await sendMessage('CreateConnectionBetweenTwoConceptsLocal', {ofTheConcept, toTheConcept, linker, both, actions})
-            // console.log('data received from sw', res)
-            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
-            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
-            return res.data
+            try {
+                const res: any = await sendMessage('CreateConnectionBetweenTwoConceptsLocal', {ofTheConcept, toTheConcept, linker, both, actions})
+                if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                return res.data
+            } catch (error) {
+                console.error('CreateConnectionBetweenTwoConceptsLocal sw error: ', error);
+                handleServiceWorkerException(error);
+            }
           }
 
         var userId:number = ofTheConcept.userId;

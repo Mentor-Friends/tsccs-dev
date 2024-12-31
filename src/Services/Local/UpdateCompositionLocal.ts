@@ -15,6 +15,7 @@ import { MakeTheInstanceConceptLocal } from "./MakeTheInstanceConceptLocal";
 import {
   CreateDefaultLConcept,
   CreateTheConnectionLocal,
+  handleServiceWorkerException,
   InnerActions,
   LConnection,
   LocalSyncData,
@@ -34,14 +35,18 @@ export async function UpdateCompositionLocal(
 ) {
   let startTime = performance.now()
   if (serviceWorker) {
-    const res: any = await sendMessage("UpdateCompositionLocal", {
-      patcherStructure,
-      actions
-    });
-    // console.log("data received from sw", res);
-    if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
-    if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
-    return res.data;
+    try {
+      const res: any = await sendMessage("UpdateCompositionLocal", {
+        patcherStructure,
+        actions
+      });
+      if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+      if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+      return res.data;
+    } catch (error) {
+      console.error("UpdateCompositionLocal error sw: ", error);
+      handleServiceWorkerException(error);
+    }
   }
 
   // get all the default userId, sessionId, accessId passed by the patcherStructure

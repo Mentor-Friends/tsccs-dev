@@ -6,15 +6,19 @@ import { BinaryTypeTree } from "../DataStructures/BinaryTypeTree";
 import { ConnectionOfNode } from "../DataStructures/ConnectionBinaryTree/ConnectionOfNode";
 import { ConnectionOfTheTree } from "../DataStructures/ConnectionBinaryTree/ConnectionOfTheTree";
 import { removeFromDatabase } from "../Database/indexeddb";
-import { LocalConceptsData, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, LocalConceptsData, sendMessage, serviceWorker } from "../app";
 import GetTheConcept from "./GetTheConcept";
 
-export  async function DeleteConceptById(id:number){
+export async function DeleteConceptById(id:number){
     if (serviceWorker) {
-        const res: any = await sendMessage('DeleteConceptById', { id })
-        // console.log('data received from sw', res)
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('DeleteConceptById', { id })
+            return res.data
+        } catch (err) {
+            console.error('DeleteConceptById sw error: ', err);
+            handleServiceWorkerException(err);
+        }
+    }
     if(id > 0){
         var concept = await GetTheConcept(id);
         if(concept.id > 0){
@@ -32,20 +36,21 @@ export  async function DeleteConceptById(id:number){
     else{
         LocalConceptsData.RemoveConceptById(id);
     }
-
-
-
 }
 
 export async function DeleteUser(id:number){
     if (serviceWorker) {
-        const res: any = await sendMessage('DeleteUser', { id })
-        // console.log('data received from sw', res)
-        return res.data
-      }
-      if(id > 0){
-            DeleteUserInBackend(id);
+        try {
+            const res: any = await sendMessage('DeleteUser', { id })
+            return res.data
+        } catch (err) {
+            console.error('DeleteUser sw error: ', err);
+            handleServiceWorkerException(err);
         }
+    }
+    if(id > 0){
+        DeleteUserInBackend(id);
+    }
     else{
         LocalConceptsData.RemoveConceptById(id);
     }

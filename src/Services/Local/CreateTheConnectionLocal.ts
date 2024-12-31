@@ -2,7 +2,7 @@ import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 import { Logger } from "../../Middleware/logger.service";
-import { InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
+import { handleServiceWorkerException, InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
 
 /**
  * This function creates a connection for the concept connection system. This connection will only be created in real sense
@@ -22,12 +22,16 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
     ){  
         let startTime = performance.now()
         if (serviceWorker) {
-            const res: any = await sendMessage('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions })
-            // console.log('data received from sw', res)
-            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
-            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
-            return res.data
-          }
+            try {
+                const res: any = await sendMessage('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions })
+                if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                return res.data
+            } catch (error) {
+                console.log('CreateTheConnectionLocal error sw: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
         try{
             let accessId : number = 4;
             // let randomid = -Math.floor(Math.random() * 100000000);
