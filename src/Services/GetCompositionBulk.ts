@@ -210,7 +210,7 @@ export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise
             connectionsAll.push(connection);
         }
     }
-    for(let i=0; i< connectionIds.length; i++){
+    for(let i=0; i< remainingConnections.length; i++){
         remainingIds[connectionIds[i]] = false;
     }
     //await ConnectionData.GetConnectionBulkData(connectionIds, connectionsAll, remainingIds);
