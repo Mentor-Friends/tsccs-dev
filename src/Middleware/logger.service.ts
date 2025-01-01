@@ -258,7 +258,7 @@ export class Logger {
             };
 
             Logger.applicationLogsData.push(logEntry);
-            // this.saveLogToLocalStorage(this.appLogs, logEntry)
+            this.saveLogToLocalStorage(this.appLogs, logEntry)
 
         } catch (error) {
             console.error("Failed to log application activity:", error);
@@ -312,7 +312,7 @@ export class Logger {
             this.applicationLogsData = [] 
             
             // this.clearLogsFromLocalStorage(this.appLogs)
-            // Logger.log("INFO", "Sync Application Logs to server")
+            Logger.log("INFO", "Sync Application Logs to server")
 
         } catch (error) {
             console.error("Error while sending logs to server:", error);
