@@ -52,7 +52,7 @@ export class ApplicationMonitor {
         classes: target.className,
         text: target.innerText?.slice(0, 50),
       }
-      // Logger.logApplication("INFO", message, details)
+      Logger.logApplication("INFO", message, details)
     });
 
     document.addEventListener("input", (event) => {
@@ -63,7 +63,7 @@ export class ApplicationMonitor {
         id: target.id,
         value: (target as HTMLInputElement).value,
       }
-      // Logger.logApplication("INFO", message, details)
+      Logger.logApplication("INFO", message, details)
 
     });
 
@@ -72,7 +72,7 @@ export class ApplicationMonitor {
       const details = {
         position: window.scrollY,
       }
-      // Logger.logApplication("INFO", message, details)
+      Logger.logApplication("INFO", message, details)
     });
   }
 
@@ -88,7 +88,7 @@ export class ApplicationMonitor {
     }
 
     // Define ignored URLs
-    // const ignoredUrls = [BaseUrl.PostLogger(), BaseUrl.PostPrefetchConceptConnections()];
+    const ignoredUrls = [BaseUrl.PostLogger(), BaseUrl.PostPrefetchConceptConnections()];
     
     window.fetch = async (...args) => {
 
@@ -96,10 +96,16 @@ export class ApplicationMonitor {
       const urlString: string = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
 
       // Check if the URL is in the ignored URLs list
-      // if (ignoredUrls.includes(urlString)) {
-      //   console.log("Ignored URLs detected : ", urlString);
-      //   return new Response(null, { status: 200 });
-      // }
+      if (ignoredUrls.includes(urlString)) {
+        console.log("Ignored URLs detected : ", urlString);
+        let networkDetails = {
+          'url' : urlString,
+          'detail' : 'skip'
+        }
+        Logger.logApplication("INFO", "Network Request", networkDetails)
+        return originalFetch(...args);
+        // return new Response(null, { status: 200 });
+      }
   
       let networkDetails:any = {
         "request": {
@@ -122,7 +128,7 @@ export class ApplicationMonitor {
           status: response.status,
         };
   
-        // Logger.logApplication("INFO", "Network Request", networkDetails)
+        Logger.logApplication("INFO", "Network Request", networkDetails)
         return response;
       } catch (error:any) {
         // Log full error message
@@ -161,7 +167,7 @@ export class ApplicationMonitor {
         loadTime: timing.loadEventEnd - timing.navigationStart,
         domContentLoadedTime: timing.domContentLoadedEventEnd - timing.navigationStart,
       }
-      // Logger.logApplication("INFO", "Performance Metrics", details)
+      Logger.logApplication("INFO", "Performance Metrics", details)
     });
   }
 
@@ -172,7 +178,7 @@ export class ApplicationMonitor {
       const urlChange = {
         url: args[2]?.toString(),
       }
-      // Logger.logApplication("INFO", "Route Change", urlChange )
+      Logger.logApplication("INFO", "Route Change", urlChange )
       return pushState.apply(this, args);
     };
 
@@ -180,7 +186,7 @@ export class ApplicationMonitor {
       const urlChange = {
         url: location.href
       }
-      // Logger.logApplication("INFO", "Route Changed (Back/Forward)", urlChange)
+      Logger.logApplication("INFO", "Route Changed (Back/Forward)", urlChange)
     });
   }
 
@@ -198,7 +204,7 @@ export class ApplicationMonitor {
         const data = {
           "url" : url.toString()
         }
-        // Logger.logApplication("INFO", message, data)
+        Logger.logApplication("INFO", message, data)
 
         this.addEventListener("message", (event) => {
           const message = "WebSocket Message"
@@ -206,7 +212,7 @@ export class ApplicationMonitor {
             "url" : url,
             "data" : event.data
           }
-          // Logger.logApplication("INFO", message, data)
+          Logger.logApplication("INFO", message, data)
 
         });
 
@@ -224,7 +230,7 @@ export class ApplicationMonitor {
           const data = {
             "url" : url,
           }
-          // Logger.logApplication("INFO", message, data)
+          Logger.logApplication("INFO", message, data)
         });
       }
     };

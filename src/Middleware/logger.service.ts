@@ -18,7 +18,6 @@ export class Logger {
 
     // Ensure logs are managed automatically
     static {
-        // console.log("Initializing Logger with auto-sync mechanism.");
         Logger.startAutoSync();
     }
 
@@ -33,8 +32,6 @@ export class Logger {
         }
 
         Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
-        // console.log("NextTimeToSync for Upcoming : ", this.nextSyncTime)
-        // this.autoSyncInterval = window?.setInterval(() => {
         setInterval(() => {
             const currentTime = Date.now();
             // console.log("Current Time : ",currentTime);
@@ -92,7 +89,6 @@ export class Logger {
 
         Logger.logsData.push(logEntry);
         // this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
-        
     }
 
     public static log(
@@ -284,17 +280,15 @@ export class Logger {
 
             const accessToken = TokenStorage.BearerAccessToken;
             const storedLogs = this.applicationLogsData
+            console.log("Application Logs of AppLog : ", storedLogs)
 
             if(!accessToken) return;
             
             if (storedLogs.length === 0) return;
-            // console.log("Stored Logs : ", storedLogs);
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
-                // console.log("The PostLogger URL on Applciation Log : ", BaseUrl.PostLogger());
-
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: { 
@@ -313,8 +307,12 @@ export class Logger {
                     return;
                 }
             }
+
+            // clear application log from memory
+            this.applicationLogsData = [] 
             
-            // this.clearLogs(this.appLogs)
+            // this.clearLogsFromLocalStorage(this.appLogs)
+            // Logger.log("INFO", "Sync Application Logs to server")
 
         } catch (error) {
             console.error("Error while sending logs to server:", error);
@@ -326,13 +324,11 @@ export class Logger {
             console.warn("Log sending to server...");
             // console.log("Log To Server : \n", this.logsData);
             
-            if(this.logsData.length > 0){
-                return
-            }
+            if(this.logsData.length === 0) return
+
             const accessToken = TokenStorage.BearerAccessToken;
-            // const storedLogs = JSON.parse(localStorage?.getItem(this.mftsccsBrowser) || "[]");
             const storedLogs = this.logsData
-            // console.log("Stored Logs for syncing... ", storedLogs);
+            console.log("Package Logs for syncing... ", storedLogs);
             
             if(!accessToken) return;
 
@@ -343,10 +339,6 @@ export class Logger {
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
 
-                // console.log("The PostLogger URL on Logs is : ", BaseUrl.PostLogger());
-                
-
-                // const response = await fetch(Logger.SERVER_URL, {
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: { 
@@ -367,11 +359,14 @@ export class Logger {
                 }
             }
 
-            // localStorage?.removeItem(this.mftsccsBrowser);
-            // this.clearLogs(this.mftsccsBrowser)
+            // clear mftsccs log from memory
+            this.logsData = [] 
+
+            // this.clearLogsFromLocalStorage(this.mftsccsBrowser)
+            // Logger.log("INFO", "Sync Application Logs to server")
+
         } catch (error) {
             console.error("Error while sending logs to server:", error);
-            // HandleNetworkError("Request", error)
         }
     }
 
@@ -395,7 +390,7 @@ export class Logger {
         }
     }
 
-    private static clearLogs(logType:string) {
+    private static clearLogsFromLocalStorage(logType:string) {
         if (typeof localStorage === undefined) {
             console.warn('localStorage is not available');
             return;
