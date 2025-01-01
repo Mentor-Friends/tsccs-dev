@@ -135,7 +135,6 @@ export async function formatConnections(linkers: number[], conceptIds: number []
  */
 export async function formatConnectionsJustId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[]){
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
-    console.log("this is the connection in prefetch", prefetchConnections);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
     compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
