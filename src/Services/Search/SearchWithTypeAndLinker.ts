@@ -139,6 +139,7 @@ export async function formatConnectionsJustId(linkers: number[], conceptIds: num
     let newCompositionData: any [] = [];
     compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
     compositionData = await FormatFunctionDataForDataJustId(prefetchConnections, compositionData, reverse);
+    console.log("this is the composition data", compositionData);
     let output:any  = await FormatFromConnectionsAlteredArrayExternalJustId(prefetchConnections, compositionData, mainCompositionIds, reverse );
     return output;
 }
