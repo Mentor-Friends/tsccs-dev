@@ -178,6 +178,7 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
             connections.sort(function(x: Connection, y:Connection){
               return y.id - x.id;
             })
+            console.log("this is the connections", connections.length);
             for(let i=0 ; i< connections.length; i++){
               let reverseFlag = false;
               let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
