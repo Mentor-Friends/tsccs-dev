@@ -8,6 +8,8 @@ export class StatefulWidget extends BaseWidget{
 
     params: any;
     html: string = "";
+    css:string = "";
+    js: string = "";
 
     /**
      * These are the child widgets that need to be added to  this widget

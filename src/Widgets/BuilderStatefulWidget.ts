@@ -22,64 +22,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
   typeValueList: any = [];
   public widgetType: string = "the_element_name";
   parentConceptList: any = [];
-
-
-
-  // async getWidgetCodeFromId(widgetId: number, token: string) {
-  //   //console.log("getWidgetCodeFromId", widgetId, token);
-  //   return new Promise(async (resolve: any, reject: any) => {
-  //     try {
-  //       let searchFirst = new SearchQuery();
-  //       searchFirst.composition = widgetId;
-  //       searchFirst.fullLinkers = [
-  //         "the_widgetcode",
-  //         "the_widgetcode_widget",
-  //         "the_widgetcode_name",
-  //         "the_widgetcode_html",
-  //         "the_widgetcode_css",
-  //         "the_widgetcode_js",
-  //         "the_widgetcode_timestamp",
-  //         "the_widgetcode_typevalue",
-  //         "the_widgetcode_addevent",
-  //         "the_widgetcode_onmount",
-  //         "the_widgetcode_onupdate",
-  //         "the_widgetcode_mountChildWidgets",
-  //         "the_widgetcode_cleanhtml",
-  //         "the_widgetcode_s_child",
-  //       ];
-  //       searchFirst.inpage = 100;
-  
-  //       let searchSecond = new SearchQuery();
-  //       searchSecond.fullLinkers = [
-  //         "the_childwidget",
-  //         "the_childwidget_typevalue",
-  //         "the_childwidget_widget",
-  //         "the_childwidget_wrapperId",
-  //       ];
-  //       searchSecond.inpage = 100;
-  
-  //       const queryParams = [searchFirst, searchSecond];
-  //       const output = await SearchLinkMultipleAll(queryParams, token);
-  //       //console.log("getWidgetCodeFromId output ->", output);
-  //       resolve(output);
-  //       return output;
-  //     } catch (error: any) {
-  //       console.error("error", error);
-  //       if (error?.status === 401) {
-  //         HandleHttpError(error?.response)
-  //       }
-  //       reject(error);
-  //     }
-  //   });
-  // }
-
-
-  // async CreateConceptConnections(){
-  //   let mainConcept = await 
-  //   for(let i=0; i<this.childrenData.length; i++){
-
-  //   }
-  // }
   
 
   async getUserId() {
