@@ -135,6 +135,7 @@ export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {WidgetTree} from './Widgets/WidgetTree';
 export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
+export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 
 type listeners = {
   listenerId: string | number
