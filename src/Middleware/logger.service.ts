@@ -141,7 +141,6 @@ export class Logger {
             Logger.log("INFO", `Information logged for ${functionName}`, logData);
         } catch(error){
             console.error("Error on logInfo");
-            return
         }
 
     }
@@ -163,7 +162,7 @@ export class Logger {
             const sessionId = getCookie("SessionId");
             const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
             const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-
+    
             const logData: LogData = {
                 userId,
                 operationType,
@@ -179,11 +178,9 @@ export class Logger {
                 conceptsUsed,
             };
         
-            Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);
-
+            Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);    
         } catch(error){
             console.error("Error on logError");
-            return
         }
     }
         
@@ -223,11 +220,9 @@ export class Logger {
         
             Logger.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
     
-        } catch(error) {
+        } catch(error){
             console.error("Error on logWarning");
-            return
         }
-
     }
 
     public static logDebug(
@@ -243,7 +238,7 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        try {
+        try{
             const sessionId = getCookie("SessionId");
             const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
             const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
@@ -264,9 +259,9 @@ export class Logger {
             };
         
             Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
+    
         } catch(error){
             console.error("Error on logDebug");
-            return
         }
     
     }    
@@ -299,15 +294,14 @@ export class Logger {
     public static async sendApplicationLogsToServer(): Promise<void> {
         try {
 
-            if (this.applicationLogsData.length === 0) return;
+            if(this.applicationLogsData.length === 0){
+                return
+            }
 
             const accessToken = TokenStorage.BearerAccessToken;
-            const storedLogs = this.applicationLogsData
-
             if(!accessToken) return;
-            
-            console.log("Application Log To Server : \n");
-            console.log("Application Logs of AppLog : ", storedLogs)
+
+            const storedLogs = this.applicationLogsData
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
@@ -334,9 +328,6 @@ export class Logger {
             // clear application log from memory
             this.applicationLogsData = [] 
             
-            // this.clearLogsFromLocalStorage(this.appLogs)
-            Logger.log("INFO", "Sync Application Logs to server")
-
         } catch (error) {
             console.error("Error while sending logs to server:", error);
         }
@@ -347,15 +338,13 @@ export class Logger {
             
             if(this.logsData.length === 0) return
 
+            if(this.logsData.length === 0){
+                return
+            }
             const accessToken = TokenStorage.BearerAccessToken;
-            const storedLogs = this.logsData
-
-            console.log("Package Logs for syncing... ", storedLogs);
-            
             if(!accessToken) return;
 
-            // const storedLogs = this.logs
-            if (storedLogs.length === 0) return;
+            const storedLogs = this.logsData
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
@@ -383,9 +372,6 @@ export class Logger {
 
             // clear mftsccs log from memory
             this.logsData = [] 
-
-            // this.clearLogsFromLocalStorage(this.mftsccsBrowser)
-            // Logger.log("INFO", "Sync Application Logs to server")
 
         } catch (error) {
             console.error("Error while sending logs to server:", error);
@@ -521,10 +507,9 @@ export function getCookie(cname:string) {
             return c.substring(name.length, c.length);
           }
         }
-        return "";
+        return "";            
     } catch(error){
-        console.error("Error in getCookie()");
+        console.error("Error on getcookie");
         return ""
     }
-
   }

@@ -109,21 +109,20 @@ export class AccessTracker {
     /**
      * Syncs the concept and connection data with the server.
      */
-    // private static async syncToServer(accessToken: string): Promise<void> {
     private static async syncToServer(): Promise<void> {
         try {
             if (!Object.keys(this.conceptsData).length && !Object.keys(this.connectionsData).length) {
                 return;
             }
+
+            const accessToken = TokenStorage.BearerAccessToken
+            if(!accessToken) return;
     
             // Ensure conceptsData and connectionsData are not undefined or null
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
             const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
 
             console.log("Access Tracker Sent to SERVER..", conceptsToSend, connectionsToSend);
-
-            const accessToken = TokenStorage.BearerAccessToken;
-            if(!accessToken) return;
 
             const response = await fetch(BaseUrl.PostPrefetchConceptConnections(), {
                 method: 'POST',
@@ -141,7 +140,7 @@ export class AccessTracker {
                 throw new Error('Failed to sync data to the server.');
             }
 
-            const serverData = await response.json();
+            await response.json();
 
             this.conceptsData = {}
             this.connectionsData = {}
@@ -176,8 +175,7 @@ export class AccessTracker {
 
             if (this.nextSyncTime && currentTime >= this.nextSyncTime) {
                 // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
-                // this.syncNow().catch(console.error);
-                this.sendToServer()
+                this.syncNow().catch(console.error);
             }
         }, 60000); // Check every 60 Seconds
     }
@@ -187,13 +185,10 @@ export class AccessTracker {
      * Sync immediately called by setInterval when time to sync has arrived.
      */
     private static async syncNow(): Promise<void> {
-        const tokenString = TokenStorage.BearerAccessToken;
-        console.log("Token String from StartAutoSync : ", tokenString);
-        if (tokenString) {
-        //   await this.syncToServer(tokenString);
-          await this.syncToServer();
-        } else {
-          console.warn("[MANUAL SYNC] No valid access token found. Sync aborted.");
+        try{
+            await this.syncToServer();
+        } catch(error){
+            console.error("Error on sync access tracker");
         }
     }
 
