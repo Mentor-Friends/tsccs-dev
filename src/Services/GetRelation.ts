@@ -5,13 +5,17 @@ import { GetCompositionWithIdAndDateFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
-import { sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 
 export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
   if (serviceWorker) {
-    const res: any = await sendMessage('GetRelation', {id, relation, inpage, page})
-    // console.log('data received from sw', res)
-    return res.data
+    try {
+      const res: any = await sendMessage('GetRelation', {id, relation, inpage, page})
+      return res.data
+    } catch (error) {
+      console.error('GetRelation error sw: ', error)
+      handleServiceWorkerException(error)
+    }
   }
     let output: any[] = [];
     let  concept:Concept = await GetTheConcept(id);
@@ -37,9 +41,13 @@ export async function GetRelation(id:number, relation:string, inpage:number=10, 
 
 export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1){
   if (serviceWorker) {
-    const res: any = await sendMessage('GetRelationRaw', {id, relation, inpage, page})
-    // console.log('data received from sw', res)
-    return res.data
+    try {
+      const res: any = await sendMessage('GetRelationRaw', {id, relation, inpage, page})
+      return res.data
+    } catch (error) {
+      console.error('GetRelationRaw error sw: ', error)
+      handleServiceWorkerException(error)
+    }
   }
   let output: Concept[] = [];
   let  concept:Concept = await GetTheConcept(id);

@@ -18,7 +18,6 @@ export class Logger {
 
     // Ensure logs are managed automatically
     static {
-        // console.log("Initializing Logger with auto-sync mechanism.");
         Logger.startAutoSync();
     }
 
@@ -33,8 +32,6 @@ export class Logger {
         }
 
         Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
-        // console.log("NextTimeToSync for Upcoming : ", this.nextSyncTime)
-        // this.autoSyncInterval = window?.setInterval(() => {
         setInterval(() => {
             const currentTime = Date.now();
             // console.log("Current Time : ",currentTime);
@@ -92,7 +89,6 @@ export class Logger {
 
         Logger.logsData.push(logEntry);
         // this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
-        
     }
 
     public static log(
@@ -120,25 +116,30 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        const sessionId = getCookie("SessionId");
-        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-        const logData: LogData = {
-            userId,
-            operationType,
-            requestFrom,
-            requestIP,
-            responseStatus,
-            responseTime,
-            responseSize,
-            sessionId: sessionId?.toString(),
-            functionName,
-            functionParameters,
-            userAgent,
-            conceptsUsed,
-        };
-    
-        Logger.log("INFO", `Information logged for ${functionName}`, logData);
+        try{
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+            const logData: LogData = {
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            Logger.log("INFO", `Information logged for ${functionName}`, logData);
+        } catch(error){
+            console.error("Error on logInfo");
+        }
+
     }
     
     public static logError(
@@ -154,27 +155,30 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        const sessionId = getCookie("SessionId");
-        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-
-        const logData: LogData = {
-            userId,
-            operationType,
-            requestFrom,
-            requestIP,
-            responseStatus,
-            responseTime,
-            responseSize,
-            sessionId: sessionId?.toString(),
-            functionName,
-            functionParameters,
-            userAgent,
-            conceptsUsed,
-        };
+        try{
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
     
-        Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);
-
+            const logData: LogData = {
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);    
+        } catch(error){
+            console.error("Error on logError");
+        }
     }
 
     public static logWarning(
@@ -190,27 +194,31 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        const sessionId = getCookie("SessionId");
-        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-
-        const logData: LogData = {
-            userId,
-            operationType,
-            requestFrom,
-            requestIP,
-            responseStatus,
-            responseTime,
-            responseSize,
-            sessionId: sessionId?.toString(),
-            functionName,
-            functionParameters,
-            userAgent,
-            conceptsUsed,
-        };
+        try{
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
     
-        Logger.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
-
+            const logData: LogData = {
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            Logger.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
+    
+        } catch(error){
+            console.error("Error on logWarning");
+        }
     }
 
     public static logDebug(
@@ -226,26 +234,31 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        const sessionId = getCookie("SessionId");
-        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-
-        const logData: LogData = {
-            userId,
-            operationType,
-            requestFrom,
-            requestIP,
-            responseStatus,
-            responseTime,
-            responseSize,
-            sessionId: sessionId?.toString(),
-            functionName,
-            functionParameters,
-            userAgent,
-            conceptsUsed,
-        };
+        try{
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
     
-        Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
+            const logData: LogData = {
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
+    
+        } catch(error){
+            console.error("Error on logDebug");
+        }
     
     }    
 
@@ -288,8 +301,6 @@ export class Logger {
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
-                // console.log("The PostLogger URL on Applciation Log : ", BaseUrl.PostLogger());
-
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: { 
@@ -308,9 +319,10 @@ export class Logger {
                     return;
                 }
             }
-            
-            // this.clearLogs(this.appLogs)
 
+            // clear application log from memory
+            this.applicationLogsData = [] 
+            
         } catch (error) {
             console.error("Error while sending logs to server:", error);
         }
@@ -319,6 +331,8 @@ export class Logger {
     public static async sendLogsToServer(): Promise<void> {
         try {
             
+            if(this.logsData.length === 0) return
+
             if(this.logsData.length === 0){
                 return
             }
@@ -331,10 +345,6 @@ export class Logger {
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
 
-                // console.log("The PostLogger URL on Logs is : ", BaseUrl.PostLogger());
-                
-
-                // const response = await fetch(Logger.SERVER_URL, {
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: { 
@@ -355,7 +365,9 @@ export class Logger {
                 }
             }
 
-            this.clearLogs(this.mftsccsBrowser)
+            // clear mftsccs log from memory
+            this.logsData = [] 
+
         } catch (error) {
             console.error("Error while sending logs to server:", error);
         }
@@ -381,7 +393,7 @@ export class Logger {
         }
     }
 
-    private static clearLogs(logType:string) {
+    private static clearLogsFromLocalStorage(logType:string) {
         if (typeof localStorage === undefined) {
             console.warn('localStorage is not available');
             return;
@@ -477,17 +489,22 @@ export interface LogData {
  * @returns Cookie value
  */
 export function getCookie(cname:string) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) == ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
-      }
+    try{
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";            
+    } catch(error){
+        console.error("Error on getcookie");
+        return ""
     }
-    return "";
   }

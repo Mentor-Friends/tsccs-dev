@@ -88,7 +88,7 @@ export class ApplicationMonitor {
     }
 
     // Define ignored URLs
-    // const ignoredUrls = [BaseUrl.PostLogger(), BaseUrl.PostPrefetchConceptConnections()];
+    const ignoredUrls = [BaseUrl.PostLogger(), BaseUrl.PostPrefetchConceptConnections()];
     
     window.fetch = async (...args) => {
 
@@ -96,10 +96,16 @@ export class ApplicationMonitor {
       const urlString: string = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
 
       // Check if the URL is in the ignored URLs list
-      // if (ignoredUrls.includes(urlString)) {
-      //   console.log("Ignored URLs detected : ", urlString);
-      //   return new Response(null, { status: 200 });
-      // }
+      if (ignoredUrls.includes(urlString)) {
+        console.log("Ignored URLs detected : ", urlString);
+        let networkDetails = {
+          'url' : urlString,
+          'detail' : 'skip'
+        }
+        Logger.logApplication("INFO", "Network Request", networkDetails)
+        return originalFetch(...args);
+        // return new Response(null, { status: 200 });
+      }
   
       let networkDetails:any = {
         "request": {
@@ -216,7 +222,7 @@ export class ApplicationMonitor {
             "url" : url,
             "error" : error instanceof Error ? error.message : String(error),
           }
-          Logger.logApplication("INFO", message, data)
+          Logger.logApplication("ERROR", message, data)
         });
 
         this.addEventListener("close", () => {

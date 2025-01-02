@@ -3,7 +3,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept, sendMessage, serviceWorker } from "../app";
+import { CreateDefaultConcept, handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 /**
  * This function helps you get concept from the id. This can only be positive.
@@ -13,10 +13,14 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
 export async function GetConcept(id: number){
     try{
         if (serviceWorker) {
-            const res: any = await sendMessage('GetConcept', {id})
-            // console.log('data received from sw', res)
-            return res.data
-          }
+            try {
+                const res: any = await sendMessage('GetConcept', {id})
+                return res.data
+            } catch (error) {
+                console.error('GetConcept sw error: ', error);
+                handleServiceWorkerException(error); 
+            }
+        }
         let result = CreateDefaultConcept();
 
         var conceptUse :Concept= await ConceptsData.GetConcept(id);

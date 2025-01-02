@@ -1,6 +1,6 @@
 import { CreateTextData } from "../Api/Create/CreateTheTextData";
 import { GetCharacterByCharacter } from "../Api/GetCharacterDataByCharacter";
-import { sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
@@ -8,14 +8,16 @@ import GetConceptByCharacter from "./GetConceptByCharacter";
 import MakeTheCharacter from "./MakeTheCharacter";
 import { SplitStrings } from "./SplitStrings";
 
-export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number,
-    )
-{
+export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number) {
     if (serviceWorker) {
-        const res: any = await sendMessage('MakeTheTypeConcept', { typeString, sessionId, sessionUserId, userId })
-        // console.log('data received from sw', res)
-        return res.data
-      }
+        try {
+            const res: any = await sendMessage('MakeTheTypeConcept', { typeString, sessionId, sessionUserId, userId })
+            return res.data
+        } catch (error) {
+            console.error('MakeTheTypeConcept sw error: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
 
     let referentId: number = 999;
     let securityId: number = 999;

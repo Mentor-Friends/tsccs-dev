@@ -23,9 +23,7 @@ export class AccessTracker {
     public static incrementConcept(conceptId: number): void {
         try{
             if(conceptId){
-                console.log("Concept Id for increment is : ", conceptId);
                 this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
-                console.log("Tracked Concepts : ", this.conceptsData);
             }
         } catch(error){
             console.error("Failed on increment concept");
@@ -38,9 +36,7 @@ export class AccessTracker {
     public static incrementConnection(connectionId: number): void {
         try{
             if(connectionId){
-                console.log("Connection Id for increment is : ", connectionId);
                 this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
-                console.log("Tracked Connections : ", this.connectionsData);
             }
         } catch(error){
             console.error("Failed on increment connection");
@@ -117,6 +113,8 @@ export class AccessTracker {
             // Ensure conceptsData and connectionsData are not undefined or null
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
             const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
+
+            console.log("Access Tracker Sent to SERVER..", conceptsToSend, connectionsToSend);
 
             const response = await fetch(BaseUrl.PostPrefetchConceptConnections(), {
                 method: 'POST',

@@ -5,7 +5,7 @@ import { UpdateToDatabase } from "../../Database/indexdblocal";
 import { ConceptsData } from "../ConceptData";
 import { LocalConceptsData } from "./LocalConceptData";
 import { Connection } from "../Connection";
-import { CreateDefaultConcept, CreateDefaultLConcept, InnerActions, Logger, sendMessage, serviceWorker } from "../../app";
+import { CreateDefaultConcept, CreateDefaultLConcept, handleServiceWorkerException, InnerActions, Logger, sendMessage, serviceWorker } from "../../app";
 import { LocalConnectionData } from "./LocalConnectionData";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
@@ -84,10 +84,14 @@ export class LocalSyncData{
      static async SyncDataOnline(transactionId?: string, actions?: InnerActions){
         let startTime = performance.now()
         try{
-            console.log('sw triggered')
             if (serviceWorker) {
-                const res: any = await sendMessage('LocalSyncData__SyncDataOnline', {transactionId})
-                return res.data
+                try {
+                    const res: any = await sendMessage('LocalSyncData__SyncDataOnline', {transactionId})
+                    return res.data
+                } catch (error) {
+                    console.error('LocalSyncData__SyncDataOnline sw error: ', error);
+                    handleServiceWorkerException(error);
+                }
             }
 
             let conceptsArray: Concept[] = [];
@@ -314,51 +318,72 @@ export class LocalSyncData{
      }
 
      static async initializeTransaction(transactionId: string) {
-        console.log('sw triggered')
-        if (serviceWorker) {
-            const res: any = await sendMessage('LocalSyncData__initializeTransaction', {transactionId})
-            return res.data
+        try {
+            if (serviceWorker) {
+                try {
+                    const res: any = await sendMessage('LocalSyncData__initializeTransaction', {transactionId})
+                    return res.data
+                } catch (error) {
+                    console.error('LocalSyncData__initializeTransaction sw error: ', error);
+                    handleServiceWorkerException(error);
+                }
+            }
+    
+            if (this.transactionCollections.some(item => item.id == transactionId)) return
+    
+            this.transactionCollections.push({
+                id: transactionId,
+                data: {concepts: [], connections: []},
+                createdDate: new Date().toISOString()
+            })
+        } catch (error) {
+            console.log('error in initializeTransaction', error)
         }
-
-        if (this.transactionCollections.some(item => item.id == transactionId)) return
-
-        this.transactionCollections.push({
-            id: transactionId,
-            data: {concepts: [], connections: []},
-            createdDate: new Date().toISOString()
-        })
      }
  
      static async markTransactionActions(transactionId: string, actions: InnerActions) {
         // remove marked 
-        console.log('sw triggered')
-        if (serviceWorker) {
-            const res: any = await sendMessage('LocalSyncData__markTransactionActions', {transactionId, actions})
-            return res.data
-        }
-
-        this.transactionCollections = this.transactionCollections.map(tran => {
-            if (tran.id == transactionId) {
-                return {
-                    ...tran,
-                    data: JSON.parse(JSON.stringify(actions))
+        try {
+            if (serviceWorker) {
+                try {
+                    const res: any = await sendMessage('LocalSyncData__markTransactionActions', {transactionId, actions})
+                    return res.data
+                } catch (error) {
+                    console.error('LocalSyncData__markTransactionActions sw error: ', error);
+                    handleServiceWorkerException(error);
                 }
-            } else return tran
-        })
-        
-        this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => !actions.concepts.some(con => con.id == concept.id || con.ghostId == concept.id))
-        this.connectionSyncArray = this.connectionSyncArray.filter(connection => !actions.connections.some(con => con.id == connection.id || con.ghostId == connection.id))
-        
+            }
+    
+            this.transactionCollections = this.transactionCollections.map(tran => {
+                if (tran.id == transactionId) {
+                    return {
+                        ...tran,
+                        data: JSON.parse(JSON.stringify(actions))
+                    }
+                } else return tran
+            })
+            
+            this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => !actions.concepts.some(con => con.id == concept.id || con.ghostId == concept.id))
+            this.connectionSyncArray = this.connectionSyncArray.filter(connection => !actions.connections.some(con => con.id == connection.id || con.ghostId == connection.id))
+        } catch (error) {
+            console.log('error in markTransactionActions', error)
+        }
      }
 
      static async rollbackTransaction(transactionId: string, actions: InnerActions) {
-        console.log('sw triggered')
-        if (serviceWorker) {
-            const res: any = await sendMessage('LocalSyncData__rollbackTransaction', {transactionId, actions})
-            return res.data
-        }
-        if (this.transactionCollections.some(item => item.id == transactionId)) return
-        this.transactionCollections = this.transactionCollections.filter(tran => tran.id != transactionId)
+        try {
+            if (serviceWorker) {
+                try {
+                    const res: any = await sendMessage('LocalSyncData__rollbackTransaction', {transactionId, actions})
+                    return res.data
+                } catch (error) {
+                    console.error('LocalSyncData__rollbackTransaction sw error: ', error);
+                    handleServiceWorkerException(error);
+                }
+            }
+            if (this.transactionCollections.some(item => item.id == transactionId)) return
+            this.transactionCollections = this.transactionCollections.filter(tran => tran.id != transactionId)
+        } catch (err) {console.log('LocalSyncData, roll', err)}
      }
 
 
