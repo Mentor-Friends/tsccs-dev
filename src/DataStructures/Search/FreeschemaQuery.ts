@@ -18,6 +18,7 @@ export class FreeschemaQuery{
     outputFormat: number = NORMAL;
     name: string = "";
     reverse: boolean = false;
+    limit: boolean = false;
     includeInFilter: boolean = false;
     isOldConnectionType: boolean = false;
 }
