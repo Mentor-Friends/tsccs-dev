@@ -1,4 +1,4 @@
-import { BaseUrl, ConceptsData, ConnectionData } from "../app";
+import { BaseUrl, ConceptsData, ConnectionData, Logger } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 type CountMap = Record<number, number>;
@@ -11,9 +11,10 @@ export class AccessTracker {
     public static activateStatus:boolean = false;
     private static readonly accessData = "Access Data"
         
-    static {        
-        // console.log(`[INIT] Next Sync Time set to: ${new Date(this.nextSyncTime).toLocaleString()}`);
-        this.startAutoSync();
+    static {
+        if(this.activateStatus){
+            this.startAutoSync();
+        }
     }
 
     /**
@@ -22,8 +23,9 @@ export class AccessTracker {
     public static incrementConcept(conceptId: number): void {
         try{
             if(conceptId){
+                console.log("Concept Id for increment is : ", conceptId);
                 this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
-                // this.saveDataToLocalStorage()
+                console.log("Tracked Concepts : ", this.conceptsData);
             }
         } catch(error){
             console.error("Failed on increment concept");
@@ -36,8 +38,9 @@ export class AccessTracker {
     public static incrementConnection(connectionId: number): void {
         try{
             if(connectionId){
+                console.log("Connection Id for increment is : ", connectionId);
                 this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
-                // this.saveDataToLocalStorage()
+                console.log("Tracked Connections : ", this.connectionsData);
             }
         } catch(error){
             console.error("Failed on increment connection");
@@ -91,9 +94,7 @@ export class AccessTracker {
 
     public static async sendToServer(){
         try{
-            const accessToken = TokenStorage.BearerAccessToken
-            if(!accessToken) return;
-            await this.syncToServer(accessToken)
+            await this.syncToServer()
         } catch(error) {
             console.error("Failed to process Access Tracker Sync with Server");
         }
@@ -103,11 +104,15 @@ export class AccessTracker {
     /**
      * Syncs the concept and connection data with the server.
      */
-    public static async syncToServer(accessToken: string): Promise<void> {
+    // private static async syncToServer(accessToken: string): Promise<void> {
+    private static async syncToServer(): Promise<void> {
         try {
             if (!Object.keys(this.conceptsData).length && !Object.keys(this.connectionsData).length) {
                 return;
             }
+
+            const accessToken = TokenStorage.BearerAccessToken
+            if(!accessToken) return;
     
             // Ensure conceptsData and connectionsData are not undefined or null
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
@@ -130,14 +135,14 @@ export class AccessTracker {
             }
 
             const serverData = await response.json();
-            // console.log("Server Data after sync : ", serverData);
+
             this.conceptsData = {}
             this.connectionsData = {}
             
             this.setNextSyncTime();
-            console.log("Access Tracker Sent to SERVER..", conceptsToSend, connectionsToSend);
+
+            // Logger.log("INFO", "Sync access tracker to server")
             
-            // localStorage?.removeItem(this.accessData)
         } catch (error) {
             console.error('Sync error:', error);
         }
@@ -149,6 +154,7 @@ export class AccessTracker {
     private static setNextSyncTime(): void {
         // Calculate next sync time (current time + time interval)
         this.nextSyncTime = Date.now() + this.SYNC_INTERVAL_MS;
+        // Logger.log("INFO", "Setip access tracker next time to sync to server")
     }
 
     /**
@@ -156,13 +162,7 @@ export class AccessTracker {
      * This will automatically call `syncToServer` every 5 minutes
      */
     private static startAutoSync(): void {
-
-        const tokenString = TokenStorage.BearerAccessToken;
-
-        if (tokenString) {
-            this.syncNow().catch(console.error);
-        }
-        
+        this.setNextSyncTime() // Setup initial next sync time
         setInterval(() => {
             const currentTime = Date.now();
             // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
@@ -176,15 +176,13 @@ export class AccessTracker {
 
 
     /**
-     * Sync immediately (called by setInterval when time to sync has arrived).
+     * Sync immediately called by setInterval when time to sync has arrived.
      */
     private static async syncNow(): Promise<void> {
-        const tokenString = TokenStorage.BearerAccessToken;
-        
-        if (tokenString) {
-          await this.syncToServer(tokenString);
-        } else {
-          console.warn("[MANUAL SYNC] No valid access token found. Sync aborted.");
+        try{
+            await this.syncToServer();
+        } catch(error){
+            console.error("Error on sending accessTracker data");
         }
     }
 

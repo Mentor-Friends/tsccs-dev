@@ -275,20 +275,15 @@ export class Logger {
     */
     public static async sendApplicationLogsToServer(): Promise<void> {
         try {
-            console.log("Application Log To Server : \n");
-            // console.log("Log To Server : \n", this.applicationLogsData);
 
-            if(this.applicationLogsData.length < 0){
+            if(this.applicationLogsData.length === 0){
                 return
             }
 
             const accessToken = TokenStorage.BearerAccessToken;
-            const storedLogs = this.applicationLogsData
-
             if(!accessToken) return;
-            
-            if (storedLogs.length === 0) return;
-            // console.log("Stored Logs : ", storedLogs);
+
+            const storedLogs = this.applicationLogsData
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
@@ -323,21 +318,14 @@ export class Logger {
 
     public static async sendLogsToServer(): Promise<void> {
         try {
-            console.warn("Log sending to server...");
-            // console.log("Log To Server : \n", this.logsData);
             
-            if(this.logsData.length > 0){
+            if(this.logsData.length === 0){
                 return
             }
             const accessToken = TokenStorage.BearerAccessToken;
-            // const storedLogs = JSON.parse(localStorage?.getItem(this.mftsccsBrowser) || "[]");
-            const storedLogs = this.logsData
-            // console.log("Stored Logs for syncing... ", storedLogs);
-            
             if(!accessToken) return;
 
-            // const storedLogs = this.logs
-            if (storedLogs.length === 0) return;
+            const storedLogs = this.logsData
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
@@ -367,11 +355,9 @@ export class Logger {
                 }
             }
 
-            // localStorage?.removeItem(this.mftsccsBrowser);
-            // this.clearLogs(this.mftsccsBrowser)
+            this.clearLogs(this.mftsccsBrowser)
         } catch (error) {
             console.error("Error while sending logs to server:", error);
-            // HandleNetworkError("Request", error)
         }
     }
 
