@@ -1,6 +1,5 @@
-import { AccessTracker, BaseUrl } from "../app";
+import { BaseUrl } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
-import { HandleNetworkError } from "./ErrorHandling";
 
 export class Logger {
 
@@ -10,8 +9,11 @@ export class Logger {
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
     private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
     private static nextSyncTime: number | null = null;
-    private static appLogs:string = "app"
-    private static mftsccsBrowser:string = "mftsccs"
+    private static appLogs:string = "app";
+    private static mftsccsBrowser:string = "mftsccs";
+    public static logApplicationActivationStatus:boolean = false;
+    public static logPackageActivationStatus:boolean = false;
+
 
     // Private auto-sync interval management
     private static autoSyncInterval: number | null = null;
@@ -96,6 +98,7 @@ export class Logger {
         message: string,
         data?:any | null
     ) : void {
+        if(!this.logPackageActivationStatus) return;
         try{
             Logger.formatLogData(level, message, data || null)
         } catch(error){
@@ -116,25 +119,31 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        const sessionId = getCookie("SessionId");
-        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-        const logData: LogData = {
-            userId,
-            operationType,
-            requestFrom,
-            requestIP,
-            responseStatus,
-            responseTime,
-            responseSize,
-            sessionId: sessionId?.toString(),
-            functionName,
-            functionParameters,
-            userAgent,
-            conceptsUsed,
-        };
-    
-        Logger.log("INFO", `Information logged for ${functionName}`, logData);
+        try{
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+            const logData: LogData = {
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            Logger.log("INFO", `Information logged for ${functionName}`, logData);
+        } catch(error){
+            console.error("Error on logInfo");
+            return
+        }
+
     }
     
     public static logError(
@@ -150,28 +159,34 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        const sessionId = getCookie("SessionId");
-        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+        try{
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
 
-        const logData: LogData = {
-            userId,
-            operationType,
-            requestFrom,
-            requestIP,
-            responseStatus,
-            responseTime,
-            responseSize,
-            sessionId: sessionId?.toString(),
-            functionName,
-            functionParameters,
-            userAgent,
-            conceptsUsed,
-        };
-    
-        Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);
+            const logData: LogData = {
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);
 
+        } catch(error){
+            console.error("Error on logError");
+            return
+        }
     }
+        
 
     public static logWarning(
         startTime: number,
@@ -186,26 +201,32 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        const sessionId = getCookie("SessionId");
-        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-
-        const logData: LogData = {
-            userId,
-            operationType,
-            requestFrom,
-            requestIP,
-            responseStatus,
-            responseTime,
-            responseSize,
-            sessionId: sessionId?.toString(),
-            functionName,
-            functionParameters,
-            userAgent,
-            conceptsUsed,
-        };
+        try{
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
     
-        Logger.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
+            const logData: LogData = {
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            Logger.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
+    
+        } catch(error) {
+            console.error("Error on logWarning");
+            return
+        }
 
     }
 
@@ -222,31 +243,37 @@ export class Logger {
         userAgent?: string,
         conceptsUsed?: string[]
     ): void {
-        const sessionId = getCookie("SessionId");
-        const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-        const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-
-        const logData: LogData = {
-            userId,
-            operationType,
-            requestFrom,
-            requestIP,
-            responseStatus,
-            responseTime,
-            responseSize,
-            sessionId: sessionId?.toString(),
-            functionName,
-            functionParameters,
-            userAgent,
-            conceptsUsed,
-        };
+        try {
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
     
-        Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
+            const logData: LogData = {
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
+        } catch(error){
+            console.error("Error on logDebug");
+            return
+        }
     
     }    
 
    // Log Application Activity
     public static logApplication(type: string, message: string, data?: any): void {
+        if(!this.logApplicationActivationStatus) return;
         try {
             const timestamp = new Date().toLocaleString();
             
@@ -258,7 +285,7 @@ export class Logger {
             };
 
             Logger.applicationLogsData.push(logEntry);
-            this.saveLogToLocalStorage(this.appLogs, logEntry)
+            // this.saveLogToLocalStorage(this.appLogs, logEntry)
 
         } catch (error) {
             console.error("Failed to log application activity:", error);
@@ -271,20 +298,16 @@ export class Logger {
     */
     public static async sendApplicationLogsToServer(): Promise<void> {
         try {
-            console.log("Application Log To Server : \n");
-            // console.log("Log To Server : \n", this.applicationLogsData);
 
-            if(this.applicationLogsData.length < 0){
-                return
-            }
+            if (this.applicationLogsData.length === 0) return;
 
             const accessToken = TokenStorage.BearerAccessToken;
             const storedLogs = this.applicationLogsData
-            console.log("Application Logs of AppLog : ", storedLogs)
 
             if(!accessToken) return;
             
-            if (storedLogs.length === 0) return;
+            console.log("Application Log To Server : \n");
+            console.log("Application Logs of AppLog : ", storedLogs)
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
@@ -321,13 +344,12 @@ export class Logger {
 
     public static async sendLogsToServer(): Promise<void> {
         try {
-            console.warn("Log sending to server...");
-            // console.log("Log To Server : \n", this.logsData);
             
             if(this.logsData.length === 0) return
 
             const accessToken = TokenStorage.BearerAccessToken;
             const storedLogs = this.logsData
+
             console.log("Package Logs for syncing... ", storedLogs);
             
             if(!accessToken) return;
@@ -486,17 +508,23 @@ export interface LogData {
  * @returns Cookie value
  */
 export function getCookie(cname:string) {
-    let name = cname + "=";
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
-    for(let i = 0; i <ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) == ' ') {
-        c = c.substring(1);
-      }
-      if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
-      }
+    try{
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+    } catch(error){
+        console.error("Error in getCookie()");
+        return ""
     }
-    return "";
+
   }

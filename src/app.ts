@@ -120,6 +120,7 @@ import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPos
 import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 import { AccessTracker } from "./app";
+import { Logger } from "./app";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -176,7 +177,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flag: { logApplication?: boolean; accessTracker?:boolean; isTest?: boolean } = { logApplication: false, accessTracker:false, isTest: false }
+  flag: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = { logApplication: false, logPackage:false, accessTracker:false, isTest: false }
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -202,14 +203,26 @@ async function init(
       return true;
     }
 
-    if(flag.logApplication){
-      ApplicationMonitor.initialize()
-      console.warn("Application log started...");
-    }
-
-    if(flag.accessTracker){
-      AccessTracker.activateStatus = true
-      console.warn("Access Tracker Activated...");
+    // Flag setup
+    try{
+      if(flag.logApplication){
+        ApplicationMonitor.initialize()
+        Logger.logApplicationActivationStatus = true;
+        console.warn("Application log started...");
+      }
+  
+      if(flag.logPackage){
+        Logger.logPackageActivationStatus = true;
+        console.warn("Package log started...");
+      }
+  
+      if(flag.accessTracker){
+        AccessTracker.activateStatus = true
+        console.warn("Access Tracker Activated...");
+        console.log("Access Tracker active status : ", AccessTracker.activateStatus);
+      }
+    } catch(error){
+      console.error("Flag setup failed in init");
     }
 
     if (!("serviceWorker" in navigator)) {
