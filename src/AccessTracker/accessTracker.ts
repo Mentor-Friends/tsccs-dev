@@ -132,7 +132,7 @@ export class AccessTracker {
                 throw new Error('Failed to sync data to the server.');
             }
 
-            const serverData = await response.json();
+            await response.json();
 
             this.conceptsData = {}
             this.connectionsData = {}
