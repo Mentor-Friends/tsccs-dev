@@ -2,7 +2,7 @@ import { handleServiceWorkerException, InnerActions, sendMessage, serviceWorker 
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
-import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
+import { Logger } from "../../Middleware/logger.service";
 
 /**
  * This function creates the concept in the local system (Local memory and IndexDb) but not in the backend database
