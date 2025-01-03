@@ -183,7 +183,6 @@ export class Logger {
             console.error("Error on logError");
         }
     }
-        
 
     public static logWarning(
         startTime: number,
