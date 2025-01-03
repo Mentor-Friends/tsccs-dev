@@ -1,4 +1,5 @@
 import { Connection } from "../../app";
+import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
 import GetTheConcept from "../GetTheConcept";
 
@@ -11,7 +12,7 @@ import GetTheConcept from "../GetTheConcept";
    * @param reverse 
    * @returns 
    */
-    export async function FormatFunctionDataForDataJustId(connections:Connection[], compositionData: any[], reverse: number [] = []){
+    export async function FormatFunctionDataForDataJustId(connections:Connection[], compositionData: any[], reverse: number [] = [], CountDictionary: any[]){
             let myConcepts: number[] = [];
             for(let i=0 ; i< connections.length; i++){
               myConcepts.push(connections[i].toTheConceptId);
@@ -95,7 +96,10 @@ import GetTheConcept from "../GetTheConcept";
                     newData = {};
                     newData[key] = {};
                     compositionData[connections[i].ofTheConceptId] = newData;
+                    
                   }
+                  
+
                   try{
                     let mytype = toTheConcept?.type?.characterValue ?? "none";
                     let value = toTheConcept.characterValue;
@@ -166,7 +170,7 @@ import GetTheConcept from "../GetTheConcept";
  * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
  * @returns 
  */
-export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = []){
+export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = [], CountDictionary: any[]){
             let startTime = new Date().getTime();
             let mainData: any[] = [] ;
             let myConcepts: number[] = [];
@@ -270,6 +274,9 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                       newData[key] = {};
                       compositionData[connections[i].ofTheConceptId] = newData;
                     }
+
+
+
                     let isComp = false;
                     let linkerConceptValue = linkerConcept.characterValue;
                     if(linkerConceptValue == ""){
@@ -282,7 +289,7 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                     try{
                         let mytype = toTheConcept?.type?.characterValue ?? "none";
                       let myData = compositionData[connections[i].toTheConceptId];
-
+                      console.log("this is the mydata", myData);
                         if(myData){
                           let testData:any = {};
                           testData[mytype] = {
@@ -322,12 +329,17 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
 
                                         }else{
                                             newData[key][linkerConceptValue] = testData;
+                                            
+
 
                                         }
                                     }
                                     
                                   }
                             }
+
+                            AddCount(toTheConcept.id, CountDictionary, testData);
+
                         }
 
 
@@ -360,5 +372,20 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
               
             }
             return mainData;
+}
+
+
+export function AddCount(ofTheConceptId: number, CountDictionary: any, newData:any){
+                      // algorith for count addition
+              if(ofTheConceptId in CountDictionary){
+                let countInfo: CountInfo = CountDictionary[ofTheConceptId];
+                console.log("this is the count info",countInfo);
+
+                if(countInfo){
+                  let connType = countInfo.connectionType + "_count";
+                  newData[connType] = countInfo.count;
+                  console.log("this is the data updated", newData);
+                }
+              }
 }
           

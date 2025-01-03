@@ -7,6 +7,8 @@ import { FormatConceptsAndConnectionsNormalList, formatFunction, formatFunctionF
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
 import { FormatFromConnectionsAlteredArrayExternalJustId, FormatFunctionDataForDataJustId } from './JustIdFormat';
 import { FormatFromConnectionsAlteredArrayExternal,FormatFunctionData, FormatFunctionDataForData } from './DataIdFormat';
+import { CountInfo } from '../../DataStructures/Count/CountInfo';
+import { GetConnectionTypeForCount } from '../Common/DecodeCountInfo';
 
 /**
  * This function will help you search a concept by their type and also to query inside of it.
@@ -111,11 +113,12 @@ export async function formatLinkersNormal(linkers: number[], conceptIds: number[
  * @param reverse 
  * @returns 
  */
-export async function formatConnections(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[]){
+export async function formatConnections(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[],countInfos: CountInfo[]){
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
-    compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
+    compositionData = await formatFunction(prefetchConnections, compositionData, reverse,CountDictionary);
     compositionData = await formatFunctionForData(prefetchConnections, compositionData, reverse);
 
     let output:any  = await FormatConceptsAndConnectionsNormalList(prefetchConnections, compositionData, mainCompositionIds, newCompositionData, reverse );
@@ -133,13 +136,14 @@ export async function formatConnections(linkers: number[], conceptIds: number []
  * @param reverse 
  * @returns 
  */
-export async function formatConnectionsJustId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[]){
+export async function formatConnectionsJustId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[]){
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
-    compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
-    compositionData = await FormatFunctionDataForDataJustId(prefetchConnections, compositionData, reverse);
-    let output:any  = await FormatFromConnectionsAlteredArrayExternalJustId(prefetchConnections, compositionData, mainCompositionIds, reverse );
+    compositionData = await formatFunction(prefetchConnections, compositionData, reverse,CountDictionary);
+    compositionData = await FormatFunctionDataForDataJustId(prefetchConnections, compositionData, reverse,CountDictionary);
+    let output:any  = await FormatFromConnectionsAlteredArrayExternalJustId(prefetchConnections, compositionData, mainCompositionIds, reverse,CountDictionary );
     return output;
 }
 

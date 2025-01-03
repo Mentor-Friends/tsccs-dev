@@ -1,4 +1,5 @@
 import { Connection, GetTheConcept } from "../../app";
+import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
 
 /**
@@ -185,7 +186,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
    * This function takes in the connections and then converts the connections to the single level objects for further processing
    * This function is the builder of the arrays/ objects from the connections.
    */
-  export async function formatFunction(connections: Connection[], compositionData: any, reverse: number[]){
+  export async function formatFunction(connections: Connection[], compositionData: any, reverse: number[], CountDictionary: any[]){
 
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
@@ -257,6 +258,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
             newData[key] = {};
             compositionData[connections[i].ofTheConceptId] = newData;
           }
+          
           let linkerConcept = await GetTheConcept(connections[i].typeId);
           try{
             let mytype = toTheConcept?.type?.characterValue ?? "none";
