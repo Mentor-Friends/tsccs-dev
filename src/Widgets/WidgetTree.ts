@@ -16,6 +16,8 @@ export class WidgetTree{
     after_render: string = "";
     before_render: string = "";
     update: string = "";
+    origin: number = 0;
+    version: number = 0;
     mount_child: string = "";
     children:WidgetTree[] = [];
     wrapper: number = 0;
