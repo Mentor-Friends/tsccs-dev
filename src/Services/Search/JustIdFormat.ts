@@ -276,7 +276,7 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                     }
 
 
-
+                    AddCount(ofTheConcept.id, CountDictionary, newData);
                     let isComp = false;
                     let linkerConceptValue = linkerConcept.characterValue;
                     if(linkerConceptValue == ""){
