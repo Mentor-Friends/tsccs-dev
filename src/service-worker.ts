@@ -119,7 +119,24 @@ self.addEventListener("message", async (event: any) => {
   
     if (type != 'init' && !checkSWInitialization()) {
       console.warn('Message received before sw initialization', type)
-      event.source.postMessage(responseData)
+
+      // wait for init to complete
+      await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (TSCCS_init) {
+            clearInterval(interval)
+            resolve(undefined)
+          }
+        }, 500) // check every 500ms
+
+        setTimeout(() => {
+          console.warn('Tried waiting for init but couldn\'t complete in time: ', type)
+          clearInterval(interval)
+          resolve(undefined)
+        }, 90000) // 1.5 minute
+      })
+
+      if (!TSCCS_init) event.source.postMessage(responseData)
     }
     
     if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})

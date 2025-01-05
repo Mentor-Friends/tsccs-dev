@@ -120,6 +120,7 @@ import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPos
 import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 import { AccessTracker } from "./app";
+import { Logger } from "./app";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -176,7 +177,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flag: { logApplication?: boolean; accessTracker?:boolean; isTest?: boolean } = { logApplication: false, accessTracker:false, isTest: false }
+  flag: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = { logApplication: false, logPackage:false, accessTracker:false, isTest: false }
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -202,14 +203,25 @@ async function init(
       return true;
     }
 
-    if(flag.logApplication){
-      ApplicationMonitor.initialize()
-      console.warn("Application log started...");
-    }
-
-    if(flag.accessTracker){
-      AccessTracker.activateStatus = true
-      console.warn("Access Tracker Activated...");
+    // Flag setup
+    try{
+      if(flag.logApplication){
+        ApplicationMonitor.initialize()
+        Logger.logApplicationActivationStatus = true;
+        console.warn("Application log started...");
+      }
+  
+      if(flag.logPackage){
+        Logger.logPackageActivationStatus = true;
+        console.warn("Package log started...");
+      }
+  
+      if(flag.accessTracker){
+        AccessTracker.activateStatus = true
+        console.warn("Access Tracker Activated...");
+      }
+    } catch(error){
+      console.error("Flag setup failed in init");
     }
 
     if (!("serviceWorker" in navigator)) {
@@ -290,47 +302,47 @@ async function init(
                     );
                     
                     // If the service worker is already active, mark it as ready
-                    if (registration.active) {
-                      serviceWorkerReady = true;
-                      console.log("active sw");
-                      serviceWorker = registration.active;
+                    // if (registration.active) {
+                    //   serviceWorkerReady = true;
+                    //   console.log("active sw");
+                    //   serviceWorker = registration.active;
 
-                      await sendMessage("init", {
-                        url,
-                        aiurl,
-                        accessToken,
-                        nodeUrl,
-                        enableAi,
-                        applicationName,
-                        flag
-                      });
-                      processMessageQueue();
-                      resolve();
-                    } else {
-                      // Handle if on state change didn't trigger
-                      setTimeout(() => {
-                        if (!success) reject("Not Completed Initialization");
-                      }, 5000);
-                    }
+                    //   await sendMessage("init", {
+                    //     url,
+                    //     aiurl,
+                    //     accessToken,
+                    //     nodeUrl,
+                    //     enableAi,
+                    //     applicationName,
+                    //     flag
+                    //   });
+                    //   processMessageQueue();
+                    //   resolve();
+                    // } else {
+                    //   // Handle if on state change didn't trigger
+                    //   setTimeout(() => {
+                    //     if (!success) reject("Not Completed Initialization");
+                    //   }, 5000);
+                    // }
 
                     // state change 
-                    if (registration.installing || registration.waiting || registration.active) {
-                      registration.addEventListener('statechange', async (event: any) => {
-                        if (event?.target?.state === 'activating') {
-                          serviceWorker = navigator.serviceWorker.controller
-                          console.log('Service Worker is activating statechange');
-                          await sendMessage("init", {
-                            url,
-                            aiurl,
-                            accessToken,
-                            nodeUrl,
-                            enableAi,
-                            applicationName,
-                            flag
-                          });
-                        }
-                      });
-                    }
+                    // if (registration.installing || registration.waiting || registration.active) {
+                    //   registration.addEventListener('statechange', async (event: any) => {
+                    //     if (event?.target?.state === 'activating') {
+                    //       serviceWorker = navigator.serviceWorker.controller
+                    //       console.log('Service Worker is activating statechange');
+                    //       await sendMessage("init", {
+                    //         url,
+                    //         aiurl,
+                    //         accessToken,
+                    //         nodeUrl,
+                    //         enableAi,
+                    //         applicationName,
+                    //         flag
+                    //       });
+                    //     }
+                    //   });
+                    // }
                     // Add Listeners before initializing the service worker
 
                     // Listen for updates to the service worker
@@ -434,7 +446,7 @@ async function init(
                       // Handle if on state change didn't trigger
                       setTimeout(() => {
                         if (!success) reject("Not Completed Initialization");
-                      }, 5000);
+                      }, 10000);
                     }
 
 
@@ -482,6 +494,7 @@ export async function sendMessage(type: string, payload: any) {
   return new Promise((resolve, reject) => {
     // navigator.serviceWorker.ready
     //   .then((registration) => {
+    console.debug('debug', navigator.serviceWorker.controller, serviceWorker, serviceWorkerReady, type == 'init')
     if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
@@ -516,7 +529,7 @@ export async function sendMessage(type: string, payload: any) {
         try {
           serviceWorker.postMessage({ type, payload: newPayload })
         } catch(err) {
-          console.log(err)
+          console.log('Retrying again on catch service worker', err)
           // serviceWorker.postMessage({ type, payload: newPayload });
           serviceWorker.postMessage({ type, payload: newPayload });
         }
@@ -525,6 +538,7 @@ export async function sendMessage(type: string, payload: any) {
         console.warn(`Service Worker hasn't loaded yet. messageId: ${messageId}, type: ${type}`)
 
         if (serviceWorkerReady) console.warn('service worker was registered already but is not available NOW!!!')
+        console.info('ready', navigator.serviceWorker.ready)
         // wait one second before checking again
         setTimeout(() => {
           console.warn(`Re-Trying after certain time. messageId: ${messageId}, type: ${type}`)
@@ -544,7 +558,7 @@ export async function sendMessage(type: string, payload: any) {
       setTimeout(() => {
         reject(`No response from service worker after timeout: ${type}`);
         navigator.serviceWorker.removeEventListener("message", responseHandler);
-      }, 90000); // 90 sec
+      }, 210000); // 3.5 minutes
     } else {
       messageQueue.push({message: {type, payload: newPayload}})
       console.log('Message Queued', type, payload)
