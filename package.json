@@ -1,6 +1,6 @@
 {
   "name": "test-in-browser",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "environment": "production",
   "description": "Full Pack of concept and connection system",
   "main": "dist/main.bundle.js",
