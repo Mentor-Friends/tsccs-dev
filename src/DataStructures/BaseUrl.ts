@@ -94,25 +94,24 @@ export class BaseUrl{
     }
 
     static PostPrefetchConceptConnections(){
-        return this.NODE_URL + '/api/v1/access-tracker/sync-access-tracker'
+        // return this.NODE_URL + '/api/v1/access-tracker/sync-access-tracker'
+        return this.NODE_URL + '/access-tracker/sync-access-tracker'
     }
 
     static GetSuggestedConcepts(){
-        return this.NODE_URL + '/api/v1/access-tracker/list-concepts-file'
+        // return this.NODE_URL + '/api/v1/access-tracker/list-concepts-file'
+        return this.NODE_URL + '/access-tracker/list-concepts-file'
     }
 
     static GetSuggestedConnections(){
-        return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
+        // return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
+        return this.NODE_URL + '/access-tracker/list-connections-file'
     }
 
     static PostLogger(){
-        return this.NODE_URL + '/api/v1/logger/logs'
+        return this.NODE_URL + '/logger/logs'
+        // return this.NODE_URL + '/api/v1/logger/logs'
     }
-
-    static GetLogger(){
-        return this.NODE_URL + '/api/v1/logger/logs'
-    }
-
 
     static GetAllPrefetchConnectionsUrl(){
         return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';

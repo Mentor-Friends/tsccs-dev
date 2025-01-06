@@ -224,6 +224,7 @@ async function init(
         AccessTracker.activateStatus = true
         console.warn("Access Tracker Activated...");
       }
+      console.log("Congratualtions on successful init...")
     } catch(error){
       console.error("Flag setup failed in init");
     }

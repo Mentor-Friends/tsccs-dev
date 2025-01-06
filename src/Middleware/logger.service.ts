@@ -7,7 +7,7 @@ export class Logger {
     private static logsData: any[] = [];
     private static applicationLogsData: any[] = [];
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 120 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app";
     private static mftsccsBrowser:string = "mftsccs";
@@ -39,10 +39,10 @@ export class Logger {
             // console.log("Current Time : ",currentTime);
             if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
                 Logger.nextSyncTime = currentTime + Logger.SYNC_INTERVAL_MS;
-                Logger.sendLogsToServer();
+                Logger.sendPackageLogsToServer();
                 Logger.sendApplicationLogsToServer();
             }
-        }, 60000); // Check every minute
+        }, 30000); // Check every minute
     }
 
     /**
@@ -267,6 +267,7 @@ export class Logger {
 
    // Log Application Activity
     public static logApplication(type: string, message: string, data?: any): void {
+        console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
         if(!this.logApplicationActivationStatus) return;
         try {
             const timestamp = new Date().toLocaleString();
@@ -280,6 +281,7 @@ export class Logger {
 
             Logger.applicationLogsData.push(logEntry);
             // this.saveLogToLocalStorage(this.appLogs, logEntry)
+            console.log("Application Log Updated : ", this.applicationLogsData);
 
         } catch (error) {
             console.error("Failed to log application activity:", error);
@@ -292,6 +294,8 @@ export class Logger {
     */
     public static async sendApplicationLogsToServer(): Promise<void> {
         try {
+
+            console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
 
             if(this.applicationLogsData.length === 0){
                 return
@@ -332,8 +336,10 @@ export class Logger {
         }
     }
 
-    public static async sendLogsToServer(): Promise<void> {
+    public static async sendPackageLogsToServer(): Promise<void> {
         try {
+
+            console.log("Log from sendPackageLogsToServer : ", this.logsData);
             
             if(this.logsData.length === 0) return
 

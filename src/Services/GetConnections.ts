@@ -8,6 +8,8 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 
 export  async function GetConnectionById(id:number){
    let startTime = performance.now()
+
+   console.log("AccessTracker activation status from GetConnectionById")
    // Add connection id in access tracker
    if(AccessTracker.activateStatus === true){
       try{

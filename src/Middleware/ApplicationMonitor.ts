@@ -4,9 +4,21 @@ import { Logger } from "./logger.service";
 export class ApplicationMonitor {
   static initialize() {
     console.warn("Initialized Application Moniroring...");
+
+    // Override console.error
+    const originalConsoleError = console.error;
+    console.error = function (...args) {
+      const message = "Console Error";
+      const errorDetails = {
+        arguments: args,
+      };
+      Logger.logApplication("ERROR", message, errorDetails);
+      originalConsoleError.apply(console, args);
+    };
+
     // Log unhandled errors
     window.addEventListener("error", (event) => {
-      // console.log("error called...");
+      console.log("error called...");
       const errorDetails = {
         error: event.error?.message || event.message,
         source: event.filename,
@@ -20,7 +32,7 @@ export class ApplicationMonitor {
 
     // Log unhandled promise rejections
     window.addEventListener("unhandledrejection", (event) => {
-      // console.log("unhandledrejection called...");
+      console.log("unhandledrejection called...");
       const errorDetails = {
         reason: event.reason,
         stack: event.reason?.stack,
@@ -37,7 +49,6 @@ export class ApplicationMonitor {
 
     // Log application state changes for SPAs
     this.logRouteChanges();
-
 
   }
 
