@@ -1,5 +1,4 @@
 import { HandleFunctionError } from "../Middleware/ErrorHandling";
-import { getCookie, LogData, Logger } from "../Middleware/logger.service";
 import { GetConceptByCharacterAndType, MakeTheTypeConcept, MakeTheTypeConceptApi } from "../app";
 import { DATA_TYPES_RULES } from "./constant";
 import { FormErrors, FormFieldData } from "./interface";

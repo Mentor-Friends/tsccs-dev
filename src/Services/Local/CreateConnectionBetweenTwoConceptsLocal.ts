@@ -1,7 +1,6 @@
 import { Concept, CreateTheConnectionLocal, handleServiceWorkerException, MakeTheInstanceConceptLocal, sendMessage, serviceWorker } from "../../app";
 import { InnerActions } from "../../Constants/general.const";
-import { getCookie, LogData, Logger } from "../../Middleware/logger.service";
-import { HandleInternalError } from "../Common/ErrorPosting";
+import { Logger } from "../../Middleware/logger.service";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, actions: InnerActions = {concepts: [], connections: []}){
     let startTime = performance.now()

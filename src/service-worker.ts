@@ -1,4 +1,4 @@
-import { BaseUrl, InnerActions, LocalSyncData, updateAccessToken } from "./app";
+import { BaseUrl, InnerActions, LocalSyncData, setHasActivatedSW, updateAccessToken } from "./app";
 import { broadcastChannel } from "./Constants/general.const";
 import { IdentifierFlags } from "./DataStructures/IdentifierFlags";
 import { TokenStorage } from "./DataStructures/Security/TokenStorage";
@@ -24,6 +24,7 @@ self.addEventListener("install", (event: any) => {
 
 // Activate Service Worker
 self.addEventListener("activate", async (event: any) => {
+  await setHasActivatedSW(true)
   console.log("Service Worker activating... sw");
 
   // Using event.waitUntil to wait for the Promise to resolve
@@ -45,28 +46,12 @@ self.addEventListener("activate", async (event: any) => {
   );
 });
 // Handle 401 in service worker
-// self.addEventListener('fetch', (event: any) => {
-//   event.respondWith(
-//     fetch(event.request)
-//       .then(response => {
-//         if (response.status === 401) {
-//           // Post a message to the main thread about the 401
-//           event.source.postMessage({success: false, data: {status: 401, statusText: response.statusText}, messageId: event?.payload?.messageId})
-//           // (self as any).clients.matchAll().then((clients: any) => {
-//           //   clients.forEach((client: any) => {
-//           //     client.postMessage({ type: 'auth-error', message: 'Unauthorized' });
-//           //   });
-//           // });
-//         }
-//         return response;
-//       })
-//       .catch(error => {
-//         console.error('Network error: ', error)
-//         // Handle network errors
-//         return new Response('Network error', { status: 500 });
-//       })
-//   );
-// });
+// Fetch event listener
+self.addEventListener('fetch', (event: any) => {
+  if (!event.clientId) {
+    event.respondWith(handleInterceptRequest(event));
+  }
+});
 
 
 // For Caching gives the event when fetch request is triggered
@@ -119,7 +104,27 @@ self.addEventListener("message", async (event: any) => {
   
     if (type != 'init' && !checkSWInitialization()) {
       console.warn('Message received before sw initialization', type)
-      event.source.postMessage(responseData)
+
+      // wait for init to complete
+      await new Promise((resolve) => {
+        let count = 1
+        const interval = setInterval(() => {
+          if (TSCCS_init) {
+            clearInterval(interval)
+            resolve(undefined)
+          } else {
+            console.warn(`Watring for init ${count}:`, type)
+          }
+        }, 200) // check every 200ms
+
+        setTimeout(() => {
+          console.warn('Tried waiting for init but couldn\'t complete in time: ', type)
+          clearInterval(interval)
+          resolve(undefined)
+        }, 90000) // 1.5 minute
+      })
+
+      if (!TSCCS_init) event.source.postMessage(responseData)
     }
     
     if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})
@@ -174,7 +179,7 @@ self.addEventListener("message", async (event: any) => {
     
     event.source.postMessage(responseData)
   } catch (error: any) {
-    console.log('Service worker Message Handle Error: ', type, error)
+    console.error('Service worker Message Handle Error: ', type, error)
     if (error?.status == 401 || error?.status == 500) {
       responseData = {success: false, data: {status: error.status, statusText: error?.url}, messageId: payload.messageId}
     }
@@ -328,3 +333,79 @@ const checkSWInitialization = () => {
   }
   return true
 }
+
+// let refreshingToken = false;
+// let refreshTokenPromise;
+
+const handleInterceptRequest = async (event: any) => {
+  try {
+    const response = await fetch(event.request);
+
+    // If the response is 401 (Unauthorized), send it back to the main thread
+    if (response.status === 401) {
+      const messageId = Math.random().toString(36).substring(2)
+      event.waitUntil(
+        // (self as any).clients.matchAll().then((clients: any) => {
+        //     clients.forEach(async (client: any) => {
+                // client.postMessage({
+                event.source.postMessage({
+                    type: 'API_401',
+                    messageId,
+                    message: 'Unauthorized',
+                    payload: {
+                      method: event.request.method,
+                      url: event.request.url,
+                      headers: Array.from(event.request.headers.entries()),  // Convert headers to array
+                      // body: await event.request.clone().text()  // Clone and send the body
+                      body: await event.request.clone().json()  // Clone and send the body
+                    }
+                })
+        //     });
+        // })
+      );
+      // Wait for the main thread to send back the response
+      const newResponse = await new Promise((resolve) => {
+        console.log('Re resolving 401', response.url)
+        // fallback 
+        setTimeout(() => resolve(response), 60000) // 60 sec
+
+        navigator.serviceWorker.addEventListener('message', (e) => {
+          if (e.data && e.data?.messageId == messageId && e.data?.type === 'API_RESPONSE') {
+            if (e?.data?.response)
+              resolve(e.data.response); // Resolve with the old response
+            else {
+              console.log('Unable to resolve re 401', response.url)
+              resolve(response); // Resolve with the old response
+            }
+          }
+        });
+      });
+      return newResponse; // Return the new response
+    }
+
+    // if (response.status == 401) {
+
+    //   if (!refreshingToken) {
+    //     refreshingToken = true;
+    //     refreshTokenPromise = refreshToken()
+    //   }
+    //   console.warn('Awating to perform token refresh')
+    //   // set options to update if need else not
+    //   setTimeout(() => {
+    //     return response
+    //   }, 30000) // return after 30 sec if unable to update token
+      
+    //   await refreshingToken
+
+    //   const clonedRequest = event.request.clone()
+    //   clonedRequest.headers.set()
+      
+    // }
+    
+    // If no issues, return the response as is
+    return response
+  } catch (error) {
+    console.error('Error occured during 401 intercepting', error)
+    throw error
+  }
+} 

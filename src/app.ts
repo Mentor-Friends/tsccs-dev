@@ -120,6 +120,7 @@ import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPos
 import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 import { AccessTracker } from "./app";
+import { Logger } from "./app";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -146,7 +147,11 @@ export var serviceWorker: any;
 const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
 export let subscribedListeners: listeners[] = [];
 let serviceWorkerReady = false;
-let messageQueue: any[] = []
+let messageQueue: any[] = [];
+// for sw use only START
+export let hasActivatedSW: boolean = false
+export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
+// for sw use only END
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
@@ -176,7 +181,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flag: { logApplication?: boolean; accessTracker?:boolean; isTest?: boolean } = { logApplication: false, accessTracker:false, isTest: false }
+  flag: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = { logApplication: false, logPackage:false, accessTracker:false, isTest: false }
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -202,14 +207,25 @@ async function init(
       return true;
     }
 
-    if(flag.logApplication){
-      ApplicationMonitor.initialize()
-      console.warn("Application log started...");
-    }
-
-    if(flag.accessTracker){
-      AccessTracker.activateStatus = true
-      console.warn("Access Tracker Activated...");
+    // Flag setup
+    try{
+      if(flag.logApplication){
+        ApplicationMonitor.initialize()
+        Logger.logApplicationActivationStatus = true;
+        console.warn("Application log started...");
+      }
+  
+      if(flag.logPackage){
+        Logger.logPackageActivationStatus = true;
+        console.warn("Package log started...");
+      }
+  
+      if(flag.accessTracker){
+        AccessTracker.activateStatus = true
+        console.warn("Access Tracker Activated...");
+      }
+    } catch(error){
+      console.error("Flag setup failed in init");
     }
 
     if (!("serviceWorker" in navigator)) {
@@ -218,6 +234,7 @@ async function init(
       return
     }
 
+    listenPostMessagaes()
     listenBroadCastMessages()
     if (enableSW && enableSW.activate && enableSW.manual) {
       await new Promise((resolve, reject) => {
@@ -290,47 +307,47 @@ async function init(
                     );
                     
                     // If the service worker is already active, mark it as ready
-                    if (registration.active) {
-                      serviceWorkerReady = true;
-                      console.log("active sw");
-                      serviceWorker = registration.active;
+                    // if (registration.active) {
+                    //   serviceWorkerReady = true;
+                    //   console.log("active sw");
+                    //   serviceWorker = registration.active;
 
-                      await sendMessage("init", {
-                        url,
-                        aiurl,
-                        accessToken,
-                        nodeUrl,
-                        enableAi,
-                        applicationName,
-                        flag
-                      });
-                      processMessageQueue();
-                      resolve();
-                    } else {
-                      // Handle if on state change didn't trigger
-                      setTimeout(() => {
-                        if (!success) reject("Not Completed Initialization");
-                      }, 5000);
-                    }
+                    //   await sendMessage("init", {
+                    //     url,
+                    //     aiurl,
+                    //     accessToken,
+                    //     nodeUrl,
+                    //     enableAi,
+                    //     applicationName,
+                    //     flag
+                    //   });
+                    //   processMessageQueue();
+                    //   resolve();
+                    // } else {
+                    //   // Handle if on state change didn't trigger
+                    //   setTimeout(() => {
+                    //     if (!success) reject("Not Completed Initialization");
+                    //   }, 5000);
+                    // }
 
                     // state change 
-                    if (registration.installing || registration.waiting || registration.active) {
-                      registration.addEventListener('statechange', async (event: any) => {
-                        if (event?.target?.state === 'activating') {
-                          serviceWorker = navigator.serviceWorker.controller
-                          console.log('Service Worker is activating statechange');
-                          await sendMessage("init", {
-                            url,
-                            aiurl,
-                            accessToken,
-                            nodeUrl,
-                            enableAi,
-                            applicationName,
-                            flag
-                          });
-                        }
-                      });
-                    }
+                    // if (registration.installing || registration.waiting || registration.active) {
+                    //   registration.addEventListener('statechange', async (event: any) => {
+                    //     if (event?.target?.state === 'activating') {
+                    //       serviceWorker = navigator.serviceWorker.controller
+                    //       console.log('Service Worker is activating statechange');
+                    //       await sendMessage("init", {
+                    //         url,
+                    //         aiurl,
+                    //         accessToken,
+                    //         nodeUrl,
+                    //         enableAi,
+                    //         applicationName,
+                    //         flag
+                    //       });
+                    //     }
+                    //   });
+                    // }
                     // Add Listeners before initializing the service worker
 
                     // Listen for updates to the service worker
@@ -340,7 +357,7 @@ async function init(
                       console.log("new worker", newWorker);
                       if (newWorker) {
                         newWorker.onstatechange = async () => {
-                          console.log("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
+                          console.warn("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
                           if (newWorker.state === "installing") {
                             console.log("Service Worker installing");
                             serviceWorker = undefined
@@ -379,7 +396,7 @@ async function init(
                       console.warn('controller change triggered', navigator.serviceWorker.controller)
                       if (navigator.serviceWorker.controller) {
                         serviceWorker = navigator.serviceWorker.controller
-                        console.log('Service worker has been activated');
+                        console.warn('Service worker has been activated; controller change');
                         await sendMessage("init", {
                           url,
                           aiurl,
@@ -399,7 +416,7 @@ async function init(
                       registration.addEventListener('statechange', async (event: any) => {
                         if (event?.target?.state === 'activating') {
                           serviceWorker = navigator.serviceWorker.controller
-                          console.log('Service Worker is activating statechange');
+                          console.warn('Service Worker is activating statechange');
                           await sendMessage("init", {
                             url,
                             aiurl,
@@ -434,7 +451,7 @@ async function init(
                       // Handle if on state change didn't trigger
                       setTimeout(() => {
                         if (!success) reject("Not Completed Initialization");
-                      }, 5000);
+                      }, 10000);
                     }
 
 
@@ -482,6 +499,7 @@ export async function sendMessage(type: string, payload: any) {
   return new Promise((resolve, reject) => {
     // navigator.serviceWorker.ready
     //   .then((registration) => {
+    console.debug('debug', navigator.serviceWorker.controller, serviceWorker, serviceWorkerReady, type == 'init')
     if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
@@ -516,7 +534,7 @@ export async function sendMessage(type: string, payload: any) {
         try {
           serviceWorker.postMessage({ type, payload: newPayload })
         } catch(err) {
-          console.log(err)
+          console.log('Retrying again on catch service worker', err)
           // serviceWorker.postMessage({ type, payload: newPayload });
           serviceWorker.postMessage({ type, payload: newPayload });
         }
@@ -525,6 +543,7 @@ export async function sendMessage(type: string, payload: any) {
         console.warn(`Service Worker hasn't loaded yet. messageId: ${messageId}, type: ${type}`)
 
         if (serviceWorkerReady) console.warn('service worker was registered already but is not available NOW!!!')
+        console.info('ready', navigator.serviceWorker.ready)
         // wait one second before checking again
         setTimeout(() => {
           console.warn(`Re-Trying after certain time. messageId: ${messageId}, type: ${type}`)
@@ -544,7 +563,7 @@ export async function sendMessage(type: string, payload: any) {
       setTimeout(() => {
         reject(`No response from service worker after timeout: ${type}`);
         navigator.serviceWorker.removeEventListener("message", responseHandler);
-      }, 90000); // 90 sec
+      }, 210000); // 3.5 minutes
     } else {
       messageQueue.push({message: {type, payload: newPayload}})
       console.log('Message Queued', type, payload)
@@ -619,8 +638,51 @@ function listenBroadCastMessages() {
       if (broadcastActions[type]) {
         responseData = await broadcastActions[type](payload);
       } else {
-        console.log(`Unable to handle "${type}" case in BC service worker`)
+        console.warn(`Unable to handle "${type}" case in BC service worker`)
       }
+    
+  });
+}
+/**
+ * Method to trigger broadcast message listener
+ */
+function listenPostMessagaes() {
+  // broadcast event can be listened through both the service worker and other tabs
+  navigator.serviceWorker.addEventListener('message', async (event: any) => {
+    try {
+      if (event.data && event.data.type === 'API_401') {
+        const { requestDetails } = event.data;
+  
+        // Re-create the POST request with the same headers and body
+        const requestOptions = {
+            method: requestDetails.method,
+            headers: new Headers(requestDetails.headers),
+            body: requestDetails.body  // Pass the original body
+        };
+  
+        // Re-hit the API with the same details
+        const apiResponse = await fetch(requestDetails.url, requestOptions);
+        const responseBody = await apiResponse?.json(); // Get the response text
+  
+        // Send the response back to the Service Worker (same client)
+        navigator?.serviceWorker?.controller?.postMessage({
+            type: 'API_RESPONSE',
+            messageId: event.data.messageId,
+            response: new Response(responseBody, {
+              status: apiResponse.status,
+              statusText: apiResponse.statusText,
+              headers: apiResponse.headers
+            })
+        });
+    }
+
+  } catch (error) {
+    console.error("Error during listenPostMessage", error)
+    navigator?.serviceWorker?.controller?.postMessage({
+      type: 'API_RESPONSE',
+      messageId: event.data.messageId
+    })
+  }
     
   });
 }
@@ -755,9 +817,11 @@ async function processMessageQueue() {
 }
 
 export const handleServiceWorkerException = (error: any) => {
+  // if (error instanceof FreeSchemaResponse && error.getStatus() != 401) {
   if (error instanceof FreeSchemaResponse) {
     console.error('FreeSchemaResponse Error', error)
     throw error
   }
+  // if (error instanceof FreeSchemaResponse && error.getStatus() == 401) console.error('401 triggered in sw defaulting')
   console.error('Service Worker Error', error)
 }

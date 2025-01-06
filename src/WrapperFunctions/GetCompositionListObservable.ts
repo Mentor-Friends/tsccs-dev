@@ -1,6 +1,5 @@
 import { GetAllConceptsByType } from "../Api/GetAllConceptsByType";
 import { ConceptsData, Connection, ConnectionData, DATAID, GetAllConnectionsOfCompositionBulk, GetComposition, GetCompositionList, GetConceptByCharacter, JUSTDATA, NORMAL } from "../app";
-import { getCookie, LogData, Logger } from "../Middleware/logger.service";
 import { GetCompositionById, GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionWithIdFromMemory, RecursiveFetchBuildLayer } from "../Services/GetComposition";
 import { DependencyObserver } from "./DepenedencyObserver";
 import { GetCompositionListener, GetCompositionObservable } from "./GetCompositionObservable";

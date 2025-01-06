@@ -104,7 +104,6 @@ export class ApplicationMonitor {
         }
         Logger.logApplication("INFO", "Network Request", networkDetails)
         return originalFetch(...args);
-        // return new Response(null, { status: 200 });
       }
   
       let networkDetails:any = {
