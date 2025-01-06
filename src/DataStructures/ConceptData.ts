@@ -119,6 +119,9 @@ export class ConceptsData{
     }
 
     static async GetConcept(id: number){
+        if(id==0 || id==undefined || id == null) {
+            return CreateDefaultConcept()
+        }
         if (serviceWorker) {
             try {
                 const res: any = await sendMessage('ConceptsData__GetConcept', {id})

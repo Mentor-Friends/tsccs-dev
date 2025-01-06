@@ -12,6 +12,9 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  */
 export async function GetConcept(id: number){
     try{
+        if(id==0 || id==undefined || id == null) {
+            return CreateDefaultConcept()
+        }
         if (serviceWorker) {
             try {
                 const res: any = await sendMessage('GetConcept', {id})
