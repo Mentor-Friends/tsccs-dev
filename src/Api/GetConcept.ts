@@ -25,7 +25,9 @@ export async function GetConcept(id: number){
             }
         }
         let result = CreateDefaultConcept();
-
+        if(id==0 || id==undefined || id == null) {
+            return result;
+        }
         var conceptUse :Concept= await ConceptsData.GetConcept(id);
         let isNpc = ConceptsData.GetNpc(id);
         if(conceptUse.id != 0 || isNpc){
