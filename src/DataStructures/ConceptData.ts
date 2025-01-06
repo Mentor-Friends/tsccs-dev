@@ -128,6 +128,9 @@ export class ConceptsData{
                 handleServiceWorkerException(error);
             }
         }
+        if(id==0 || id==undefined || id == null) {
+            return CreateDefaultConcept();
+        }
         var  myConcept: Concept = CreateDefaultConcept();
         var node = await BinaryTree.getNodeFromTree(id);
         if(node?.value){
