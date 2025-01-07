@@ -20,7 +20,7 @@ export class WidgetTree{
     version: number = 0;
     mount_child: string = "";
     children:WidgetTree[] = [];
-    wrapper: number = 0;
+    wrapper: string = '0';
     widget: BuilderStatefulWidget = new BuilderStatefulWidget();
 
 }
