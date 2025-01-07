@@ -226,6 +226,7 @@ export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise
     for(let j=0 ; j< connectionsAll.length; j++){
         prefetchConcepts.push(connectionsAll[j].ofTheConceptId);
         prefetchConcepts.push(connectionsAll[j].toTheConceptId);
+        prefetchConcepts.push(connectionsAll[j].typeId);
     }
     await GetConceptBulk(prefetchConcepts);
     return connectionsAll;
