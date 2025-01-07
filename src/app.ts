@@ -147,7 +147,11 @@ export var serviceWorker: any;
 const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
 export let subscribedListeners: listeners[] = [];
 let serviceWorkerReady = false;
-let messageQueue: any[] = []
+let messageQueue: any[] = [];
+// for sw use only START
+export let hasActivatedSW: boolean = false
+export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
+// for sw use only END
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
@@ -230,6 +234,7 @@ async function init(
       return
     }
 
+    listenPostMessagaes()
     listenBroadCastMessages()
     if (enableSW && enableSW.activate && enableSW.manual) {
       await new Promise((resolve, reject) => {
@@ -352,7 +357,7 @@ async function init(
                       console.log("new worker", newWorker);
                       if (newWorker) {
                         newWorker.onstatechange = async () => {
-                          console.log("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
+                          console.warn("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
                           if (newWorker.state === "installing") {
                             console.log("Service Worker installing");
                             serviceWorker = undefined
@@ -391,7 +396,7 @@ async function init(
                       console.warn('controller change triggered', navigator.serviceWorker.controller)
                       if (navigator.serviceWorker.controller) {
                         serviceWorker = navigator.serviceWorker.controller
-                        console.log('Service worker has been activated');
+                        console.warn('Service worker has been activated; controller change');
                         await sendMessage("init", {
                           url,
                           aiurl,
@@ -411,7 +416,7 @@ async function init(
                       registration.addEventListener('statechange', async (event: any) => {
                         if (event?.target?.state === 'activating') {
                           serviceWorker = navigator.serviceWorker.controller
-                          console.log('Service Worker is activating statechange');
+                          console.warn('Service Worker is activating statechange');
                           await sendMessage("init", {
                             url,
                             aiurl,
@@ -633,8 +638,51 @@ function listenBroadCastMessages() {
       if (broadcastActions[type]) {
         responseData = await broadcastActions[type](payload);
       } else {
-        console.log(`Unable to handle "${type}" case in BC service worker`)
+        console.warn(`Unable to handle "${type}" case in BC service worker`)
       }
+    
+  });
+}
+/**
+ * Method to trigger broadcast message listener
+ */
+function listenPostMessagaes() {
+  // broadcast event can be listened through both the service worker and other tabs
+  navigator.serviceWorker.addEventListener('message', async (event: any) => {
+    try {
+      if (event.data && event.data.type === 'API_401') {
+        const { requestDetails } = event.data;
+  
+        // Re-create the POST request with the same headers and body
+        const requestOptions = {
+            method: requestDetails.method,
+            headers: new Headers(requestDetails.headers),
+            body: requestDetails.body  // Pass the original body
+        };
+  
+        // Re-hit the API with the same details
+        const apiResponse = await fetch(requestDetails.url, requestOptions);
+        const responseBody = await apiResponse?.json(); // Get the response text
+  
+        // Send the response back to the Service Worker (same client)
+        navigator?.serviceWorker?.controller?.postMessage({
+            type: 'API_RESPONSE',
+            messageId: event.data.messageId,
+            response: new Response(responseBody, {
+              status: apiResponse.status,
+              statusText: apiResponse.statusText,
+              headers: apiResponse.headers
+            })
+        });
+    }
+
+  } catch (error) {
+    console.error("Error during listenPostMessage", error)
+    navigator?.serviceWorker?.controller?.postMessage({
+      type: 'API_RESPONSE',
+      messageId: event.data.messageId
+    })
+  }
     
   });
 }
@@ -769,9 +817,11 @@ async function processMessageQueue() {
 }
 
 export const handleServiceWorkerException = (error: any) => {
+  // if (error instanceof FreeSchemaResponse && error.getStatus() != 401) {
   if (error instanceof FreeSchemaResponse) {
     console.error('FreeSchemaResponse Error', error)
     throw error
   }
+  // if (error instanceof FreeSchemaResponse && error.getStatus() == 401) console.error('401 triggered in sw defaulting')
   console.error('Service Worker Error', error)
 }
