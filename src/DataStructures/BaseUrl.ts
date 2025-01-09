@@ -109,8 +109,7 @@ export class BaseUrl{
     }
 
     static GetSuggestedConnections(){
-        // return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
-        return this.NODE_URL + '/access-tracker/list-connections-file'
+        return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
     }
 
     static PostLogger(){
