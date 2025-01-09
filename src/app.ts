@@ -485,7 +485,6 @@ export async function sendMessage(type: string, payload: any) {
   return new Promise((resolve, reject) => {
     // navigator.serviceWorker.ready
     //   .then((registration) => {
-    console.debug('debug', navigator.serviceWorker.controller, serviceWorker, serviceWorkerReady, type == 'init')
     if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
