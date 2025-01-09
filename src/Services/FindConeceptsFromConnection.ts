@@ -17,6 +17,9 @@ export  async function FindConceptsFromConnections(connectionList:Connection[] =
           if(!ConceptList.includes(connectionList[i].toTheConceptId)){
             ConceptList.push(connectionList[i].toTheConceptId);
           }
+          if(!ConceptList.includes(connectionList[i].typeId)){
+            ConceptList.push(connectionList[i].typeId);
+          }
 
         }
 
