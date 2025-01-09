@@ -121,6 +121,7 @@ import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 import { AccessTracker } from "./app";
 import { Logger } from "./app";
+import { BASE_URL } from "./Constants/ApiConstants";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -162,6 +163,8 @@ function updateAccessToken(accessToken: string = "") {
   TokenStorage.BearerAccessToken = accessToken;
   if (serviceWorker) sendMessage('updateAccessToken', { accessToken })
 }
+
+
 /**
  *
  * @param url This is the url for the backend c# system or our main data fabric server
@@ -181,7 +184,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flag: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = { logApplication: false, logPackage:false, accessTracker:false, isTest: false }
+  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {}
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -194,39 +197,21 @@ async function init(
     // BaseUrl.BASE_RANDOMIZER = 999;
     
     BaseUrl.setRandomizer(randomizer)
-    if (flag.isTest) {
-      IdentifierFlags.isDataLoaded = true;
-      IdentifierFlags.isCharacterLoaded = true;
-      IdentifierFlags.isTypeLoaded = true;
-      IdentifierFlags.isLocalDataLoaded = true;
-      IdentifierFlags.isLocalTypeLoaded = true;
-      IdentifierFlags.isLocalCharacterLoaded = true;
-      IdentifierFlags.isConnectionLoaded = true;
-      IdentifierFlags.isConnectionTypeLoaded = true;
-      IdentifierFlags.isLocalConnectionLoaded = true;
-      return true;
-    }
 
-    // Flag setup
-    try{
-      if(flag.logApplication){
-        ApplicationMonitor.initialize()
-        Logger.logApplicationActivationStatus = true;
-        console.warn("Application log started...");
-      }
-  
-      if(flag.logPackage){
-        Logger.logPackageActivationStatus = true;
-        console.warn("Package log started...");
-      }
-  
-      if(flag.accessTracker){
-        AccessTracker.activateStatus = true
-        console.warn("Access Tracker Activated...");
-      }
-    } catch(error){
-      console.error("Flag setup failed in init");
-    }
+    // Change Default Flags
+    const defaultFlags = {
+      logApplication: false,
+      logPackage: false,
+      accessTracker: false,
+      isTest: false
+    };
+    BaseUrl.FLAGS = defaultFlags
+
+    // Merge Provided Flags with Defaults
+    BaseUrl.FLAGS = { ...defaultFlags, ...flags };
+
+    initializeFlags(BaseUrl.FLAGS)
+    // console.log("BaseUrl.FLAGS before sending to service worker : ",  BaseUrl.FLAGS)
 
     if (!("serviceWorker" in navigator)) {
       await initConceptConnection();
@@ -249,7 +234,7 @@ async function init(
             nodeUrl,
             enableAi,
             applicationName,
-            flag
+            flags
           });
           resolve('done')
         })
@@ -319,7 +304,7 @@ async function init(
                     //     nodeUrl,
                     //     enableAi,
                     //     applicationName,
-                    //     flag
+                    //     flags
                     //   });
                     //   processMessageQueue();
                     //   resolve();
@@ -343,7 +328,7 @@ async function init(
                     //         nodeUrl,
                     //         enableAi,
                     //         applicationName,
-                    //         flag
+                    //         flags
                     //       });
                     //     }
                     //   });
@@ -371,6 +356,7 @@ async function init(
                               registration
                             );
                             serviceWorker = newWorker;
+                            console.log("This is a flag after sw init : ", flags)
                             // serviceWorker = registration.active;
                             // Send init message now that it's active
                             await sendMessage("init", {
@@ -380,7 +366,7 @@ async function init(
                               nodeUrl,
                               enableAi,
                               applicationName,
-                              flag
+                              flags
                             });
                             success = true;
                             serviceWorkerReady = true;
@@ -404,7 +390,7 @@ async function init(
                           nodeUrl,
                           enableAi,
                           applicationName,
-                          flag                          
+                          flags                          
                         });
                         // The new service worker is now controlling the page
                         // You can reload the page if necessary or handle the update process here
@@ -424,7 +410,7 @@ async function init(
                             nodeUrl,
                             enableAi,
                             applicationName,
-                            flag,
+                            flags,
                           });
                         }
                       });
@@ -443,7 +429,7 @@ async function init(
                         nodeUrl,
                         enableAi,
                         applicationName,
-                        flag,
+                        flags,
                       });
                       processMessageQueue();
                       resolve();
@@ -619,7 +605,8 @@ const broadcastActions: any = {
       accessToken: TokenStorage.BearerAccessToken,
       nodeUrl: BaseUrl.NODE_URL,
       enableAi: false,
-      applicationName: BaseUrl.BASE_APPLICATION
+      applicationName: BaseUrl.BASE_APPLICATION,
+      flags: BaseUrl.FLAGS
     });
     return { success: true }
   }
@@ -820,4 +807,41 @@ export const handleServiceWorkerException = (error: any) => {
   }
   // if (error instanceof FreeSchemaResponse && error.getStatus() == 401) console.error('401 triggered in sw defaulting')
   console.error('Service Worker Error', error)
+}
+
+/**
+ * Function to setup initial flag
+ */
+function initializeFlags(flags: any) {
+  try {
+    if (flags.logApplication) {
+      ApplicationMonitor.initialize();
+      Logger.logApplicationActivationStatus = true;
+      console.warn("Application log started.");
+    }
+    if (flags.logPackage) {
+      Logger.logPackageActivationStatus = true;
+      console.warn("Package log started.");
+    }
+    if (flags.accessTracker) {
+      AccessTracker.activateStatus = true;
+      console.warn("Access Tracker Activated.");
+    }
+    if (flags.isTest) {
+      IdentifierFlags.isDataLoaded = true;
+      IdentifierFlags.isCharacterLoaded = true;
+      IdentifierFlags.isTypeLoaded = true;
+      IdentifierFlags.isLocalDataLoaded = true;
+      IdentifierFlags.isLocalTypeLoaded = true;
+      IdentifierFlags.isLocalCharacterLoaded = true;
+      IdentifierFlags.isConnectionLoaded = true;
+      IdentifierFlags.isConnectionTypeLoaded = true;
+      IdentifierFlags.isLocalConnectionLoaded = true;
+      // return true;
+    }
+    return flags
+  } catch (error) {
+    console.error("Failed to initialize flags:", error);
+    throw error;
+  }
 }
