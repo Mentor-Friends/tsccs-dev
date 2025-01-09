@@ -29,7 +29,7 @@ export class BaseUrl{
     }
     static getRandomizer() {
         return this.BASE_RANDOMIZER
-        }
+    }
 
 
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';
@@ -101,13 +101,11 @@ export class BaseUrl{
     }
 
     static PostPrefetchConceptConnections(){
-        // return this.NODE_URL + '/api/v1/access-tracker/sync-access-tracker'
-        return this.NODE_URL + '/access-tracker/sync-access-tracker'
+        return this.NODE_URL + '/api/v1/access-tracker/sync-access-tracker'
     }
 
     static GetSuggestedConcepts(){
-        // return this.NODE_URL + '/api/v1/access-tracker/list-concepts-file'
-        return this.NODE_URL + '/access-tracker/list-concepts-file'
+        return this.NODE_URL + '/api/v1/access-tracker/list-concepts-file'
     }
 
     static GetSuggestedConnections(){
