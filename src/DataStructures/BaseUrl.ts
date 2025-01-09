@@ -113,8 +113,7 @@ export class BaseUrl{
     }
 
     static PostLogger(){
-        return this.NODE_URL + '/logger/logs'
-        // return this.NODE_URL + '/api/v1/logger/logs'
+        return this.NODE_URL + '/api/v1/logger/logs'
     }
 
     static GetAllPrefetchConnectionsUrl(){
