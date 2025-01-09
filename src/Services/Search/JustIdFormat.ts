@@ -289,7 +289,6 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                     try{
                         let mytype = toTheConcept?.type?.characterValue ?? "none";
                       let myData = compositionData[connections[i].toTheConceptId];
-                      console.log("this is the mydata", myData);
                         if(myData){
                           let testData:any = {};
                           testData[mytype] = {
