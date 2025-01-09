@@ -3,22 +3,68 @@ import { Logger } from "./logger.service";
 
 export class ApplicationMonitor {
   static initialize() {
-    console.warn("Initialized Application Moniroring...");
+    console.warn("Initialized Application Moniroring for tracking error...")
 
-    // Override console.error
-    const originalConsoleError = console.error;
-    console.error = function (...args) {
-      const message = "Console Error";
+    this.initGlobalErrorHandlers();
+    this.logCatchError()
+    this.logErrorEvent()
+    this.logUnhandledError()
+    
+    // Log user interactions
+    this.logUserInteractions()
+
+    // Log network requests requires interception with Service Worker or monkey-patching
+    this.logNetworkRequests();
+
+    // Log application state changes for SPAs
+    this.logRouteChanges();
+
+  } 
+
+  // Initialize global error handlers for JavaScript errors and promise rejections
+  static initGlobalErrorHandlers() {
+    // console.log("Into initGlobalErrorHandlers.")
+    if(typeof window === undefined) return;
+    // Track runtime errors
+    window.onerror = (message, source, lineno, colno, error) => {
       const errorDetails = {
-        arguments: args,
+        message,
+        source,
+        lineno,
+        colno,
+        stack: error?.stack || 'undefined',
       };
-      Logger.logApplication("ERROR", message, errorDetails);
-      originalConsoleError.apply(console, args);
+      Logger.logApplication("ERROR", "Runtime Error", errorDetails);
     };
 
+    // Track unhandled promise rejections
+    window.onunhandledrejection = (event) => {
+      Logger.logApplication("ERROR", "Unhandled Promise Rejection", {
+        message: event.reason ? event.reason.message : event.reason,
+        stack: event.reason ? event.reason.stack : null,
+      });
+    };
+  }
+
+  static logCatchError() {
+    try {
+      const originalConsoleError = console.error;
+      console.log("Inside originalConsoleError...")
+      console.error = function (...args) {
+        const message = "Console Error";
+        const errorDetails = { arguments: args };
+        Logger.logApplication("ERROR", message, errorDetails);
+        originalConsoleError.apply(console, args);
+      };
+    } catch (error) {
+      console.warn("Failed to override console.error:", error);
+    }
+  }
+  
+  static logErrorEvent() {
     // Log unhandled errors
     window.addEventListener("error", (event) => {
-      console.log("error called...");
+      console.log("Inside error event...")
       const errorDetails = {
         error: event.error?.message || event.message,
         source: event.filename,
@@ -29,31 +75,23 @@ export class ApplicationMonitor {
       const message = "Unhandled Error"
       Logger.logApplication("Error", message, errorDetails)
     });
-
-    // Log unhandled promise rejections
-    window.addEventListener("unhandledrejection", (event) => {
-      console.log("unhandledrejection called...");
-      const errorDetails = {
-        reason: event.reason,
-        stack: event.reason?.stack,
-      }
-      const message = "Unhandled Promise Rejection"
-      Logger.logApplication("Error", message, errorDetails)
-    });
-
-    // Log user interactions
-    this.logUserInteractions()
-
-    // Log network requests requires interception with Service Worker or monkey-patching
-    this.logNetworkRequests();
-
-    // Log application state changes for SPAs
-    this.logRouteChanges();
-
   }
 
-   // Log user interactions
-   static logUserInteractions() {
+
+  static logUnhandledError() {
+    // Log unhandled promise rejections
+    window.addEventListener("unhandledrejection", (event) => {
+      console.log("Inside unhandledrejection...")
+      const errorDetails = {
+        reason: event.reason?.message || String(event.reason),
+        stack: event.reason?.stack || "No stack trace available",
+      };
+      Logger.logApplication("ERROR", "Unhandled Promise Rejection", errorDetails);
+    });
+  }
+
+  // Log user interactions
+  static logUserInteractions() {
     document.addEventListener("click", (event) => {
       const target = event.target as HTMLElement;
       const message = "User Click"
@@ -63,7 +101,7 @@ export class ApplicationMonitor {
         classes: target.className,
         text: target.innerText?.slice(0, 50),
       }
-      Logger.logApplication("INFO", message, details)
+      // Logger.logApplication("INFO", message, details)
     });
 
     document.addEventListener("input", (event) => {
@@ -74,7 +112,7 @@ export class ApplicationMonitor {
         id: target.id,
         value: (target as HTMLInputElement).value,
       }
-      Logger.logApplication("INFO", message, details)
+      // Logger.logApplication("INFO", message, details)
 
     });
 
@@ -83,7 +121,7 @@ export class ApplicationMonitor {
       const details = {
         position: window.scrollY,
       }
-      Logger.logApplication("INFO", message, details)
+      // Logger.logApplication("INFO", message, details)
     });
   }
 
@@ -138,16 +176,16 @@ export class ApplicationMonitor {
           status: response.status,
         };
   
-        Logger.logApplication("INFO", "Network Request", networkDetails)
+        // Logger.logApplication("INFO", "Successful Network Request", networkDetails)
         return response;
       } catch (error:any) {
         // Log full error message
-        if (error instanceof Error) {
-          console.error("Error message:", error.message);
-          console.error("Stack trace:", error.stack);
-        }
+        // if (error instanceof Error) {
+        //   console.error("Error message:", error.message);
+        //   console.error("Stack trace:", error.stack);
+        // }
 
-        console.error("Fetch failed for:", urlString, error);
+        // console.error("Fetch failed for:", urlString, error);
   
         // Add error details to the network log
         networkDetails.response = {
@@ -158,7 +196,7 @@ export class ApplicationMonitor {
         };
   
         // Log or process networkDetails if needed
-        Logger.logApplication("ERROR", "Network Request", networkDetails)
+        Logger.logApplication("ERROR", "Failed Network Request", networkDetails)
   
         // Throw a standard Error object (not the networkDetails object)
         throw new Error(`Network request failed for ${urlString}: ${error.message}`);
@@ -177,7 +215,7 @@ export class ApplicationMonitor {
         loadTime: timing.loadEventEnd - timing.navigationStart,
         domContentLoadedTime: timing.domContentLoadedEventEnd - timing.navigationStart,
       }
-      Logger.logApplication("INFO", "Performance Metrics", details)
+      // Logger.logApplication("INFO", "Performance Metrics", details)
     });
   }
 

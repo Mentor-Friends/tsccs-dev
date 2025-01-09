@@ -14,6 +14,13 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
+    static FLAGS : any= {
+        logApplication: false,
+        logPackage: false,
+        accessTracker: false,
+        isTest: false
+    }
+
     public static BASE_RANDOMIZER = 999;
 
     static setRandomizer(id: number) {

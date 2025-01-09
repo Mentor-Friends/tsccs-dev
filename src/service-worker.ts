@@ -1,4 +1,5 @@
-import { BaseUrl, InnerActions, LocalSyncData, setHasActivatedSW, updateAccessToken } from "./app";
+import { AccessTracker, BaseUrl, InnerActions, LocalSyncData, Logger, setHasActivatedSW, updateAccessToken } from "./app";
+import { BASE_URL } from "./Constants/ApiConstants";
 import { broadcastChannel } from "./Constants/general.const";
 import { IdentifierFlags } from "./DataStructures/IdentifierFlags";
 import { TokenStorage } from "./DataStructures/Security/TokenStorage";
@@ -67,6 +68,7 @@ const actions: Actions = {
       return {success: true, name: 'init'}
     }
     TSCCS_init = true
+    console.log("Payload log in service worker : ", payload)
     await init(
         payload?.url,
         payload?.aiurl,
@@ -74,7 +76,7 @@ const actions: Actions = {
         payload?.nodeUrl,
         payload?.enableAi,
         payload?.applicationName,
-        payload?.isTest
+        payload?.flags
       );
     return {success: true, data: undefined, name: 'init'}
   },
@@ -205,7 +207,8 @@ async function init(
   nodeUrl: string = "",
   enableAi: boolean = true,
   applicationName: string = "",
-  isTest: boolean = false
+  flags?: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean }
+
 ) {
   BaseUrl.BASE_URL = url;
   BaseUrl.AI_URL = aiurl;
@@ -214,9 +217,11 @@ async function init(
   TokenStorage.BearerAccessToken = accessToken;
   let randomizer = Math.floor(Math.random() * 100000000);
   // BaseUrl.BASE_RANDOMIZER = randomizer;
-  
+  console.log("Flags came in init of service worker is ", flags)
   BaseUrl.setRandomizer(randomizer)
-  if (isTest) {
+  BaseUrl.FLAGS = flags;
+
+  if (BaseUrl.FLAGS?.isTest) {
     IdentifierFlags.isDataLoaded = true;
     IdentifierFlags.isCharacterLoaded = true;
     IdentifierFlags.isTypeLoaded = true;
@@ -229,7 +234,13 @@ async function init(
     return true;
   }
   console.log("This is the base url", BaseUrl.BASE_URL, randomizer);
+  console.log("service worker BaseUrl.FLAGS is ", BaseUrl.FLAGS)
 
+  if(BaseUrl.FLAGS?.accessTracker){
+    console.log("From service worker, flag of Access Tracker.")
+    AccessTracker.activateStatus = true;
+    console.log("Access Tracker Activation status from service worker", AccessTracker.activateStatus)
+  }
   /**
    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
    * We use some sort of AI algorithm to initilize these concepts with the most used concept.

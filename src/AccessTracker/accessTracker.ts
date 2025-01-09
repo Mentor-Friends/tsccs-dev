@@ -6,13 +6,13 @@ type CountMap = Record<number, number>;
 export class AccessTracker {
     private static conceptsData: CountMap = {};
     private static connectionsData: CountMap = {};
-    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
     private static nextSyncTime: number = Date.now(); 
     public static activateStatus:boolean = false;
     private static readonly accessData = "Access Data"
         
     static {
-        console.log("Access Tracker init...")
+        // console.log("Access Tracker init...")
         this.startAutoSync();
     }
 
@@ -24,8 +24,8 @@ export class AccessTracker {
             if(conceptId){
                 this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
             }
-            console.log("Concept Added : ", conceptId);
-            console.log("Updated Concept: ", this.conceptsData);
+            // console.log("Concept Added into Access Tracker : ", conceptId);
+            // console.log("Updated Concept: ", this.conceptsData);
         } catch(error){
             console.error("Failed on increment concept");
         }
@@ -39,8 +39,8 @@ export class AccessTracker {
             if(connectionId){
                 this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
             }
-            console.log("Connection Added : ", connectionId);
-            console.log("Updated Connections: ", this.connectionsData);
+            // console.log("Connection Added into Access Tracker : ", connectionId);
+            // console.log("Updated Connections: ", this.connectionsData);
         } catch(error){
             console.error("Failed on increment connection");
         }
@@ -171,7 +171,7 @@ export class AccessTracker {
                 // console.log(`[SYNC TRIGGER] Time to sync! Triggering sync at: ${new Date(currentTime).toISOString()}`);
                 this.syncNow().catch(console.error);
             }
-        }, 30000); // Check every 60 Seconds
+        }, 60000); // Check every 60 Seconds
     }
 
 

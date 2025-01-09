@@ -14,7 +14,8 @@ import { CreateDefaultConcept } from "./CreateDefaultConcept";
  */
 export default async function GetTheConcept(id: number, userId: number = 999){
     let startTime = performance.now()
-    console.log("I skip GetTheConcept : ", id)
+    // console.log("I skip GetTheConcept : ", id)
+    // console.log("Log from GetTheConcept.............", id)
     if(AccessTracker.activateStatus){
         try{
             AccessTracker.incrementConcept(id)
@@ -23,6 +24,7 @@ export default async function GetTheConcept(id: number, userId: number = 999){
             Logger.log("ERROR", "Error Adding Connection")
         }
     }
+
 
     try{
         if (serviceWorker) {

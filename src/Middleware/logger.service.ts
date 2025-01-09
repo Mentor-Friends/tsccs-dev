@@ -4,10 +4,10 @@ import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 export class Logger {
 
     private static logLevel: string = "INFO";
-    private static logsData: any[] = [];
+    private static packageLogsData: any[] = [];
     private static applicationLogsData: any[] = [];
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app";
     private static mftsccsBrowser:string = "mftsccs";
@@ -20,7 +20,7 @@ export class Logger {
 
     // Ensure logs are managed automatically
     static {
-        Logger.startAutoSync();
+        this.startAutoSync();
     }
 
     /**
@@ -32,17 +32,18 @@ export class Logger {
             console.warn("Auto-sync is already running.");
             return;
         }
+        this.nextSyncTime = Date.now() + this.SYNC_INTERVAL_MS;
 
-        Logger.nextSyncTime = Date.now() + Logger.SYNC_INTERVAL_MS;
         setInterval(() => {
             const currentTime = Date.now();
             // console.log("Current Time : ",currentTime);
-            if (Logger.nextSyncTime && currentTime >= Logger.nextSyncTime) {
-                Logger.nextSyncTime = currentTime + Logger.SYNC_INTERVAL_MS;
-                Logger.sendPackageLogsToServer();
-                Logger.sendApplicationLogsToServer();
+            if (this.nextSyncTime && currentTime >= this.nextSyncTime) {
+                // console.log("Time to sync log.")
+                this.nextSyncTime = currentTime + this.SYNC_INTERVAL_MS;
+                this.sendPackageLogsToServer();
+                this.sendApplicationLogsToServer();
             }
-        }, 30000); // Check every minute
+        }, 60000); // Check every minute
     }
 
     /**
@@ -52,7 +53,7 @@ export class Logger {
         if (this.autoSyncInterval !== null) {
             clearInterval(this.autoSyncInterval);
             this.autoSyncInterval = null;
-            Logger.nextSyncTime = null;
+            this.nextSyncTime = null;
         }
     }
 
@@ -61,14 +62,14 @@ export class Logger {
      * Set the log level (e.g., "DEBUG", "INFO", "WARNING", "ERROR").
      */
      public static setLogLevel(level: string): void {
-        Logger.logLevel = level;
+        this.logLevel = level;
     }
 
     /**
      * Determines whether the current log level permits the given level to be logged.
      */
     private static shouldLog(level: string): boolean {
-        return Logger.LOG_LEVELS.indexOf(level) >= Logger.LOG_LEVELS.indexOf(Logger.logLevel);
+        return this.LOG_LEVELS.indexOf(level) >= this.LOG_LEVELS.indexOf(this.logLevel);
     }
 
 
@@ -80,7 +81,7 @@ export class Logger {
         message: string,
         data?: LogData
     ): void {
-        if (!Logger.shouldLog(level)) return;
+        if (!this.shouldLog(level)) return;
 
         const logEntry : any = {
             timestamp: new Date().toLocaleString(),
@@ -89,8 +90,10 @@ export class Logger {
             ...data,
         };
 
-        Logger.logsData.push(logEntry);
+        this.packageLogsData.push(logEntry);
         // this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
+        // console.log("Package Log Updated : ", this.log);
+
     }
 
     public static log(
@@ -100,7 +103,7 @@ export class Logger {
     ) : void {
         if(!this.logPackageActivationStatus) return;
         try{
-            Logger.formatLogData(level, message, data || null)
+            this.formatLogData(level, message, data || null)
         } catch(error){
             console.error("Error on Logger Log : ", error);
         }
@@ -138,7 +141,7 @@ export class Logger {
                 conceptsUsed,
             };
         
-            Logger.log("INFO", `Information logged for ${functionName}`, logData);
+            this.log("INFO", `Information logged for ${functionName}`, logData);
         } catch(error){
             console.error("Error on logInfo");
         }
@@ -178,7 +181,7 @@ export class Logger {
                 conceptsUsed,
             };
         
-            Logger.formatLogData("ERROR", `Information logged for ${functionName}`, logData);    
+            this.formatLogData("ERROR", `Information logged for ${functionName}`, logData);    
         } catch(error){
             console.error("Error on logError");
         }
@@ -217,7 +220,7 @@ export class Logger {
                 conceptsUsed,
             };
         
-            Logger.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
+            this.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
     
         } catch(error){
             console.error("Error on logWarning");
@@ -257,7 +260,7 @@ export class Logger {
                 conceptsUsed,
             };
         
-            Logger.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
+            this.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
     
         } catch(error){
             console.error("Error on logDebug");
@@ -279,9 +282,9 @@ export class Logger {
                 data: data || null,
             };
 
-            Logger.applicationLogsData.push(logEntry);
+            this.applicationLogsData.push(logEntry);
             // this.saveLogToLocalStorage(this.appLogs, logEntry)
-            console.log("Application Log Updated : ", this.applicationLogsData);
+            // console.log("Application Log Updated : ", this.applicationLogsData);
 
         } catch (error) {
             console.error("Failed to log application activity:", error);
@@ -296,7 +299,6 @@ export class Logger {
         try {
 
             console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
-
             if(this.applicationLogsData.length === 0){
                 return
             }
@@ -324,7 +326,6 @@ export class Logger {
                 if (!response.ok) {
                     const responseBody = await response.text();
                     console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
-                    return;
                 }
             }
 
@@ -332,24 +333,21 @@ export class Logger {
             this.applicationLogsData = [] 
             
         } catch (error) {
-            console.error("Error while sending logs to server:", error);
+            console.error("Network error while sending logs:", error);
         }
     }
 
     public static async sendPackageLogsToServer(): Promise<void> {
         try {
 
-            console.log("Log from sendPackageLogsToServer : ", this.logsData);
+            console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
             
-            if(this.logsData.length === 0) return
+            if(this.packageLogsData.length === 0) return
 
-            if(this.logsData.length === 0){
-                return
-            }
             const accessToken = TokenStorage.BearerAccessToken;
             if(!accessToken) return;
 
-            const storedLogs = this.logsData
+            const storedLogs = this.packageLogsData
             
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
@@ -376,7 +374,7 @@ export class Logger {
             }
 
             // clear mftsccs log from memory
-            this.logsData = [] 
+            this.packageLogsData = [] 
 
         } catch (error) {
             console.error("Error while sending logs to server:", error);
@@ -399,7 +397,7 @@ export class Logger {
             }
         } catch(error){
             console.error("Error on saving log in localstorage");
-            Logger.log("ERROR", "Error while saving log in local storage")
+            this.log("ERROR", "Error while saving log in local storage")
         }
     }
 

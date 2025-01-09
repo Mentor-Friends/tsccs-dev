@@ -10,12 +10,7 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  * @param id The id that you want to get the concept of
  * @returns 
  */
-export async function GetConcept(id: number){
-    if (!id) {
-        return CreateDefaultConcept();
-    }
-    
-    console.log("Log from Get Concept.............", id)
+export async function GetConcept(id: number){    
     
     try{
         if (serviceWorker) {
