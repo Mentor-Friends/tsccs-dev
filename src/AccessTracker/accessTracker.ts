@@ -12,6 +12,7 @@ export class AccessTracker {
     private static readonly accessData = "Access Data"
         
     static {
+        // console.log("Access Tracker init...")
         this.startAutoSync();
     }
 
@@ -23,6 +24,8 @@ export class AccessTracker {
             if(conceptId){
                 this.conceptsData[conceptId] = (this.conceptsData[conceptId] || 0) + 1;
             }
+            // console.log("Concept Added into Access Tracker : ", conceptId);
+            // console.log("Updated Concept: ", this.conceptsData);
         } catch(error){
             console.error("Failed on increment concept");
         }
@@ -36,6 +39,8 @@ export class AccessTracker {
             if(connectionId){
                 this.connectionsData[connectionId] = (this.connectionsData[connectionId] || 0) + 1;
             }
+            // console.log("Connection Added into Access Tracker : ", connectionId);
+            // console.log("Updated Connections: ", this.connectionsData);
         } catch(error){
             console.error("Failed on increment connection");
         }

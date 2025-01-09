@@ -3,14 +3,15 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept, handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { AccessTracker, CreateDefaultConcept, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 /**
  * This function helps you get concept from the id. This can only be positive.
  * @param id The id that you want to get the concept of
  * @returns 
  */
-export async function GetConcept(id: number){
+export async function GetConcept(id: number){    
+    
     try{
         if (serviceWorker) {
             try {
