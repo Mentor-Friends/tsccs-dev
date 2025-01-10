@@ -195,7 +195,15 @@ export class StatefulWidget extends BaseWidget{
     after_render(){
 
     }
-  
+
+    /**
+     * render child widgets
+     */
+    renderChildWidgets(){
+      this.childWidgets?.forEach((child: StatefulWidget) => {
+        child.render();
+      });
+    }
 
     /**
      * save widget state data as key and value pair.
@@ -212,9 +220,7 @@ export class StatefulWidget extends BaseWidget{
         })
       }
       updateChildStateRecursive(thisWidget)
-      this.childWidgets?.forEach((child: StatefulWidget) => {
-        child.render();
-      });
+      this.renderChildWidgets()
     }
   
     /**
