@@ -139,6 +139,8 @@ export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 
+export {renderLatestWidget, renderPage, renderWidget} from './Widgets/RenderWidgetService';
+
 type listeners = {
   listenerId: string | number
   callback: any,
