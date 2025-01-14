@@ -109,13 +109,11 @@ export class BaseUrl{
     }
 
     static GetSuggestedConnections(){
-        // return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
-        return this.NODE_URL + '/access-tracker/list-connections-file'
+        return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
     }
 
     static PostLogger(){
-        return this.NODE_URL + '/logger/logs'
-        // return this.NODE_URL + '/api/v1/logger/logs'
+        return this.NODE_URL + '/api/v1/logger/logs'
     }
 
     static GetAllPrefetchConnectionsUrl(){
@@ -277,7 +275,16 @@ export class BaseUrl{
         return this.BASE_URL + '/api/freeschema-query';
     }
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR IMAGE UPLOAD //////////////////////
+    static uploadImageUrl(){
+        return this.BASE_URL + '/api/Image/UploadImage';
+    }
 
-
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR FILE UPLOAD //////////////////////
+    static uploadFileUrl(){
+        return this.BASE_URL + '/api/Image/UploadFile';
+    }
 
 }

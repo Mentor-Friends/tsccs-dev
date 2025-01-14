@@ -18,6 +18,10 @@ export class StatefulWidget extends BaseWidget{
 
     childWidgetElement: any = [];
 
+    /** 
+     * store widget state datas to pass through child widgets
+     */
+    widgetState: { [key: string]: any } = {};
 
     /**
      * This is the id of the parentElement of this widget.
@@ -191,6 +195,45 @@ export class StatefulWidget extends BaseWidget{
     after_render(){
 
     }
+
+    /**
+     * render child widgets
+     */
+    renderChildWidgets(){
+      this.childWidgets?.forEach((child: StatefulWidget) => {
+        child.render();
+      });
+    }
+
+    /**
+     * save widget state data as key and value pair.
+     */
+    setWidgetState(key: string, value: any) {
+      this.widgetState[key] = value;
+      let thisWidget = this;
+      function updateChildStateRecursive(widget: StatefulWidget) {
+        if (!widget) {
+          return
+        }
+        widget.childWidgets.forEach((child: StatefulWidget) => {
+          child.widgetState = {...child.widgetState, ...widget.widgetState}
+        })
+      }
+      updateChildStateRecursive(thisWidget)
+      this.renderChildWidgets()
+    }
   
+    /**
+     * get the saved widget state from stateful widget
+     */
+    getWidgetState(key:string ,defaultValue: any):object {
+      if (Object.keys.length && this.widgetState[key]) {
+        return this.widgetState[key]
+      } else {
+        return defaultValue;
+      }
+    }
+
+    
 
   }
