@@ -186,7 +186,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
    * This function takes in the connections and then converts the connections to the single level objects for further processing
    * This function is the builder of the arrays/ objects from the connections.
    */
-  export async function formatFunction(connections: Connection[], compositionData: any, reverse: number[], CountDictionary: any[]){
+  export async function formatFunction(connections: Connection[], compositionData: any, reverse: number[], order: string = "DESC"){
 
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
@@ -194,9 +194,17 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
       myConcepts.push(connections[i].ofTheConceptId)
       myConcepts.push(connections[i].typeId);
     }
-    connections.sort(function(x: Connection, y:Connection){
-      return y.id - x.id;
-    })
+    if(order == "DESC"){
+      connections.sort(function(x: Connection, y:Connection){
+        return x.id - y.id;
+      })
+    }
+    else{
+      connections.sort(function(x: Connection, y:Connection){
+        return y.id - x.id;
+      })
+    }
+
   
     for(let i=0 ; i< connections.length; i++){
       let reverseFlag = false;

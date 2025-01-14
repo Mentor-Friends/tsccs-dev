@@ -8,10 +8,12 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     mainCompositionIds: number [] =[];
     query: FreeschemaQuery = new FreeschemaQuery();
     countInfoStrings: string [] = [];
+    order: string = "DESC";
     constructor(query: FreeschemaQuery, token: string){
         super();
         this.query = query;
         this.format = query.outputFormat;
+        this.order = query.order;
     }
 
     async bind() {
@@ -35,7 +37,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
         }
         else if(this.format == JUSTDATA){
-            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos);
+            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos, this.order);
         }
         else{
             this.data = await formatConnections(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos);

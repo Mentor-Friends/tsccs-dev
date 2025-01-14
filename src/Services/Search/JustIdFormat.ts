@@ -12,16 +12,23 @@ import GetTheConcept from "../GetTheConcept";
    * @param reverse 
    * @returns 
    */
-    export async function FormatFunctionDataForDataJustId(connections:Connection[], compositionData: any[], reverse: number [] = [], CountDictionary: any[]){
+    export async function FormatFunctionDataForDataJustId(connections:Connection[], compositionData: any[], reverse: number [] = [], order:string = "DESC"){
             let myConcepts: number[] = [];
             for(let i=0 ; i< connections.length; i++){
               myConcepts.push(connections[i].toTheConceptId);
               myConcepts.push(connections[i].ofTheConceptId)
               myConcepts.push(connections[i].typeId);
             }
-            connections.sort(function(x: Connection, y:Connection){
-              return y.id - x.id;
-            })
+            if(order == "DESC"){
+              connections.sort(function(x: Connection, y:Connection){
+                return x.id - y.id;
+              })
+            }
+            else{
+              connections.sort(function(x: Connection, y:Connection){
+                return y.id - x.id;
+              })
+            }
             for(let i=0 ; i< connections.length; i++){
               let reverseFlag = false;
               let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
@@ -119,7 +126,8 @@ import GetTheConcept from "../GetTheConcept";
                     let data:any = {};
                     data[mytype] = {
                         "id": toTheConcept.id,
-                        "data": value
+                        "data": value,
+                        "created_on": connections[i].entryTimeStamp
 
                     }
                     if(isNaN(Number(dataCharacter))){
@@ -170,7 +178,7 @@ import GetTheConcept from "../GetTheConcept";
  * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
  * @returns 
  */
-export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = [], CountDictionary: any[]){
+export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = [], CountDictionary: any[], order: string ="DESC"){
             let startTime = new Date().getTime();
             let mainData: any[] = [] ;
             let myConcepts: number[] = [];
@@ -179,9 +187,16 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
               myConcepts.push(connections[i].ofTheConceptId)
               myConcepts.push(connections[i].typeId);
             }
-            connections.sort(function(x: Connection, y:Connection){
-              return y.id - x.id;
-            })
+            if(order == "DESC"){
+              connections.sort(function(x: Connection, y:Connection){
+                return x.id - y.id;
+              })
+            }
+            else{
+              connections.sort(function(x: Connection, y:Connection){
+                return y.id - x.id;
+              })
+            }
             for(let i=0 ; i< connections.length; i++){
               let reverseFlag = false;
               let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
@@ -219,7 +234,7 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                         let data =  compositionData[connections[i].ofTheConceptId]
                         if(data){
                           data["id"] =  ofTheConcept.id;
-          
+                          data["created_on"] = ofTheConcept.entryTimeStamp;
                         }
           
                         let reverseCharater = linkerConcept.characterValue + "_reverse";
@@ -293,7 +308,8 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                           let testData:any = {};
                           testData[mytype] = {
                             "data": myData[mytype],
-                            "id": toTheConcept.id
+                            "id": toTheConcept.id,
+                            "created_on": connections[i].entryTimeStamp
                           };
                             if(Array.isArray(newData[key])){
                                 if(isComp){

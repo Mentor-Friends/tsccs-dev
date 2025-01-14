@@ -136,14 +136,14 @@ export async function formatConnections(linkers: number[], conceptIds: number []
  * @param reverse 
  * @returns 
  */
-export async function formatConnectionsJustId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[]){
+export async function formatConnectionsJustId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[], order:string = "DESC"){
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
-    compositionData = await formatFunction(prefetchConnections, compositionData, reverse,CountDictionary);
-    compositionData = await FormatFunctionDataForDataJustId(prefetchConnections, compositionData, reverse,CountDictionary);
-    let output:any  = await FormatFromConnectionsAlteredArrayExternalJustId(prefetchConnections, compositionData, mainCompositionIds, reverse,CountDictionary );
+    compositionData = await formatFunction(prefetchConnections, compositionData, reverse,order);
+    compositionData = await FormatFunctionDataForDataJustId(prefetchConnections, compositionData, reverse,order);
+    let output:any  = await FormatFromConnectionsAlteredArrayExternalJustId(prefetchConnections, compositionData, mainCompositionIds, reverse,CountDictionary , order);
     return output;
 }
 
