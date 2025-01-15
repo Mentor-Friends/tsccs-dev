@@ -111,7 +111,9 @@ self.addEventListener("message", async (event: any) => {
       await new Promise((resolve) => {
         let count = 1
         const interval = setInterval(() => {
+          console.log('Interval check 0', TSCCS_init)
           if (TSCCS_init) {
+            console.log('Interval check 2', TSCCS_init)
             clearInterval(interval)
             resolve(undefined)
           } else {
@@ -125,7 +127,7 @@ self.addEventListener("message", async (event: any) => {
           resolve(undefined)
         }, 90000) // 1.5 minute
       })
-
+      console.log('After timeout promise', TSCCS_init)
       if (!TSCCS_init) event.source.postMessage(responseData)
     }
     
