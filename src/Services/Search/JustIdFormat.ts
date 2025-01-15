@@ -12,22 +12,12 @@ import GetTheConcept from "../GetTheConcept";
    * @param reverse 
    * @returns 
    */
-    export async function FormatFunctionDataForDataJustId(connections:Connection[], compositionData: any[], reverse: number [] = [], order:string = "DESC"){
+    export async function FormatFunctionDataForDataJustId(connections:Connection[], compositionData: any[], reverse: number [] = []){
             let myConcepts: number[] = [];
             for(let i=0 ; i< connections.length; i++){
               myConcepts.push(connections[i].toTheConceptId);
               myConcepts.push(connections[i].ofTheConceptId)
               myConcepts.push(connections[i].typeId);
-            }
-            if(order == "DESC"){
-              connections.sort(function(x: Connection, y:Connection){
-                return x.id - y.id;
-              })
-            }
-            else{
-              connections.sort(function(x: Connection, y:Connection){
-                return y.id - x.id;
-              })
             }
             for(let i=0 ; i< connections.length; i++){
               let reverseFlag = false;
@@ -178,7 +168,7 @@ import GetTheConcept from "../GetTheConcept";
  * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
  * @returns 
  */
-export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = [], CountDictionary: any[], order: string ="DESC"){
+export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = [], CountDictionary: any[]){
             let startTime = new Date().getTime();
             let mainData: any[] = [] ;
             let myConcepts: number[] = [];
@@ -186,16 +176,6 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
               myConcepts.push(connections[i].toTheConceptId);
               myConcepts.push(connections[i].ofTheConceptId)
               myConcepts.push(connections[i].typeId);
-            }
-            if(order == "DESC"){
-              connections.sort(function(x: Connection, y:Connection){
-                return x.id - y.id;
-              })
-            }
-            else{
-              connections.sort(function(x: Connection, y:Connection){
-                return y.id - x.id;
-              })
             }
             for(let i=0 ; i< connections.length; i++){
               let reverseFlag = false;

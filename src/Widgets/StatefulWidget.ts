@@ -108,6 +108,7 @@ export class StatefulWidget extends BaseWidget{
         }
       //console.log("added-widget-container",this.childWidgetElement);
       // addEvents is called after the element has been mounted.
+      console.log("this is the rendering", this);
       this.after_render();
 
       // then after the child widgets are again loaded.
@@ -193,7 +194,7 @@ export class StatefulWidget extends BaseWidget{
      * for the widget and its html element. User can add any logic here.
      */
     after_render(){
-
+      console.log("this is calling the after render", this);
     }
 
     /**

@@ -788,12 +788,15 @@ async function initConceptConnection() {
  */
 export function dispatchIdEvent(id: number|string, data:any = {}) {
   // console.log('id event dispatched', id)
-  if (serviceWorker) {
+  console.log("this is the dispatched", typeof window, serviceWorker, id);
+  if (serviceWorker || typeof window != undefined) {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
-  } else {
+  } 
+  else {
     broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
+
   }
 }
 

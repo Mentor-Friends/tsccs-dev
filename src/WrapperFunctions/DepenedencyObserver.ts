@@ -27,12 +27,16 @@ export class DependencyObserver{
      * @param id this is the type id which needs to be tracked
      */
     listenToEventType(id: number): void {
+        console.log("this is the type listen before", id);
         window.addEventListener(`${id}`, (event) => {
+            console.log("this is the window event", id ,event);
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
+                
                 setTimeout( async function(){
                     let myEvent = event as CustomEvent;
+                    console.log("this is the event", myEvent);
                     if(!that.compositionIds.includes(myEvent?.detail)){
                         that.compositionIds.unshift(myEvent?.detail);
                         that.listenToEvent(myEvent?.detail);

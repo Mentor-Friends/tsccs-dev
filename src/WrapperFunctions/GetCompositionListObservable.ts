@@ -52,12 +52,13 @@ export class GetCompositionListObservable extends DependencyObserver{
                 this.listenToEvent(this.compositionIds[i]);
             }
         }
-        return await this.build();
+        let mydata  =  await this.build();
+        return mydata;
     }
 
     async build(){
         this.data = [];
-        console.log("this is building the data list");
+        console.log("this is building the data list", this.startPage, this.inpage);
         if(this.format == JUSTDATA){
             for(let i=this.startPage; i< this.startPage + this.inpage; i++){
                 if(this.compositionIds[i]){
@@ -79,7 +80,6 @@ export class GetCompositionListObservable extends DependencyObserver{
         else if(this.format == NORMAL){
             for(let i=this.startPage; i< this.startPage + this.inpage; i++){
                 if(this.compositionIds[i]){
-          
                     let compositionJson= await GetCompositionFromMemoryNormal(this.compositionIds[i]);
                    this.data.push(compositionJson);
                 }
@@ -90,6 +90,7 @@ export class GetCompositionListObservable extends DependencyObserver{
                 if(this.compositionIds[i]){
           
                     let compositionJson= await GetCompositionFromMemory(this.compositionIds[i]);
+
                    this.data.push(compositionJson);
                 }
               }
@@ -104,9 +105,8 @@ export class GetCompositionListObservable extends DependencyObserver{
  */
 export function GetCompositionListListener(compositionName:string, userId: number, inpage: number, page: number, format:number = JUSTDATA){
 
-    let startTime = performance.now()
     
-    const compositionResult = new GetCompositionListObservable(compositionName, userId, inpage, page,format);
+    return  new GetCompositionListObservable(compositionName, userId, inpage, page,format);
     
     // Add Log
     // Logger.logInfo(
@@ -123,5 +123,4 @@ export function GetCompositionListListener(compositionName:string, userId: numbe
     //     []
     // );
 
-    return compositionResult
 }

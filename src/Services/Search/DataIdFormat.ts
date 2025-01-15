@@ -17,9 +17,6 @@ import { removeThePrefix } from "../Common/RegexFunction";
           myConcepts.push(connections[i].ofTheConceptId)
           myConcepts.push(connections[i].typeId);
         }
-        connections.sort(function(x: Connection, y:Connection){
-          return y.id - x.id;
-        })
         for(let i=0 ; i< connections.length; i++){
           let reverseFlag = false;
           let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
@@ -156,7 +153,7 @@ import { removeThePrefix } from "../Common/RegexFunction";
  * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
  * @returns 
  */
-export async function FormatFromConnectionsAlteredArrayExternal(connections:Connection[], compositionData: any[], newCompositionData: any, mainComposition: number[], reverse: number [] = []){
+export async function FormatFromConnectionsAlteredArrayExternal(connections:Connection[], compositionData: any[], newCompositionData: any, mainComposition: number[], reverse: number [] = [],CountDictionary: any[] ){
     let startTime = new Date().getTime();
     let mainData: any[] = [] ;
     let myConcepts: number[] = [];
@@ -165,9 +162,6 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       myConcepts.push(connections[i].ofTheConceptId)
       myConcepts.push(connections[i].typeId);
     }
-    connections.sort(function(x: Connection, y:Connection){
-      return y.id - x.id;
-    })
     for(let i=0 ; i< connections.length; i++){
       let reverseFlag = false;
       let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
@@ -204,7 +198,8 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
               if(isComp){
                 let data = {
                   "id": ofTheConcept.id,
-                  "data": compositionData[connections[i].ofTheConceptId]
+                  "data": compositionData[connections[i].ofTheConceptId],
+                  "created_on": connections[i].entryTimeStamp
                 }
                 let reverseCharater = linkerConcept.characterValue + "_reverse";
                   if(Array.isArray(newData[key][reverseCharater])){
@@ -273,7 +268,8 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
               if(myData){
                 let data = {
                   "id": toTheConcept.id,
-                  "data": compositionData[connections[i].toTheConceptId]
+                  "data": compositionData[connections[i].toTheConceptId],
+                  "created_on": connections[i].entryTimeStamp
               }
               if(Array.isArray(newData[key])){
                 if(isComp){
@@ -343,9 +339,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       myConcepts.push(connections[i].ofTheConceptId)
       myConcepts.push(connections[i].typeId);
     }
-    connections.sort(function(x: Connection, y:Connection){
-      return y.id - x.id;
-    })
+
     for(let i=0 ; i< connections.length; i++){
       let reverseFlag = false;
       let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
