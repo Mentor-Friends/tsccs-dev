@@ -788,7 +788,7 @@ async function initConceptConnection() {
  */
 export function dispatchIdEvent(id: number|string, data:any = {}) {
   // console.log('id event dispatched', id)
-  if (serviceWorker) {
+  if (serviceWorker || typeof window != undefined) {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
