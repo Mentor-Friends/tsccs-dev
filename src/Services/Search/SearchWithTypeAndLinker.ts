@@ -1,6 +1,6 @@
 import { Console } from 'console';
 import { GetConcept } from '../../Api/GetConcept';
-import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept} from '../../app';
+import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept, GetAllConnectionsOfCompositionBulk} from '../../app';
 import { recursiveFetchConceptSingleLoop } from '../GetComposition';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
 import { FormatConceptsAndConnectionsNormalList, formatFunction, formatFunctionForData } from './FormatData';
@@ -79,7 +79,10 @@ export async function formatDataArrayDataId(linkers: number[], conceptIds: numbe
  * @returns 
  */
 export async function formatDataArrayNormal(linkers: number[], conceptIds: number[], connections: number[], mainCompositionIds: number[], reverse: number[] ){
+    console.log("this is the linkers", linkers);
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    //await GetAllConnectionsOfCompositionBulk(mainCompositionIds);
+    console.log("this is the linkers after prefetch", prefetchConnections);
     let concepts = await GetCompositionFromConnectionsInObjectNormal(conceptIds, connections);
     let output:any =  await FormatConceptsAndConnections(prefetchConnections, concepts, mainCompositionIds, reverse);
     return output;

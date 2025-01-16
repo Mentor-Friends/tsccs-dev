@@ -62,6 +62,7 @@ export class DependencyObserver{
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id: number) {
+        console.log("this is listening to the id adding event", id);
         window.addEventListener(`${id}`, (event) => {
             if(!this.isUpdating){
                 this.isUpdating = true;
@@ -69,6 +70,7 @@ export class DependencyObserver{
 
                 setTimeout( async function(){
                     let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+                    console.log("this is the new connections", newConnection);
                     for(let i=0 ;i< newConnection.length; i++){
                         
                                await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{

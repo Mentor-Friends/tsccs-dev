@@ -74,12 +74,14 @@ export class GetLinkListObservable extends DependencyObserver{
             for(let i =0; i< this.mainCompositionIds.length; i++){
                 this.listenToEvent(this.mainCompositionIds[i]);
             }
+
         }
         return await this.build();
     }
 
 
     async build(){
+
     await GetConceptBulk(this.conceptIds);
 
         if(this.format == DATAID){
