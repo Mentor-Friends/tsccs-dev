@@ -141,7 +141,7 @@ export async function formatConnections(linkers: number[], conceptIds: number []
 export async function formatConnectionsJustId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[], order:string = "DESC"){
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
-     prefetchConnections = orderTheConnections(prefetchConnections);
+     prefetchConnections = orderTheConnections(prefetchConnections, order);
 
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
@@ -165,7 +165,8 @@ export async function formatConnectionsJustId(linkers: number[], conceptIds: num
 export async function formatConnectionsDataId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[], order:string = "DESC"){
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
-    prefetchConnections = orderTheConnections(prefetchConnections);
+    prefetchConnections = orderTheConnections(prefetchConnections, order);
+    console.log("this is the prfetch connections", prefetchConnections);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
