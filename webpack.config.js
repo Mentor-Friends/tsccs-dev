@@ -19,9 +19,6 @@ module.exports = env => ({
       extensions: ['.tsx', '.ts', '.js'],
       mainFields: ['module', 'browser', 'main'],  // Prefer ES module resolution
    },
-   optimization: {
-      minimize: true
-   },
    module: {
       rules: [
          {
@@ -33,9 +30,6 @@ module.exports = env => ({
    },
    plugins: [
    ],
-   optimization: {
-      minimize: false,  // Optional: Disable minimization for easier debugging
-   },
    target: 'web',  // Ensure output is compatible with browsers
    experiments: {
       outputModule: true,  // Enable support for ES module output
