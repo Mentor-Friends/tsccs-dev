@@ -32,7 +32,7 @@ export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
 export {RecursiveSearchApi,RecursiveSearchApiWithInternalConnections, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker,RecursiveSearchApiNewRawFullLinker} from './Api/RecursiveSearch';
 export {GetCompositionBulkWithDataId,GetCompositionFromConnectionsWithDataIdFromConnections,GetCompositionFromConnectionsWithIndexFromConnections,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
-
+export {uploadAttachment, uploadFile, uploadImage, validDocumentFormats, validImageFormats} from './Services/Upload'
 export { GetConceptBulk } from './Api/GetConceptBulk';
 export { GetConnectionBulk } from './Api/GetConnectionBulk';
 export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
@@ -138,6 +138,8 @@ export {WidgetTree} from './Widgets/WidgetTree';
 export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
+
+export {renderLatestWidget, renderPage, renderWidget} from './Widgets/RenderWidgetService';
 
 type listeners = {
   listenerId: string | number
@@ -342,7 +344,7 @@ async function init(
                       console.log("new worker", newWorker);
                       if (newWorker) {
                         newWorker.onstatechange = async () => {
-                          console.warn("on state change triggered", (newWorker.state === "installed" || newWorker.state === "activated" || newWorker.state === 'redundant'), navigator.serviceWorker.controller);
+                          console.warn("on state change triggered", newWorker.state, navigator.serviceWorker.controller);
                           if (newWorker.state === "installing") {
                             console.log("Service Worker installing");
                             serviceWorker = undefined
@@ -359,6 +361,10 @@ async function init(
                             console.log("This is a flag after sw init : ", flags)
                             // serviceWorker = registration.active;
                             // Send init message now that it's active
+                            setTimeout(() => {
+                              console.log('Message Processed after some time')
+                              processMessageQueue();
+                            }, 5000)
                             await sendMessage("init", {
                               url,
                               aiurl,
@@ -485,7 +491,7 @@ export async function sendMessage(type: string, payload: any) {
   return new Promise((resolve, reject) => {
     // navigator.serviceWorker.ready
     //   .then((registration) => {
-    console.debug('debug', navigator.serviceWorker.controller, serviceWorker, serviceWorkerReady, type == 'init')
+    if (!((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init'))) console.log('will go to queue', navigator.serviceWorker.controller, serviceWorker, serviceWorkerReady, type == 'init')
     if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
@@ -756,7 +762,11 @@ async function initConceptConnection() {
   await PopulateTheLocalConnectionToMemory().catch((event) => {
     console.log("This is the error in populating binary tree");
    throw event;
- });;
+ });
+
+//  await PopulateTheLocalConceptsToMemory().catch((event)=>{
+//   console.log("This is the error in populating binary tree");
+//  });
 
   /**
    * This process gets the connections from indexdb and loads it to the connections array which is inside of
@@ -783,7 +793,7 @@ async function initConceptConnection() {
  */
 export function dispatchIdEvent(id: number|string, data:any = {}) {
   // console.log('id event dispatched', id)
-  if (serviceWorker) {
+  if (serviceWorker || typeof window != undefined) {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);

@@ -3,8 +3,10 @@ import { GetConcept } from '../../Api/GetConcept';
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept} from '../../app';
 import { recursiveFetchConceptSingleLoop } from '../GetComposition';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
-import { FormatConceptsAndConnectionsNormalList, FormatFromConnectionsAlteredArrayExternal, FormatFromConnectionsAlteredArrayExternalJustId, formatFunction, FormatFunctionData, FormatFunctionDataForData, FormatFunctionDataForDataJustId, formatFunctionForData } from './FormatData';
+import { FormatConceptsAndConnectionsNormalList, formatFunction, formatFunctionForData } from './FormatData';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
+import { FormatFromConnectionsAlteredArrayExternalJustId, FormatFunctionDataForDataJustId } from './JustIdFormat';
+import { FormatFromConnectionsAlteredArrayExternal,FormatFunctionData, FormatFunctionDataForData } from './DataIdFormat';
 
 /**
  * This function will help you search a concept by their type and also to query inside of it.
@@ -158,6 +160,7 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
     let newCompositionData: any [] = [];
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
     compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
+    console.log("this is the composition data", compositionData);
      let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse );
      return output;
 }

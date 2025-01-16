@@ -275,7 +275,16 @@ export class BaseUrl{
         return this.BASE_URL + '/api/freeschema-query';
     }
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR IMAGE UPLOAD //////////////////////
+    static uploadImageUrl(){
+        return this.BASE_URL + '/api/Image/UploadImage';
+    }
 
-
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR FILE UPLOAD //////////////////////
+    static uploadFileUrl(){
+        return this.BASE_URL + '/api/Image/UploadFile';
+    }
 
 }
