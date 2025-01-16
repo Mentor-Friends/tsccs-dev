@@ -5,9 +5,9 @@ module.exports = env => ({
       main: './src/app.ts',  // Main app entry point
       serviceWorker: './src/service-worker.ts'  // Service worker entry point
    },
-   mode: 'development',  // Set to 'production' for production
-   devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
-   watch: true,
+   mode: 'production',  // Set to 'production' for production
+  // devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
+   watch: false,
    output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
@@ -30,9 +30,6 @@ module.exports = env => ({
    },
    plugins: [
    ],
-   optimization: {
-      minimize: false,  // Optional: Disable minimization for easier debugging
-   },
    target: 'web',  // Ensure output is compatible with browsers
    experiments: {
       outputModule: true,  // Enable support for ES module output
