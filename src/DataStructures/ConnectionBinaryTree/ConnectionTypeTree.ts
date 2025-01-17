@@ -64,12 +64,12 @@ export class ConnectionTypeTree{
     static async getTypeVariantsFromTree(typeId:number){
         var connection : Connection[] = [];
 
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return connection;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return connection;
+        // }
 
             var Node = this.getNodeFromTree(typeId);
     

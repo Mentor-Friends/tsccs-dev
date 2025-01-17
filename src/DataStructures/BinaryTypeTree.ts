@@ -82,12 +82,12 @@ export class BinaryTypeTree{
 
     static async getTypeVariantsFromTreeWithUserId(typeId:number, userId:number){
         var concepts : Concept[] = [];
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return concepts;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return concepts;
+        // }
             var Node = this.getNodeFromTree(typeId);
     
             if(Node){
@@ -116,12 +116,12 @@ export class BinaryTypeTree{
 
     static async getTypeVariantsWithCharacterValue( characterValue:string,typeId:number,){
         let concept = CreateDefaultConcept();
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return concept;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return concept;
+        // }
             var Node = this.getNodeFromTree(typeId);
             if(Node){
                 if(Node.value.characterValue == characterValue ){

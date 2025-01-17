@@ -53,12 +53,12 @@ export class LocalBinaryCharacterTree{
 
     static async getCharacterAndTypeFromTree(value:string, typeId: number){
 
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return null;
+        // }
         if(this.LocalCharacterRoot){
             var Node = this.LocalCharacterRoot.getFromNodeWithCharacterAndType(value, typeId,this.LocalCharacterRoot);
             return Node;

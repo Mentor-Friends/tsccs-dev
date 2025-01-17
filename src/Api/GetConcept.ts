@@ -7,6 +7,7 @@ import { CreateDefaultConcept } from "../app";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 export async function GetConcept(id: number){
     let result = CreateDefaultConcept();
+    console.log('id', id)
     try{
         var conceptUse :Concept= await ConceptsData.GetConcept(id);
         let isNpc = ConceptsData.GetNpc(id);
@@ -21,6 +22,7 @@ export async function GetConcept(id: number){
                 headers:header,
                 body: `id=${id}`
             });
+            console.log('response', response)
             if(response.ok){
                 result = await response.json() as Concept;
                 if(result.id > 0){

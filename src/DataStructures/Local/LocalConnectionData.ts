@@ -85,7 +85,7 @@ export class LocalConnectionData{
         var connectionList:LConnection[] = [];
 
         try{
-            var data = await this.waitForDataToLoad();
+            // var data = await this.waitForDataToLoad();
 
         for(var i=0; i<this.connectionArray.length; i++){
             if(this.connectionArray[i].typeId == id){
