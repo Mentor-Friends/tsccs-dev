@@ -103,6 +103,8 @@ self.addEventListener("message", async (event: any) => {
 
   try {
     if (!type || !payload.TABID) return;
+
+    console.log('received type', type, payload?.messageId)
   
     if (type != 'init' && !checkSWInitialization()) {
       console.warn('Message received before sw initialization', type)
@@ -129,6 +131,7 @@ self.addEventListener("message", async (event: any) => {
       })
       console.log('After timeout promise', TSCCS_init)
       if (!TSCCS_init) event.source.postMessage(responseData)
+      console.log('After timeout promise nice', TSCCS_init)
     }
     
     if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})

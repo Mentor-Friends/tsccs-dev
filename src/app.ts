@@ -485,6 +485,7 @@ export async function sendMessage(type: string, payload: any) {
   payload.messageId = messageId
   payload.TABID = TABID
   // let actions = payload.actions
+  console.log('sent type', type, messageId)
 
   const newPayload = JSON.parse(JSON.stringify(payload))
 

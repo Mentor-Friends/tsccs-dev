@@ -7,7 +7,7 @@ module.exports = env => ({
    },
    mode: 'production',  // Set to 'production' for production
   // devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
-   watch: false,
+   watch: true,
    output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
