@@ -8,12 +8,9 @@ import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCo
 
 export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1){
     var output: any[] = [];
-    console.log('first')
     var  concept:Concept = await GetTheConcept(id);
-    console.log('sercond')
     var linkString: string = concept.type?.characterValue + "_s" + "_" + linker;
     var relatedConceptString = await GetConceptByCharacterAndType(linkString, 16);
-    console.log('third')
     var relatedConcept = relatedConceptString as Concept;
     if(relatedConcept.id > 0){
       var connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
@@ -22,9 +19,7 @@ export async function GetLink(id:number, linker:string, inpage:number=10, page:n
       for(var i=0; i<connections.length; i++){
         prefetch.push(connections[i].toTheConceptId);
       }
-      console.log('forth')
       await GetAllConnectionsOfCompositionBulk(prefetch);
-      console.log('fifth')
       for(var i=0; i<connections.length; i++){
         let toConceptId = connections[i].toTheConceptId;
         let toConcept = await GetTheConcept(toConceptId);
