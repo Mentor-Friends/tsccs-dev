@@ -66,8 +66,8 @@ export class ConnectionOfTheTree{
             let event = new Event(`${key}`);
             // console.log("dispatched the of the concecpt event", event);
             // dispatchEvent(event);
-            console.log("dispatching the key", key);
-            dispatchIdEvent(key);
+            //console.log("dispatching the key", key);
+           // dispatchIdEvent(key);
 
             
         }
@@ -87,7 +87,7 @@ export class ConnectionOfTheTree{
             this.node = connectionOfNode;
             // let event = new Event(`${this.node.key}`);
             // console.log("dispatched the of the concecpt event", event);
-            // dispatchEvent(event);
+             dispatchIdEvent(connectionOfNode.key);
             return this.node;
         }
         else{

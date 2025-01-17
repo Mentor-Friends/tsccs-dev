@@ -79,10 +79,7 @@ export async function formatDataArrayDataId(linkers: number[], conceptIds: numbe
  * @returns 
  */
 export async function formatDataArrayNormal(linkers: number[], conceptIds: number[], connections: number[], mainCompositionIds: number[], reverse: number[] ){
-    console.log("this is the linkers", linkers);
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
-    //await GetAllConnectionsOfCompositionBulk(mainCompositionIds);
-    console.log("this is the linkers after prefetch", prefetchConnections);
     let concepts = await GetCompositionFromConnectionsInObjectNormal(conceptIds, connections);
     let output:any =  await FormatConceptsAndConnections(prefetchConnections, concepts, mainCompositionIds, reverse);
     return output;

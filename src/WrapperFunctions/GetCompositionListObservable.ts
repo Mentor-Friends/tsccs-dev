@@ -27,14 +27,11 @@ export class GetCompositionListObservable extends DependencyObserver{
 
     async bind(){
         if(!this.isDataLoaded){
-            console.log("again data loading mechanism");
             var concept = await GetConceptByCharacter(this.compositionName);
         
             if(concept){
                 await GetAllConceptsByType(this.compositionName, this.userId);
-                console.log("getting the user data", concept.id, this.userId);
                 let conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,this.userId);
-                console.log("this is the concept list", conceptList);
                 var startPage = this.inpage * (this.page - 1);
                 for(var i=startPage; i< startPage + this.inpage; i++){
                     if(conceptList[i]){
@@ -48,7 +45,6 @@ export class GetCompositionListObservable extends DependencyObserver{
             this.isDataLoaded = true;
             this.listenToEventType(concept.id);
             for(let i= 0 ; i< this.compositionIds.length; i++){
-                console.log("list listen", this.compositionIds[i]);
                 this.listenToEvent(this.compositionIds[i]);
             }
         }
@@ -58,7 +54,6 @@ export class GetCompositionListObservable extends DependencyObserver{
 
     async build(){
         this.data = [];
-        console.log("this is building the data list", this.startPage, this.inpage);
         if(this.format == JUSTDATA){
             for(let i=this.startPage; i< this.startPage + this.inpage; i++){
                 if(this.compositionIds[i]){
