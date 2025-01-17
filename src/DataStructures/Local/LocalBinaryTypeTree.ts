@@ -79,12 +79,12 @@ export class LocalBinaryTypeTree{
 
     static async getTypeVariantsFromTreeWithUserId(typeId:number, userId:number){
         var concepts : Concept[] = [];
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return concepts;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return concepts;
+        // }
             var Node = this.getNodeFromTree(typeId);
     
             if(Node){
