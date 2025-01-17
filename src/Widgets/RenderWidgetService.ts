@@ -25,8 +25,8 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
       try {
         const widgetTree = await getWidgetFromId(widgetId);
         const appElement = attachNode;
-        // const newWidget = await convertWidgetTreeToWidget(
-        await convertWidgetTreeToWidget(
+        const newWidget = await convertWidgetTreeToWidget(
+        // await convertWidgetTreeToWidget(
           widgetTree,
           appElement,
           undefined,
@@ -34,7 +34,7 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
         );
         // add newWidget css to the page
         const style = document.createElement("style");
-        style.innerHTML = widgetTree.css;
+        style.innerHTML = widgetTree.css + newWidget.css;
         appElement.appendChild(style);
         // add newWidget js to the page
         const script = document.createElement("script");
@@ -179,15 +179,17 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
                   child.wrapper === widgetElement.id
                 ) {
                   const clearedChildWidget = clearDraggedWidget(child);
+                  child.html = `<div id="${child.wrapper}">${child.html}</div>`;
                   const childWidget = await convertWidgetTreeToWidget(
                     clearedChildWidget,
                     widgetElement,
                     isMain
                   );
                   newWidget.childWidgets.push(childWidget);
-                  newWidget.css =
-                    newWidget.css +
-                    `div[data-widgetid="${child.id}"] { ${child.css} }`;
+                  // newWidget.css =
+                  //   newWidget.css +
+                  //   `div[data-widgetid="${child.id}"] { ${child.css} }`;
+                  newWidget.css = newWidget.css + `#${child.wrapper} { ${child.css} }`;
                   childWidget.dataChange((value: Concept) => {
                     console.log("This is the data change in child", value);
                     const type = value?.type?.characterValue;

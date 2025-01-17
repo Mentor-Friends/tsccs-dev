@@ -3,57 +3,72 @@ import { Logger } from "./logger.service";
 
 export class ApplicationMonitor {
   static initialize() {
-    console.warn("Initialized Application Moniroring for tracking error...")
+    try {
+      console.warn("Initialized Application Monitoring for tracking errors...");
 
-    this.initGlobalErrorHandlers();
-    this.logCatchError()
-    this.logErrorEvent()
-    this.logUnhandledError()
-    
-    // Log user interactions
-    this.logUserInteractions()
+      // Initialize error handling and logging
+      this.initGlobalErrorHandlers();
+      this.logCatchError();
+      this.logErrorEvent();
+      this.logUnhandledError();
 
-    // Log network requests requires interception with Service Worker or monkey-patching
-    this.logNetworkRequests();
-
-    // Log application state changes for SPAs
-    this.logRouteChanges();
-
+      // Log user interactions and other relevant events
+      this.logUserInteractions();
+      this.logNetworkRequests();
+      this.logRouteChanges();
+      this.logPerformanceMetrics();
+      this.logWebSocketEvents();
+    } catch (error) {
+      console.error("Error during Application Monitoring initialization:", error);
+    }
   } 
 
   // Initialize global error handlers for JavaScript errors and promise rejections
   static initGlobalErrorHandlers() {
-    // console.log("Into initGlobalErrorHandlers.")
-    if(typeof window === undefined) return;
-    // Track runtime errors
-    window.onerror = (message, source, lineno, colno, error) => {
-      const errorDetails = {
-        message,
-        source,
-        lineno,
-        colno,
-        stack: error?.stack || 'undefined',
+    try{
+      // console.log("Into initGlobalErrorHandlers.")
+      if(typeof window === undefined) return;
+      // Track runtime errors
+      window.onerror = (message, source, lineno, colno, error) => {
+        const errorDetails = {
+          message,
+          source,
+          lineno,
+          colno,
+          stack: error?.stack || 'undefined',
+        };
+        Logger.logApplication("ERROR", "Runtime Error", errorDetails);
       };
-      Logger.logApplication("ERROR", "Runtime Error", errorDetails);
-    };
 
-    // Track unhandled promise rejections
-    window.onunhandledrejection = (event) => {
-      Logger.logApplication("ERROR", "Unhandled Promise Rejection", {
-        message: event.reason ? event.reason.message : event.reason,
-        stack: event.reason ? event.reason.stack : null,
-      });
-    };
+      // Track unhandled promise rejections
+      window.onunhandledrejection = (event) => {
+        Logger.logApplication("ERROR", "Unhandled Promise Rejection", {
+          message: event.reason ? event.reason.message : event.reason,
+          stack: event.reason ? event.reason.stack : null,
+        });
+      };
+    } catch(error) {
+      console.warn("Failed to initialize global error handlers:", error);
+    }
+
   }
 
   static logCatchError() {
     try {
       const originalConsoleError = console.error;
-      console.log("Inside originalConsoleError...")
+      console.log("Inside originalConsoleError...");
+      
       console.error = function (...args) {
         const message = "Console Error";
-        const errorDetails = { arguments: args };
+  
+        // Handle circular references in arguments
+        const safeArgs = args.map(arg => safeStringify(arg));
+        
+        // Log error details with safe arguments
+        const errorDetails = { arguments: safeArgs };
         Logger.logApplication("ERROR", message, errorDetails);
+  
+        // Call the original console.error method
         originalConsoleError.apply(console, args);
       };
     } catch (error) {
@@ -61,33 +76,43 @@ export class ApplicationMonitor {
     }
   }
   
+  
   static logErrorEvent() {
-    // Log unhandled errors
-    window.addEventListener("error", (event) => {
-      console.log("Inside error event...")
-      const errorDetails = {
-        error: event.error?.message || event.message,
-        source: event.filename,
-        line: event.lineno,
-        column: event.colno,
-        stack: event.error?.stack
-      }
-      const message = "Unhandled Error"
-      Logger.logApplication("Error", message, errorDetails)
-    });
+    try{
+      // Log unhandled errors
+      window.addEventListener("error", (event) => {
+        console.log("Inside error event...")
+        const errorDetails = {
+          error: event.error?.message || event.message,
+          source: event.filename,
+          line: event.lineno,
+          column: event.colno,
+          stack: event.error ? safeStringify(event.error.stack) : undefined
+        }
+        const message = "Unhandled Error"
+        Logger.logApplication("Error", message, errorDetails)
+      });
+    } catch(error) {
+      console.warn("Failed to add error event listener:", error);
+    }
   }
 
 
   static logUnhandledError() {
-    // Log unhandled promise rejections
-    window.addEventListener("unhandledrejection", (event) => {
-      console.log("Inside unhandledrejection...")
-      const errorDetails = {
-        reason: event.reason?.message || String(event.reason),
-        stack: event.reason?.stack || "No stack trace available",
-      };
-      Logger.logApplication("ERROR", "Unhandled Promise Rejection", errorDetails);
-    });
+    try {
+      // Log unhandled promise rejections
+      window.addEventListener("unhandledrejection", (event) => {
+        console.log("Inside unhandledrejection...")
+        const errorDetails = {
+          reason: event.reason?.message || String(event.reason),
+          stack: event.reason?.stack || "No stack trace available",
+        };
+        Logger.logApplication("ERROR", "Unhandled Promise Rejection", errorDetails);
+      });      
+    } catch (error) {
+      console.warn("Failed to add unhandled rejection event listener:", error);
+    }
+
   }
 
   // Log user interactions
@@ -126,82 +151,78 @@ export class ApplicationMonitor {
   }
 
   static logNetworkRequests() {
-    if(typeof window === undefined){
-      return
-    }
-    const originalFetch = window?.fetch;
-    // console.log("Original Fetch is equals to : ", originalFetch);
-    
-    if (!originalFetch) {
-      throw new Error("Original fetch is not available.");
-    }
+    try {
+      if(typeof window === undefined) return
 
-    // Define ignored URLs
-    const ignoredUrls = [BaseUrl.PostLogger(), BaseUrl.PostPrefetchConceptConnections()];
-    
-    window.fetch = async (...args) => {
-
-      const [url, options] = args;
-      const urlString: string = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
-
-      // Check if the URL is in the ignored URLs list
-      if (ignoredUrls.includes(urlString)) {
-        console.log("Ignored URLs detected : ", urlString);
-        let networkDetails = {
-          'url' : urlString,
-          'detail' : 'skip'
-        }
-        Logger.logApplication("INFO", "Network Request", networkDetails)
-        return originalFetch(...args);
+      const originalFetch = window?.fetch;
+      // console.log("Original Fetch is equals to : ", originalFetch);
+      
+      if (!originalFetch) {
+        throw new Error("Original fetch is not available.");
       }
   
-      let networkDetails:any = {
-        "request": {
-          type: "REQUEST",
-          message: "Network Request",
-          method: options?.method || "GET",
-          url: urlString,
-          body: options?.body,
+      // Define ignored URLs
+      const ignoredUrls = [BaseUrl.PostLogger(), BaseUrl.PostPrefetchConceptConnections()];
+      
+      window.fetch = async (...args) => {
+  
+        const [url, options] = args;
+        const urlString: string = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
+  
+        // Check if the URL is in the ignored URLs list
+        if (ignoredUrls.includes(urlString)) {
+          console.log("Ignored URLs detected : ", urlString);
+          let networkDetails = {
+            'url' : urlString,
+            'detail' : 'skip'
+          }
+          Logger.logApplication("INFO", "Network Request", networkDetails)
+          return originalFetch(...args);
+        }
+    
+        let networkDetails:any = {
+          "request": {
+            type: "REQUEST",
+            message: "Network Request",
+            method: options?.method || "GET",
+            url: urlString,
+            body: options?.body,
+          }
+        };
+    
+        try {
+          const response: Response = await originalFetch(...args) as Response;
+    
+          // Add response details to the network log
+          networkDetails.response = {
+            type: "RESPONSE",
+            message: "Network Response",
+            url: urlString,
+            status: response.status,
+          };
+    
+          // Logger.logApplication("INFO", "Successful Network Request", networkDetails)
+          return response;
+        } catch (error:any) {  
+          // Add error details to the network log
+          networkDetails.response = {
+            type: "ERROR",
+            message: "Network Request Failed",
+            url: urlString,
+            error: error instanceof Error ? error.message : String(error),
+          };
+    
+          // Log or process networkDetails if needed
+          Logger.logApplication("ERROR", "Failed Network Request", networkDetails)
+    
+          // Throw a standard Error object (not the networkDetails object)
+          throw new Error(`Network request failed for ${urlString}: ${error.message}`);
         }
       };
-  
-      try {
-        const response: Response = await originalFetch(...args) as Response;
-  
-        // Add response details to the network log
-        networkDetails.response = {
-          type: "RESPONSE",
-          message: "Network Response",
-          url: urlString,
-          status: response.status,
-        };
-  
-        // Logger.logApplication("INFO", "Successful Network Request", networkDetails)
-        return response;
-      } catch (error:any) {
-        // Log full error message
-        // if (error instanceof Error) {
-        //   console.error("Error message:", error.message);
-        //   console.error("Stack trace:", error.stack);
-        // }
-
-        // console.error("Fetch failed for:", urlString, error);
-  
-        // Add error details to the network log
-        networkDetails.response = {
-          type: "ERROR",
-          message: "Network Request Failed",
-          url: urlString,
-          error: error instanceof Error ? error.message : String(error),
-        };
-  
-        // Log or process networkDetails if needed
-        Logger.logApplication("ERROR", "Failed Network Request", networkDetails)
-  
-        // Throw a standard Error object (not the networkDetails object)
-        throw new Error(`Network request failed for ${urlString}: ${error.message}`);
-      }
-    };
+      
+    } catch (error) {
+      console.warn("Failed to override network requests:", error); 
+    }
 
   }
   
@@ -286,3 +307,27 @@ export class ApplicationMonitor {
 
 }
 
+
+/**
+ * Helper function to safely stringify values to avoid circular references
+ *  
+ * */ 
+
+// Handle circular references by replacing them with a string
+function safeStringify(value:unknown) : string{
+  try {
+    return JSON.stringify(value, (key, val) => {
+      if (val && typeof val === 'object') {
+        if (val instanceof Error) {
+          return {
+            message: val.message,
+            stack: val.stack
+          };
+        }
+      }
+      return val;
+    });
+  } catch (error) {
+    return "Error while serializing value";
+  }
+}
