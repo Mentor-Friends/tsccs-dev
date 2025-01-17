@@ -117,13 +117,14 @@ self.addEventListener("message", async (event: any) => {
           if (TSCCS_init) {
             console.log('Interval check 2', TSCCS_init)
             clearInterval(interval)
+            clearTimeout(timeout)
             resolve(undefined)
           } else {
             console.warn(`Watring for init ${count}:`, type)
           }
         }, 200) // check every 200ms
 
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           console.warn('Tried waiting for init but couldn\'t complete in time: ', type)
           clearInterval(interval)
           resolve(undefined)
