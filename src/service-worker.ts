@@ -103,6 +103,8 @@ self.addEventListener("message", async (event: any) => {
 
   try {
     if (!type || !payload.TABID) return;
+
+    console.log('received type', type, payload?.messageId)
   
     if (type != 'init' && !checkSWInitialization()) {
       console.warn('Message received before sw initialization', type)
@@ -115,13 +117,14 @@ self.addEventListener("message", async (event: any) => {
           if (TSCCS_init) {
             console.log('Interval check 2', TSCCS_init)
             clearInterval(interval)
+            clearTimeout(timeout)
             resolve(undefined)
           } else {
             console.warn(`Watring for init ${count}:`, type)
           }
         }, 200) // check every 200ms
 
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           console.warn('Tried waiting for init but couldn\'t complete in time: ', type)
           clearInterval(interval)
           resolve(undefined)
@@ -129,6 +132,7 @@ self.addEventListener("message", async (event: any) => {
       })
       console.log('After timeout promise', TSCCS_init)
       if (!TSCCS_init) event.source.postMessage(responseData)
+      console.log('After timeout promise nice', TSCCS_init)
     }
     
     if (!tabActionsMap.has(tabId)) tabActionsMap.set(tabId, {concepts: [], connections: []})
