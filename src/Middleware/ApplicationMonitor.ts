@@ -308,10 +308,14 @@ export class ApplicationMonitor {
 }
 
 
-// Helper function to safely stringify values to avoid circular references
+/**
+ * Helper function to safely stringify values to avoid circular references
+ *  
+ * */ 
+
+// Handle circular references by replacing them with a string
 function safeStringify(value:unknown) : string{
   try {
-    // Handle circular references by replacing them with a string
     return JSON.stringify(value, (key, val) => {
       if (val && typeof val === 'object') {
         if (val instanceof Error) {
