@@ -189,7 +189,7 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
                   // newWidget.css =
                   //   newWidget.css +
                   //   `div[data-widgetid="${child.id}"] { ${child.css} }`;
-                  newWidget.css = newWidget.css + `#${child.wrapper} { ${child.css} }`;
+                  newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
                   childWidget.dataChange((value: Concept) => {
                     console.log("This is the data change in child", value);
                     const type = value?.type?.characterValue;
