@@ -808,6 +808,7 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
 async function processMessageQueue() {
   while (messageQueue.length > 0) {
     const { message, resolve, reject } = messageQueue.shift();
+    console.log('Queue poped', message.type);
     await sendMessage(message.type, message.payload)
   }
 }
