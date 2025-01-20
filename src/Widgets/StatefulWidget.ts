@@ -193,7 +193,7 @@ export class StatefulWidget extends BaseWidget{
      * for the widget and its html element. User can add any logic here.
      */
     after_render(){
-
+      console.log("this is the after render", this);
     }
 
     /**

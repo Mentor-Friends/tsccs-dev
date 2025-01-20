@@ -13,6 +13,19 @@ export  function HandleHttpError(response: Response){
     }
 }
 
+export  function HandleHttpErrorObject(response: Response, output:any= {}){
+    if(response.status == 401 || response.status == 406){
+        let errorResponse = new FreeSchemaResponse(output.statusText, false, response.status, "");
+        errorResponse.setUrl(response.url);
+        throw errorResponse;
+    }
+    else if(response.status == 500){
+        let errorResponse = new FreeSchemaResponse(output.statusText, false, response.status, "");
+        errorResponse.setUrl(response.url);
+        throw errorResponse;
+    }
+}
+
 export function HandleInternalError(error: any, url: string = ""){
     if(error.status){
         let errorResponse = new FreeSchemaResponse(error.message, false, error.status, error.stack);

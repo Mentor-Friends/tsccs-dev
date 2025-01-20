@@ -1,6 +1,6 @@
 import { FreeschemaResponse } from "../DataStructures/Responses/StandardResponses";
 import { SignupModel } from "../DataStructures/SignupModel"
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleHttpErrorObject, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { BaseUrl } from "../app"
 
 export default async function Signup(signupModel: SignupModel){
@@ -13,7 +13,7 @@ async function postData(url = '', data = {}) {
         message: 'success',
         status: false,
         statusCode: 200,
-        data: '',
+        data: 'cannot signup',
       }
     // Default options are marked with *
     try{
@@ -40,7 +40,7 @@ async function postData(url = '', data = {}) {
             }
           }
           else{
-            HandleHttpError(response);
+            HandleHttpErrorObject(response, output);
           }
           return freeschemaRes
     }
