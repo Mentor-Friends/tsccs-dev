@@ -4,6 +4,9 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
       const widgets = await GetRelation(pageId, "the_page_body");
       if (widgets?.[0]?.id)
         await renderWidget(widgets[0].id, attachNode, props);
+      else{
+        attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4>'
+      }
     }
   
     export async function renderLatestWidget(
@@ -24,6 +27,10 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
         const widgetTree = await getWidgetFromId(widgetId);
+        if (!widgetTree.name) {
+          attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
+          return 
+        }
         const appElement = attachNode;
         const newWidget = await convertWidgetTreeToWidget(
         // await convertWidgetTreeToWidget(
