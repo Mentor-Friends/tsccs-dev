@@ -153,7 +153,7 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
      * @returns the widgetree with widgets attached inside of it.
      * Also this will add the tree to the dom.
      */
-    async function convertWidgetTreeToWidget(
+    export async function convertWidgetTreeToWidget(
       tree: WidgetTree,
       parentElement: HTMLElement,
       isMain: boolean = true,
@@ -181,8 +181,6 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
               for (let j = 0; j < newWidget.childWidgetElement.length; j++) {
                 const widgetElement = newWidget.childWidgetElement[j];
                 if (
-                  child.id ===
-                    Number(widgetElement.getAttribute("data-widgetid")) &&
                   child.wrapper === widgetElement.id
                 ) {
                   const clearedChildWidget = clearDraggedWidget(child);
@@ -219,6 +217,60 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
   
       return newWidget;
     }
+
+
+    /**
+ * 
+ * @param tree Widget tree from getWidgetFromId(widgetId);
+ * @param parentElement this is the dom element on which we want to add our widget
+ * @returns the widgetree with widgets attached inside of it.
+ * Also this will add the tree to the dom.
+ */
+export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, parentElement:HTMLElement, isMain:boolean = true, state?:object){
+  let newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
+  newWidget.html = tree.html;
+  newWidget.widgetState = {...state};
+  newWidget.widgetType = tree.type;
+  newWidget.componentDidMountFunction = tree.before_render;
+  newWidget.addEventFunction = tree.after_render;
+  newWidget.mountChildWidgetsFunction = tree.mount_child;
+  // newWidget.css = newWidget.css ? newWidget.css : "";
+  parentElement.innerHTML = "";
+  let newParent = parentElement;
+  //let newParent = appendWidgetContainerToParent(parentElement, tree.id, isMain);
+  isMain = false;
+  if(newParent){
+      await newWidget.mount(newParent);
+      tree.widget = newWidget;
+      if(tree.children.length > 0){
+          if(newWidget.childWidgetElement?.length > 0){
+              for(let i=0; i<tree.children?.length; i++){
+                  let child = tree.children[i];
+                  for(let j=0; j<newWidget.childWidgetElement.length; j++){
+                      let widgetElement = newWidget.childWidgetElement[j];
+                      // if ((child.id === Number(widgetElement.getAttribute("data-widgetid"))) && (child.wrapper === widgetElement.id)) {
+                      if ((child.wrapper === widgetElement.id)) {
+                          const clearedChildWidget = clearDraggedWidget(child);
+                          const childWidget =  await convertWidgetTreeToWidget(clearedChildWidget, widgetElement, isMain, newWidget.widgetState);
+                          newWidget.childWidgets.push(childWidget);
+                          newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                          childWidget.dataChange((value: Concept) => {
+                              console.log("This is the data change in child", value);
+                              let type = value?.type?.characterValue;
+                              if (type) {
+                                  newWidget.childrenData[type] = value;
+                              }
+                              console.log("new child data", newWidget.childrenData);
+                          });
+                      }                        
+                  }
+              }
+          }
+      }
+  }
+  console.log("newWidget ->", newWidget);
+  return newWidget;
+}
   
     async function getWidgetCodeFromId(widgetId: number, token: string) {
       try {
