@@ -245,7 +245,6 @@ export async function GetCompositionFromMemoryNormal(id:number){
             compositionList.push(connectionList[i].ofTheConceptId);
         }
     }
-
     let concept = await ConceptsData.GetConcept(id);
     if(concept.id == 0 && id != null && id != undefined){
         let conceptString = await  GetConcept(id);

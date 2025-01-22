@@ -139,7 +139,7 @@ export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 
-export {renderLatestWidget, renderPage, renderWidget} from './Widgets/RenderWidgetService';
+export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, convertWidgetTreeToWidget} from './Widgets/RenderWidgetService';
 
 type listeners = {
   listenerId: string | number
@@ -585,8 +585,10 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
-  } else {
+  } 
+  else {
     broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
+
   }
 }
 

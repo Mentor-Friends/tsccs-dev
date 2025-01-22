@@ -15,6 +15,7 @@ export class FreeschemaQuery{
     filters: FilterSearch[] = [];
     filterLogic: string = "";
     typeConnection: string = "";
+    order: string = "DESC";
     outputFormat: number = NORMAL;
     name: string = "";
     reverse: boolean = false;

@@ -312,6 +312,8 @@ export async function GetCompositionFromConnectionsInObjectNormal(conceptIds:num
     for(let i=0; i< conceptIds.length;i++){
         let comp = await GetCompositionFromMemoryNormal(conceptIds[i]);
         compositions[conceptIds[i]] = comp;
+        console.log("this is the normal data", conceptIds[i], comp);
+
     }
     return compositions;
 }

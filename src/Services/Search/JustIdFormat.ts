@@ -1,4 +1,5 @@
 import { Connection } from "../../app";
+import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
 import GetTheConcept from "../GetTheConcept";
 
@@ -18,9 +19,6 @@ import GetTheConcept from "../GetTheConcept";
               myConcepts.push(connections[i].ofTheConceptId)
               myConcepts.push(connections[i].typeId);
             }
-            connections.sort(function(x: Connection, y:Connection){
-              return y.id - x.id;
-            })
             for(let i=0 ; i< connections.length; i++){
               let reverseFlag = false;
               let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
@@ -95,7 +93,10 @@ import GetTheConcept from "../GetTheConcept";
                     newData = {};
                     newData[key] = {};
                     compositionData[connections[i].ofTheConceptId] = newData;
+                    
                   }
+                  
+
                   try{
                     let mytype = toTheConcept?.type?.characterValue ?? "none";
                     let value = toTheConcept.characterValue;
@@ -115,7 +116,8 @@ import GetTheConcept from "../GetTheConcept";
                     let data:any = {};
                     data[mytype] = {
                         "id": toTheConcept.id,
-                        "data": value
+                        "data": value,
+                        "created_on": connections[i].entryTimeStamp
 
                     }
                     if(isNaN(Number(dataCharacter))){
@@ -166,7 +168,7 @@ import GetTheConcept from "../GetTheConcept";
  * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
  * @returns 
  */
-export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = []){
+export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = [], CountDictionary: any[]){
             let startTime = new Date().getTime();
             let mainData: any[] = [] ;
             let myConcepts: number[] = [];
@@ -175,9 +177,6 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
               myConcepts.push(connections[i].ofTheConceptId)
               myConcepts.push(connections[i].typeId);
             }
-            connections.sort(function(x: Connection, y:Connection){
-              return y.id - x.id;
-            })
             for(let i=0 ; i< connections.length; i++){
               let reverseFlag = false;
               let ofTheConcept = await GetTheConcept(connections[i].ofTheConceptId);
@@ -215,7 +214,7 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                         let data =  compositionData[connections[i].ofTheConceptId]
                         if(data){
                           data["id"] =  ofTheConcept.id;
-          
+                          data["created_on"] = ofTheConcept.entryTimeStamp;
                         }
           
                         let reverseCharater = linkerConcept.characterValue + "_reverse";
@@ -270,6 +269,9 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                       newData[key] = {};
                       compositionData[connections[i].ofTheConceptId] = newData;
                     }
+
+
+                    AddCount(ofTheConcept.id, CountDictionary, newData);
                     let isComp = false;
                     let linkerConceptValue = linkerConcept.characterValue;
                     if(linkerConceptValue == ""){
@@ -282,12 +284,12 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                     try{
                         let mytype = toTheConcept?.type?.characterValue ?? "none";
                       let myData = compositionData[connections[i].toTheConceptId];
-
                         if(myData){
                           let testData:any = {};
                           testData[mytype] = {
                             "data": myData[mytype],
-                            "id": toTheConcept.id
+                            "id": toTheConcept.id,
+                            "created_on": connections[i].entryTimeStamp
                           };
                             if(Array.isArray(newData[key])){
                                 if(isComp){
@@ -322,12 +324,17 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
 
                                         }else{
                                             newData[key][linkerConceptValue] = testData;
+                                            
+
 
                                         }
                                     }
                                     
                                   }
                             }
+
+                            AddCount(toTheConcept.id, CountDictionary, testData);
+
                         }
 
 
@@ -360,5 +367,20 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
               
             }
             return mainData;
+}
+
+
+export function AddCount(ofTheConceptId: number, CountDictionary: any, newData:any){
+                      // algorith for count addition
+              if(ofTheConceptId in CountDictionary){
+                let countInfo: CountInfo = CountDictionary[ofTheConceptId];
+                console.log("this is the count info",countInfo);
+
+                if(countInfo){
+                  let connType = countInfo.connectionType + "_count";
+                  newData[connType] = countInfo.count;
+                  console.log("this is the data updated", newData);
+                }
+              }
 }
           

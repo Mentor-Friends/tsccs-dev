@@ -126,7 +126,7 @@ export class ApplicationMonitor {
         classes: target.className,
         text: target.innerText?.slice(0, 50),
       }
-      // Logger.logApplication("INFO", message, details)
+       Logger.logApplication("INFO", message, details)
     });
 
     document.addEventListener("input", (event) => {

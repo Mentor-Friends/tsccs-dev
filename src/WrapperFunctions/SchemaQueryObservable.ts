@@ -1,15 +1,19 @@
 import { FreeschemaQuery, FreeschemaQueryApi } from "../app";
 import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
+import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
 import { DependencyObserver } from "./DepenedencyObserver";
 
 export class SearchLinkMultipleAllObservable extends DependencyObserver{
     mainCompositionIds: number [] =[];
     query: FreeschemaQuery = new FreeschemaQuery();
+    countInfoStrings: string [] = [];
+    order: string = "DESC";
     constructor(query: FreeschemaQuery, token: string){
         super();
         this.query = query;
         this.format = query.outputFormat;
+        this.order = query.order;
     }
 
     async bind() {
@@ -22,19 +26,21 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.linkers = result.linkers;
             this.reverse = result.reverse;
             this.mainCompositionIds = result.mainCompositionIds;
+            this.countInfoStrings = result.countinfo;
         }
         return await this.build();
     }
     
     async build(){
+        let countInfos = DecodeCountInfo(this.countInfoStrings);
         if(this.format == DATAID){
-            this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+            this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse,countInfos, this.order);
         }
         else if(this.format == JUSTDATA){
-            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos, this.order);
         }
         else{
-            this.data = await formatConnections(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+            this.data = await formatConnections(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos);
 
             //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
         }

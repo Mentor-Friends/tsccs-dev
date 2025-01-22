@@ -1,5 +1,7 @@
 import { Connection, GetTheConcept } from "../../app";
+import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
+import { orderTheConnections } from "./orderingConnections";
 
 /**
  * ######### Format is normal ######### used for listing. This only provides type connections.
@@ -193,9 +195,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
       myConcepts.push(connections[i].ofTheConceptId)
       myConcepts.push(connections[i].typeId);
     }
-    connections.sort(function(x: Connection, y:Connection){
-      return y.id - x.id;
-    })
+
   
     for(let i=0 ; i< connections.length; i++){
       let reverseFlag = false;
@@ -257,6 +257,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
             newData[key] = {};
             compositionData[connections[i].ofTheConceptId] = newData;
           }
+          
           let linkerConcept = await GetTheConcept(connections[i].typeId);
           try{
             let mytype = toTheConcept?.type?.characterValue ?? "none";
