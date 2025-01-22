@@ -1,11 +1,12 @@
 const path = require('path');
+const { optimize } = require('webpack');
 
 module.exports = env => ({
    entry: {
       main: './src/app.ts',  // Main app entry point
       serviceWorker: './src/service-worker.ts'  // Service worker entry point
    },
-   mode: 'production',  // Set to 'production' for production
+   mode: 'development',  // Set to 'production' for production
   // devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
    watch: true,
    output: {
