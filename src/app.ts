@@ -139,7 +139,7 @@ export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 
-export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, convertWidgetTreeToWidget} from './Widgets/RenderWidgetService';
+export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, convertWidgetTreeToWidget, unwrapContainers} from './Widgets/RenderWidgetService';
 
 type listeners = {
   listenerId: string | number

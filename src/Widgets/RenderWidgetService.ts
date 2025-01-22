@@ -393,7 +393,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
       return widgetContainerEl;
     }
   
-    async function unwrapContainers(parentElement: HTMLElement, selector: string) {
+    export async function unwrapContainers(parentElement: HTMLElement, selector: string) {
       const elements: any = parentElement.querySelectorAll(selector);
       for (const el of elements) {
         const parent = el.parentElement;
