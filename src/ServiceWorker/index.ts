@@ -20,11 +20,11 @@ let processMessageQueue: string[] = []
  * @returns Promise<void>
  */
 export async function handleMessageEvent(event: any) {
-    console.log('before', event?.data?.type)
   let responseData: {success: boolean, data?: any, messageId?: string, actions?: InnerActions} = {success: false, data: undefined}
   const { type, payload }: any = event.data;
   const tabId = payload.TABID
   let addedActions = false
+  if (type == 'checkProcess') console.log('type process', type, payload)
 
   try {
     console.log('received', type, payload?.messageId)
@@ -135,7 +135,8 @@ export async function handleMessageEvent(event: any) {
 // Actions that can be performed in this service worker
 const actions: Actions = {
     checkProcess: async (payload: any) => {
-        if (processMessageQueue.includes(payload.messageId)) return {success: true, data: {processing: true}, name: 'init'}
+        console.log('payload 123', payload)
+        if (payload?.checkMessageId && processMessageQueue.includes(payload?.checkMessageId)) return {success: true, data: {processing: true}, name: 'init'}
         return {success: true, data: {processing: false}, name: 'init'}
     },
     init: async (payload: any) => {

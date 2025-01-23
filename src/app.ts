@@ -268,21 +268,37 @@ async function init(
  * @param payload any
  * @returns Promise<any>
  */
-export async function sendMessage(type: string, payload: any) {
+export async function sendMessage(type: string, payload: any, retry = true) {
   let messagedProcessed = false
   const messageId = Math.random().toString(36).substring(2); // Generate a unique message ID
   payload.messageId = messageId
   payload.TABID = TABID
   // let actions = payload.actions
-  console.log('sent type', type, messageId)
 
   const newPayload = JSON.parse(JSON.stringify(payload))
 
   const checkProcessInterval = setInterval(async () => {
     console.log('process took more than one second', messageId, type, messagedProcessed)
+    // if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
+    //   console.log("Message process missing")
+    //   throw Error('Failed to handle type ' + type + ' ' + messageId)
+    // }
     if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
-      console.log("Message process missing")
-      throw Error('Failed to handle type ' + type + ' ' + messageId)
+      clearInterval(checkProcessInterval)
+      setTimeout(async () => {
+        if (!messagedProcessed) {
+          console.log('Failed to handle type ' + type + ' message not found ' + messageId)
+          if (retry) {
+            console.log('retrying ', type, messageId)
+            const res = await sendMessage(type, payload, false)
+            return res
+          } else {
+            throw ('Failed to handle type ' + type + ' ' + messageId)
+          }
+        }
+      }, 100)
+      console.log("Message process missing ", type, messageId, messageQueue)
+      // throw Error('Failed to handle type ' + type + ' ' + messageId)
     }
   }, 1000)
 
@@ -778,7 +794,7 @@ async function initServiceWorker() {
 
 async function checkIfExecutingProcess(messageId: string, type: string) {
   try {
-    const res: any = await sendMessage("checkProcess", {})
+    const res: any = await sendMessage("checkProcess", {checkMessageId: messageId})
     console.log('check interval data res for type ', type, messageId, res.data)
     if (res?.data?.processing) return true
     else false
