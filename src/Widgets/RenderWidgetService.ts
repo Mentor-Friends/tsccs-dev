@@ -39,6 +39,7 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
           undefined,
           props
         );
+        console.log("this is the tree newWidget", widgetTree);
         // add newWidget css to the page
         const style = document.createElement("style");
         style.innerHTML = widgetTree.css + newWidget.css;
