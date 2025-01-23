@@ -309,6 +309,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
     if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
+          messagedProcessed = true
           if (type != 'checkProcess') console.log('received from sw', type, messageId)
           clearInterval(checkProcessInterval)
           if (!event.data.success) {
