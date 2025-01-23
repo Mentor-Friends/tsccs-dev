@@ -287,4 +287,12 @@ export class BaseUrl{
         return this.BASE_URL + '/api/Image/UploadFile';
     }
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////// API FOR SENDING MAIL ////////////////////////
+    static sendMail(){
+        return this.BASE_URL + '/api/sendmail';
+    }
+    static sendBulkMail(){
+        return this.BASE_URL + '/api/sendmail/bulk';
+    }
 }
