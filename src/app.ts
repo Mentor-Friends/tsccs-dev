@@ -268,7 +268,7 @@ async function init(
  * @param payload any
  * @returns Promise<any>
  */
-export async function sendMessage(type: string, payload: any, retry = true) {
+export async function sendMessage(type: string, payload: any, retryCount = 0) {
   let messagedProcessed = false
   const messageId = Math.random().toString(36).substring(2); // Generate a unique message ID
   payload.messageId = messageId
@@ -277,37 +277,39 @@ export async function sendMessage(type: string, payload: any, retry = true) {
 
   const newPayload = JSON.parse(JSON.stringify(payload))
 
-  const checkProcessInterval = setInterval(async () => {
-    console.log('process took more than one second', messageId, type, messagedProcessed)
-    // if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
-    //   console.log("Message process missing")
-    //   throw Error('Failed to handle type ' + type + ' ' + messageId)
-    // }
-    if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
-      clearInterval(checkProcessInterval)
-      setTimeout(async () => {
-        if (!messagedProcessed) {
-          console.log('Failed to handle type ' + type + ' message not found ' + messageId)
-          if (retry) {
-            console.log('retrying ', type, messageId)
-            const res = await sendMessage(type, payload, false)
-            return res
-          } else {
-            throw ('Failed to handle type ' + type + ' ' + messageId)
+  let checkProcessInterval: any
+  if (type != 'checkProcess') {
+    checkProcessInterval = setInterval(async () => {
+      console.log('process took more than one second', messageId, type, messagedProcessed)
+      // if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
+      //   console.log("Message process missing")
+      //   throw Error('Failed to handle type ' + type + ' ' + messageId)
+      // }
+      if (!messagedProcessed && !await checkIfExecutingProcess(messageId, type)) {
+        clearInterval(checkProcessInterval)
+          if (!messagedProcessed) {
+            console.log('Failed to handle type ' + type + ' message not found ' + messageId)
+            if (retryCount == 0 && type != 'checkProcess') {
+              console.log('retrying ', type, messageId)
+              const res = await sendMessage(type, payload, retryCount + 1)
+              return res
+            } else {
+              // throw Error('Failed to handle type ' + type + ' ' + messageId)
+              console.log('Failed to handle type ' + type + ' ' + messageId)
+            }
           }
-        }
-      }, 100)
-      console.log("Message process missing ", type, messageId, messageQueue)
-      // throw Error('Failed to handle type ' + type + ' ' + messageId)
-    }
-  }, 1000)
+        console.log("Message process missing ", type, messageId, messageQueue)
+        // throw Error('Failed to handle type ' + type + ' ' + messageId)
+      }
+    }, 2000)
+  }
 
   return new Promise((resolve, reject) => {
     if (!((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init'))) console.log('will go to queue', navigator.serviceWorker.controller, serviceWorker, serviceWorkerReady, type == 'init')
     if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
-          console.log('received from sw', type, messageId)
+          if (type != 'checkProcess') console.log('received from sw', type, messageId)
           clearInterval(checkProcessInterval)
           if (!event.data.success) {
             if (event?.data?.status == 401) {
@@ -331,7 +333,7 @@ export async function sendMessage(type: string, payload: any, retry = true) {
   
       // Send the message to the service worker
       if (navigator.serviceWorker.controller) {
-        console.log('sent to sw', type, messageId)
+        if (type != 'checkProcess') console.log('sent to sw', type, messageId)
         navigator.serviceWorker.controller.postMessage({ type, payload: newPayload })
       } else if (serviceWorker) {
         console.log('sent to sw', type, messageId)

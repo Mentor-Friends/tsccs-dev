@@ -24,17 +24,16 @@ export async function handleMessageEvent(event: any) {
   const { type, payload }: any = event.data;
   const tabId = payload.TABID
   let addedActions = false
-  if (type == 'checkProcess') console.log('type process', type, payload)
 
   try {
-    console.log('received', type, payload?.messageId)
+    if (type != 'checkProcess') console.log('received', type, payload?.messageId)
     if (!type || !payload.TABID) return;
     processMessageQueue.push(payload.messageId)
 
     // console.log('received type', type, payload?.messageId)
 
     if (type != 'init' && !checkSWInitialization()) {
-      console.warn('Message received before sw initialization', type)
+      console.warn('Message received before sw initialization', type, payload.messageId)
 
       // wait for init to complete
       await new Promise((resolve) => {
@@ -117,7 +116,7 @@ export async function handleMessageEvent(event: any) {
     actionsLock = false
   
     if (addedActions) delete responseData.actions
-    console.log('sent', type, payload?.messageId)
+    if (type != 'checkProcess') console.log('sent', type, payload?.messageId)
 
     processMessageQueue = await Promise.all(processMessageQueue.filter(item => item != payload.messageId))
     event.source.postMessage(responseData)
@@ -135,7 +134,6 @@ export async function handleMessageEvent(event: any) {
 // Actions that can be performed in this service worker
 const actions: Actions = {
     checkProcess: async (payload: any) => {
-        console.log('payload 123', payload)
         if (payload?.checkMessageId && processMessageQueue.includes(payload?.checkMessageId)) return {success: true, data: {processing: true}, name: 'init'}
         return {success: true, data: {processing: false}, name: 'init'}
     },
