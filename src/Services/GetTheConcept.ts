@@ -29,14 +29,15 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     try{
         if (serviceWorker) {
             try {
+                console.time("serviceworker");
                 const res: any = await sendMessage('GetTheConcept', {id, userId})
+                console.timeEnd("serviceworker");
                 return res.data
             } catch (error) {
                 console.error('GetTheConcept sw error: ', error)
                 handleServiceWorkerException(error)
             }
         }
-
         let concept = CreateDefaultConcept();
         if(id < 0){
            let lconcept:Concept =  await GetUserGhostId(userId, id);
@@ -62,7 +63,6 @@ export default async function GetTheConcept(id: number, userId: number = 999){
         }
         // Add Log
         // Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined )
-    
         return concept;
     }
     catch(err){

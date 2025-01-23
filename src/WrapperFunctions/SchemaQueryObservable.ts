@@ -35,7 +35,9 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         let countInfos = DecodeCountInfo(this.countInfoStrings);
 
         if(this.format == DATAID){
+            console.time("format");
             this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse,countInfos, this.order);
+            console.timeEnd("format");
         }
         else if(this.format == JUSTDATA){
             this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos, this.order);
