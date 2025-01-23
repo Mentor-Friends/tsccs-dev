@@ -120,10 +120,15 @@ export async function formatConnections(linkers: number[], conceptIds: number []
     prefetchConnections = orderTheConnections(prefetchConnections);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
+    let time1 = new Date().getTime();
     compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
+    console.log("format1", new Date().getTime() - time1);
+    let time2 = new Date().getTime();
     compositionData = await formatFunctionForData(prefetchConnections, compositionData, reverse);
-
+    console.log("format2", new Date().getTime() - time2);
+    let time3 = new Date().getTime();
     let output:any  = await FormatConceptsAndConnectionsNormalList(prefetchConnections, compositionData, mainCompositionIds, newCompositionData, reverse );
+    console.log("format3", new Date().getTime() - time3);
     return output;
 }
 

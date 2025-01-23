@@ -111,7 +111,6 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
                 if(data){
                   if(Array.isArray(newData[key])){
                     if(isComp){
-                      console.log("this is the data", data, connections[i].toTheConceptId);
                       newData[key].push(data[linkerConceptValue]);
   
                     }

@@ -33,6 +33,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     
     async build(){
         let countInfos = DecodeCountInfo(this.countInfoStrings);
+
         if(this.format == DATAID){
             this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse,countInfos, this.order);
         }
@@ -40,10 +41,14 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos, this.order);
         }
         else{
+        console.time("format");
+
             this.data = await formatConnections(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos);
+            console.timeEnd("format");
 
             //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
         }
+
         return this.data
     }
 

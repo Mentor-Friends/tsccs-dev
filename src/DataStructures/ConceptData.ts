@@ -76,7 +76,6 @@ export class ConceptsData{
           //  }
              //UpdateToDatabase("concept",concept);
              //IndexDbUpdate.UpdateConceptIndexDb(concept);
-             console.log("this is the adding type concept", concept);
              BinaryTree.addConceptToTree(concept);
               BinaryTypeTree.addConceptToTree(concept);
              //BinaryCharacterTree.addConceptToTree(concept);
