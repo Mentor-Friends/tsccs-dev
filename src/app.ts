@@ -150,7 +150,7 @@ type listeners = {
 export var serviceWorker: any;
 const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
 export let subscribedListeners: listeners[] = [];
-let serviceWorkerReady = false;
+// let serviceWorkerReady = false;
 let messageQueue: any[] = [];
 // for sw use only START
 export let hasActivatedSW: boolean = false
@@ -279,7 +279,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
   const newPayload = JSON.parse(JSON.stringify(payload))
 
   let checkProcessInterval: any
-  if (type != 'checkProcess') {
+  if (type != 'checkProcess' && retryCount == 0) {
     checkProcessInterval = setInterval(async () => {
       console.log('process took more than one second', messageId, type, messagedProcessed)
       // if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
@@ -289,7 +289,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
       if (!messagedProcessed && !await checkIfExecutingProcess(messageId, type)) {
         clearInterval(checkProcessInterval)
           if (!messagedProcessed) {
-            console.log('Failed to handle type ' + type + ' message not found ' + messageId)
+            console.log('Failed to handle type ' + type + ' message not found ' + messageId, 'retrying: ', retryCount == 0, type)
             if (retryCount == 0 && type != 'checkProcess') {
               console.log('retrying ', type, messageId)
               const res = await sendMessage(type, payload, retryCount + 1)
@@ -299,15 +299,14 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
               console.log('Failed to handle type ' + type + ' ' + messageId)
             }
           }
-        console.log("Message process missing ", type, messageId, messageQueue)
         // throw Error('Failed to handle type ' + type + ' ' + messageId)
       }
     }, 2000)
   }
 
   return new Promise((resolve, reject) => {
-    if (!((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init'))) console.log('will go to queue', navigator.serviceWorker.controller, serviceWorker, serviceWorkerReady, type == 'init')
-    if ((navigator.serviceWorker.controller || serviceWorker) && (serviceWorkerReady || type == 'init')) {
+    if (!((navigator.serviceWorker.controller || serviceWorker))) console.log('will go to queue', navigator.serviceWorker.controller, serviceWorker, type)
+    if ((navigator.serviceWorker.controller || serviceWorker)) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
           messagedProcessed = true
@@ -340,7 +339,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
       } else if (serviceWorker) {
         console.log('sent to sw', type, messageId)
         console.warn(`controller not found but serviceWorker is available. messageId: ${messageId}, type: ${type}`)
-        if (serviceWorkerReady) console.warn('service worker was registered already but navigator is empty!!!', serviceWorker)
+        // if (serviceWorkerReady) console.warn('service worker was registered already but navigator is empty!!!', serviceWorker)
         try {
           serviceWorker.postMessage({ type, payload: newPayload })
         } catch(err) {
@@ -350,7 +349,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
       } else {
         console.warn(`Service Worker hasn't loaded yet. messageId: ${messageId}, type: ${type}`)
 
-        if (serviceWorkerReady) console.warn('service worker was registered already but is not available NOW!!!')
+        // if (serviceWorkerReady) console.warn('service worker was registered already but is not available NOW!!!')
         console.info('ready', navigator.serviceWorker.ready)
         // wait one second before checking again
         setTimeout(() => {
@@ -375,7 +374,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
     } else {
       messageQueue.push({message: {type, payload: newPayload}})
       console.log('Message Queued', type, payload)
-      console.log((navigator.serviceWorker.controller || serviceWorker), (serviceWorkerReady || type == 'init'))
+      console.log(navigator.serviceWorker.controller, serviceWorker, type)
       if (type == 'init') {
         clearInterval(checkProcessInterval)
         resolve(null)
@@ -613,9 +612,24 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
 }
 
 async function processMessageQueue() {
+  console.log('message queue', messageQueue)
+  // process init if exist in queue
+  const initQueueItem = messageQueue.find(item => item?.message?.type == 'init')
+  if (initQueueItem) {
+    console.log('Processing Init Queue poped', initQueueItem?.type, initQueueItem);
+    // remove current init items
+    const index = messageQueue.indexOf(initQueueItem);
+    if (index > -1) { // only splice array when item is found
+      messageQueue.splice(index, 1); // 2nd parameter means remove one item only
+    }
+    await sendMessage(initQueueItem?.type, initQueueItem?.payload)
+  }
+
+  console.log('message queue while', messageQueue)
+  
   while (messageQueue.length > 0) {
     const { message, resolve, reject } = messageQueue.shift();
-    console.log('Queue poped', message.type);
+    console.log('Queue poped', message.type, message);
     await sendMessage(message.type, message.payload)
   }
 }
@@ -690,7 +704,11 @@ async function handleRegisterServiceWorker(enableSW: any) {
           registration
         );
         // process queue if exist
-        setInterval(() => processMessageQueue(), 5000)
+        setInterval(() => {
+          console.log('message process interrval calling', messageQueue)
+          if (messageQueue.length)
+            processMessageQueue()
+        }, 2000)
         
         // Add Listeners before initializing the service worker
 
@@ -705,16 +723,17 @@ async function handleRegisterServiceWorker(enableSW: any) {
               if (newWorker.state === "installing") {
                 console.log("Service Worker installing");
                 serviceWorker = undefined
-                serviceWorkerReady = false
+                // serviceWorkerReady = false
               }
               // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
               if ((newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
                 // && navigator.serviceWorker.controller) {
+                // serviceWorkerReady = true;
+                serviceWorker = newWorker;
                 console.log(
                   "New Service Worker is active",
                   registration
                 );
-                serviceWorker = newWorker;
                 // serviceWorker = registration.active;
                 // Send init message now that it's active
                 setTimeout(() => {
@@ -724,7 +743,6 @@ async function handleRegisterServiceWorker(enableSW: any) {
                 await initServiceWorker()
                 
                 success = true;
-                serviceWorkerReady = true;
                 processMessageQueue();
                 resolve();
               }
@@ -757,7 +775,7 @@ async function handleRegisterServiceWorker(enableSW: any) {
         
         // If the service worker is already active, mark it as ready
         if (registration.active) {
-          serviceWorkerReady = true;
+          // serviceWorkerReady = true;
           console.log("active sw");
           serviceWorker = registration.active;
 
