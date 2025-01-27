@@ -1,6 +1,6 @@
 import { GetAllLinkerConnectionsFromTheConcept } from "../Api/GetAllLinkerConnectionsFromTheConcept";
 import { GetAllLinkerConnectionsToTheConcept } from "../Api/GetAllLinkerConnectionsToTheConcept";
-import { Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter, handleServiceWorkerException, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter, handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 
 /**
  * 
@@ -9,6 +9,7 @@ import { Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter
  * @returns 
  */
 export async function DeleteConnectionByType(id: number, linker: string){
+    Logger.logfunction(DeleteConnectionByType, arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('DeleteConnectionByType', { id, linker })

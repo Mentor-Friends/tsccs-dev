@@ -1,8 +1,10 @@
 import { LocalBinaryCharacterTree } from "../../DataStructures/Local/LocalBinaryCharacterTree";
 import { LNode } from "../../DataStructures/Local/LNode";
 import { getObjectsFromLocalIndexDb } from "../../Database/indexdblocal";
+import { Logger } from "../../app";
 
 export  async function CreateLocalCharacterBinaryTreeFromData(){
+    Logger.logfunction(CreateLocalCharacterBinaryTreeFromData);
     try{
         let conceptList = await getObjectsFromLocalIndexDb("localconcept");
         if(Array.isArray(conceptList)){

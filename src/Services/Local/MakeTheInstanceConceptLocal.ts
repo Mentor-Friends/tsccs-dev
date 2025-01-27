@@ -24,6 +24,7 @@ import { Connection, handleServiceWorkerException, LocalSyncData, Logger, sendMe
  */
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
+        Logger.logfunction(MakeTheInstanceConceptLocal, arguments);
         let startTime = performance.now()
         if (serviceWorker) {
             try {

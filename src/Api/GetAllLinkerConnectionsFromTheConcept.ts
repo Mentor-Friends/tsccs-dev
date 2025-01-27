@@ -1,9 +1,10 @@
 import { Connection } from "../DataStructures/Connection";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { BaseUrl } from "../app";
+import { BaseUrl, Logger } from "../app";
 
 export async function GetAllLinkerConnectionsFromTheConcept(conceptId:number){
+  Logger.logfunction(GetAllLinkerConnectionsFromTheConcept, arguments);
   var connections: Connection[] = [];
 
     try{

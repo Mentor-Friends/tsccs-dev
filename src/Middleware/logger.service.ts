@@ -1,3 +1,4 @@
+import { strict } from "assert";
 import { BaseUrl } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
@@ -7,7 +8,7 @@ export class Logger {
     private static packageLogsData: any[] = [];
     private static applicationLogsData: any[] = [];
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 12 * 1000; // 120 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app";
     private static mftsccsBrowser:string = "mftsccs";
@@ -43,7 +44,7 @@ export class Logger {
                 this.sendPackageLogsToServer();
                 this.sendApplicationLogsToServer();
             }
-        }, 60000); // Check every minute
+        }, 10000); // Check every minute
     }
 
     /**
@@ -92,7 +93,7 @@ export class Logger {
 
         this.packageLogsData.push(logEntry);
         // this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
-        // console.log("Package Log Updated : ", this.log);
+         // console.log("Package Log Updated : ", this.packageLogsData);
 
     }
 
@@ -107,6 +108,21 @@ export class Logger {
         } catch(error){
             console.error("Error on Logger Log : ", error);
         }
+    }
+
+    public static logfunction(myfunction:Function, ...args:any[]){
+        
+      //  if(this.logPackageActivationStatus){
+      let myarguments: any = args;
+      //let size = Object.values(myarguments[0]).length;
+
+           // console.log("info", myfunction.name, myarguments, myarguments[0].length);
+            let logData: LogData = {
+                functionName: myfunction.name,
+                functionParameters: myarguments
+            }
+            this.formatLogData('INFO', "function called", logData);
+       // }
     }
 
     public static logInfo(
@@ -348,7 +364,7 @@ export class Logger {
             if(!accessToken) return;
 
             const storedLogs = this.packageLogsData
-            
+            console.log("this is the logs to server", this.packageLogsData);
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);

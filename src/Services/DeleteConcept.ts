@@ -6,10 +6,11 @@ import { BinaryTypeTree } from "../DataStructures/BinaryTypeTree";
 import { ConnectionOfNode } from "../DataStructures/ConnectionBinaryTree/ConnectionOfNode";
 import { ConnectionOfTheTree } from "../DataStructures/ConnectionBinaryTree/ConnectionOfTheTree";
 import { removeFromDatabase } from "../Database/indexeddb";
-import { ConceptsData, handleServiceWorkerException, LocalConceptsData, sendMessage, serviceWorker } from "../app";
+import { ConceptsData, handleServiceWorkerException, LocalConceptsData, Logger, sendMessage, serviceWorker } from "../app";
 import GetTheConcept from "./GetTheConcept";
 
 export async function DeleteConceptById(id:number){
+    Logger.logfunction(DeleteConceptById, arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('DeleteConceptById', { id })

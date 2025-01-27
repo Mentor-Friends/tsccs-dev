@@ -3,9 +3,10 @@ import { GetConceptByCharacterAndTypeUrl } from './../../Constants/ApiConstants'
 import { Concept } from "./../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept } from "../../app";
+import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: string, category_id: number): Promise<Concept>{
+  Logger.logfunction(GetConceptByCharacterAndCategoryDirectApi, arguments);
   let concept:Concept = CreateDefaultConcept();
 
     try{

@@ -1,4 +1,4 @@
-import { Connection, GetTheConcept } from "../../app";
+import { Connection, GetTheConcept, Logger } from "../../app";
 import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
 import { orderTheConnections } from "./orderingConnections";
@@ -187,7 +187,6 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
    * This function is the builder of the arrays/ objects from the connections.
    */
   export async function formatFunction(connections: Connection[], compositionData: any, reverse: number[]){
-
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
       myConcepts.push(connections[i].toTheConceptId);

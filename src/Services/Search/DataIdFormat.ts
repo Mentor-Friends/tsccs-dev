@@ -1,4 +1,4 @@
-import { Connection, GetTheConcept } from "../../app";
+import { Connection, GetTheConcept, Logger } from "../../app";
 import { removeThePrefix } from "../Common/RegexFunction";
 
     /**
@@ -11,7 +11,8 @@ import { removeThePrefix } from "../Common/RegexFunction";
    * @returns 
    */
     export async function FormatFunctionDataForData(connections:Connection[], compositionData: any[], reverse: number [] = []){
-        let myConcepts: number[] = [];
+      Logger.logfunction(FormatFunctionDataForData, arguments);  
+      let myConcepts: number[] = [];
         for(let i=0 ; i< connections.length; i++){
           myConcepts.push(connections[i].toTheConceptId);
           myConcepts.push(connections[i].ofTheConceptId)
@@ -154,7 +155,8 @@ import { removeThePrefix } from "../Common/RegexFunction";
  * @returns 
  */
 export async function FormatFromConnectionsAlteredArrayExternal(connections:Connection[], compositionData: any[], newCompositionData: any, mainComposition: number[], reverse: number [] = [],CountDictionary: any[] ){
-    let startTime = new Date().getTime();
+  Logger.logfunction(FormatFromConnectionsAlteredArrayExternal, arguments);  
+  let startTime = new Date().getTime();
     let mainData: any[] = [] ;
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
@@ -333,6 +335,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
    * @returns 
    */
   export async function FormatFunctionData(connections:Connection[], compositionData: any[], reverse: number [] = []){
+    Logger.logfunction(FormatFunctionData, arguments);
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
       myConcepts.push(connections[i].toTheConceptId);

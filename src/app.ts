@@ -612,6 +612,7 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
 }
 
 async function processMessageQueue() {
+  Logger.logfunction(processMessageQueue, arguments);
   console.log('message queue', messageQueue)
   // process init if exist in queue
   const initQueueItem = messageQueue.find(item => item?.message?.type == 'init')
@@ -652,6 +653,7 @@ export const handleServiceWorkerException = (error: any) => {
  * Function to setup initial flag
  */
 function initializeFlags(flags: any) {
+  Logger.logfunction(initializeFlags,arguments);
   try {
     if (flags.logApplication) {
       ApplicationMonitor.initialize();
@@ -690,6 +692,7 @@ function initializeFlags(flags: any) {
  * @param enableSW any
  */
 async function handleRegisterServiceWorker(enableSW: any) {
+  Logger.logfunction(handleRegisterServiceWorker,arguments);
   await new Promise<void>((resolve, reject) => {
     let success = false;
 

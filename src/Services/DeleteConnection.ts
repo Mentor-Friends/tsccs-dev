@@ -3,10 +3,11 @@ import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/Con
 import { ConnectionTypeTree } from "../DataStructures/ConnectionBinaryTree/ConnectionTypeTree";
 import { LocalConnectionData } from "../DataStructures/Local/LocalConnectionData";
 import { removeFromDatabase } from "../Database/indexeddb";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import {GetConnectionById} from "./GetConnections";
 
 export  async function DeleteConnectionById(id:number){
+    Logger.logfunction(DeleteConnectionById, arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('DeleteConnectionById', { id })

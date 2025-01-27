@@ -6,10 +6,11 @@ import { FindConnectionsOfCompositionsBulkInMemory } from '../Services/FindConne
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
-import { handleServiceWorkerException, sendMessage, serviceWorker } from '../app';
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from '../app';
 
 
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
+  Logger.logfunction(GetAllConnectionsOfCompositionBulk, arguments);
   if (serviceWorker) {
     try {
       const res: any = await sendMessage('GetAllConnectionsOfCompositionBulk', {composition_ids})
@@ -34,6 +35,7 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_ids: number[] = []){
+  Logger.logfunction(GetAllConnectionsOfCompositionOnline, arguments);
   var connectionList: Connection[] = [];
 
   try{

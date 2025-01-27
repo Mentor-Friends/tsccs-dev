@@ -5,7 +5,9 @@ import { TheCharacter } from "../DataStructures/TheCharacter";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { Logger } from "../app";
 export async function GetCharacterByCharacter(characterValue: string){
+  Logger.logfunction(GetCharacterByCharacter, arguments);
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetCharacterByCharacterUrl(),{

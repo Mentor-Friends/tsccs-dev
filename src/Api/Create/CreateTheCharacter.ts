@@ -5,8 +5,10 @@ import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { Logger } from "../../app";
 
 export async function CreateTheCharacter(characterData: TheCharacter){
+  Logger.logfunction(CreateTheCharacter, characterData);
     try{
 
       var characterData = CharacterRepository.GetCharacter(characterData.data);

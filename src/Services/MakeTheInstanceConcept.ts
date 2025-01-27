@@ -30,6 +30,7 @@ export default async function MakeTheInstanceConcept(
   passedSessionId: number = 999,
   referentId: number = 0
 ) {
+  Logger.logfunction(MakeTheInstanceConcept, arguments);
   let startTime = performance.now()
   if (serviceWorker) {
     try {

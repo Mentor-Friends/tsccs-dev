@@ -1,8 +1,10 @@
+import { Logger } from "../app";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Concept } from "../DataStructures/Concept";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { GetOnlyTokenHeader, GetRequestHeader, GetRequestHeaderWithAuthorization } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConcept(id:number){
+  Logger.logfunction(DeleteTheConcept, arguments);
     try{
            
            const formdata = new FormData();

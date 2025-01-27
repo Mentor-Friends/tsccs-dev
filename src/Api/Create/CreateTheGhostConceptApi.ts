@@ -5,11 +5,12 @@ import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
-import { Connection } from "../../app";
+import { Connection, Logger } from "../../app";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 
 export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[]){
+  Logger.logfunction(CreateTheGhostConceptApi,[conceptData.length, connectionData.length] )
   try {
     const CHUNK_SIZE = 1000
     let result: any = {

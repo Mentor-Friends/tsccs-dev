@@ -2,14 +2,14 @@ import { IdentifierFlags } from "../../DataStructures/IdentifierFlags";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 import { GetLockStatus, getObjectsFromLocalIndexDb, LockTheDatabase, UnlockDatabase, UpdateToDatabase } from "../../Database/indexdblocal";
-import { BaseUrl, DelayFunctionExecution } from "../../app";
+import { BaseUrl, DelayFunctionExecution, Logger } from "../../app";
 
 
 /**
  * This will create a binary tree of local concepts that is saved from the indexdb.
  */
 export default  async function CreateLocalBinaryTreeFromIndexDb(){
-    console.log("this is trying to create local binary tree");
+    Logger.logfunction(CreateLocalBinaryTreeFromIndexDb);
     try{
         let conceptList = await getObjectsFromLocalIndexDb("localconcept");
         if(Array.isArray(conceptList)){
@@ -50,6 +50,7 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
  * 
  */
 export async function PopulateTheLocalConceptsToMemory(){
+    Logger.logfunction(PopulateTheLocalConceptsToMemory);
     try{
         // put a lock on the indexdb for the domain so that no two things do this same process.
         await navigator.locks?.request("dblock", async (lock) => {
@@ -117,6 +118,7 @@ export async function PopulateTheLocalConceptsToMemory(){
  * 
  */
  export async function PopulateTheLocalConnectionToMemory(){
+    Logger.logfunction(PopulateTheLocalConnectionToMemory);
     try{
                 // put a lock on the indexdb for the domain so that no two things do this same process.
         await navigator.locks?.request("dblock", async (lock) => {

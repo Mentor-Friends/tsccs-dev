@@ -9,7 +9,7 @@ import {
   HandleHttpError,
   HandleInternalError,
 } from "../Services/Common/ErrorPosting";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { formatConnectionsDataId } from "../Services/Search/SearchWithTypeAndLinker";
 
 export async function RecursiveSearchApi(
@@ -17,7 +17,7 @@ export async function RecursiveSearchApi(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-
+  Logger.logfunction(RecursiveSearchApi, arguments);
   let concepts: any[] = [];
 
   try {
@@ -78,7 +78,7 @@ export async function RecursiveSearchApiWithInternalConnections(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-
+  Logger.logfunction(RecursiveSearchApiWithInternalConnections, arguments);
   let concepts: any[] = [];
 
   try {  
@@ -137,7 +137,7 @@ export async function RecursiveSearchApiRaw(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-
+  Logger.logfunction(RecursiveSearchApiRaw, arguments);
   let concepts: any[] = [];
 
   try {
@@ -192,7 +192,7 @@ export async function RecursiveSearchApiRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-
+  Logger.logfunction(RecursiveSearchApiRawFullLinker, arguments);
   let concepts: any[] = [];
 
   try {
@@ -247,6 +247,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
+  Logger.logfunction(RecursiveSearchApiRawFullLinker, arguments);
   let concepts: any[] = [];
 
   try {

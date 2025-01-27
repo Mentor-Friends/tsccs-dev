@@ -14,8 +14,8 @@ import { CreateDefaultConcept } from "./CreateDefaultConcept";
  */
 export default async function GetTheConcept(id: number, userId: number = 999){
     let startTime = performance.now()
-    // console.log("I skip GetTheConcept : ", id)
-    // console.log("Log from GetTheConcept.............", id)
+    //Logger.logfunction(GetTheConcept,arguments);
+
     if(AccessTracker.activateStatus){
         try{
             AccessTracker.incrementConcept(id)

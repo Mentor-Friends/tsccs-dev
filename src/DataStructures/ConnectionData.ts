@@ -1,5 +1,5 @@
 import { AccessTracker } from "../AccessTracker/accessTracker";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { IndexDbUpdate } from "../Database/IndexUpdate";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
@@ -120,6 +120,7 @@ export class ConnectionData {
   }
 
   static GetConnectionByOfType(ofTheConceptId: number, typeId: number) {
+    Logger.logfunction(ConnectionData.GetConnectionByOfType, arguments);
     let connections = ConnectionTypeTree.GetConnectionByOfTheConceptAndTypeId(
       ofTheConceptId,
       typeId
@@ -203,7 +204,7 @@ export class ConnectionData {
 
   // commented
   static async GetConnectionsOfCompositionLocal(id: number) {
-
+    Logger.logfunction(ConnectionData.GetConnectionsOfCompositionLocal, arguments);
     let connections: Connection[] = [];
 
     try{    

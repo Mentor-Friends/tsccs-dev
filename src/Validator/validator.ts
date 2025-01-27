@@ -1,5 +1,5 @@
 import { HandleFunctionError } from "../Middleware/ErrorHandling";
-import { GetConceptByCharacterAndType, MakeTheTypeConcept, MakeTheTypeConceptApi } from "../app";
+import { GetConceptByCharacterAndType, Logger, MakeTheTypeConcept, MakeTheTypeConceptApi } from "../app";
 import { DATA_TYPES_RULES } from "./constant";
 import { FormErrors, FormFieldData } from "./interface";
 
@@ -12,6 +12,7 @@ export class Validator {
      * @returns boolean indicating uniqueness
      */
     public async checkUniqueness(type: string, value: string): Promise<boolean> {
+        Logger.logfunction(this.checkUniqueness)
         // Ensure 'the_' is at the start of the type
         if (!type.startsWith('the_')) {
             type = 'the_' + type; 
@@ -66,6 +67,7 @@ export class Validator {
         required: boolean,
         isUnique: boolean = false
     ): Promise< {[fieldName:string] : string } > {
+        Logger.logfunction(this.validateField)
         try {
             let startTime = performance.now()
             const errors: { [fieldName: string]: string } = {};
@@ -166,6 +168,7 @@ export class Validator {
     public async validateForm(formData: { 
         [key: string]: FormFieldData
     }): Promise<FormErrors> {
+        Logger.logfunction(this.validateForm);
         try{
             let startTime = performance.now()
             const validationErrors: FormErrors = {};
@@ -223,6 +226,7 @@ export class Validator {
         required: boolean,
         isUnique: boolean = false
     ){
+        Logger.logfunction(this.validate);
         let error:any = {};
         this.validateField(
             fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
