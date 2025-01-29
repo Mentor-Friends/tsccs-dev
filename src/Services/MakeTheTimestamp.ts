@@ -6,7 +6,7 @@ import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
 
 export async function MakeTheTimestamp(type:string, referent:string, userId: number, 
     accessId:number = 4, sessionInformationId: number=999){
-        Logger.logfunction(MakeTheTimestamp);
+        Logger.logfunction("MakeTheTimestamp");
         if (serviceWorker) {
             try {
                 const res: any = await sendMessage('MakeTheTimestamp', {type, referent, userId, accessId, sessionInformationId})

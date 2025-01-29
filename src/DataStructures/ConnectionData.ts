@@ -120,7 +120,7 @@ export class ConnectionData {
   }
 
   static GetConnectionByOfType(ofTheConceptId: number, typeId: number) {
-    Logger.logfunction(ConnectionData.GetConnectionByOfType, arguments);
+    Logger.logfunction("ConnectionData.GetConnectionByOfType", arguments);
     let connections = ConnectionTypeTree.GetConnectionByOfTheConceptAndTypeId(
       ofTheConceptId,
       typeId
@@ -204,7 +204,7 @@ export class ConnectionData {
 
   // commented
   static async GetConnectionsOfCompositionLocal(id: number) {
-    Logger.logfunction(ConnectionData.GetConnectionsOfCompositionLocal, arguments);
+    Logger.logfunction("ConnectionData.GetConnectionsOfCompositionLocal", arguments);
     let connections: Connection[] = [];
 
     try{    

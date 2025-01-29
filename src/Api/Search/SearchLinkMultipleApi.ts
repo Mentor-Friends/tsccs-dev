@@ -6,7 +6,7 @@ import { HandleHttpError, HandleInternalError } from "../../Services/Common/Erro
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
 export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: string=""){
-    Logger.logfunction(SearchLinkMultipleApi, arguments);
+    Logger.logfunction("SearchLinkMultipleApi", arguments);
     let startTime = performance.now()
     var header = GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.SearchLinkMultipleAllApiUrl();

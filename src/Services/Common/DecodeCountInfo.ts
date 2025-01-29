@@ -14,7 +14,7 @@ export function DecodeCountInfo(countStrings: string[] = []){
 }
 
 export async function GetConnectionTypeForCount(countInfos: CountInfo[]){
-    Logger.logfunction(GetConnectionTypeForCount, arguments);
+    Logger.logfunction("GetConnectionTypeForCount", arguments);
     let CountDictionary:any = {};
     for(let i =0; i<countInfos.length; i++){
         let concept: Concept = await GetConcept(countInfos[i].connectionTypeId);

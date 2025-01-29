@@ -6,7 +6,7 @@ import { HandleHttpError, HandleInternalError } from "../../Services/Common/Erro
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
 export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string=""){
-    Logger.logfunction(FreeschemaQueryApi, arguments);
+    Logger.logfunction("FreeschemaQueryApi", arguments);
     var header = GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.FreeschemaQueryUrl();
     const body = JSON.stringify(query);

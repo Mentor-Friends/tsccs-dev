@@ -211,7 +211,7 @@ export class ConceptsData{
      }
 
      static async GetConceptsByTypeIdAndUser(typeId: number, userId: number){
-        Logger.logfunction(ConceptsData.GetConceptsByTypeIdAndUser, arguments);
+        Logger.logfunction("ConceptsData.GetConceptsByTypeIdAndUser", arguments);
         if (serviceWorker) {
             try {
                 const res: any = await sendMessage('ConceptsData__GetConceptsByTypeIdAndUser', {typeId, userId})

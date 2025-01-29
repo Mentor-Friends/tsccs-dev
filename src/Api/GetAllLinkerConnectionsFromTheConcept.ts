@@ -4,7 +4,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { BaseUrl, Logger } from "../app";
 
 export async function GetAllLinkerConnectionsFromTheConcept(conceptId:number){
-  Logger.logfunction(GetAllLinkerConnectionsFromTheConcept, arguments);
+  Logger.logfunction("GetAllLinkerConnectionsFromTheConcept", arguments);
   var connections: Connection[] = [];
 
     try{

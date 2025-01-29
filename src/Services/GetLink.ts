@@ -8,7 +8,7 @@ import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCo
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1){
-  Logger.logfunction(GetLink, arguments);
+  Logger.logfunction("GetLink", arguments);
   let startTime = performance.now()
   if (serviceWorker) {
     try {
@@ -47,7 +47,7 @@ export async function GetLink(id:number, linker:string, inpage:number=10, page:n
 
 
 export async function GetLinkRaw(id:number, linker:string, inpage:number=10, page:number=1){
-  Logger.logfunction(GetLinkRaw, arguments);
+  Logger.logfunction("GetLinkRaw", arguments);
   let output: Concept[] = [];
   let  concept:Concept = await GetTheConcept(id);
   let linkString: string = concept.type?.characterValue + "_s" + "_" + linker;

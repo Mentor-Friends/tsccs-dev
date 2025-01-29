@@ -6,7 +6,7 @@ import { GetOnlyTokenHeader, GetRequestHeaderWithAuthorization } from "../../Ser
 export  async function DeleteUserInBackend(
     id: number
   ) {
-    Logger.logfunction(DeleteUserInBackend, arguments);
+    Logger.logfunction("DeleteUserInBackend", arguments);
     try {
     var header = GetRequestHeaderWithAuthorization("application/json", "");
       let queryUrl = BaseUrl.DeleteUserUrl();

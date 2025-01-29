@@ -3,7 +3,7 @@ import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 
 export async function FindConnectionsOfCompositionsBulkInMemory(composition_ids:number[] = []){
-  Logger.logfunction(FindConnectionsOfCompositionsBulkInMemory, [composition_ids.length]);
+  Logger.logfunction("FindConnectionsOfCompositionsBulkInMemory", [composition_ids.length]);
   let FinalConnectionList:Connection[] = [];
   try {
     if (serviceWorker) {

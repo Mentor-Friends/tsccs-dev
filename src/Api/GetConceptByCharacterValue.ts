@@ -6,7 +6,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../app";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterValue(characterValue: string){
-  Logger.logfunction(GetConceptByCharacterValue, arguments);
+  Logger.logfunction("GetConceptByCharacterValue", arguments);
   let result:Concept = CreateDefaultConcept();
     try{
             const formdata = new FormData();

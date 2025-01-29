@@ -8,7 +8,7 @@ import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByC
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
-  Logger.logfunction(GetRelation,arguments);
+  Logger.logfunction("GetRelation",arguments);
   if (serviceWorker) {
     try {
       const res: any = await sendMessage('GetRelation', {id, relation, inpage, page})
@@ -41,7 +41,7 @@ export async function GetRelation(id:number, relation:string, inpage:number=10, 
 }
 
 export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1){
-  Logger.logfunction(GetRelationRaw,arguments);
+  Logger.logfunction("GetRelationRaw",arguments);
   if (serviceWorker) {
     try {
       const res: any = await sendMessage('GetRelationRaw', {id, relation, inpage, page})

@@ -7,7 +7,7 @@ import { ConnectionData, Logger } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAllPrefetchConnections(userId:number, inpage:number){
-  Logger.logfunction(GetAllPrefetchConnections, arguments);
+  Logger.logfunction("GetAllPrefetchConnections", arguments);
     try{
       const start = new Date().getTime();
       var urlencoded = new URLSearchParams();

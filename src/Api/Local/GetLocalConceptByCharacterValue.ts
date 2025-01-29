@@ -6,7 +6,7 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultLConcept, Logger } from "../../app";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function GetLocalConceptByCharacterValue(characterValue: string){
-  Logger.logfunction(GetLocalConceptByCharacterValue, arguments);
+  Logger.logfunction("GetLocalConceptByCharacterValue", arguments);
   let result = CreateDefaultLConcept();
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');

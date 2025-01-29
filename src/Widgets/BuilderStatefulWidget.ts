@@ -112,12 +112,19 @@ export class BuilderStatefulWidget extends StatefulWidget {
 
   async mount_child() {
 
-    const dynamicAsyncFunction = new Function("tsccs",`
-      return (async function() {
-        ${this.mountChildWidgetsFunction}
-      }).call(this);
-    `).bind(this);
-    dynamicAsyncFunction(tsccs);
+    try{
+      const dynamicAsyncFunction = new Function("tsccs",`
+        return (async function() {
+          ${this.mountChildWidgetsFunction}
+        }).call(this);
+      `).bind(this);
+      dynamicAsyncFunction(tsccs);
+    }
+    catch(error)
+    {
+      console.log("This is the error in the mount child", error);
+      throw error;
+    }
   }
 
   async setProperty(widgetTypeName: any) {
@@ -185,13 +192,20 @@ export class BuilderStatefulWidget extends StatefulWidget {
    * This function will be called after the component mounts.
    */
   before_render() {
+    try{
+      const dynamicAsyncFunction = new Function("tsccs",`
+        return (async function() {
+          ${this.componentDidMountFunction}
+        }).call(this);
+      `).bind(this);
+      dynamicAsyncFunction(tsccs);
+    }
+    catch(error){
+      console.log("This is the error in the before render", error);
+      throw error;
+    }
     //console.log("onmountVal", onmountVal);
-    const dynamicAsyncFunction = new Function("tsccs",`
-      return (async function() {
-        ${this.componentDidMountFunction}
-      }).call(this);
-    `).bind(this);
-    dynamicAsyncFunction(tsccs);
+
     // dynamicAsyncFunction(tsccs);
     // const AsyncFunction = Object.getPrototypeOf(
     //   async function () {}
@@ -207,13 +221,20 @@ export class BuilderStatefulWidget extends StatefulWidget {
     // const AsyncFunction = Object.getPrototypeOf(
     //   async function () {}
     // ).constructor;
-    const dynamicAsyncFunction = new Function("tsccs",`
-      return (async function() {
-        ${this.addEventFunction}
-      }).call(this);
-    `).bind(this);
+    try{
+      const dynamicAsyncFunction = new Function("tsccs",`
+        return (async function() {
+          ${this.addEventFunction}
+        }).call(this);
+      `).bind(this);
+  
+      dynamicAsyncFunction(tsccs);
+    }
+    catch(error){
+      console.log("This is the error in the after render", error);
+      throw error;
+    }
 
-    dynamicAsyncFunction(tsccs);
 
     // const renderOnmount = AsyncFunction("tsccs", this.addEventFunction);
 

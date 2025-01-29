@@ -5,7 +5,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 export async function GetAllConceptsByType(type:string,userId: number){
-  Logger.logfunction(GetAllConceptsByType, arguments);
+  Logger.logfunction("GetAllConceptsByType", arguments);
     try{
             var urlencoded = new URLSearchParams();
             urlencoded.append("type", type);

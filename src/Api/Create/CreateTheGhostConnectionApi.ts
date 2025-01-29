@@ -6,7 +6,7 @@ import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 import { Connection, Logger } from "../../app";
 export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
-  Logger.logfunction(CreateTheGhostConnectionApi, [connectionData.length]);
+  Logger.logfunction("CreateTheGhostConnectionApi", [connectionData.length]);
   let result:Connection[] = [];
     try{
 

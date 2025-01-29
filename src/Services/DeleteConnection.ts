@@ -7,7 +7,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 import {GetConnectionById} from "./GetConnections";
 
 export  async function DeleteConnectionById(id:number){
-    Logger.logfunction(DeleteConnectionById, arguments);
+    Logger.logfunction("DeleteConnectionById", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('DeleteConnectionById', { id })

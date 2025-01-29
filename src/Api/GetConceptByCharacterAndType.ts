@@ -6,7 +6,7 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
-  Logger.logfunction(GetConceptByCharacterAndType, arguments);
+  Logger.logfunction("GetConceptByCharacterAndType", arguments);
   try{
     if (serviceWorker) {
       try {

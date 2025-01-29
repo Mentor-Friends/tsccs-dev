@@ -3,7 +3,7 @@ import { GetConceptByCharacterAndCategoryDirectApi } from "../../Api/SearchConce
 import { Concept, ConceptsData, CreateDefaultConcept, Logger, SplitStrings } from "../../app";
 
 export async function GetConceptByCharacterAndCategory(character: string){
-    Logger.logfunction(GetConceptByCharacterAndCategory, character);
+    Logger.logfunction("GetConceptByCharacterAndCategory", character);
     let concept: Concept = CreateDefaultConcept();
     if(character == "the"){
         concept.id = 1;
@@ -28,7 +28,7 @@ export async function GetConceptByCharacterAndCategory(character: string){
 }
 
 export  async function GetConceptByCharacter(characterValue: string){
-    Logger.logfunction(GetConceptByCharacter, arguments);
+    Logger.logfunction("GetConceptByCharacter", arguments);
     let concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
     if(concept.id == 0){
        concept = await GetConceptByCharacterValue(characterValue);
@@ -37,7 +37,7 @@ export  async function GetConceptByCharacter(characterValue: string){
 }
 
 export  async function GetConceptByCharacterAndCategoryFromMemory(character: string, category: number){
-    Logger.logfunction(GetConceptByCharacterAndCategoryFromMemory, arguments);
+    Logger.logfunction("GetConceptByCharacterAndCategoryFromMemory", arguments);
     let concept = await ConceptsData.GetConceptByCharacterAndCategoryLocal(character, category);
     if(concept.id == 0){
         concept = await GetConceptByCharacterAndCategoryDirectApi(character,category);

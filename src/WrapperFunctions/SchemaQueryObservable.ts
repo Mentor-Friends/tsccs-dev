@@ -32,7 +32,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     }
     
     async build(){
-        Logger.logfunction(this.build, ["schemaquery", this.mainCompositionIds]);
+        Logger.logfunction("build", ["schemaquery", this.mainCompositionIds]);
         let countInfos = DecodeCountInfo(this.countInfoStrings);
 
         if(this.format == DATAID){

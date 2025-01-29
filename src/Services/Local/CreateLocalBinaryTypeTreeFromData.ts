@@ -4,7 +4,7 @@ import { getObjectsFromLocalIndexDb } from "../../Database/indexdblocal";
 import { Logger } from "../../app";
 
 export  async function CreateLocalBinaryTypeTreeFromData(){
-    Logger.logfunction(CreateLocalBinaryTypeTreeFromData);
+    Logger.logfunction("CreateLocalBinaryTypeTreeFromData");
     try{
         let conceptList = await getObjectsFromLocalIndexDb("localconcept");
         if(Array.isArray(conceptList)){

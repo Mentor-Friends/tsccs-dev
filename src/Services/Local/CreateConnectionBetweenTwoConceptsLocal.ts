@@ -3,7 +3,7 @@ import { InnerActions } from "../../Constants/general.const";
 import { Logger } from "../../Middleware/logger.service";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, actions: InnerActions = {concepts: [], connections: []}){
-    Logger.logfunction(CreateConnectionBetweenTwoConceptsLocal, arguments);
+    Logger.logfunction("CreateConnectionBetweenTwoConceptsLocal", arguments);
     let startTime = performance.now()
     try{
         if (serviceWorker) {

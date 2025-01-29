@@ -24,7 +24,7 @@ export class IndexDb{
  * @returns a promise that either resolves or rejects opening the database.
  */
 export function openDatabase(databaseName:string): Promise<IDBDatabase>{
-  Logger.logfunction(openDatabase, [databaseName, "indexdb"]);
+  Logger.logfunction("openDatabase", [databaseName, "indexdb"]);
   return new Promise(function(resolve, reject){
   
   // if the indexdb is already initialized then you do not need to again initialize the db so you can get 
@@ -120,7 +120,7 @@ request.onupgradeneeded = (event) => {
  * @returns a promise that if a store is successful then the obejct is returned else rejects with the event.
  */
 export function storeToDatabase(databaseName:string, object:any): Promise<any>{
-  Logger.logfunction(storeToDatabase, [databaseName, "indexdb"]);
+  Logger.logfunction("storeToDatabase", [databaseName, "indexdb"]);
   return new Promise(function(resolve, reject){
     console.log("this is storing to the database", object);
     openDatabase(databaseName).then((db: IDBDatabase)=>{
@@ -162,7 +162,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    * @returns returns the object if it is updated successfully.
    */
  export function UpdateToDatabase(databaseName:string, object:any){
-  Logger.logfunction(UpdateToDatabase, [databaseName, "indexdb"]);
+  Logger.logfunction("UpdateToDatabase", [databaseName, "indexdb"]);
   return new Promise(function(resolve, reject){
     // console.log("this is wriring to the database", object);
   openDatabase(databaseName).then((db)=>{
@@ -202,7 +202,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
  * @returns This returns the last object from the database.
  */
   export function GetLastSettingsFromDatabase(){
-    Logger.logfunction(GetLastSettingsFromDatabase, ["indexdb"]);
+    Logger.logfunction("GetLastSettingsFromDatabase", ["indexdb"]);
     return new Promise(function(resolve, reject){
       let databaseName:string = "settings";
       openDatabase(databaseName).then((db: IDBDatabase)=>{
@@ -242,7 +242,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    *  ai data from the api.
    */
   export function AiUpdateFlag(object:SettingData){
-    Logger.logfunction(AiUpdateFlag, ["indexdb"]);
+    Logger.logfunction("AiUpdateFlag", ["indexdb"]);
     return new Promise(function(resolve, reject){
       let databaseName:string = "settings";
       openDatabase(databaseName).then((db)=>{
@@ -283,7 +283,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    * @returns all the objects that are in the database
    */
   export async function getObjectsFromIndexDb(databaseName:string){
-    Logger.logfunction(getObjectsFromIndexDb, [databaseName, "indexdb"]);
+    Logger.logfunction("getObjectsFromIndexDb", [databaseName, "indexdb"]);
     return new Promise(function(resolve, reject){
       openDatabase(databaseName).then((db: IDBDatabase)=>{
 
@@ -326,7 +326,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    * @returns an id if the deletion is successful and error with even in case it cannot.
    */
   export function removeFromDatabase(databaseName:string, id:number){
-    Logger.logfunction(removeFromDatabase, [databaseName, "indexdb"]);
+    Logger.logfunction("removeFromDatabase", [databaseName, "indexdb"]);
     return new Promise(function(resolve, reject){
       openDatabase(databaseName).then((db) => {
         let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;

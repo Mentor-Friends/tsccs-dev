@@ -13,7 +13,7 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
   toConcept: number,
   mainKey: number
 ) {
-  Logger.logfunction(GetCompositionConnectionsBetweenTwoConcepts, arguments);
+  Logger.logfunction("GetCompositionConnectionsBetweenTwoConcepts", arguments);
   var connectionList: Connection[] = [];
   try {
     if (serviceWorker) {

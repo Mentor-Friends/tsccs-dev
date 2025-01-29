@@ -27,7 +27,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 export default async function UpdateComposition(
   patcherStructure: PatcherStructure
 ) {
-  Logger.logfunction(UpdateComposition);
+  Logger.logfunction("UpdateComposition");
   if (serviceWorker) {
     try {
       const res: any = await sendMessage("UpdateComposition", {

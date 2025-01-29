@@ -10,7 +10,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 
 
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
-  Logger.logfunction(GetAllConnectionsOfCompositionBulk, arguments);
+  Logger.logfunction("GetAllConnectionsOfCompositionBulk", arguments);
   if (serviceWorker) {
     try {
       const res: any = await sendMessage('GetAllConnectionsOfCompositionBulk', {composition_ids})
@@ -35,7 +35,7 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_ids: number[] = []){
-  Logger.logfunction(GetAllConnectionsOfCompositionOnline, arguments);
+  Logger.logfunction("GetAllConnectionsOfCompositionOnline", arguments);
   var connectionList: Connection[] = [];
 
   try{

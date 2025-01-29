@@ -10,7 +10,7 @@ import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 
 export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[]){
-  Logger.logfunction(CreateTheGhostConceptApi,[conceptData.length, connectionData.length] )
+  Logger.logfunction("CreateTheGhostConceptApi",[conceptData.length, connectionData.length] )
   try {
     const CHUNK_SIZE = 1000
     let result: any = {

@@ -23,7 +23,7 @@ export async function uploadAttachment(
   file: File,
   token?: string
 ): Promise<{ message: string; success: boolean; url?: string }> {
-  Logger.logfunction(uploadAttachment);
+  Logger.logfunction("uploadAttachment");
   try {
     console.log("File Type", file.type);
     const formData = new FormData();
@@ -57,7 +57,7 @@ export async function uploadAttachment(
  * @returns JSON | string | null
  */
 export async function uploadImage(body: FormData, token: string = "") {
-  Logger.logfunction(uploadImage);
+  Logger.logfunction("uploadImage");
   try {
     const response = await fetch(BaseUrl.uploadImageUrl(), {
       method: "POST",
@@ -90,7 +90,7 @@ export async function uploadImage(body: FormData, token: string = "") {
  * @returns JSON | string | null
  */
 export async function uploadFile(body: FormData, token: string = "") {
-  Logger.logfunction(uploadFile);
+  Logger.logfunction("uploadFile");
   try {
     const response = await fetch(BaseUrl.uploadFileUrl(), {
       method: "POST",

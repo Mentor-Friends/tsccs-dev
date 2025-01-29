@@ -3,7 +3,7 @@ import { HandleHttpError, HandleInternalError } from "../../Services/Common/Erro
 import { GetRequestHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { Concept, ConceptsData, CreateDefaultConcept, Logger } from "../../app";
 export async function TranslateLocalToReal(conceptId: number){
-  Logger.logfunction(TranslateLocalToReal, arguments);
+  Logger.logfunction("TranslateLocalToReal", arguments);
   let result:Concept = CreateDefaultConcept();
     try{
 

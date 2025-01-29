@@ -10,7 +10,7 @@ import { ConceptsData, handleServiceWorkerException, LocalConceptsData, Logger, 
 import GetTheConcept from "./GetTheConcept";
 
 export async function DeleteConceptById(id:number){
-    Logger.logfunction(DeleteConceptById, arguments);
+    Logger.logfunction("DeleteConceptById", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('DeleteConceptById', { id })

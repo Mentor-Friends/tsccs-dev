@@ -7,7 +7,7 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheConceptApi(conceptData: any){
-  Logger.logfunction(CreateTheConceptApi, conceptData);
+  Logger.logfunction("CreateTheConceptApi", conceptData);
   let result = CreateDefaultConcept();
     try{
             var header = GetRequestHeader();

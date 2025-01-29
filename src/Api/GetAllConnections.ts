@@ -5,7 +5,7 @@ import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
 export async function GetAllUserConnections(userId: number){
-  Logger.logfunction(GetAllUserConnections, arguments);
+  Logger.logfunction("GetAllUserConnections", arguments);
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetAllConnectionsOfUserUrl(),{

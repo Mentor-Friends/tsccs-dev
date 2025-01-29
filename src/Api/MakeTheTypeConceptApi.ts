@@ -15,7 +15,7 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  * @returns the concept created.
  */
 export async function MakeTheTypeConceptApi(type:string, userId:number){
-  Logger.logfunction(MakeTheTypeConceptApi, arguments);
+  Logger.logfunction("MakeTheTypeConceptApi", arguments);
   // create  a default concept with all defaulting to zero
     let concept:Concept = CreateDefaultConcept();
     try{

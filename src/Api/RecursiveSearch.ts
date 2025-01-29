@@ -17,7 +17,7 @@ export async function RecursiveSearchApi(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction(RecursiveSearchApi, arguments);
+  Logger.logfunction("RecursiveSearchApi", arguments);
   let concepts: any[] = [];
 
   try {
@@ -78,7 +78,7 @@ export async function RecursiveSearchApiWithInternalConnections(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction(RecursiveSearchApiWithInternalConnections, arguments);
+  Logger.logfunction("RecursiveSearchApiWithInternalConnections", arguments);
   let concepts: any[] = [];
 
   try {  
@@ -137,7 +137,7 @@ export async function RecursiveSearchApiRaw(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction(RecursiveSearchApiRaw, arguments);
+  Logger.logfunction("RecursiveSearchApiRaw", arguments);
   let concepts: any[] = [];
 
   try {
@@ -192,7 +192,7 @@ export async function RecursiveSearchApiRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction(RecursiveSearchApiRawFullLinker, arguments);
+  Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments);
   let concepts: any[] = [];
 
   try {
@@ -247,7 +247,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction(RecursiveSearchApiRawFullLinker, arguments);
+  Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments);
   let concepts: any[] = [];
 
   try {

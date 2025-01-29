@@ -6,7 +6,7 @@ import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
 export async function GetAllConnectionsOfComposition(composition_id: number){
-      Logger.logfunction(GetAllConnectionsOfComposition, arguments);
+      Logger.logfunction("GetAllConnectionsOfComposition", arguments);
         var connectionList: Connection[] = [];
         //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
         connectionList = await ConnectionData.GetConnectionsOfConcept(composition_id);
@@ -26,7 +26,7 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_id: number){
-  Logger.logfunction(GetAllConnectionsOfCompositionOnline, arguments);
+  Logger.logfunction("GetAllConnectionsOfCompositionOnline", arguments);
   var connectionList: Connection[] = [];
 
   try{

@@ -9,7 +9,7 @@ import { Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter
  * @returns 
  */
 export async function DeleteConnectionByType(id: number, linker: string){
-    Logger.logfunction(DeleteConnectionByType, arguments);
+    Logger.logfunction("DeleteConnectionByType", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('DeleteConnectionByType', { id, linker })

@@ -8,7 +8,7 @@ import { Logger } from "../app";
  * @param connectionList list of connections whose concepts need to be found out.
  */
 export  async function FindConceptsFromConnections(connectionList:Connection[] = []){
-  Logger.logfunction(FindConceptsFromConnections, [connectionList.length]);
+  Logger.logfunction("FindConceptsFromConnections", [connectionList.length]);
     let ConceptList:number[] = [];
     if(connectionList.length > 0){
         for(let i=0;i < connectionList.length; i++){

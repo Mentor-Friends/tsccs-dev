@@ -6,7 +6,7 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterAndCategoryApi(characterValue: string){
-  Logger.logfunction(GetConceptByCharacterAndCategoryApi, arguments);
+  Logger.logfunction("GetConceptByCharacterAndCategoryApi", arguments);
     let concept = CreateDefaultConcept();
 
     try{

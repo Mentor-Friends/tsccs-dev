@@ -8,7 +8,7 @@ import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 import { Logger } from "../../app";
 
 export async function CreateTheCharacter(characterData: TheCharacter){
-  Logger.logfunction(CreateTheCharacter, characterData);
+  Logger.logfunction("CreateTheCharacter", characterData);
     try{
 
       var characterData = CharacterRepository.GetCharacter(characterData.data);

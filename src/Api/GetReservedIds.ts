@@ -7,7 +7,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 export async function GetReservedIds(){
-  Logger.logfunction(GetReservedIds, arguments);
+  Logger.logfunction("GetReservedIds", arguments);
     try{
             let header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetReservedIdUrl(),{

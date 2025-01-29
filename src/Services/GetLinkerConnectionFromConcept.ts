@@ -5,7 +5,7 @@ import { Connection } from "../DataStructures/Connection";
 import GetTheConcept from "./GetTheConcept";
 
 export async function GetLinkerConnectionFromConcepts(id:number){
-    Logger.logfunction(GetLinkerConnectionFromConcepts, arguments);
+    Logger.logfunction("GetLinkerConnectionFromConcepts", arguments);
     let connections = await GetAllLinkerConnectionsFromTheConcept(id);
 
     for(let i=0;i<connections.length;i++){
@@ -20,7 +20,7 @@ export async function GetLinkerConnectionFromConcepts(id:number){
 }
 
 export async function GetLinkerConnectionToConcepts(id:number){
-    Logger.logfunction(GetLinkerConnectionToConcepts, arguments);
+    Logger.logfunction("GetLinkerConnectionToConcepts", arguments);
     let connections = await GetAllLinkerConnectionsToTheConcept(id);
 
     for(let i=0;i<connections.length;i++){

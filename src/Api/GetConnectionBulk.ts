@@ -12,7 +12,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
  * @returns the list of  connections that have been fetched
  */
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
-    Logger.logfunction(GetConnectionBulk, arguments);
+    Logger.logfunction("GetConnectionBulk", connectionIds.length);
 
     let connectionList:Connection[] = [];
     try{

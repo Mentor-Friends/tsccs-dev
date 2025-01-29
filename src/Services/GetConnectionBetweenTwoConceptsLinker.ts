@@ -21,7 +21,7 @@ export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concep
             handleServiceWorkerException(error)
         }
     }
-    Logger.logfunction(GetConnectionBetweenTwoConceptsLinker);
+    Logger.logfunction("GetConnectionBetweenTwoConceptsLinker");
     let typeConcept: Concept = CreateDefaultConcept();
     if(linker != ""){
         let typeLinker = "";
