@@ -352,7 +352,7 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                    this.applicationLogsData.push(storedLogs);
+                    this.applicationLogsData.push(...storedLogs);
                    // console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
                 }
             }
@@ -360,7 +360,7 @@ export class Logger {
 
             
         } catch (error) {
-            this.applicationLogsData.push(storedLogs);
+            this.applicationLogsData.push(...storedLogs);
           //  console.error("Network error while sending logs:", error);
         }
     }
@@ -397,7 +397,7 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                    this.packageLogsData.push(storedLogs);
+                    this.packageLogsData.push(...storedLogs);
                     //console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
                 }
@@ -407,7 +407,7 @@ export class Logger {
             //this.packageLogsData = [] 
 
         } catch (error) {
-            this.packageLogsData.push(storedLogs);
+            this.packageLogsData.push(...storedLogs);
            //console.error("Error while sending logs to server:", error);
         }
     }
