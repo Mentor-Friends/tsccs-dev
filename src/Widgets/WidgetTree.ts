@@ -1,5 +1,6 @@
 //import { BuilderStatefulWidget } from "../default/StatefulWidget"
 
+import { TMainLibrary } from "../DataStructures/TypeLibrary";
 import { BuilderStatefulWidget } from "./BuilderStatefulWidget";
 
 
@@ -9,6 +10,7 @@ export class WidgetTree{
     html: string = "";
     css: string = "";
     js: string = "";
+    library: TMainLibrary = { css:[], js: [] };
     timestamp:string ="";
     widgetId: number = 0;
     type: string = "";
