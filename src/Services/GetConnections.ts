@@ -7,6 +7,7 @@ import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/Con
 import { ConnectionData } from "../DataStructures/ConnectionData";
 
 export  async function GetConnectionById(id:number){
+   Logger.logfunction("GetConnectionById", arguments);
    let startTime = performance.now()
 
    console.log("AccessTracker activation status from GetConnectionById")

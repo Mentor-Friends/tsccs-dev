@@ -2,7 +2,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { Concept } from "../DataStructures/Concept";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
-import { ConceptsData, GetConceptByCharacter } from "../app";
+import { ConceptsData, GetConceptByCharacter, Logger } from "../app";
 import { GetConceptByCharacterAndCategory } from "../Services/ConceptFinding/GetConceptByCharacterAndCategory";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
 
@@ -15,7 +15,7 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  * @returns the concept created.
  */
 export async function MakeTheTypeConceptApi(type:string, userId:number){
-
+  Logger.logfunction("MakeTheTypeConceptApi", arguments);
   // create  a default concept with all defaulting to zero
     let concept:Concept = CreateDefaultConcept();
     try{

@@ -6,13 +6,14 @@ import {
   HandleHttpError,
   HandleInternalError,
 } from "../Services/Common/ErrorPosting";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetCompositionConnectionsBetweenTwoConcepts(
   ofConceptId: number,
   toConcept: number,
   mainKey: number
 ) {
+  Logger.logfunction("GetCompositionConnectionsBetweenTwoConcepts", arguments);
   var connectionList: Connection[] = [];
   try {
     if (serviceWorker) {

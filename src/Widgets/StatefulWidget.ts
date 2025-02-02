@@ -211,17 +211,17 @@ export class StatefulWidget extends BaseWidget{
      */
     setWidgetState(key: string, value: any) {
       this.widgetState[key] = value;
-      let thisWidget = this;
       function updateChildStateRecursive(widget: StatefulWidget) {
-        if (!widget) {
-          return
-        }
-        widget.childWidgets.forEach((child: StatefulWidget) => {
-          child.widgetState = {...child.widgetState, ...widget.widgetState}
-        })
+      if (!widget || !Array.isArray(widget.childWidgets)) {
+        return;
       }
-      updateChildStateRecursive(thisWidget)
-      this.renderChildWidgets()
+      widget.childWidgets.forEach((child: StatefulWidget) => {
+        child.widgetState = { ...child.widgetState, ...widget.widgetState };
+        updateChildStateRecursive(child);
+      });
+      }
+      updateChildStateRecursive(this);
+      this.renderChildWidgets();
     }
   
     /**

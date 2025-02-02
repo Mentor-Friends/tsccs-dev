@@ -5,7 +5,7 @@ import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { IndexDbUpdate } from "../Database/IndexUpdate";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 export class ConceptsData{
 
     name: string;
@@ -211,6 +211,7 @@ export class ConceptsData{
      }
 
      static async GetConceptsByTypeIdAndUser(typeId: number, userId: number){
+        Logger.logfunction("ConceptsData.GetConceptsByTypeIdAndUser", arguments);
         if (serviceWorker) {
             try {
                 const res: any = await sendMessage('ConceptsData__GetConceptsByTypeIdAndUser', {typeId, userId})

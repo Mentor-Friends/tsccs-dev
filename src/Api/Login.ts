@@ -1,8 +1,10 @@
+import { Logger } from "../app";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { TokenStorage } from '../DataStructures/Security/TokenStorage';
 import { HandleHttpError, HandleHttpErrorObject, HandleInternalError } from "../Services/Common/ErrorPosting";
 
 export async function LoginToBackend(email:string, password:string){
+  Logger.logfunction("LoginToBackend", arguments);
     try{
         let object = {
             'email': email,

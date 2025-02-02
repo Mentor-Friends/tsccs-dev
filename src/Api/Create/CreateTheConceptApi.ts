@@ -4,9 +4,10 @@ import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept } from "../../app";
+import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheConceptApi(conceptData: any){
+  Logger.logfunction("CreateTheConceptApi", conceptData);
   let result = CreateDefaultConcept();
     try{
             var header = GetRequestHeader();

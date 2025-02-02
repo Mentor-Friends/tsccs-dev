@@ -1,8 +1,10 @@
 import { LocalBinaryTypeTree } from "../../DataStructures/Local/LocalBinaryTypeTree";
 import { LNode } from "../../DataStructures/Local/LNode";
 import { getObjectsFromLocalIndexDb } from "../../Database/indexdblocal";
+import { Logger } from "../../app";
 
 export  async function CreateLocalBinaryTypeTreeFromData(){
+    Logger.logfunction("CreateLocalBinaryTypeTreeFromData");
     try{
         let conceptList = await getObjectsFromLocalIndexDb("localconcept");
         if(Array.isArray(conceptList)){

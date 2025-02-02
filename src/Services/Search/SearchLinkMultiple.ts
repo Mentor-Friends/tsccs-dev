@@ -1,11 +1,12 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { DATAID, JUSTDATA, LISTNORMAL, NORMAL } from "../../Constants/FormatConstants";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
-import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept, handleServiceWorkerException, sendMessage, serviceWorker } from "../../app";
+import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../../app";
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetCompositionFromConnectionsWithDataIdInObjectNew, GetConnectionDataPrefetch } from "../GetCompositionBulk";
 import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
+  Logger.logfunction("SearchLinkMultipleAll", arguments);
   try{
     try {
       if (serviceWorker) {

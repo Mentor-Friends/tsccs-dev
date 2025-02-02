@@ -4,11 +4,11 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
-import { Connection } from "../../app";
+import { Connection, Logger } from "../../app";
 export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
+  Logger.logfunction("CreateTheGhostConnectionApi", [connectionData.length]);
   let result:Connection[] = [];
     try{
-
 
       var header = GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
       var jsonData = JSON.stringify(connectionData);

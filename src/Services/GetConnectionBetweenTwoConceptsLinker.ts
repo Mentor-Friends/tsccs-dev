@@ -1,5 +1,5 @@
 import { GetCompositionConnectionsBetweenTwoConcepts } from "../Api/GetCompositionConnectionsBetweenTwoConcepts";
-import { Concept, Connection, CreateDefaultConcept, handleServiceWorkerException, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { Concept, Connection, CreateDefaultConcept, handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
 /**
@@ -21,6 +21,7 @@ export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concep
             handleServiceWorkerException(error)
         }
     }
+    Logger.logfunction("GetConnectionBetweenTwoConceptsLinker");
     let typeConcept: Concept = CreateDefaultConcept();
     if(linker != ""){
         let typeLinker = "";

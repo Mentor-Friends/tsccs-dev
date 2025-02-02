@@ -3,9 +3,10 @@ import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
+  Logger.logfunction("GetConceptByCharacterAndType", arguments);
   try{
     if (serviceWorker) {
       try {

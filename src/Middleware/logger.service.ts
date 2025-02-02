@@ -1,3 +1,4 @@
+import { strict } from "assert";
 import { BaseUrl } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
@@ -13,7 +14,6 @@ export class Logger {
     private static mftsccsBrowser:string = "mftsccs";
     public static logApplicationActivationStatus:boolean = false;
     public static logPackageActivationStatus:boolean = false;
-
 
     // Private auto-sync interval management
     private static autoSyncInterval: number | null = null;
@@ -57,7 +57,6 @@ export class Logger {
         }
     }
 
-
     /**
      * Set the log level (e.g., "DEBUG", "INFO", "WARNING", "ERROR").
      */
@@ -91,11 +90,16 @@ export class Logger {
         };
 
         this.packageLogsData.push(logEntry);
-        // this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
-        // console.log("Package Log Updated : ", this.log);
+        if(level == "ERROR"){
+            this.sendPackageLogsToServer();
+            this.sendApplicationLogsToServer();
+        }
+        //this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
+         // console.log("Package Log Updated : ", this.packageLogsData);
 
     }
 
+    
     public static log(
         level: 'INFO' | 'ERROR' | 'DEBUG' | 'WARNING',
         message: string,
@@ -107,6 +111,24 @@ export class Logger {
         } catch(error){
             console.error("Error on Logger Log : ", error);
         }
+    }
+
+    public static logfunction(myfunction:string, ...args:any[]){
+        
+      //  if(this.logPackageActivationStatus){
+      let myarguments: any = args;
+      //let size = Object.values(myarguments[0]).length;
+
+           // console.log("info", myfunction.name, myarguments, myarguments[0].length);
+            let logData: LogData = {
+                functionName: myfunction,
+                functionParameters: myarguments,
+                requestFrom: BaseUrl.BASE_APPLICATION,
+                sessionId: TokenStorage.sessionId,
+                applicationId: BaseUrl.getRandomizer()
+            }
+            this.formatLogData('INFO', "function called", logData);
+       // }
     }
 
     public static logInfo(
@@ -296,6 +318,8 @@ export class Logger {
      * Helper method to send logs to the server.
     */
     public static async sendApplicationLogsToServer(): Promise<void> {
+        const storedLogs = this.applicationLogsData
+
         try {
 
             console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
@@ -306,8 +330,8 @@ export class Logger {
             const accessToken = TokenStorage.BearerAccessToken;
             if(!accessToken) return;
 
-            const storedLogs = this.applicationLogsData
-            
+            // clear application log from memory
+            this.applicationLogsData = [] 
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
@@ -325,19 +349,20 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                    console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
+                    this.applicationLogsData.push(...storedLogs);
+                   // console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
                 }
             }
-
-            // clear application log from memory
-            this.applicationLogsData = [] 
             
         } catch (error) {
-            console.error("Network error while sending logs:", error);
+            this.applicationLogsData.push(...storedLogs);
+          //  console.error("Network error while sending logs:", error);
         }
     }
 
     public static async sendPackageLogsToServer(): Promise<void> {
+        const storedLogs = this.packageLogsData;
+
         try {
 
             console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
@@ -347,9 +372,8 @@ export class Logger {
             const accessToken = TokenStorage.BearerAccessToken;
             if(!accessToken) return;
 
-            const storedLogs = this.packageLogsData
-            
-            const chunkSize = 50;
+            this.packageLogsData = [];
+            const chunkSize = 300;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
 
@@ -368,16 +392,18 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                    console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
+                    this.packageLogsData.push(...storedLogs);
+                    //console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
                 }
             }
 
             // clear mftsccs log from memory
-            this.packageLogsData = [] 
+            //this.packageLogsData = [] 
 
         } catch (error) {
-            console.error("Error while sending logs to server:", error);
+            this.packageLogsData.push(...storedLogs);
+           //console.error("Error while sending logs to server:", error);
         }
     }
 
@@ -470,6 +496,8 @@ export interface LogData {
      */
     functionName?: string;
 
+    applicationId?: number;
+
     /**
      * The parameters used in the function.
      * This should include all inputs to the function.
@@ -500,6 +528,7 @@ export function getCookie(cname:string) {
     try{
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
+        console.log("this is the decoded cookie", decodedCookie);
         let ca = decodedCookie.split(';');
         for(let i = 0; i <ca.length; i++) {
           let c = ca[i];
@@ -515,4 +544,4 @@ export function getCookie(cname:string) {
         console.error("Error on getcookie");
         return ""
     }
-  }
+}

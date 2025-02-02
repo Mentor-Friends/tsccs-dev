@@ -1,5 +1,6 @@
 import { Actions } from ".";
 import { RecursiveSearchApi, RecursiveSearchApiNewRawFullLinker, RecursiveSearchApiRaw, RecursiveSearchApiRawFullLinker, RecursiveSearchApiWithInternalConnections, SearchLinkMultipleAll } from "../../app";
+import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../../Services/Search/SearchWithTypeAndLinker";
 
 export const searchActions: Actions = {
     SearchLinkMultipleAll: async (payload: any) => {
@@ -51,6 +52,25 @@ export const searchActions: Actions = {
             payload.composition,
             payload.fullLinkers,
             payload.textSearch
+        )
+        return { success: true, data }
+    },
+
+    formatConnectionsDataId: async (payload: any) => {
+        const data = await formatConnectionsDataId(
+            payload.linkers,payload.conceptIds,payload.mainCompositionIds,payload.reverse,payload.countInfos,payload.order
+        )
+        return { success: true, data }
+    },
+    formatConnectionsJustId: async (payload: any) => {
+        const data = await formatConnectionsJustId(
+            payload.linkers,payload.conceptIds,payload.mainCompositionIds,payload.reverse,payload.countInfos,payload.order
+        )
+        return { success: true, data }
+    },
+    formatConnections: async (payload: any) => {
+        const data = await formatConnections(
+            payload.linkers,payload.conceptIds,payload.mainCompositionIds,payload.reverse,payload.countInfos
         )
         return { success: true, data }
     },

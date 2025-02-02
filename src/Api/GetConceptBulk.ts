@@ -16,6 +16,7 @@ import { BinaryTree, sendMessage, serviceWorker } from "../app";
  */
 export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[]>{
 
+  Logger.logfunction("GetConceptBulk", [passedConcepts.length]);
     let result:Concept[] = [];
     let setTime = new Date().getTime();
     let startTime = performance.now()

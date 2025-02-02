@@ -7,7 +7,8 @@ module.exports = env => ({
       serviceWorker: './src/service-worker.ts'  // Service worker entry point
    },
    mode: 'development',  // Set to 'production' for production
-  // devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
+   //devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
+   devtool: false,
    watch: true,
    output: {
       filename: '[name].bundle.js',

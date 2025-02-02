@@ -1,4 +1,4 @@
-import { DeleteConceptById } from "../../app"
+import { DeleteConceptById, Logger } from "../../app"
 import { BaseUrl } from "../../DataStructures/BaseUrl"
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting"
 import { GetOnlyTokenHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
@@ -6,6 +6,7 @@ import { GetOnlyTokenHeader, GetRequestHeaderWithAuthorization } from "../../Ser
 export  async function DeleteUserInBackend(
     id: number
   ) {
+    Logger.logfunction("DeleteUserInBackend", arguments);
     try {
     var header = GetRequestHeaderWithAuthorization("application/json", "");
       let queryUrl = BaseUrl.DeleteUserUrl();

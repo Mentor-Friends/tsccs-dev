@@ -2,7 +2,7 @@ import { GetAllConceptsByType } from "../Api/GetAllConceptsByType";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { LocalConceptsData } from "../DataStructures/Local/LocalConceptData";
-import { Concept, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionLocalWithId, handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { Concept, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionLocalWithId, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { GetComposition, GetCompositionFromMemory, GetCompositionWithId, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetConceptByCharacter, { GetConceptByCharacterUpdated } from "./GetConceptByCharacter";
 import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
@@ -10,6 +10,7 @@ import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
 // get the list of compositions from the type 
 // for eg get list of boomgpt
 export  async function GetCompositionList(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
+   Logger.logfunction("GetCompositionList", arguments);
    if (serviceWorker) {
       try {
          const res: any = await sendMessage('GetCompositionList', { compositionName, userId, inpage, page })

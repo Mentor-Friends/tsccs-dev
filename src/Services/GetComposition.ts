@@ -4,7 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData"
-import { GetTheConcept, handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { GetTheConcept, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 
 export async function GetCompositionById(id:number): Promise<{connectionList: Connection[], compositionList: number[]}> {
@@ -264,6 +264,7 @@ export async function GetCompositionFromMemoryNormal(id:number){
  * @returns 
  */
 export async function GetCompositionWithIdFromMemory(id:number){
+    Logger.logfunction("GetCompositionWithIdFromMemory", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('GetCompositionWithIdFromMemory', {id})
@@ -314,6 +315,7 @@ export async function GetCompositionWithIdFromMemory(id:number){
  * @returns 
  */
 export async function GetCompositionFromMemoryWithConnections(id:number, connectionList:Connection[]){
+    Logger.logfunction("GetCompositionFromMemoryWithConnections", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('GetCompositionFromMemoryWithConnections', {id, connectionList})
@@ -356,6 +358,7 @@ export async function GetCompositionFromMemoryWithConnections(id:number, connect
  * @returns 
  */
 export async function GetCompositionWithIdFromMemoryFromConnection(id:number, connectionList: Connection[]){
+    Logger.logfunction("GetCompositionWithIdFromMemoryFromConnection", [id]);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('GetCompositionWithIdFromMemory', {id})
@@ -520,6 +523,7 @@ export async function GetCompositionWithIdFromMemoryFromConnections(id:number, c
  * @returns 
  */
 export async function GetCompositionWithId(id:number){
+    Logger.logfunction("GetCompositionWithId", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('GetCompositionWithId', {id})
@@ -567,7 +571,7 @@ export async function GetCompositionWithId(id:number){
  * @returns 
  */
 export async function recursiveFetchConcept(concept:Concept, connectionList:Connection[], compositionList:number[], visitedConcepts: number[] = []){
-
+    //Logger.logfunction(recursiveFetchConcept, [concept.id]);
     let output : any= {};
     let arroutput: any = [];
     let id = concept.id;
@@ -663,6 +667,7 @@ export async function recursiveFetchConcept(concept:Concept, connectionList:Conn
  * @returns 
  */
 export async function recursiveFetchConceptNormal(concept:Concept, connectionList:Connection[], compositionList:number[], visitedConcepts: number[] = []){
+    Logger.logfunction("recursiveFetchConceptNormal", [concept]);
     let startTime = new Date().getTime();
     let output : any= {};
     let arroutput: any = [];

@@ -1,6 +1,6 @@
 import { CreateTextData } from "../Api/Create/CreateTheTextData";
 import { GetCharacterByCharacter } from "../Api/GetCharacterDataByCharacter";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
@@ -9,6 +9,7 @@ import MakeTheCharacter from "./MakeTheCharacter";
 import { SplitStrings } from "./SplitStrings";
 
 export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number) {
+    Logger.logfunction("MakeTheTypeConcept", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('MakeTheTypeConcept', { typeString, sessionId, sessionUserId, userId })

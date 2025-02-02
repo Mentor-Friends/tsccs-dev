@@ -4,7 +4,9 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 import { Connection } from "../DataStructures/Connection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { Logger } from "../app";
 export async function GetConnection(id: number){
+    Logger.logfunction("GetConnection", arguments);
     let result :Connection= await ConnectionData.GetConnection(id);
 
     try{

@@ -1,6 +1,6 @@
 import { Console } from 'console';
 import { GetConcept } from '../../Api/GetConcept';
-import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept, GetAllConnectionsOfCompositionBulk} from '../../app';
+import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept, GetAllConnectionsOfCompositionBulk, serviceWorker, sendMessage, handleServiceWorkerException} from '../../app';
 import { recursiveFetchConceptSingleLoop } from '../GetComposition';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
 import { FormatConceptsAndConnectionsNormalList, formatFunction, formatFunctionForData } from './FormatData';
@@ -115,6 +115,16 @@ export async function formatLinkersNormal(linkers: number[], conceptIds: number[
  * @returns 
  */
 export async function formatConnections(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[],countInfos: CountInfo[]){
+    if (serviceWorker) {
+        try {
+            const res: any = await sendMessage('formatConnections', {linkers,conceptIds,mainCompositionIds,reverse,countInfos})
+            return res.data
+        } catch (error) {
+            console.error('formatConnections error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
+    
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     //let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
     prefetchConnections = orderTheConnections(prefetchConnections);
@@ -144,6 +154,16 @@ export async function formatConnections(linkers: number[], conceptIds: number []
  * @returns 
  */
 export async function formatConnectionsJustId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[], order:string = "DESC"){
+    if (serviceWorker) {
+        try {
+            const res: any = await sendMessage('formatConnectionsJustId', {linkers,conceptIds,mainCompositionIds,reverse,countInfos,order})
+            return res.data
+        } catch (error) {
+            console.error('formatConnectionsJustId error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
+   
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
      prefetchConnections = orderTheConnections(prefetchConnections, order);
@@ -168,15 +188,30 @@ export async function formatConnectionsJustId(linkers: number[], conceptIds: num
  * @returns 
  */
 export async function formatConnectionsDataId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[], order:string = "DESC"){
+        if (serviceWorker) {
+            try {
+                const res: any = await sendMessage('formatConnectionsDataId', {linkers,conceptIds,mainCompositionIds,reverse,countInfos,order})
+                return res.data
+            } catch (error) {
+                console.error('GetConnectionDataPrefetch error sw: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
     prefetchConnections = orderTheConnections(prefetchConnections, order);
     console.log("this is the prfetch connections", prefetchConnections);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
+    let time1 = new Date().getTime();
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
+    console.log("format1", new Date().getTime() - time1);
+    let time2 = new Date().getTime();
     compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
+    console.log("format2", new Date().getTime() - time2);
+    let time3 = new Date().getTime();
      let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse, CountDictionary );
+     console.log("format2", new Date().getTime() - time3);
      return output;
 }
 

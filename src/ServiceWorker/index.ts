@@ -159,7 +159,7 @@ const actions: Actions = {
         return {success: true, data: undefined, name: 'init'}
     },
     updateAccessToken: async (payload) => {
-        await updateAccessToken(payload.accessToken)
+        await updateAccessToken(payload.accessToken, payload.session)
         return {success: true, name: 'updateAccessToken'}
     },
     // imported actions

@@ -21,12 +21,13 @@ import { SyncData } from "../DataStructures/SyncData";
 import { CompositionBinaryTree } from "../DataStructures/Composition/CompositionBinaryTree";
 import { Composition } from "../DataStructures/Composition/Composition";
 import { CreateTheCompositionWithCache } from "./Composition/CreateCompositionCache";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 // function to update the cache composition
 export default async function UpdateComposition(
   patcherStructure: PatcherStructure
 ) {
+  Logger.logfunction("UpdateComposition");
   if (serviceWorker) {
     try {
       const res: any = await sendMessage("UpdateComposition", {

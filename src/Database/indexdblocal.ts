@@ -1,5 +1,5 @@
 import { Concept } from "../DataStructures/Concept";
-import { BaseUrl } from "../app";
+import { BaseUrl, Logger } from "../app";
 
 /**
  * version of the database. If you want to change the database then you must update this version also.
@@ -20,6 +20,7 @@ export class LocalIndexDb{
  * @returns a promise that either resolves or rejects opening the database.
  */
 export function openDatabase(databaseName:string): Promise<IDBDatabase>{ 
+  Logger.logfunction("openDatabase", arguments);
   return new Promise(function(resolve, reject){
   // if the indexdb is already initialized then you do not need to again initialize the db so you can get 
   // from memory.
@@ -143,6 +144,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
    * @returns all the objects that are in the database
    */
   export async function getObjectsFromLocalIndexDb(databaseName:string){
+    Logger.logfunction("getObjectsFromLocalIndexDb", arguments);
     return new Promise(function(resolve, reject){
     openDatabase(databaseName).then((db)=>{
 
@@ -184,6 +186,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
  * @returns a promise that if a store is successful then the obejct is returned else rejects with the event.
  */
   export function storeToDatabase(databaseName:string, object:any){
+    Logger.logfunction("storeToDatabase", [databaseName, "localindexdb"]);
     return new Promise(function(resolve, reject){
      openDatabase(databaseName).then((db)=> {
       let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
@@ -222,6 +225,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
    * @returns returns the object if it is updated successfully.
    */
   export function UpdateToDatabase(databaseName:string, object:any){
+    Logger.logfunction("UpdateToDatabase", arguments);
     return new Promise(function(resolve, reject){
       // console.log("this is wriring to the database local", object);
     openDatabase(databaseName).then((db)=>{
@@ -289,6 +293,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
    * @returns an id if the deletion is successful and error with even in case it cannot.
    */
   export function removeFromDatabase(databaseName:string, id:number){
+    Logger.logfunction("removeFromDatabase", arguments);
     return new Promise(function(resolve, reject){
     openDatabase(databaseName).then((db)=>{
       let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;

@@ -1,4 +1,4 @@
-import { FreeschemaQuery, FreeschemaQueryApi } from "../app";
+import { FreeschemaQuery, FreeschemaQueryApi, Logger } from "../app";
 import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
@@ -32,10 +32,13 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     }
     
     async build(){
+        Logger.logfunction("build", ["schemaquery", this.mainCompositionIds]);
         let countInfos = DecodeCountInfo(this.countInfoStrings);
 
         if(this.format == DATAID){
+            console.time("format");
             this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse,countInfos, this.order);
+            console.timeEnd("format");
         }
         else if(this.format == JUSTDATA){
             this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos, this.order);

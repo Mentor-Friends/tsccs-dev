@@ -11,7 +11,7 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  * @returns 
  */
 export async function GetConcept(id: number){    
-    
+    Logger.logfunction("GetConcept", arguments);
     try{
         if (serviceWorker) {
             try {

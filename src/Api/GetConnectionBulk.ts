@@ -4,7 +4,7 @@ import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 /**
  * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched
@@ -12,8 +12,9 @@ import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app
  * @returns the list of  connections that have been fetched
  */
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
+    Logger.logfunction("GetConnectionBulk", connectionIds.length);
+
     let connectionList:Connection[] = [];
-    
     try{
         if (serviceWorker) {
             try {

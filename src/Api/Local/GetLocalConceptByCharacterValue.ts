@@ -3,9 +3,10 @@ import { GetConceptByCharacterValueUrl } from './../../Constants/ApiConstants';
 import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
-import { CreateDefaultLConcept } from "../../app";
+import { CreateDefaultLConcept, Logger } from "../../app";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 export async function GetLocalConceptByCharacterValue(characterValue: string){
+  Logger.logfunction("GetLocalConceptByCharacterValue", arguments);
   let result = CreateDefaultLConcept();
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');

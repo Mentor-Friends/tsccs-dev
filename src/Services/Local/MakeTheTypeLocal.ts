@@ -3,7 +3,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import { GetConceptByCharacterAndCategoryLocal } from "./GetConceptByCharacterLocal";
 import { SplitStrings } from "../SplitStrings";
 import MakeTheConceptLocal from "./MakeTheConceptLocal";
-import { handleServiceWorkerException, sendMessage, serviceWorker } from "../../app";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../../app";
 import { InnerActions } from "../../Constants/general.const";
 
 /**
@@ -22,6 +22,7 @@ import { InnerActions } from "../../Constants/general.const";
 export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number, actions: InnerActions = {concepts: [], connections: []}
     ): Promise<Concept>
 {
+    Logger.logfunction("MakeTheTypeConceptLocal", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage("MakeTheTypeConceptLocal", {

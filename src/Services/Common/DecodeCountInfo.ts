@@ -1,5 +1,5 @@
 import { GetConcept } from "../../Api/GetConcept";
-import { Concept, Connection } from "../../app";
+import { Concept, Connection, Logger } from "../../app";
 import { CountInfo } from "../../DataStructures/Count/CountInfo";
 
 export function DecodeCountInfo(countStrings: string[] = []){
@@ -14,6 +14,7 @@ export function DecodeCountInfo(countStrings: string[] = []){
 }
 
 export async function GetConnectionTypeForCount(countInfos: CountInfo[]){
+    Logger.logfunction("GetConnectionTypeForCount", arguments);
     let CountDictionary:any = {};
     for(let i =0; i<countInfos.length; i++){
         let concept: Concept = await GetConcept(countInfos[i].connectionTypeId);

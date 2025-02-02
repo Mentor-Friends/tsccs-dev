@@ -3,9 +3,10 @@ import { GetConceptByCharacterAndTypeUrl } from '../../Constants/ApiConstants';
 import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept } from "../../app";
+import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterAndCategoryApi(characterValue: string){
+  Logger.logfunction("GetConceptByCharacterAndCategoryApi", arguments);
     let concept = CreateDefaultConcept();
 
     try{

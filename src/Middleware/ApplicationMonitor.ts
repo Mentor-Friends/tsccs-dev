@@ -26,6 +26,7 @@ export class ApplicationMonitor {
   // Initialize global error handlers for JavaScript errors and promise rejections
   static initGlobalErrorHandlers() {
     try{
+      console.log("this is the window", window);
       // console.log("Into initGlobalErrorHandlers.")
       if(typeof window === undefined) return;
       // Track runtime errors
@@ -37,12 +38,18 @@ export class ApplicationMonitor {
           colno,
           stack: error?.stack || 'undefined',
         };
+        console.log("This is the window error", errorDetails);
         Logger.logApplication("ERROR", "Runtime Error", errorDetails);
+        Logger.log("ERROR","Runtime Error",errorDetails );
       };
 
       // Track unhandled promise rejections
       window.onunhandledrejection = (event) => {
         Logger.logApplication("ERROR", "Unhandled Promise Rejection", {
+          message: event.reason ? event.reason.message : event.reason,
+          stack: event.reason ? event.reason.stack : null,
+        });
+        Logger.log("ERROR", "Unhandled Promise Rejection", {
           message: event.reason ? event.reason.message : event.reason,
           stack: event.reason ? event.reason.stack : null,
         });
@@ -67,6 +74,7 @@ export class ApplicationMonitor {
         // Log error details with safe arguments
         const errorDetails = { arguments: safeArgs };
         Logger.logApplication("ERROR", message, errorDetails);
+        Logger.log("ERROR", message, errorDetails);
   
         // Call the original console.error method
         originalConsoleError.apply(console, args);
@@ -90,7 +98,8 @@ export class ApplicationMonitor {
           stack: event.error ? safeStringify(event.error.stack) : undefined
         }
         const message = "Unhandled Error"
-        Logger.logApplication("Error", message, errorDetails)
+        Logger.logApplication("ERROR", message, errorDetails)
+        Logger.log("ERROR", message, errorDetails)
       });
     } catch(error) {
       console.warn("Failed to add error event listener:", error);
@@ -108,6 +117,7 @@ export class ApplicationMonitor {
           stack: event.reason?.stack || "No stack trace available",
         };
         Logger.logApplication("ERROR", "Unhandled Promise Rejection", errorDetails);
+        Logger.log("ERROR", "Unhandled Promise Rejection", errorDetails);
       });      
     } catch (error) {
       console.warn("Failed to add unhandled rejection event listener:", error);

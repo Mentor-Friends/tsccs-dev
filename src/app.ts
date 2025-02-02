@@ -122,6 +122,7 @@ import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 import { AccessTracker } from "./app";
 import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
+import { getCookie } from "./Middleware/logger.service";
 export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -157,15 +158,28 @@ export let hasActivatedSW: boolean = false
 export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
 // for sw use only END
 
+
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
  * Your concepts using this package.
  * @param accessToken access token got from the sign in process
  */
-function updateAccessToken(accessToken: string = "") {
+function updateAccessToken(accessToken: string = "", session?: any) {
   TokenStorage.BearerAccessToken = accessToken;
-  if (serviceWorker) sendMessage('updateAccessToken', { accessToken })
+
+  // because in the service worker document is not defined.
+  if(typeof document == undefined){
+    // for the service worker
+    TokenStorage.sessionId = session;
+  }
+  else{
+    // for the main thread
+    TokenStorage.sessionId = parseInt(getCookie("SessionId"));
+  }
+  if (serviceWorker) sendMessage('updateAccessToken', { accessToken, session: parseInt(getCookie("SessionId"))})
 }
+
+
 
 
 /**
@@ -194,7 +208,8 @@ async function init(
     BaseUrl.AI_URL = aiurl;
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
-    TokenStorage.BearerAccessToken = accessToken;
+    updateAccessToken(accessToken);
+    //TokenStorage.BearerAccessToken = accessToken;
     let randomizer = Math.floor(Math.random() * 100000000);
     // BaseUrl.BASE_RANDOMIZER = randomizer;
     // BaseUrl.BASE_RANDOMIZER = 999;
@@ -612,6 +627,7 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
 }
 
 async function processMessageQueue() {
+  Logger.logfunction("processMessageQueue", arguments);
   console.log('message queue', messageQueue)
   // process init if exist in queue
   const initQueueItem = messageQueue.find(item => item?.message?.type == 'init')
@@ -652,6 +668,7 @@ export const handleServiceWorkerException = (error: any) => {
  * Function to setup initial flag
  */
 function initializeFlags(flags: any) {
+  Logger.logfunction("initializeFlags",arguments);
   try {
     if (flags.logApplication) {
       ApplicationMonitor.initialize();
@@ -690,6 +707,7 @@ function initializeFlags(flags: any) {
  * @param enableSW any
  */
 async function handleRegisterServiceWorker(enableSW: any) {
+  Logger.logfunction("handleRegisterServiceWorker",arguments);
   await new Promise<void>((resolve, reject) => {
     let success = false;
 
