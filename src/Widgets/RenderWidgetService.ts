@@ -256,7 +256,8 @@ import { GetWidgetForTree } from "./WidgetBuild";
       tree: WidgetTree,
       parentElement: HTMLElement,
       isMain: boolean = true,
-      props?: any
+      props?: any,
+      state?:any
     ) {
       const newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
       newWidget.html = tree.html;
@@ -264,6 +265,7 @@ import { GetWidgetForTree } from "./WidgetBuild";
       newWidget.componentDidMountFunction = tree.before_render;
       newWidget.addEventFunction = tree.after_render;
       newWidget.mountChildWidgetsFunction = tree.mount_child;
+      newWidget.widgetState = {...state};
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
       parentElement.innerHTML = "";
@@ -287,13 +289,16 @@ import { GetWidgetForTree } from "./WidgetBuild";
                   const childWidget = await convertWidgetTreeToWidget(
                     clearedChildWidget,
                     widgetElement,
-                    isMain
+                    isMain,
+                    newWidget.data,
+                    newWidget.widgetState
                   );
                   newWidget.childWidgets.push(childWidget);
                   // newWidget.css =
                   //   newWidget.css +
                   //   `div[data-widgetid="${child.id}"] { ${child.css} }`;
-                  newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                  // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                  newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
                   childWidget.dataChange((value: Concept) => {
                     console.log("This is the data change in child", value);
                     const type = value?.type?.characterValue;
@@ -352,7 +357,8 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
                           const clearedChildWidget = clearDraggedWidget(child);
                           const childWidget =  await convertWidgetTreeToWidget(clearedChildWidget, widgetElement, isMain, newWidget.widgetState);
                           newWidget.childWidgets.push(childWidget);
-                          newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                          // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                          newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
                           childWidget.dataChange((value: Concept) => {
                               console.log("This is the data change in child", value);
                               let type = value?.type?.characterValue;
