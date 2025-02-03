@@ -4,9 +4,9 @@ import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
-import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterAndCategoryApi(characterValue: string){
-  Logger.logfunction("GetConceptByCharacterAndCategoryApi", arguments);
+  const logData : any = Logger.logfunction("GetConceptByCharacterAndCategoryApi", arguments);
     let concept = CreateDefaultConcept();
 
     try{
@@ -27,6 +27,7 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
             console.log("This is the concept by category and character error", response.status);
             HandleHttpError(response);
             }
+      Logger.logUpdate(logData);
       return concept;
 
     }
@@ -37,5 +38,6 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
           console.log(' This is the concept by category and character unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptByCharacterAndCategoryUrl());
+        UpdatePackageLogWithError(logData, GetConceptByCharacterAndCategoryApi.name, error);
       }
 }

@@ -30,8 +30,7 @@ export default async function MakeTheInstanceConcept(
   passedSessionId: number = 999,
   referentId: number = 0
 ) {
-  Logger.logfunction("MakeTheInstanceConcept", arguments);
-  let startTime = performance.now()
+  const logData : any = Logger.logfunction("MakeTheInstanceConcept", arguments);
   if (serviceWorker) {
     try {
       const res: any = await sendMessage("MakeTheInstanceConcept", {
@@ -158,6 +157,8 @@ export default async function MakeTheInstanceConcept(
   //   "unknown", 
   //   undefined 
   // )
+
+  Logger.logUpdate(logData);
     
   return concept;
 }

@@ -4,10 +4,10 @@ import { Concept } from "../DataStructures/Concept";
 import { ReservedConnectionIds, ReservedIds } from "../DataStructures/ReservedIds";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 export async function GetReservedConnectionIds(){
-  Logger.logfunction("GetReservedConnectionIds", arguments);
+  const logData : any = Logger.logfunction("GetReservedConnectionIds", arguments);
     try{
             let header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetReservedConnectionIdUrl(),{
@@ -22,6 +22,7 @@ export async function GetReservedConnectionIds(){
              for(let i=0; i< result.length; i++){
                 ReservedConnectionIds.AddId(result[i]);
              }
+             Logger.logUpdate(logData);
     }
     catch (error) {
         if (error instanceof Error) {
@@ -30,5 +31,6 @@ export async function GetReservedConnectionIds(){
           console.log('get reserved connection ids  unexpected error: ', error);
         }
         HandleInternalError(error,BaseUrl.GetReservedConnectionIdUrl() );
+        UpdatePackageLogWithError(logData, GetReservedConnectionIds.name, error);
       }
 }

@@ -3,7 +3,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger } from "../app";
 import { BinaryTree, sendMessage, serviceWorker } from "../app";
 
@@ -16,7 +16,7 @@ import { BinaryTree, sendMessage, serviceWorker } from "../app";
  */
 export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[]>{
 
-  Logger.logfunction("GetConceptBulk", [passedConcepts.length]);
+  const logData : any = Logger.logfunction("GetConceptBulk", [passedConcepts.length]);
     let result:Concept[] = [];
     let setTime = new Date().getTime();
     let startTime = performance.now()
@@ -59,7 +59,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
     
 
         if(bulkConceptFetch.length == 0){
-
+            Logger.logfunction(logData)
             return result;
         }
         else{
@@ -79,13 +79,14 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
                     }
                 }
                 console.log("added the concepts");
+                Logger.logUpdate(logData)
                 // Add Log
                 // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, result, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
             }
             else{
                 console.log("Get Concept Bulk error", response.status);
                 // Add Log
-                Logger.logError(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
+                Logger.logError(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", [passedConcepts], "unknown", undefined)
                 HandleHttpError(response);
             }
 
@@ -104,9 +105,10 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
       }
 
       // Add Log
-      Logger.logError(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
+      Logger.logError(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", [passedConcepts], "unknown", undefined)
       
       HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
+      UpdatePackageLogWithError(logData, GetConceptBulk.name, error)
       }
 
       return result;

@@ -1,4 +1,5 @@
 import { BaseUrl, Logger } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 export const validImageFormats = [
   "image/jpeg",
@@ -23,7 +24,7 @@ export async function uploadAttachment(
   file: File,
   token?: string
 ): Promise<{ message: string; success: boolean; url?: string }> {
-  Logger.logfunction("uploadAttachment");
+  const logData : any = Logger.logfunction("uploadAttachment");
   try {
     console.log("File Type", file.type);
     const formData = new FormData();
@@ -42,10 +43,11 @@ export async function uploadAttachment(
     if (!response?.data) {
       return { message: "File Upload Failed", success: false };
     }
-
+    Logger.logUpdate(logData);
     return { message: "Upload Success", success: true, url: response.data };
   } catch (err) {
     console.error(err);
+    UpdatePackageLogWithError(logData, uploadAttachment.name, err);
     throw err;
   }
 }
@@ -57,7 +59,7 @@ export async function uploadAttachment(
  * @returns JSON | string | null
  */
 export async function uploadImage(body: FormData, token: string = "") {
-  Logger.logfunction("uploadImage");
+  const logData : any = Logger.logfunction("uploadImage");
   try {
     const response = await fetch(BaseUrl.uploadImageUrl(), {
       method: "POST",
@@ -74,11 +76,13 @@ export async function uploadImage(body: FormData, token: string = "") {
       }
       const errorData = await response?.text();
       console.error(`${response.status} ${errorData}`); // Log error response data
+      Logger.logUpdate(logData);
       return null;
     }
     return await response.json();
   } catch (err) {
     console.error(err);
+    UpdatePackageLogWithError(logData, uploadImage.name, err);
     return null;
   }
 }
@@ -90,7 +94,7 @@ export async function uploadImage(body: FormData, token: string = "") {
  * @returns JSON | string | null
  */
 export async function uploadFile(body: FormData, token: string = "") {
-  Logger.logfunction("uploadFile");
+  const logData : any = Logger.logfunction("uploadFile");
   try {
     const response = await fetch(BaseUrl.uploadFileUrl(), {
       method: "POST",
@@ -109,9 +113,11 @@ export async function uploadFile(body: FormData, token: string = "") {
       console.error(`${response.status} ${errorData}`); // Log error response data
       return null;
     }
+    Logger.logUpdate(logData);
     return await response.json();
   } catch (err) {
     console.error(err);
+    UpdatePackageLogWithError(logData, uploadFile.name, err);
     return null;
   }
 }

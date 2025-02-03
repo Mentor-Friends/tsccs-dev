@@ -5,9 +5,9 @@ import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
-import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 export async function CreateTheConceptApi(conceptData: any){
-  Logger.logfunction("CreateTheConceptApi", conceptData);
+  const logData : any = Logger.logfunction("CreateTheConceptApi", conceptData);
   let result = CreateDefaultConcept();
     try{
             var header = GetRequestHeader();
@@ -22,7 +22,7 @@ export async function CreateTheConceptApi(conceptData: any){
             }
              const resultString = await response.json();
             result = resultString as Concept;
-
+            Logger.logUpdate(logData);
             return result;
     }
     catch (error) {
@@ -32,5 +32,6 @@ export async function CreateTheConceptApi(conceptData: any){
           console.log('Create the concept api unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.CreateTheConceptUrl());
+        UpdatePackageLogWithError(logData, CreateTheConceptApi.name, error);
       }
 }

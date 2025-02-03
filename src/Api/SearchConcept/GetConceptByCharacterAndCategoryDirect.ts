@@ -4,9 +4,9 @@ import { Concept } from "./../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
-import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: string, category_id: number): Promise<Concept>{
-  Logger.logfunction("GetConceptByCharacterAndCategoryDirectApi", arguments);
+  const logData : any = Logger.logfunction("GetConceptByCharacterAndCategoryDirectApi", arguments);
   let concept:Concept = CreateDefaultConcept();
 
     try{
@@ -27,6 +27,8 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
             console.log("This is the concept by category and character error", response.status);
             HandleHttpError(response);
             }
+            
+            Logger.logUpdate(logData);
 
     }
     catch (error) {
@@ -36,6 +38,7 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
           console.log(' This is the concept by category and character unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptByCharacterAndCategoryDirectUrl());
+        UpdatePackageLogWithError(logData, GetConceptByCharacterAndCategoryDirectApi.name, error);
     }
     return concept;
 

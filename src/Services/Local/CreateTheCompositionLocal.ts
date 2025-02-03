@@ -18,7 +18,7 @@ import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
  */
 export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null, automaticSync: boolean  = false, actions: InnerActions = {concepts: [], connections: []})
 {
-    Logger.logfunction("CreateTheCompositionLocal");
+    const logData : any = Logger.logfunction("CreateTheCompositionLocal");
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('CreateTheCompositionLocal', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, actions })
@@ -76,7 +76,8 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
     //     "unknown", 
     //     undefined 
     // )
-   
+      
+    Logger.logUpdate(logData);
       return MainConcept;
 }
 

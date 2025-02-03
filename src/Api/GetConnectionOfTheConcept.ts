@@ -5,11 +5,11 @@ import { TheCharacter } from "../DataStructures/TheCharacter";
 import { Connection } from "../DataStructures/Connection";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
-Logger.logfunction("GetConnectionOfTheConcept", arguments);
+  const logData : any = Logger.logfunction("GetConnectionOfTheConcept", arguments);
   let connectionList:Connection[] = []; 
   try{
     if (serviceWorker) {
@@ -40,6 +40,7 @@ Logger.logfunction("GetConnectionOfTheConcept", arguments);
           HandleHttpError(response);
           console.log("Get connection of concept error", response.status);
         }
+        Logger.logUpdate(logData);
         return connectionList;
     }
     catch (error) {
@@ -49,5 +50,6 @@ Logger.logfunction("GetConnectionOfTheConcept", arguments);
         console.log('Get connection of concept unexpected error: ', error);
       }
       HandleInternalError(error, BaseUrl.GetAllConnectionsOfConceptUrl());
+      UpdatePackageLogWithError(logData, GetConnectionOfTheConcept.name, error);
     }
 }

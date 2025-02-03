@@ -1,6 +1,7 @@
 import { strict } from "assert";
 import { BaseUrl } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
+import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 
 export class Logger {
 
@@ -90,16 +91,17 @@ export class Logger {
         };
 
         this.packageLogsData.push(logEntry);
+        console.log("Log Update Test for functions : ", this.packageLogsData);
         if(level == "ERROR"){
             this.sendPackageLogsToServer();
             this.sendApplicationLogsToServer();
         }
         //this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
          // console.log("Package Log Updated : ", this.packageLogsData);
+         return logEntry;
 
     }
 
-    
     public static log(
         level: 'INFO' | 'ERROR' | 'DEBUG' | 'WARNING',
         message: string,
@@ -113,62 +115,59 @@ export class Logger {
         }
     }
 
-    public static logfunction(myfunction:string, ...args:any[]){
-        
-      //  if(this.logPackageActivationStatus){
-      let myarguments: any = args;
-      //let size = Object.values(myarguments[0]).length;
+    /**
+     * Updates log data with execution details.
+     * @param logData The log data object to be updated.
+    */
+    public static logUpdate(logData:LogData){
 
-           // console.log("info", myfunction.name, myarguments, myarguments[0].length);
-            let logData: LogData = {
-                functionName: myfunction,
-                functionParameters: myarguments,
-                requestFrom: BaseUrl.BASE_APPLICATION,
-                sessionId: TokenStorage.sessionId,
-                applicationId: BaseUrl.getRandomizer()
+        try {
+            console.log("Log Data for update is : ", logData);
+            if (!logData) {
+                console.error("logUpdate failed: logData is undefined");
+                return;
             }
-            this.formatLogData('INFO', "function called", logData);
-       // }
-    }
-
-    public static logInfo(
-        startTime: number,
-        userId: string | number,
-        operationType?: "read" | "create" | "update" | "delete" | "search",
-        requestFrom?: string,
-        requestIP?: string,
-        responseStatus?: number,
-        responseData?: any,
-        functionName?: string,
-        functionParameters?: any[],
-        userAgent?: string,
-        conceptsUsed?: string[]
-    ): void {
-        try{
-            const sessionId = getCookie("SessionId");
-            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-            const logData: LogData = {
-                userId,
-                operationType,
-                requestFrom,
-                requestIP,
-                responseStatus,
-                responseTime,
-                responseSize,
-                sessionId: sessionId?.toString(),
-                functionName,
-                functionParameters,
-                userAgent,
-                conceptsUsed,
-            };
-        
-            this.log("INFO", `Information logged for ${functionName}`, logData);
-        } catch(error){
-            console.error("Error on logInfo");
+            const updateTime = Date.now();
+            
+            //  prevent undefined subtraction
+            logData.startTime = logData.startTime ?? updateTime;
+    
+            const responseTime = updateTime - logData.startTime;
+    
+            // Update log data with execution details
+            logData.responseTime = `${responseTime} ms`;
+            // logData.endTime = updateTime;
+            console.log("Updated Log Data:", logData);
+        } catch (error) {
+            console.error("Error updating log data:", error);
+            UpdatePackageLogWithError(logData, this.logUpdate.name, error)
         }
 
     }
+
+
+    public static logfunction(myFunction:string, ...args:any[]){
+        const startTime = Date.now(); 
+        //  if(this.logPackageActivationStatus){
+        let myarguments: any = args;
+        //let size = Object.values(myarguments[0]).length;
+        const applicationId = BaseUrl.getRandomizer();
+        const sessionId = TokenStorage.sessionId;
+
+        // console.log("info", myfunction.name, myarguments, myarguments[0].length);
+        let logData: LogData = {
+            startTime: startTime,
+            functionName: myFunction,
+            functionParameters: myarguments,
+            requestFrom: BaseUrl.BASE_APPLICATION,
+            sessionId: sessionId,
+            applicationId: applicationId
+        }
+        return this.formatLogData('INFO', "function called", logData);
+        // }
+
+    }
+
     
     public static logError(
         startTime: number,
@@ -189,6 +188,7 @@ export class Logger {
             const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
     
             const logData: LogData = {
+                startTime,
                 userId,
                 operationType,
                 requestFrom,
@@ -209,88 +209,6 @@ export class Logger {
         }
     }
 
-    public static logWarning(
-        startTime: number,
-        userId: string | number,
-        operationType?: "read" | "create" | "update" | "delete" | "search",
-        requestFrom?: string,
-        requestIP?: string,
-        responseStatus?: number,
-        responseData?: any,
-        functionName?: string,
-        functionParameters?: any[],
-        userAgent?: string,
-        conceptsUsed?: string[]
-    ): void {
-        try{
-            const sessionId = getCookie("SessionId");
-            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-    
-            const logData: LogData = {
-                userId,
-                operationType,
-                requestFrom,
-                requestIP,
-                responseStatus,
-                responseTime,
-                responseSize,
-                sessionId: sessionId?.toString(),
-                functionName,
-                functionParameters,
-                userAgent,
-                conceptsUsed,
-            };
-        
-            this.formatLogData("WARNING", `Information logged for ${functionName}`, logData);
-    
-        } catch(error){
-            console.error("Error on logWarning");
-        }
-    }
-
-    public static logDebug(
-        startTime: number,
-        userId: string | number,
-        operationType?: "read" | "create" | "update" | "delete" | "search",
-        requestFrom?: string,
-        requestIP?: string,
-        responseStatus?: number,
-        responseData?: any,
-        functionName?: string,
-        functionParameters?: any[],
-        userAgent?: string,
-        conceptsUsed?: string[]
-    ): void {
-        try{
-            const sessionId = getCookie("SessionId");
-            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-    
-            const logData: LogData = {
-                userId,
-                operationType,
-                requestFrom,
-                requestIP,
-                responseStatus,
-                responseTime,
-                responseSize,
-                sessionId: sessionId?.toString(),
-                functionName,
-                functionParameters,
-                userAgent,
-                conceptsUsed,
-            };
-        
-            this.formatLogData("DEBUG", `Information logged for ${functionName}`, logData);
-    
-        } catch(error){
-            console.error("Error on logDebug");
-        }
-    
-    }    
-
-   // Log Application Activity
     public static logApplication(type: string, message: string, data?: any): void {
         console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
         if(!this.logApplicationActivationStatus) return;
@@ -312,7 +230,6 @@ export class Logger {
             console.error("Failed to log application activity:", error);
         }
     }
-
 
     /**
      * Helper method to send logs to the server.
@@ -480,6 +397,12 @@ export interface LogData {
     responseTime?: string;
 
     /**
+     * The start and end time 
+     */
+    startTime: number;
+    endTime?: number;
+
+    /**
      * The size of the response payload.
      * @example "15KB", "1.2MB"
      */
@@ -497,6 +420,12 @@ export interface LogData {
     functionName?: string;
 
     applicationId?: number;
+
+    /**
+     * The error return
+     * @example function could not execute
+     */
+    errorMessage? : string,
 
     /**
      * The parameters used in the function.

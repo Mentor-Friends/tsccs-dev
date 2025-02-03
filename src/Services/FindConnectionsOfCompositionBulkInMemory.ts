@@ -1,9 +1,10 @@
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 export async function FindConnectionsOfCompositionsBulkInMemory(composition_ids:number[] = []){
-  Logger.logfunction("FindConnectionsOfCompositionsBulkInMemory", [composition_ids.length]);
+  const logData : any = Logger.logfunction("FindConnectionsOfCompositionsBulkInMemory", [composition_ids.length]);
   let FinalConnectionList:Connection[] = [];
   try {
     if (serviceWorker) {
@@ -20,9 +21,11 @@ export async function FindConnectionsOfCompositionsBulkInMemory(composition_ids:
        let connectionList = await ConnectionData.GetConnectionsOfConcept(composition_ids[i]);
         FinalConnectionList.push(...connectionList);
     }
+    Logger.logUpdate(logData)
     return FinalConnectionList;
   } catch (error) {
       console.error('FindConnectionsOfCompositionsBulkInMemory error: ', error)
+      UpdatePackageLogWithError(logData, FindConnectionsOfCompositionsBulkInMemory.name, error);
       return FinalConnectionList;
   } 
 }

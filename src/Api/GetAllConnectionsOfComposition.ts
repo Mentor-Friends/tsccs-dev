@@ -3,10 +3,11 @@ import { ConnectionData } from '../DataStructures/ConnectionData';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
-import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
+import { log } from 'console';
 export async function GetAllConnectionsOfComposition(composition_id: number){
-      Logger.logfunction("GetAllConnectionsOfComposition", arguments);
+      const logData : any = Logger.logfunction("GetAllConnectionsOfComposition", arguments);
         var connectionList: Connection[] = [];
         //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(composition_id);
         connectionList = await ConnectionData.GetConnectionsOfConcept(composition_id);
@@ -20,13 +21,14 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
           CheckForConnectionDeletion(newConnections, connectionList);
           connectionList = newConnections;
         }
+        Logger.logUpdate(logData);
         return connectionList;
         
      
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_id: number){
-  Logger.logfunction("GetAllConnectionsOfCompositionOnline", arguments);
+  const logData : any = Logger.logfunction("GetAllConnectionsOfCompositionOnline", arguments);
   var connectionList: Connection[] = [];
 
   try{
@@ -49,7 +51,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
           ConnectionData.AddConnection(result[i]);
           connectionList.push(result[i]);
       }
-      
+      Logger.logUpdate(logData)
       return connectionList;
     }
     catch (error) {
@@ -59,5 +61,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
         console.log('Get all connection of composition error : ', error);
       }
       HandleInternalError(error, BaseUrl.GetAllConnectionsOfCompositionUrl());
+      UpdatePackageLogWithError(logData, GetAllConnectionsOfCompositionOnline.name, error);
     }
 }

@@ -7,7 +7,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 import {GetConnectionById} from "./GetConnections";
 
 export  async function DeleteConnectionById(id:number){
-    Logger.logfunction("DeleteConnectionById", arguments);
+    const logData : any = Logger.logfunction("DeleteConnectionById", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('DeleteConnectionById', { id })
@@ -28,4 +28,5 @@ export  async function DeleteConnectionById(id:number){
         LocalConnectionData.RemoveConnectionById(id);
     }
    //ConnectionTypeTree.removeTypeConcept(connection.typeId,id);
+   Logger.logUpdate(logData)
 }

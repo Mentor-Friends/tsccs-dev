@@ -4,14 +4,14 @@ import { GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { AccessTracker, CreateDefaultConcept, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 /**
  * This function helps you get concept from the id. This can only be positive.
  * @param id The id that you want to get the concept of
  * @returns 
  */
 export async function GetConcept(id: number){    
-    Logger.logfunction("GetConcept", arguments);
+    const logData : any = Logger.logfunction("GetConcept", arguments);
     try{
         if (serviceWorker) {
             try {
@@ -29,7 +29,7 @@ export async function GetConcept(id: number){
         var conceptUse :Concept= await ConceptsData.GetConcept(id);
         let isNpc = ConceptsData.GetNpc(id);
         if(conceptUse.id != 0 || isNpc){
-
+            Logger.logUpdate(logData)
             return conceptUse;
         }
         else{
@@ -54,7 +54,7 @@ export async function GetConcept(id: number){
                 console.log("Get the concept error", response.status);
                 HandleHttpError(response);
             }
-            
+            Logger.logUpdate(logData);
             return result;
 
         }
@@ -66,5 +66,6 @@ export async function GetConcept(id: number){
           console.log('Get the concept unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptUrl());
+        UpdatePackageLogWithError(logData, GetConcept.name, error);
       }
 }

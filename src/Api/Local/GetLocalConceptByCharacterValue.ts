@@ -4,9 +4,9 @@ import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultLConcept, Logger } from "../../app";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 export async function GetLocalConceptByCharacterValue(characterValue: string){
-  Logger.logfunction("GetLocalConceptByCharacterValue", arguments);
+  const logData : any = Logger.logfunction("GetLocalConceptByCharacterValue", arguments);
   let result = CreateDefaultLConcept();
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
@@ -26,6 +26,7 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
             console.log("Error in Getting Local concept by character value Error", response.status);
             HandleHttpError(response);
           }
+          Logger.logUpdate(logData);
           return result;
 
 
@@ -36,6 +37,7 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
         } else {
           console.log('Error in Getting Local concept by character value unexpected error: ', error);
         }
+        UpdatePackageLogWithError(logData, GetLocalConceptByCharacterValue.name, error);
         throw result;
       }
 }

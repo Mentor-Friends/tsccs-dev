@@ -2,10 +2,10 @@ import { ConnectionData } from '../DataStructures/ConnectionData';
 import { GetAllConnectionsOfUserUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
-import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
 export async function GetAllUserConnections(userId: number){
-  Logger.logfunction("GetAllUserConnections", arguments);
+  const logData : any = Logger.logfunction("GetAllUserConnections", arguments);
     try{
             var header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetAllConnectionsOfUserUrl(),{
@@ -22,6 +22,9 @@ export async function GetAllUserConnections(userId: number){
                 ConnectionData.AddConnection(result[i]);
                 ConnectionData.AddToDictionary(result[i]);
             }
+
+            Logger.logUpdate(logData)
+
     }
     catch (error) {
         if (error instanceof Error) {
@@ -30,5 +33,6 @@ export async function GetAllUserConnections(userId: number){
           console.log(' Get all user Connections unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetAllConnectionsOfUserUrl());
+        UpdatePackageLogWithError(logData, GetAllUserConnections.name, error )
       }
 }

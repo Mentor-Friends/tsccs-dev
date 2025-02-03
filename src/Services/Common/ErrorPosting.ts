@@ -43,3 +43,32 @@ export function HandleInternalError(error: any, url: string = ""){
     }
     throw error;
 }
+
+/**
+ * Handle errors inside package functions
+ * @updateLog existing function log at start
+ * @param functionName name of the function that encountered the error
+ * @param error error appeared
+ */
+export function UpdatePackageLogWithError(logData: any, functionName: string, error: any):void {
+    try {
+        if (!logData) {
+            console.error(`Error in ${functionName}: logData is undefined`);
+            return;
+        }
+
+        const errorTime = Date.now();
+         // Ensure startTime is set
+        logData.startTime = logData.startTime ?? errorTime;
+        logData.responseTime = `${errorTime - logData.startTime} ms`;
+
+        logData.level = "ERROR";
+        logData.errorMessage = error?.message || "Unknown error occurred";
+        
+        // Log additional error details
+        console.error(`Error in function ${functionName}:`, error);
+    } catch (err) {
+        console.error("Failed to handle package function error:", err);
+    }
+}
+

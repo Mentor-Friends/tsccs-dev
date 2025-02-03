@@ -4,7 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 
 export default async function GetConceptByCharacter(characterValue: string){
-    Logger.logfunction("GetConceptByCharacter", arguments);
+    const logData : any = Logger.logfunction("GetConceptByCharacter", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('GetConceptByCharacter', {characterValue})
@@ -23,11 +23,12 @@ export default async function GetConceptByCharacter(characterValue: string){
             concept = await ConceptsData.GetConceptByCharacter(characterValue);
         }
     }
+    Logger.logUpdate(logData);
     return concept;
 }
 
 export  async function GetConceptByCharacterUpdated(characterValue: string){
-    Logger.logfunction("GetConceptByCharacterUpdated", arguments);
+    const logData : any = Logger.logfunction("GetConceptByCharacterUpdated", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('GetConceptByCharacterUpdated', {characterValue})
@@ -43,5 +44,6 @@ export  async function GetConceptByCharacterUpdated(characterValue: string){
         await GetConceptByCharacterValue(characterValue);
         concept = await ConceptsData.GetConceptByCharacter(characterValue);
     }
+    Logger.logUpdate(logData)
     return concept;
 }

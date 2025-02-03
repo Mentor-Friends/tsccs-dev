@@ -1,9 +1,9 @@
 import { Logger } from "../app";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 export async function MakeTheNameInBackend(newConceptId:number, referent:string, typeId: number, typeUserId:number){
-  Logger.logfunction("MakeTheNameInBackend", arguments);  
+  const logData : any = Logger.logfunction("MakeTheNameInBackend", arguments);  
   try{
         let object = {
             'newConceptId': newConceptId,
@@ -20,6 +20,7 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
                 headers: myHeaders,
                 body: requestObject
             });
+            Logger.logUpdate(logData)
             if(! response.ok){
               HandleHttpError(response);
             }
@@ -31,5 +32,6 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
           console.log('make the name in backend unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.MakeTheNameInBackendUrl());
+        UpdatePackageLogWithError(logData, MakeTheNameInBackend.name, error);
       }
 }

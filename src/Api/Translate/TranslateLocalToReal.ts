@@ -1,9 +1,9 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { Concept, ConceptsData, CreateDefaultConcept, Logger } from "../../app";
 export async function TranslateLocalToReal(conceptId: number){
-  Logger.logfunction("TranslateLocalToReal", arguments);
+  const logData : any = Logger.logfunction("TranslateLocalToReal", arguments);
   let result:Concept = CreateDefaultConcept();
     try{
 
@@ -26,6 +26,8 @@ export async function TranslateLocalToReal(conceptId: number){
             HandleHttpError(response);
           }
 
+          Logger.logUpdate(logData);
+
 
     }
     catch (error) {
@@ -35,6 +37,7 @@ export async function TranslateLocalToReal(conceptId: number){
           console.log('Error in Getting Translating concept unexpected error: ', error);
         }
         HandleInternalError(error,BaseUrl.GetRealConceptById() );
+        UpdatePackageLogWithError(logData, TranslateLocalToReal.name, error);
       }
 
       return result;

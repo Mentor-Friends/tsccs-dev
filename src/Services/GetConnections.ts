@@ -7,8 +7,7 @@ import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/Con
 import { ConnectionData } from "../DataStructures/ConnectionData";
 
 export  async function GetConnectionById(id:number){
-   Logger.logfunction("GetConnectionById", arguments);
-   let startTime = performance.now()
+   const logData : any = Logger.logfunction("GetConnectionById", arguments);
 
    console.log("AccessTracker activation status from GetConnectionById")
    // Add connection id in access tracker
@@ -37,7 +36,7 @@ export  async function GetConnectionById(id:number){
        }
       // Add Log
       // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, connection, "GetConnectionById", [id], "unknown", undefined )
-
+       Logger.logUpdate(logData);
        return connection;
 
 }

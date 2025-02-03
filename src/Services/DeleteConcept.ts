@@ -10,7 +10,7 @@ import { ConceptsData, handleServiceWorkerException, LocalConceptsData, Logger, 
 import GetTheConcept from "./GetTheConcept";
 
 export async function DeleteConceptById(id:number){
-    Logger.logfunction("DeleteConceptById", arguments);
+    const logData : any = Logger.logfunction("DeleteConceptById", arguments);
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('DeleteConceptById', { id })
@@ -32,11 +32,13 @@ export async function DeleteConceptById(id:number){
             await BinaryTree.removeNodeFromTree(id);
             await ConnectionOfTheTree.removeNodeFromTree(id);
         }
-
+    
     }
     else{
         LocalConceptsData.RemoveConceptById(id);
     }
+
+    Logger.logUpdate(logData)
 }
 
 export async function DeleteUser(id:number){

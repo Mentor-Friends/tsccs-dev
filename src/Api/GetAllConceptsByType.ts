@@ -2,10 +2,10 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetAllConceptsByTypeUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 export async function GetAllConceptsByType(type:string,userId: number){
-  Logger.logfunction("GetAllConceptsByType", arguments);
+  const logData:any = Logger.logfunction("GetAllConceptsByType", arguments);
     try{
             var urlencoded = new URLSearchParams();
             urlencoded.append("type", type);
@@ -37,5 +37,6 @@ export async function GetAllConceptsByType(type:string,userId: number){
           console.log('GetAllConceptsByType unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetAllConceptsByTypeUrl());
+        UpdatePackageLogWithError(logData, GetAllConceptsByType.name, error);
       }
 }

@@ -2,11 +2,11 @@ import { Logger } from "../../app";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { FreeSchemaResponse } from "../../DataStructures/Responses/ErrorResponse";
 import {SearchQuery} from '../../DataStructures/SearchQuery';
-import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
 export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: string=""){
-    Logger.logfunction("SearchLinkMultipleApi", arguments);
+    const logData : any = Logger.logfunction("SearchLinkMultipleApi", arguments);
     let startTime = performance.now()
     var header = GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.SearchLinkMultipleAllApiUrl();
@@ -19,15 +19,15 @@ export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: s
         });
         if(response.ok){
             let result = await response.json();
-            // Add Log
-            // Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
+
+            Logger.logUpdate(logData);
             return result;
 
         }
         else{
             HandleHttpError(response);
             console.log("This is the searching multiple error", response.status);
-            Logger.logWarning(startTime, "unknown", "search", "unknown", undefined, response.status, response, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
+            Logger.logError(startTime, "unknown", "search", "unknown", undefined, response.status, response, "SearchLinkMultipleApi", [searchQuery, token], "unknown", undefined )
             return [];
 
         }
@@ -35,7 +35,8 @@ export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: s
     }
     catch(ex:any){
         console.log("This is the searching multiple error", ex);
-        Logger.logWarning(startTime, "unknown", "search", "unknown", undefined, 500, ex, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
+        Logger.logError(startTime, "unknown", "search", "unknown", undefined, 500, ex, "SearchLinkMultipleApi", [searchQuery, token], "unknown", undefined )
         HandleInternalError(ex, queryUrl);
+        UpdatePackageLogWithError(logData, SearchLinkMultipleApi.name, ex);
     }
 }

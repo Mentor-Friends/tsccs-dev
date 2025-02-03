@@ -1,9 +1,10 @@
 import { Concept, CreateTheConnectionLocal, handleServiceWorkerException, MakeTheInstanceConceptLocal, sendMessage, serviceWorker } from "../../app";
 import { InnerActions } from "../../Constants/general.const";
 import { Logger } from "../../Middleware/logger.service";
+import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, actions: InnerActions = {concepts: [], connections: []}){
-    Logger.logfunction("CreateConnectionBetweenTwoConceptsLocal", arguments);
+    const logData : any = Logger.logfunction("CreateConnectionBetweenTwoConceptsLocal", arguments);
     let startTime = performance.now()
     try{
         if (serviceWorker) {
@@ -53,7 +54,7 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
         //     undefined,
         //     undefined
         // )
-        
+        Logger.logUpdate(logData);
         return newConnection;
     }
     catch(ex){
@@ -63,6 +64,7 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
             undefined,
             undefined
          )
+        UpdatePackageLogWithError(logData, CreateConnectionBetweenTwoConceptsLocal.name, ex);
         throw ex;
     }
 

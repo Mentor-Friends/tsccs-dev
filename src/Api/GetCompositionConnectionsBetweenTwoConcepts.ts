@@ -5,6 +5,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import {
   HandleHttpError,
   HandleInternalError,
+  UpdatePackageLogWithError,
 } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
@@ -13,7 +14,7 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
   toConcept: number,
   mainKey: number
 ) {
-  Logger.logfunction("GetCompositionConnectionsBetweenTwoConcepts", arguments);
+  const logData : any = Logger.logfunction("GetCompositionConnectionsBetweenTwoConcepts", arguments);
   var connectionList: Connection[] = [];
   try {
     if (serviceWorker) {
@@ -47,6 +48,7 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
         ConnectionData.AddConnection(result[i]);
         connectionList.push(result[i]);
       }
+      Logger.logUpdate(logData)
     } else {
       console.log(
         "Get composition connection between two concepts",
@@ -70,6 +72,7 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
       error,
       BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl()
     );
+    UpdatePackageLogWithError(logData, GetCompositionConnectionsBetweenTwoConcepts.name, error);
   }
   return connectionList;
 }

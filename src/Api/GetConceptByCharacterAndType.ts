@@ -2,11 +2,11 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
-  Logger.logfunction("GetConceptByCharacterAndType", arguments);
+  const logData : any = Logger.logfunction("GetConceptByCharacterAndType", arguments);
   try{
     if (serviceWorker) {
       try {
@@ -43,6 +43,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           }
 
       }
+      Logger.logUpdate(logData)
       return concept;
 
     }
@@ -53,5 +54,6 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           console.log(' This is the concept by type and character unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptByCharacterAndTypeUrl());
+        UpdatePackageLogWithError(logData, GetConceptByCharacterAndType.name, error);
       }
 }
