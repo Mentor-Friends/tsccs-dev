@@ -140,8 +140,9 @@ export {WidgetTree} from './Widgets/WidgetTree';
 export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
+export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 
-export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, convertWidgetTreeToWidget, unwrapContainers} from './Widgets/RenderWidgetService';
+export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 type listeners = {
   listenerId: string | number

@@ -295,4 +295,8 @@ export class BaseUrl{
     static sendBulkMail(){
         return this.BASE_URL + '/api/sendmail/bulk';
     }
+
+    static getWidgetData(){
+        return this.BASE_URL + '/api/get-widget';
+    }
 }

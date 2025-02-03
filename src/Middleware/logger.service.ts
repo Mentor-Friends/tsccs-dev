@@ -117,11 +117,11 @@ export class Logger {
     }
 
     public static logfunction(myfunction:string, ...args:any[]){
+      if(!this.logPackageActivationStatus) return;
         
       //  if(this.logPackageActivationStatus){
       let myarguments: any = args;
       //let size = Object.values(myarguments[0]).length;
-
            // console.log("info", myfunction.name, myarguments, myarguments[0].length);
             let logData: LogData = {
                 functionName: myfunction,
@@ -326,15 +326,16 @@ export class Logger {
         try {
 
             console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
+            
             if(this.applicationLogsData.length === 0){
                 return
             }
+            this.applicationLogsData = []
 
             const accessToken = TokenStorage.BearerAccessToken;
             if(!accessToken) return;
 
             // clear application log from memory
-            this.applicationLogsData = [] 
             const chunkSize = 50;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
@@ -352,7 +353,7 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                    this.applicationLogsData.push(...storedLogs);
+                   // this.applicationLogsData.push(...storedLogs);
                    // console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
                 }
             }
@@ -360,7 +361,7 @@ export class Logger {
 
             
         } catch (error) {
-            this.applicationLogsData.push(...storedLogs);
+            //this.applicationLogsData.push(...storedLogs);
           //  console.error("Network error while sending logs:", error);
         }
     }
@@ -373,11 +374,11 @@ export class Logger {
             console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
             
             if(this.packageLogsData.length === 0) return
+            this.packageLogsData = [];
 
             const accessToken = TokenStorage.BearerAccessToken;
             if(!accessToken) return;
 
-            this.packageLogsData = [];
             const chunkSize = 300;
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
@@ -397,7 +398,7 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                    this.packageLogsData.push(...storedLogs);
+                   // this.packageLogsData.push(...storedLogs);
                     //console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
                 }
@@ -407,7 +408,7 @@ export class Logger {
             //this.packageLogsData = [] 
 
         } catch (error) {
-            this.packageLogsData.push(...storedLogs);
+            //this.packageLogsData.push(...storedLogs);
            //console.error("Error while sending logs to server:", error);
         }
     }
