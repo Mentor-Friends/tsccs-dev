@@ -46,12 +46,12 @@ export async function GetCompositionFromConnectionsWithDataId(ids:number[]=[], c
  * @param connectionIds these are the connection ids that are used to fetch all the connections and also their related concepts.
  * @returns all the connections that are passed as ids.
  */
-export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise<Connection[]>{
+export async function GetConnectionDataPrefetch(connectionIds:number[] = []): Promise<Connection[]>{
 
     let remainingConnections: number[] = [];
     let connectionsAll:Connection[] = [];
     let remainingIds: any = {};
-    for(let i=0; i< connectionIds.length; i++){
+    for(let i=0; i< connectionIds?.length; i++){
         let connection = await ConnectionData.GetConnection(connectionIds[i]);
        // console.log("this is the connection fetch", connection);
         if(connection.id == 0){

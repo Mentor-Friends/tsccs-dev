@@ -5,7 +5,7 @@ import { CountInfo } from "../../DataStructures/Count/CountInfo";
 export function DecodeCountInfo(countStrings: string[] = []){
     let countInfos: CountInfo[] = [];
     if(countStrings.length > 0){
-        for(let i=0; i<countStrings.length; i++){
+        for(let i=0; i<countStrings?.length; i++){
             let countInfo = separateString(countStrings[i]);
             countInfos.push(countInfo);
         }
