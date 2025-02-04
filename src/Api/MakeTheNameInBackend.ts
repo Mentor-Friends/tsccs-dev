@@ -32,6 +32,6 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
           console.log('make the name in backend unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.MakeTheNameInBackendUrl());
-        UpdatePackageLogWithError(logData, MakeTheNameInBackend.name, error);
+        UpdatePackageLogWithError(logData, 'MakeTheNameInBackend', error);
       }
 }

@@ -108,7 +108,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
       Logger.logError(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", [passedConcepts], "unknown", undefined)
       
       HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
-      UpdatePackageLogWithError(logData, GetConceptBulk.name, error)
+      UpdatePackageLogWithError(logData, 'GetConceptBulk', error)
       }
 
       return result;

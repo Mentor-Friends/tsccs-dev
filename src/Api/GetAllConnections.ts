@@ -33,6 +33,6 @@ export async function GetAllUserConnections(userId: number){
           console.log(' Get all user Connections unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetAllConnectionsOfUserUrl());
-        UpdatePackageLogWithError(logData, GetAllUserConnections.name, error )
+        UpdatePackageLogWithError(logData, 'GetAllUserConnections', error )
       }
 }

@@ -37,6 +37,6 @@ export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: s
         console.log("This is the searching multiple error", ex);
         Logger.logError(startTime, "unknown", "search", "unknown", undefined, 500, ex, "SearchLinkMultipleApi", [searchQuery, token], "unknown", undefined )
         HandleInternalError(ex, queryUrl);
-        UpdatePackageLogWithError(logData, SearchLinkMultipleApi.name, ex);
+        UpdatePackageLogWithError(logData, 'SearchLinkMultipleApi', ex);
     }
 }

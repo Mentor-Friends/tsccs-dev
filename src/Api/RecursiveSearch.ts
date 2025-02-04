@@ -71,7 +71,7 @@ export async function RecursiveSearchApi(
       console.log("recursive search unexpected error: ", error);
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
-    UpdatePackageLogWithError(logData, RecursiveSearchApi.name, error);
+    UpdatePackageLogWithError(logData, 'RecursiveSearchApi', error);
   }
   return concepts;
 }
@@ -190,7 +190,7 @@ export async function RecursiveSearchApiRaw(
       console.log("recursive search unexpected error: ", error);
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
-    UpdatePackageLogWithError(logData, RecursiveSearchApiRaw.name, error);
+    UpdatePackageLogWithError(logData, 'RecursiveSearchApiRaw', error);
   }
 }
 
@@ -247,7 +247,7 @@ export async function RecursiveSearchApiRawFullLinker(
       console.log("recursive search unexpected error: ", error);
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
-    UpdatePackageLogWithError(logData, RecursiveSearchApiRawFullLinker.name, error);
+    UpdatePackageLogWithError(logData, 'RecursiveSearchApiRawFullLinker', error);
   }
 }
 
@@ -305,7 +305,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
       console.log("recursive search unexpected error: ", error);
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
-    UpdatePackageLogWithError(logData, RecursiveSearchApiNewRawFullLinker.name, error);
+    UpdatePackageLogWithError(logData, 'RecursiveSearchApiNewRawFullLinker', error);
   }
 }
 

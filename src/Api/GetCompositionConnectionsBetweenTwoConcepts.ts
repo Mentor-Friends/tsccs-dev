@@ -72,7 +72,7 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
       error,
       BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl()
     );
-    UpdatePackageLogWithError(logData, GetCompositionConnectionsBetweenTwoConcepts.name, error);
+    UpdatePackageLogWithError(logData, 'GetCompositionConnectionsBetweenTwoConcepts', error);
   }
   return connectionList;
 }

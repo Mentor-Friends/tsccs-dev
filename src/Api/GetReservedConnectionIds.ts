@@ -31,6 +31,6 @@ export async function GetReservedConnectionIds(){
           console.log('get reserved connection ids  unexpected error: ', error);
         }
         HandleInternalError(error,BaseUrl.GetReservedConnectionIdUrl() );
-        UpdatePackageLogWithError(logData, GetReservedConnectionIds.name, error);
+        UpdatePackageLogWithError(logData, 'GetReservedConnectionIds', error);
       }
 }

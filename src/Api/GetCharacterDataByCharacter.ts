@@ -30,6 +30,6 @@ export async function GetCharacterByCharacter(characterValue: string){
           console.log('unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetCharacterByCharacterUrl());
-        UpdatePackageLogWithError(logData, GetCharacterByCharacter.name, error);
+        UpdatePackageLogWithError(logData, 'GetCharacterByCharacter', error);
       }
 }

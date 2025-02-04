@@ -36,7 +36,7 @@ export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
         } else {
           console.log(' Create the connection unexpected error: ', error);
         }
-        UpdatePackageLogWithError(logData, CreateTheGhostConnectionApi.name, error);
+        UpdatePackageLogWithError(logData, 'CreateTheGhostConnectionApi', error);
         throw error;
       }
 }

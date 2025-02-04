@@ -67,7 +67,7 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
 
   } catch (error) {
     console.log(error)
-    UpdatePackageLogWithError(logData, CreateTheGhostConceptApi.name, error);
+    UpdatePackageLogWithError(logData, 'CreateTheGhostConceptApi', error);
     throw error
   }
     

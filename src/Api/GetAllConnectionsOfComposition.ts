@@ -61,6 +61,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
         console.log('Get all connection of composition error : ', error);
       }
       HandleInternalError(error, BaseUrl.GetAllConnectionsOfCompositionUrl());
-      UpdatePackageLogWithError(logData, GetAllConnectionsOfCompositionOnline.name, error);
+      UpdatePackageLogWithError(logData, 'GetAllConnectionsOfCompositionOnline', error);
     }
 }

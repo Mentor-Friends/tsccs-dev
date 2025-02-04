@@ -44,6 +44,6 @@ export async function GetConnection(id: number){
           console.log('Get Connection unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConnectionUrl());
-        UpdatePackageLogWithError(logData, GetConnection.name, error);
+        UpdatePackageLogWithError(logData, 'GetConnection', error);
       }
 }

@@ -53,7 +53,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
       console.error("Why didn't you allow my web app to use IndexedDB?!", event);
       indexedDB.deleteDatabase(dbName);
       openDatabase(databaseName);
-      UpdatePackageLogWithError(logData, openDatabase.name, event);
+      UpdatePackageLogWithError(logData, 'openDatabase', event);
       reject(event);
   };
 
@@ -145,7 +145,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "data": event,
             "body": object
           };
-          UpdatePackageLogWithError(logData, storeToDatabase.name, errorObject);
+          UpdatePackageLogWithError(logData, 'storeToDatabase', errorObject);
           reject(errorObject);
         }
       }
@@ -156,7 +156,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
         "message":"Cannot store to the database because you cannot open the database",
         "data": event
       };
-      UpdatePackageLogWithError(logData, storeToDatabase.name, errorObject);
+      UpdatePackageLogWithError(logData, 'storeToDatabase', errorObject);
       reject(errorObject);
     });
   });
@@ -189,7 +189,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
         "data": event,
         "body": object
       };
-      UpdatePackageLogWithError(logData, UpdateToDatabase.name, errorObject);
+      UpdatePackageLogWithError(logData, 'UpdateToDatabase', errorObject);
       reject(errorObject);
      }
   }).catch((event)=>{
@@ -199,7 +199,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
       "message":"Cannot update to database because you cannot open the database",
       "data": event
     };
-    UpdatePackageLogWithError(logData, UpdateToDatabase.name, errorObject);
+    UpdatePackageLogWithError(logData, 'UpdateToDatabase', errorObject);
     reject(errorObject);
   });
   });
@@ -232,7 +232,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             resolve(settingsData); 
           }
           allobjects.onerror = (event) =>{
-            UpdatePackageLogWithError(logData, GetLastSettingsFromDatabase.name, event);
+            UpdatePackageLogWithError(logData, 'GetLastSettingsFromDatabase', event);
             reject(event);
           }
         }).catch((event)=>{
@@ -242,7 +242,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "message":"Cannot get last object from database because you cannot open the database",
             "data": event
           };
-            UpdatePackageLogWithError(logData, GetLastSettingsFromDatabase.name, errorObject);
+            UpdatePackageLogWithError(logData, 'GetLastSettingsFromDatabase', errorObject);
             reject(errorObject);
         });
       });
@@ -275,7 +275,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "data": event,
             "body": object
           };
-          UpdatePackageLogWithError(logData, AiUpdateFlag.name, errorObject);
+          UpdatePackageLogWithError(logData, 'AiUpdateFlag', errorObject);
           reject(errorObject);
         }
         })
@@ -286,7 +286,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "message":"Cannot update AI flag because you cannot open the database",
             "data": event
           };
-          UpdatePackageLogWithError(logData, AiUpdateFlag.name, errorObject);
+          UpdatePackageLogWithError(logData, 'AiUpdateFlag', errorObject);
           reject(errorObject);
       });
     });
@@ -329,7 +329,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
           "message":"Cannot get objects from the database because you cannot open the database",
           "data": event
         };
-        UpdatePackageLogWithError(logData, getObjectsFromIndexDb.name, errorObject);
+        UpdatePackageLogWithError(logData, 'getObjectsFromIndexDb', errorObject);
         reject(errorObject);
     });
 
@@ -362,7 +362,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "message":"Cannot remove from the database" + databaseName,
             "data": event
           };
-          UpdatePackageLogWithError(logData, removeFromDatabase.name, errorObject);
+          UpdatePackageLogWithError(logData, 'removeFromDatabase', errorObject);
           reject(errorObject);
         }
 
@@ -375,7 +375,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "body": id
 
           };
-          UpdatePackageLogWithError(logData, removeFromDatabase.name, errorObject);
+          UpdatePackageLogWithError(logData, 'removeFromDatabase', errorObject);
           reject(errorObject);
       });
     });

@@ -40,6 +40,6 @@ export async function LoginToBackend(email:string, password:string){
           console.log(' Login tsccs  unexpected error: ', error);
         }
        HandleInternalError(error,BaseUrl.LoginUrl() );
-       UpdatePackageLogWithError(logData, LoginToBackend.name, error);
+       UpdatePackageLogWithError(logData, 'LoginToBackend', error);
       }
 }

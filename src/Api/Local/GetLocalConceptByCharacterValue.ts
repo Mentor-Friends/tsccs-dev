@@ -37,7 +37,7 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
         } else {
           console.log('Error in Getting Local concept by character value unexpected error: ', error);
         }
-        UpdatePackageLogWithError(logData, GetLocalConceptByCharacterValue.name, error);
+        UpdatePackageLogWithError(logData, 'GetLocalConceptByCharacterValue', error);
         throw result;
       }
 }

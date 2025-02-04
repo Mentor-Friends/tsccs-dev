@@ -1,4 +1,5 @@
-import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
+import { BuilderStatefulWidget, BuildWidgetFromId, Concept, GetRelation, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
+import { GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
       const widgets = await GetRelation(pageId, "the_page_body");
@@ -26,7 +27,9 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
   
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
-        const widgetTree = await getWidgetFromId(widgetId);
+        const bulkWidget = await BuildWidgetFromId(widgetId);
+        console.log("this is the bulk widget", bulkWidget);
+        const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
         if (!widgetTree.name) {
           attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
           return 
@@ -63,6 +66,15 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
         console.error("Error Caught Rendering Widget");
       }
     }
+
+      export async function getWidgetFromId(widgetId: number,
+        visitedWidgets: number[] = [],
+        token: string = ""){
+        const bulkWidget = await BuildWidgetFromId(widgetId);
+        console.log("this is the bulk widget", bulkWidget);
+        const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
+        return widgetTree;
+      }
   
     /**
      * This function builds a widget tree. This tree is built fully along with its children
@@ -71,66 +83,152 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
      * @param widgetId the id of the widget
      * @returns WidgetTree.
      */
-    async function getWidgetFromId(
+    // async function getWidgetFromId(
+    //   widgetId: number,
+    //   visitedWidgets: number[] = [],
+    //   token: string = ""
+    // ) {
+    //   try {
+    //     const widgetNode = new WidgetTree();
+    //     const output: any = await getWidgetCodeFromId(widgetId, token);
+    //     visitedWidgets.push(widgetId);
+  
+    //     const widgetInfo = output?.data?.the_widget;
+    //     widgetNode.name = widgetInfo?.the_widget_name?.[0]?.data?.the_name;
+    //     widgetNode.html = widgetInfo?.the_widget_html?.[0]?.data?.the_html;
+    //     widgetNode.css = widgetInfo?.the_widget_css?.[0]?.data?.the_css;
+    //     widgetNode.js = widgetInfo?.the_widget_js?.[0]?.data?.the_js;
+    //     widgetNode.origin = Number(
+    //       widgetInfo?.the_widget_origin?.[0]?.data?.the_originid
+    //     );
+    //     widgetNode.version =
+    //       widgetInfo?.the_widget_version?.[0]?.data?.the_version;
+    //     widgetNode.clean = widgetInfo?.the_widget_clean?.[0]?.data?.the_clean;
+    //     widgetNode.timestamp =
+    //       widgetInfo?.the_widget_timestamp?.[0]?.data?.the_timestamp;
+    //     widgetNode.id = output.id;
+    //     const widgetTypeValue = widgetInfo?.the_widget_type?.[0]?.data?.the_type;
+    //     if (widgetTypeValue == "null" || widgetTypeValue == null) {
+    //       widgetNode.type = "the_element_name";
+    //     } else {
+    //       widgetNode.type = widgetTypeValue;
+    //     }
+    //     widgetNode.after_render =
+    //       widgetInfo?.the_widget_after_render?.[0]?.data?.the_after_render;
+  
+    //     widgetNode.before_render =
+    //       widgetInfo?.the_widget_before_render?.[0]?.data?.the_before_render;
+  
+    //     widgetNode.update = widgetInfo?.the_widget_update?.[0]?.data?.the_update;
+    //     widgetNode.widgetId = widgetId;
+    //     widgetNode.mount_child =
+    //       widgetInfo?.the_widget_mount_child?.[0]?.data?.the_mount_child;
+    //     const childWidgets = widgetInfo?.the_widget_s_child;
+    //     // if there are children present in the widget then convert the children to widget and put it inside of the tree.
+    //     if (childWidgets?.length) {
+    //       for (let i = 0; i < childWidgets.length; i++) {
+    //         const childWidgetId =
+    //           childWidgets[i]?.data.the_child_widget?.the_child_widget_info?.[0]
+    //             ?.id ||
+    //           childWidgets[i]?.data.the_child_widget?.the_child_widget_parent?.[0]
+    //             ?.data?.the_parent;
+    //         const childWidget: WidgetTree = await getWidgetFromId(
+    //           childWidgetId,
+    //           visitedWidgets,
+    //           token
+    //         );
+    //         const childWidgetTypeValue =
+    //           childWidgets[i]?.data?.the_child_widget?.the_child_widget_type?.[0]
+    //             ?.data?.the_type;
+    //         const childWidgetWrapperId =
+    //           childWidgets[i]?.data?.the_child_widget
+    //             ?.the_child_widget_wrapper?.[0]?.data?.the_wrapper;
+    //         if (childWidgetTypeValue == "null" || childWidgetTypeValue == null) {
+    //           childWidget.type = "the_element_name";
+    //         } else {
+    //           childWidget.type = childWidgetTypeValue;
+    //         }
+    //         childWidget.wrapper = childWidgetWrapperId;
+    //         widgetNode.children.push(childWidget);
+    //       }
+    //     }
+    //     return widgetNode;
+    //   } catch (ex) {
+    //     console.error("error", ex);
+    //     throw ex;
+    //   }
+    // }
+
+
+    export async function getWidgetBulkFromId(
       widgetId: number,
       visitedWidgets: number[] = [],
+      bulkWidget:any,
       token: string = ""
     ) {
       try {
         const widgetNode = new WidgetTree();
-        const output: any = await getWidgetCodeFromId(widgetId, token);
+        const output = GetWidgetForTree(bulkWidget, widgetId);
+        console.log("this is the output", output);
+        //const output: any = await getWidgetCodeFromId(widgetId, token);
         visitedWidgets.push(widgetId);
   
         const widgetInfo = output?.data?.the_widget;
-        widgetNode.name = widgetInfo?.the_widget_name?.[0]?.data?.the_name;
-        widgetNode.html = widgetInfo?.the_widget_html?.[0]?.data?.the_html;
-        widgetNode.css = widgetInfo?.the_widget_css?.[0]?.data?.the_css;
-        widgetNode.js = widgetInfo?.the_widget_js?.[0]?.data?.the_js;
+        widgetNode.name = widgetInfo?.the_widget_name?.data?.the_name;
+
+        widgetNode.html = widgetInfo?.the_widget_html?.data?.the_html;
+        widgetNode.css = widgetInfo?.the_widget_css?.data?.the_css;
+        widgetNode.js = widgetInfo?.the_widget_js?.data?.the_js;
         widgetNode.origin = Number(
-          widgetInfo?.the_widget_origin?.[0]?.data?.the_originid
+          widgetInfo?.the_widget_origin?.data?.the_originid
         );
         widgetNode.version =
-          widgetInfo?.the_widget_version?.[0]?.data?.the_version;
-        widgetNode.clean = widgetInfo?.the_widget_clean?.[0]?.data?.the_clean;
+          widgetInfo?.the_widget_version?.data?.the_version;
+        widgetNode.clean = widgetInfo?.the_widget_clean?.data?.the_clean;
         widgetNode.timestamp =
-          widgetInfo?.the_widget_timestamp?.[0]?.data?.the_timestamp;
+          widgetInfo?.the_widget_timestamp?.data?.the_timestamp;
         widgetNode.id = output.id;
-        const widgetTypeValue = widgetInfo?.the_widget_type?.[0]?.data?.the_type;
+        const widgetTypeValue = widgetInfo?.the_widget_type?.data?.the_type;
         if (widgetTypeValue == "null" || widgetTypeValue == null) {
           widgetNode.type = "the_element_name";
         } else {
           widgetNode.type = widgetTypeValue;
         }
         widgetNode.after_render =
-          widgetInfo?.the_widget_after_render?.[0]?.data?.the_after_render;
+          widgetInfo?.the_widget_after_render?.data?.the_after_render;
   
         widgetNode.before_render =
-          widgetInfo?.the_widget_before_render?.[0]?.data?.the_before_render;
+          widgetInfo?.the_widget_before_render?.data?.the_before_render;
   
-        widgetNode.update = widgetInfo?.the_widget_update?.[0]?.data?.the_update;
+        widgetNode.update = widgetInfo?.the_widget_update?.data?.the_update;
         widgetNode.widgetId = widgetId;
         widgetNode.mount_child =
-          widgetInfo?.the_widget_mount_child?.[0]?.data?.the_mount_child;
+          widgetInfo?.the_widget_mount_child?.data?.the_mount_child;
         const childWidgets = widgetInfo?.the_widget_s_child;
+        console.log("widget info", widgetNode);
+
         // if there are children present in the widget then convert the children to widget and put it inside of the tree.
         if (childWidgets?.length) {
           for (let i = 0; i < childWidgets.length; i++) {
             const childWidgetId =
-              childWidgets[i]?.data.the_child_widget?.the_child_widget_info?.[0]
+              childWidgets[i]?.data.the_child_widget?.the_child_widget_info
                 ?.id ||
-              childWidgets[i]?.data.the_child_widget?.the_child_widget_parent?.[0]
+              childWidgets[i]?.data.the_child_widget?.the_child_widget_parent
                 ?.data?.the_parent;
-            const childWidget: WidgetTree = await getWidgetFromId(
+                console.log("this is the child Widget", childWidgetId);
+            const childWidget: WidgetTree = await getWidgetBulkFromId(
               childWidgetId,
               visitedWidgets,
+              bulkWidget,
               token
             );
+            console.log("this is the child Widget", childWidget);
             const childWidgetTypeValue =
-              childWidgets[i]?.data?.the_child_widget?.the_child_widget_type?.[0]
+              childWidgets[i]?.data?.the_child_widget?.the_child_widget_type
                 ?.data?.the_type;
             const childWidgetWrapperId =
               childWidgets[i]?.data?.the_child_widget
-                ?.the_child_widget_wrapper?.[0]?.data?.the_wrapper;
+                ?.the_child_widget_wrapper?.data?.the_wrapper;
             if (childWidgetTypeValue == "null" || childWidgetTypeValue == null) {
               childWidget.type = "the_element_name";
             } else {
@@ -158,7 +256,8 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
       tree: WidgetTree,
       parentElement: HTMLElement,
       isMain: boolean = true,
-      props?: any
+      props?: any,
+      state?:any
     ) {
       const newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
       newWidget.html = tree.html;
@@ -166,6 +265,7 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
       newWidget.componentDidMountFunction = tree.before_render;
       newWidget.addEventFunction = tree.after_render;
       newWidget.mountChildWidgetsFunction = tree.mount_child;
+      newWidget.widgetState = {...state};
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
       parentElement.innerHTML = "";
@@ -189,13 +289,16 @@ import { BuilderStatefulWidget, Concept, GetRelation, SearchLinkMultipleAll, Sea
                   const childWidget = await convertWidgetTreeToWidget(
                     clearedChildWidget,
                     widgetElement,
-                    isMain
+                    isMain,
+                    newWidget.data,
+                    newWidget.widgetState
                   );
                   newWidget.childWidgets.push(childWidget);
                   // newWidget.css =
                   //   newWidget.css +
                   //   `div[data-widgetid="${child.id}"] { ${child.css} }`;
-                  newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                  // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                  newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
                   childWidget.dataChange((value: Concept) => {
                     console.log("This is the data change in child", value);
                     const type = value?.type?.characterValue;
@@ -254,7 +357,8 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
                           const clearedChildWidget = clearDraggedWidget(child);
                           const childWidget =  await convertWidgetTreeToWidget(clearedChildWidget, widgetElement, isMain, newWidget.widgetState);
                           newWidget.childWidgets.push(childWidget);
-                          newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                          // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
+                          newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
                           childWidget.dataChange((value: Concept) => {
                               console.log("This is the data change in child", value);
                               let type = value?.type?.characterValue;
@@ -316,7 +420,8 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
         throw error;
       }
     }
-  
+
+
     function clearDraggedWidget(widgetTree: WidgetTree): WidgetTree {
       widgetTree.html = widgetTree.html.replace(
         /<[^>]*\bclass=["'][^"']*\bwidget_container\b[^"']*["'][^>]*>/g,

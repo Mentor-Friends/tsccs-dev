@@ -31,6 +31,6 @@ export async function GetReservedIds(){
           console.log('get reserved ids  unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetReservedIdUrl());
-        UpdatePackageLogWithError(logData, GetReservedIds.name, error);
+        UpdatePackageLogWithError(logData, 'GetReservedIds', error);
       }
 }

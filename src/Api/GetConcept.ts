@@ -66,6 +66,6 @@ export async function GetConcept(id: number){
           console.log('Get the concept unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptUrl());
-        UpdatePackageLogWithError(logData, GetConcept.name, error);
+        UpdatePackageLogWithError(logData, 'GetConcept', error);
       }
 }

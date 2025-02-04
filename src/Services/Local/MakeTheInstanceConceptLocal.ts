@@ -118,7 +118,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
                 "UnknownUserAgent",
                 []
             );
-            UpdatePackageLogWithError(logData, MakeTheInstanceConceptLocal.name, error);
+            UpdatePackageLogWithError(logData, 'MakeTheInstanceConceptLocal', error);
             throw error;
         }
 

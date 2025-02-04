@@ -235,7 +235,7 @@ export class ConnectionData {
     }
     catch(error){
       console.log("this is the error GetConnectionsOfCompositionLocal", id, connections)
-      UpdatePackageLogWithError(logData, this.GetConnectionsOfCompositionLocal.name, error);
+      UpdatePackageLogWithError(logData, 'ConnectionData.GetConnectionsOfCompositionLocal', error);
     }
     return connections;
 

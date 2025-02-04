@@ -33,6 +33,6 @@ export async function GetAllUserConcepts(userId: number){
           console.log('GetAllUserConcepts unexpected error: ', error);
         }
         HandleInternalError(error,BaseUrl.GetAllConceptsOfUserUrl());
-        UpdatePackageLogWithError(logData, GetAllUserConcepts.name, error)
+        UpdatePackageLogWithError(logData, 'GetAllUserConcepts', error)
       }
 }

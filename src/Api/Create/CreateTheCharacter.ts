@@ -44,7 +44,7 @@ export async function CreateTheCharacter(characterData: TheCharacter){
         } else {
           console.log('create the character unexpected error: ', error);
         }
-        UpdatePackageLogWithError(logData, CreateTheCharacter.name, error);
+        UpdatePackageLogWithError(logData, 'CreateTheCharacter', error);
         throw error;
       }
 }

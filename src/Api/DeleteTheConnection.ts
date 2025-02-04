@@ -30,6 +30,6 @@ export default async function DeleteTheConnection(id:number){
           console.log('Delete connection unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.DeleteTheConnectionUrl());
-        UpdatePackageLogWithError(logData, DeleteTheConnection.name, error)  // handle function package error
+        UpdatePackageLogWithError(logData, 'DeleteTheConnection', error)  // handle function package error
       }
 }

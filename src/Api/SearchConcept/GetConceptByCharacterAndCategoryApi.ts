@@ -38,6 +38,6 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
           console.log(' This is the concept by category and character unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptByCharacterAndCategoryUrl());
-        UpdatePackageLogWithError(logData, GetConceptByCharacterAndCategoryApi.name, error);
+        UpdatePackageLogWithError(logData, 'GetConceptByCharacterAndCategoryApi', error);
       }
 }

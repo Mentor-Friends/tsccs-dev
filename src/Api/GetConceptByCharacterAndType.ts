@@ -54,6 +54,6 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           console.log(' This is the concept by type and character unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptByCharacterAndTypeUrl());
-        UpdatePackageLogWithError(logData, GetConceptByCharacterAndType.name, error);
+        UpdatePackageLogWithError(logData, 'GetConceptByCharacterAndType', error);
       }
 }

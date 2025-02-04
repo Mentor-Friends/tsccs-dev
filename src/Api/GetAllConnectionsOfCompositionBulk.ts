@@ -67,6 +67,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_ids: numb
         console.log('Get all connections of composition bulk unexpected error: ', error);
       }
       HandleInternalError(error,BaseUrl.GetAllConnectionsOfCompositionBulkUrl() );
-      UpdatePackageLogWithError(logData, GetAllConnectionsOfCompositionOnline.name, error )
+      UpdatePackageLogWithError(logData, 'GetAllConnectionsOfCompositionOnline', error )
     }
 }

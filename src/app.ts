@@ -140,8 +140,9 @@ export {WidgetTree} from './Widgets/WidgetTree';
 export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
+export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 
-export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, convertWidgetTreeToWidget, unwrapContainers} from './Widgets/RenderWidgetService';
+export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 type listeners = {
   listenerId: string | number
@@ -695,8 +696,6 @@ function initializeFlags(flags: any) {
       // return true;
     }
 
-    console.log("I am updating initialize flags.", updateLog)
-
     // update the existing log
     Logger.logUpdate(updateLog)
     
@@ -704,7 +703,7 @@ function initializeFlags(flags: any) {
     
     return flags
   } catch (error) {
-    UpdatePackageLogWithError(updateLog, initializeFlags.name, error);
+    UpdatePackageLogWithError(updateLog, 'initializeFlags', error);
     throw error;
   }
 }
@@ -820,7 +819,7 @@ async function handleRegisterServiceWorker(enableSW: any) {
         await initConceptConnection();
         reject(error);
         console.error("Service Worker registration failed:", error);
-        UpdatePackageLogWithError(logData, handleRegisterServiceWorker.name, error)
+        UpdatePackageLogWithError(logData, 'handleRegisterServiceWorker', error)
       });
   })
 }

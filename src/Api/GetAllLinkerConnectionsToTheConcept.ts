@@ -35,7 +35,7 @@ export async function GetAllLinkerConnectionsToTheConcept(conceptId:number){
         console.log('Get all linker connection To the concepts error(Unexpected): ', error);
       }
       HandleInternalError(error,BaseUrl.GetAllLinkerConnectionToConceptUrl() );
-      UpdatePackageLogWithError(logData, GetAllLinkerConnectionsToTheConcept.name, error)
+      UpdatePackageLogWithError(logData, 'GetAllLinkerConnectionsToTheConcept', error)
     }
 
     return connections;

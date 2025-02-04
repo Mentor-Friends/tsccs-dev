@@ -37,6 +37,6 @@ catch (error) {
       console.log('Get all prefetch connections unexpected error: ', error);
     }
     HandleInternalError(error, BaseUrl.GetAllPrefetchConnectionsUrl());
-    UpdatePackageLogWithError(logData, GetAllPrefetchConnections.name, error);
+    UpdatePackageLogWithError(logData, 'GetAllPrefetchConnections', error);
   }
 }

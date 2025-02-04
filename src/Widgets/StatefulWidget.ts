@@ -142,9 +142,8 @@ export class StatefulWidget extends BaseWidget{
      */
     async mount(parent: HTMLElement) {
       if(parent){
-        // create a div to wrap everything inside of it.
+        // create a div to wrap everything inside of it. 
         this.element = document.createElement("div");
-
         // assign an identifier to the element so that it does not conflict with others.
         this.element.id = this.createWidgetWrapperIdentifier();
 
@@ -158,7 +157,7 @@ export class StatefulWidget extends BaseWidget{
         this.parentElement = parent.id;
 
         // if the widget has not been mounted.
-        if(this.widgetMounted == false){
+        // if(this.widgetMounted == false){
 
           // then after the widget has been mounted for the first time call this function
           // user can update this function as per their requirement 
@@ -171,14 +170,13 @@ export class StatefulWidget extends BaseWidget{
   
           // after the widget has been mounted for the first time then the widget has been updated.
           this.widgetMounted = true;
-        }
-        else{
+        // }
+        // else{
 
           // if the widget has already been mounted before then only render the new widget
-          this.render();
-        }
+          // this.render();
+        // }
       }
-
     }
 
   
@@ -200,9 +198,24 @@ export class StatefulWidget extends BaseWidget{
     /**
      * render child widgets
      */
+    // renderChildWidgets(){
+    //   this.childWidgets?.forEach((child: StatefulWidget) => {
+    //     child.render();
+    //   });
+    // }
+
     renderChildWidgets(){
-      this.childWidgets?.forEach((child: StatefulWidget) => {
-        child.render();
+
+      function renderChildWidgetRecursive(childWidget: StatefulWidget) {
+        if (!childWidget) return
+        childWidget.childWidgets?.forEach((child: StatefulWidget) => {
+          renderChildWidgetRecursive(child);
+        });
+        childWidget.render();
+      }
+
+      this.childWidgets.forEach((child: StatefulWidget) => {
+        renderChildWidgetRecursive(child);
       });
     }
 

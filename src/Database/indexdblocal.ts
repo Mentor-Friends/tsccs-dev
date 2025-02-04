@@ -46,7 +46,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         console.error("Why didn't you allow my web app to use IndexedDB?!",event);
         indexedDB.deleteDatabase(localDbName);
         openDatabase(databaseName);
-        UpdatePackageLogWithError(logData, openDatabase.name, event);
+        UpdatePackageLogWithError(logData, 'openDatabase', event);
         reject(event);
     };
   
@@ -175,7 +175,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         "message":"Cannot get objects from database because you cannot open the Local database",
         "data": event
       };
-      UpdatePackageLogWithError(logData, getObjectsFromLocalIndexDb.name, errorObject)
+      UpdatePackageLogWithError(logData, 'getObjectsFromLocalIndexDb', errorObject)
       reject(errorObject);
       
     });
@@ -210,7 +210,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
           "data": event,
           "body": object
         };
-        UpdatePackageLogWithError(logData, storeToDatabase.name, errorObject);
+        UpdatePackageLogWithError(logData, 'storeToDatabase', errorObject);
         reject(errorObject);
       }
      }).catch((event)=>{
@@ -220,7 +220,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         "message":"Cannot store to database because you cannot open the Local database",
         "data": event
       };
-      UpdatePackageLogWithError(logData, storeToDatabase.name, errorObject);
+      UpdatePackageLogWithError(logData, 'storeToDatabase', errorObject);
       reject(errorObject);
     });
     });
@@ -252,7 +252,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
           "data": event,
           "body": object
         };
-        UpdatePackageLogWithError(logData, UpdateToDatabase.name, errorObject);
+        UpdatePackageLogWithError(logData, 'UpdateToDatabase', errorObject);
         reject(errorObject);
        }
     }).catch((event)=>{
@@ -262,7 +262,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         "message":"Cannot update to database because you cannot open the Local database",
         "data": event
       };
-      UpdatePackageLogWithError(logData, UpdateToDatabase.name, errorObject);
+      UpdatePackageLogWithError(logData, 'UpdateToDatabase', errorObject);
       reject(errorObject);
     });
     });
@@ -322,7 +322,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
           "data": event,
           "body": id
         };
-        UpdatePackageLogWithError(logData, removeFromDatabase.name, errorObject);
+        UpdatePackageLogWithError(logData, 'removeFromDatabase', errorObject);
         reject(errorObject);
       }
     }).catch((event)=>{
@@ -332,7 +332,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         "message":"Cannot remove object from database because you cannot open the Local database",
         "data": event
       };
-      UpdatePackageLogWithError(logData, removeFromDatabase.name, errorObject);
+      UpdatePackageLogWithError(logData, 'removeFromDatabase', errorObject);
       reject(errorObject);
     });
   });

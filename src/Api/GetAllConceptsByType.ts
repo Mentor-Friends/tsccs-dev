@@ -37,6 +37,6 @@ export async function GetAllConceptsByType(type:string,userId: number){
           console.log('GetAllConceptsByType unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetAllConceptsByTypeUrl());
-        UpdatePackageLogWithError(logData, GetAllConceptsByType.name, error);
+        UpdatePackageLogWithError(logData, 'GetAllConceptsByType', error);
       }
 }

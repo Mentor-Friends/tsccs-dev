@@ -33,6 +33,6 @@ export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string="
     catch(ex:any){
         console.log("This is the freeschema query error others", ex);
         HandleInternalError(ex, queryUrl);
-        UpdatePackageLogWithError(logData, FreeschemaQueryApi.name, ex);
+        UpdatePackageLogWithError(logData, 'FreeschemaQueryApi', ex);
     }
 }

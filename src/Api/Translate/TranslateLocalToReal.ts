@@ -37,7 +37,7 @@ export async function TranslateLocalToReal(conceptId: number){
           console.log('Error in Getting Translating concept unexpected error: ', error);
         }
         HandleInternalError(error,BaseUrl.GetRealConceptById() );
-        UpdatePackageLogWithError(logData, TranslateLocalToReal.name, error);
+        UpdatePackageLogWithError(logData, 'TranslateLocalToReal', error);
       }
 
       return result;

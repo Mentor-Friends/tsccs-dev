@@ -1,6 +1,7 @@
 import { Actions } from ".";
 import { RecursiveSearchApi, RecursiveSearchApiNewRawFullLinker, RecursiveSearchApiRaw, RecursiveSearchApiRawFullLinker, RecursiveSearchApiWithInternalConnections, SearchLinkMultipleAll } from "../../app";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../../Services/Search/SearchWithTypeAndLinker";
+import { BuildWidgetFromId } from "../../Widgets/WidgetBuild";
 
 export const searchActions: Actions = {
     SearchLinkMultipleAll: async (payload: any) => {
@@ -73,6 +74,11 @@ export const searchActions: Actions = {
             payload.linkers,payload.conceptIds,payload.mainCompositionIds,payload.reverse,payload.countInfos
         )
         return { success: true, data }
+    },
+
+    BuildWidgetFromId: async (payload: any) => {
+        const data = await BuildWidgetFromId(payload.id)
+        return { success:true, data};
     },
     
 }

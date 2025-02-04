@@ -32,6 +32,6 @@ export async function CreateTheConceptApi(conceptData: any){
           console.log('Create the concept api unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.CreateTheConceptUrl());
-        UpdatePackageLogWithError(logData, CreateTheConceptApi.name, error);
+        UpdatePackageLogWithError(logData, 'CreateTheConceptApi', error);
       }
 }

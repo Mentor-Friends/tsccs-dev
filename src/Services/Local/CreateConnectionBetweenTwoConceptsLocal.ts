@@ -64,7 +64,7 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
             undefined,
             undefined
          )
-        UpdatePackageLogWithError(logData, CreateConnectionBetweenTwoConceptsLocal.name, ex);
+        UpdatePackageLogWithError(logData, 'CreateConnectionBetweenTwoConceptsLocal', ex);
         throw ex;
     }
 

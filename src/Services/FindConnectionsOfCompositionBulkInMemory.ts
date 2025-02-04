@@ -25,7 +25,7 @@ export async function FindConnectionsOfCompositionsBulkInMemory(composition_ids:
     return FinalConnectionList;
   } catch (error) {
       console.error('FindConnectionsOfCompositionsBulkInMemory error: ', error)
-      UpdatePackageLogWithError(logData, FindConnectionsOfCompositionsBulkInMemory.name, error);
+      UpdatePackageLogWithError(logData, 'FindConnectionsOfCompositionsBulkInMemory', error);
       return FinalConnectionList;
   } 
 }

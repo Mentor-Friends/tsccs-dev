@@ -35,6 +35,6 @@ export  async function DeleteUserInBackend(
         console.log('Delete composition unexpected error: ', error)
       }
       HandleInternalError(error, BaseUrl.DeleteConceptUrl());
-      UpdatePackageLogWithError(logData, DeleteUserInBackend.name, error);
+      UpdatePackageLogWithError(logData, 'DeleteUserInBackend', error);
     }
   }

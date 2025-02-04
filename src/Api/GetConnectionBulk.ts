@@ -85,7 +85,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
           console.log('Get Connection Bulk unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConnectionBulkUrl());
-        UpdatePackageLogWithError(logData, GetConnectionBulk.name, error);
+        UpdatePackageLogWithError(logData, 'GetConnectionBulk', error);
       }
       await FindConceptsFromConnections(connectionList);
 

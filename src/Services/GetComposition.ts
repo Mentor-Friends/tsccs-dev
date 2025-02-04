@@ -303,7 +303,7 @@ export async function GetCompositionWithIdFromMemory(id:number){
    }
    catch(error){
     console.log("this is the exception in GetCompositionWithIdFromMemory", id);
-    UpdatePackageLogWithError(logData, GetCompositionWithIdFromMemory.name, error);
+    UpdatePackageLogWithError(logData, 'GetCompositionWithIdFromMemory', error);
    }
    Logger.logUpdate(logData);
    return FinalReturn;

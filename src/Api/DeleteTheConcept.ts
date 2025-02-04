@@ -31,6 +31,6 @@ export default async function DeleteTheConcept(id:number){
           console.log('Delete concept unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.DeleteConceptUrl());
-        UpdatePackageLogWithError(logData, DeleteTheConcept.name, error)  // handle function package error
+        UpdatePackageLogWithError(logData, 'DeleteTheConcept', error)  // handle function package error
       }
 }

@@ -35,7 +35,7 @@ export async function GetConceptByCharacterValue(characterValue: string){
           console.log('Error in Getting concept by character value unexpected error: ', error);
         }
        HandleInternalError(error,BaseUrl.GetConceptByCharacterValueUrl() );
-       UpdatePackageLogWithError(logData, GetConceptByCharacterValue.name, error);
+       UpdatePackageLogWithError(logData, 'GetConceptByCharacterValue', error);
       }
       return result;
 

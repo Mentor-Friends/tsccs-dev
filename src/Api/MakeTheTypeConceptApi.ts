@@ -48,7 +48,7 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
           console.log('Make The Type Concept Api error : ', error);
         }
         HandleInternalError(error, BaseUrl.MakeTheTypeConceptUrl());
-        UpdatePackageLogWithError(logData, MakeTheTypeConceptApi.name, error);
+        UpdatePackageLogWithError(logData, 'MakeTheTypeConceptApi', error);
       }
 
       return concept;

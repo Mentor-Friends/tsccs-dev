@@ -34,7 +34,7 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
             "ok": false,
             "status": 400
         };
-        UpdatePackageLogWithError(logData, CreateLocalBinaryTreeFromIndexDb.name, error);
+        UpdatePackageLogWithError(logData, 'CreateLocalBinaryTreeFromIndexDb', error);
         throw errorObject;
     }
 
@@ -105,7 +105,7 @@ export async function PopulateTheLocalConceptsToMemory(){
             "ok": false,
             "status": 400
         };
-        UpdatePackageLogWithError(logData, PopulateTheLocalConceptsToMemory.name, error);
+        UpdatePackageLogWithError(logData, 'PopulateTheLocalConceptsToMemory', error);
         throw errorObject;
     }
 
@@ -167,7 +167,7 @@ export async function PopulateTheLocalConceptsToMemory(){
             "ok": false,
             "status": 400
         };
-        UpdatePackageLogWithError(logData, PopulateTheLocalConnectionToMemory.name, error);
+        UpdatePackageLogWithError(logData, "PopulateTheLocalConnectionToMemory", error);
         throw errorObject;
     }
 

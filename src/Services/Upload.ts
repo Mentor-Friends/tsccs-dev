@@ -47,7 +47,7 @@ export async function uploadAttachment(
     return { message: "Upload Success", success: true, url: response.data };
   } catch (err) {
     console.error(err);
-    UpdatePackageLogWithError(logData, uploadAttachment.name, err);
+    UpdatePackageLogWithError(logData, 'uploadAttachment', err);
     throw err;
   }
 }
@@ -82,7 +82,7 @@ export async function uploadImage(body: FormData, token: string = "") {
     return await response.json();
   } catch (err) {
     console.error(err);
-    UpdatePackageLogWithError(logData, uploadImage.name, err);
+    UpdatePackageLogWithError(logData, 'uploadImage', err);
     return null;
   }
 }
@@ -117,7 +117,7 @@ export async function uploadFile(body: FormData, token: string = "") {
     return await response.json();
   } catch (err) {
     console.error(err);
-    UpdatePackageLogWithError(logData, uploadFile.name, err);
+    UpdatePackageLogWithError(logData, 'uploadFile', err);
     return null;
   }
 }

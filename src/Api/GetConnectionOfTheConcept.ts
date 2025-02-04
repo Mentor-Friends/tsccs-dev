@@ -50,6 +50,6 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
         console.log('Get connection of concept unexpected error: ', error);
       }
       HandleInternalError(error, BaseUrl.GetAllConnectionsOfConceptUrl());
-      UpdatePackageLogWithError(logData, GetConnectionOfTheConcept.name, error);
+      UpdatePackageLogWithError(logData, 'GetConnectionOfTheConcept', error);
     }
 }

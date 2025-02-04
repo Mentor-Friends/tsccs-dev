@@ -139,7 +139,7 @@ export class Validator {
 
             return errors
         } catch (error) {
-            UpdatePackageLogWithError(logData, this.validateField.name, error);
+            UpdatePackageLogWithError(logData, "Validator.validateField", error);
             throw error
         }
     }
@@ -177,7 +177,7 @@ export class Validator {
             Logger.logUpdate(logData);
             return validationErrors
         } catch(error){
-            UpdatePackageLogWithError(logData, this.validateForm.name, error);
+            UpdatePackageLogWithError(logData, "Validator.validateForm", error);
             throw error
         }
     }
@@ -234,7 +234,7 @@ export class Validator {
             return error;
     
         } catch(error) {
-            UpdatePackageLogWithError(logData, this.validate.name, error);
+            UpdatePackageLogWithError(logData, "Validator.validate", error);
         }
     
     }
