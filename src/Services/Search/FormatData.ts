@@ -103,7 +103,7 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
               isComp = true;
             }
             if(linkerConceptValue == ""){
-              linkerConceptValue = toTheConcept?.type?.characterValue;
+              linkerConceptValue = toTheConcept?.type?.characterValue ?? "";
             }
 
             try{
