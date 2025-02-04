@@ -22,7 +22,6 @@ export async function GetConcept(id: number){
                 headers:header,
                 body: `id=${id}`
             });
-            console.log('response', response)
             if(response.ok){
                 result = await response.json() as Concept;
                 if(result.id > 0){
