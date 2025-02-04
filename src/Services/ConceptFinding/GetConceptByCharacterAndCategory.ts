@@ -10,6 +10,8 @@ export async function GetConceptByCharacterAndCategory(character: string){
         concept.characterValue ="the";
         return concept;
     }
+    let characterLength = character.length;
+    console.log("this is the character length ", characterLength);
     var splittedStringArray = SplitStrings(character);
     if(splittedStringArray.length > 1){
         let category = 1;
@@ -18,6 +20,10 @@ export async function GetConceptByCharacterAndCategory(character: string){
             category = prefix.id;
         }
         concept = await GetConceptByCharacterAndCategoryFromMemory(character,category);
+    }
+    else if(splittedStringArray[0] == character && characterLength == 1){
+        concept = await GetConceptByCharacterSingle(character);
+
     }
     else if(splittedStringArray[0] == character){
         concept = await GetConceptByCharacter(character);
@@ -28,6 +34,16 @@ export async function GetConceptByCharacterAndCategory(character: string){
 
 export  async function GetConceptByCharacter(characterValue: string){
     var concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
+    if(concept.id == 0){
+       concept = await GetConceptByCharacterValue(characterValue);
+    }
+    return concept;
+}
+
+export  async function GetConceptByCharacterSingle(characterValue: string){
+    console.log("inside the character length function", characterValue);
+    var concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,49);
+    console.log("inside the character length function after", concept);
     if(concept.id == 0){
        concept = await GetConceptByCharacterValue(characterValue);
     }

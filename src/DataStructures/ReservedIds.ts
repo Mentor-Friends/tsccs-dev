@@ -5,11 +5,15 @@ export class ReservedIds{
     static  ids:number[] = [];
 
      static async getId(){
-        if(this.ids.length < 5){
+        let startTime = new Date().getTime();
+        if(this.ids.length < 10){
             var ids =  await GetReservedIds();
         }
         var id = this.ids[0];
         this.ids.shift();
+        var end = new Date().getTime();
+        var time = end - startTime;
+        console.log('Execution time for concept: ' + time);
         return id;
 
     }
@@ -24,11 +28,15 @@ export class ReservedIds{
 export class ReservedConnectionIds{
     static connectionIds: number[] = [];
     static async getId(){
-        if(this.connectionIds.length < 5){
+        let startTime = new Date().getTime();
+        if(this.connectionIds.length < 10){
             var connectionIds =  await GetReservedConnectionIds();
         }
         var id = this.connectionIds[0];
         this.connectionIds.shift();
+        var end = new Date().getTime();
+        var time = end - startTime;
+        console.log('Execution time for connection: ' + time);
         return id;
 
     }

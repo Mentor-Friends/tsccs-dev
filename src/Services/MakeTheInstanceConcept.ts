@@ -36,12 +36,17 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
             else{
                 stringToCheck = "the_" + type;
             }
+            let startTime = new Date().getTime();
+
             if(composition){
                let   typeConceptString = await MakeTheTypeConceptApi(type, userId);
                typeConcept = typeConceptString as Concept;
                let conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                 referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
                 concept = conceptString as Concept;
+                let end = new Date().getTime();
+                let time = end - startTime;
+                console.log('Execution time in type test for composition: ' + time + "--------" +  type);
             }
             else if(stringLength > 255){
 
@@ -56,6 +61,9 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                     Date.now().toString(),true);
 
                 CreateTextData(TheTextsData);
+                let end = new Date().getTime();
+                let time = end - startTime;
+                console.log('Execution time in type test for text: ' + time + "--------" +  type);
 
             }
             else{
@@ -74,6 +82,9 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                     MakeTheNameInBackend(concept.id, `${referent}`, typeConcept.id, userId);
 
                 }
+                let end = new Date().getTime();
+                let time = end - startTime;
+                console.log('Execution time in type test: ' + time + "--------" +  type);
             }
             // if(concept){
             //     if(concept.type == null){

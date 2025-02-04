@@ -86,6 +86,7 @@ import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {BaseUrl} from './DataStructures/BaseUrl';
+export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }

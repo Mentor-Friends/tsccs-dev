@@ -10,7 +10,7 @@ import { HandleHttpError } from "../Services/Common/ErrorPosting";
 // This function is used to check the type concpet of a passed string
 // if the text is "the_person" then the function finds the related concept
 export async function MakeTheTypeConceptApi(type:string, userId:number){
-
+  let startTime = new Date().getTime();
   // create  a default concept with all defaulting to zero
     let concept = CreateDefaultConcept();
     try{
@@ -18,6 +18,8 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
        // get the concept by character and category from the api
         concept = await GetConceptByCharacterAndCategory(type);
         if(concept.id == 0 || concept.typeId == 4){
+          
+          console.log("this is the concept that needs to be found", type, concept.typeId);
             var header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.MakeTheTypeConceptUrl(),{
               method: 'POST',
@@ -30,8 +32,14 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
             }
             let result = await response.json();
             concept = result as Concept;
-      
+            if(concept.id > 0){
+              ConceptsData.AddConcept(concept);
+            }
+
         }
+        var end = new Date().getTime();
+        var time = end - startTime;
+        console.log('Execution time: ' + time + "This is the type" + type + "----" + concept.typeId);
         return concept;
 
 

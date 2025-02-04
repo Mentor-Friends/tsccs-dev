@@ -7,3 +7,17 @@ export  function HandleHttpError(response: Response){
         throw errorResponse;
     }
 }
+
+export function HandleInternalError(error: any, url: string = ""){
+    if(error.status){
+        let errorResponse = new FreeSchemaResponse(error.message, false, error.status, error.stack);
+        errorResponse.setUrl(url);
+        throw errorResponse;
+    }
+    else{
+        let errorResponse = new FreeSchemaResponse(error.message, false, 500, error.stack);
+        errorResponse.setUrl(url);
+        throw errorResponse;
+    }
+    throw error;
+}

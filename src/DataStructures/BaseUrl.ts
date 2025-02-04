@@ -201,6 +201,12 @@ export class BaseUrl{
         return this.BASE_URL + '/api/delete_connection';
     }
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR FREESCHEMA QUERY //////////////////////
+    static FreeschemaQueryUrl(){
+        return this.BASE_URL + '/api/freeschema-query';
+    }
+
 
 
 
