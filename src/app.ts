@@ -202,13 +202,16 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {}
+  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
+  parameters: { logserver?:string} = {},
 ) {
   try {
     BaseUrl.BASE_URL = url;
     BaseUrl.AI_URL = aiurl;
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
+    BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
+    console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
     updateAccessToken(accessToken);
     //TokenStorage.BearerAccessToken = accessToken;
     let randomizer = Math.floor(Math.random() * 100000000);

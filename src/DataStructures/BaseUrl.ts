@@ -10,6 +10,8 @@ export class BaseUrl{
 
     static NODE_URL: string = "http://localhost:5001";
 
+    static LOG_SERVER:string = "https://logdev.freeschema.com";
+
     static MQTT_CONNECTION:any ;
 
     static BASE_APPLICATION = "";
@@ -113,7 +115,7 @@ export class BaseUrl{
     }
 
     static PostLogger(){
-        return this.NODE_URL + '/api/v1/logger/logs'
+        return this.LOG_SERVER + '/api/logger'
     }
 
     static GetAllPrefetchConnectionsUrl(){
