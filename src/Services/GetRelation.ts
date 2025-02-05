@@ -8,7 +8,7 @@ import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByC
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
-  Logger.logfunction("GetRelation",arguments);
+  const logData : any = Logger.logfunction("GetRelation",arguments);
   if (serviceWorker) {
     try {
       const res: any = await sendMessage('GetRelation', {id, relation, inpage, page})
@@ -37,11 +37,12 @@ export async function GetRelation(id:number, relation:string, inpage:number=10, 
         output.push(newComposition);
       }
     }
+    Logger.logUpdate(logData);
     return  output;
 }
 
 export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1){
-  Logger.logfunction("GetRelationRaw",arguments);
+  const logData : any = Logger.logfunction("GetRelationRaw",arguments);
   if (serviceWorker) {
     try {
       const res: any = await sendMessage('GetRelationRaw', {id, relation, inpage, page})
@@ -68,5 +69,6 @@ export async function GetRelationRaw(id:number, relation:string, inpage:number=1
       output.push(toConcept);
     }
   }
+  Logger.logUpdate(logData);
   return  output;
 }

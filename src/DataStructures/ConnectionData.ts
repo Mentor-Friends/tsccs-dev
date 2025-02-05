@@ -2,6 +2,7 @@ import { AccessTracker } from "../AccessTracker/accessTracker";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { removeFromDatabase, UpdateToDatabase } from "../Database/indexeddb";
 import { IndexDbUpdate } from "../Database/IndexUpdate";
+import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { Connection } from "./Connection";
 import { ConnectionBinaryTree } from "./ConnectionBinaryTree/ConnectionBinaryTree";
@@ -120,14 +121,16 @@ export class ConnectionData {
   }
 
   static GetConnectionByOfType(ofTheConceptId: number, typeId: number) {
-    Logger.logfunction("ConnectionData.GetConnectionByOfType", arguments);
+    const logData : any = Logger.logfunction("ConnectionData.GetConnectionByOfType", arguments);
     let connections = ConnectionTypeTree.GetConnectionByOfTheConceptAndTypeId(
       ofTheConceptId,
       typeId
     );
     if (connections) {
+      Logger.logUpdate(logData);
       return connections;
     }
+    Logger.logUpdate(logData);
     return [];
   }
 
@@ -204,7 +207,7 @@ export class ConnectionData {
 
   // commented
   static async GetConnectionsOfCompositionLocal(id: number) {
-    Logger.logfunction("ConnectionData.GetConnectionsOfCompositionLocal", arguments);
+    const logData : any = Logger.logfunction("ConnectionData.GetConnectionsOfCompositionLocal", arguments);
     let connections: Connection[] = [];
 
     try{    
@@ -227,10 +230,12 @@ export class ConnectionData {
         if (conn) {
           connections.push(conn.value);
         }
+        Logger.logUpdate(logData);
       }
     }
     catch(error){
       console.log("this is the error GetConnectionsOfCompositionLocal", id, connections)
+      UpdatePackageLogWithError(logData, 'ConnectionData.GetConnectionsOfCompositionLocal', error);
     }
     return connections;
 

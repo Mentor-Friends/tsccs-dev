@@ -4,7 +4,7 @@ import { Concept } from "../DataStructures/Concept";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { ConceptsData, GetConceptByCharacter, Logger } from "../app";
 import { GetConceptByCharacterAndCategory } from "../Services/ConceptFinding/GetConceptByCharacterAndCategory";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 
 
 /**
@@ -15,7 +15,7 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  * @returns the concept created.
  */
 export async function MakeTheTypeConceptApi(type:string, userId:number){
-  Logger.logfunction("MakeTheTypeConceptApi", arguments);
+  const logData : any = Logger.logfunction("MakeTheTypeConceptApi", arguments);
   // create  a default concept with all defaulting to zero
     let concept:Concept = CreateDefaultConcept();
     try{
@@ -35,10 +35,9 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
             }
             let result = await response.json();
             concept = result as Concept;
+            Logger.logUpdate(logData);
       
         }
-
-
 
 
       }
@@ -49,6 +48,7 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
           console.log('Make The Type Concept Api error : ', error);
         }
         HandleInternalError(error, BaseUrl.MakeTheTypeConceptUrl());
+        UpdatePackageLogWithError(logData, 'MakeTheTypeConceptApi', error);
       }
 
       return concept;

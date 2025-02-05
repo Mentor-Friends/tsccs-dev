@@ -116,13 +116,13 @@ import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
 export { Logger } from "./Middleware/logger.service";
 import { WidgetTree } from "./Widgets/WidgetTree";
-import { HandleHttpError, HandleInternalError } from "./Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "./Services/Common/ErrorPosting";
 import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 import { AccessTracker } from "./app";
 import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
-import { getCookie } from "./Middleware/logger.service";
+import { getCookie, LogData } from "./Middleware/logger.service";
 export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -628,7 +628,6 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
 }
 
 async function processMessageQueue() {
-  Logger.logfunction("processMessageQueue", arguments);
   console.log('message queue', messageQueue)
   // process init if exist in queue
   const initQueueItem = messageQueue.find(item => item?.message?.type == 'init')
@@ -669,7 +668,7 @@ export const handleServiceWorkerException = (error: any) => {
  * Function to setup initial flag
  */
 function initializeFlags(flags: any) {
-  Logger.logfunction("initializeFlags",arguments);
+  const updateLog:any = Logger.logfunction("initializeFlags",arguments);
   try {
     if (flags.logApplication) {
       ApplicationMonitor.initialize();
@@ -696,9 +695,15 @@ function initializeFlags(flags: any) {
       IdentifierFlags.isLocalConnectionLoaded = true;
       // return true;
     }
+
+    // update the existing log
+    Logger.logUpdate(updateLog)
+    
+    // throw new Error("Forced error for testing!");
+    
     return flags
   } catch (error) {
-    console.error("Failed to initialize flags:", error);
+    UpdatePackageLogWithError(updateLog, 'initializeFlags', error);
     throw error;
   }
 }
@@ -708,7 +713,7 @@ function initializeFlags(flags: any) {
  * @param enableSW any
  */
 async function handleRegisterServiceWorker(enableSW: any) {
-  Logger.logfunction("handleRegisterServiceWorker",arguments);
+  const logData:any = Logger.logfunction("handleRegisterServiceWorker",arguments);
   await new Promise<void>((resolve, reject) => {
     let success = false;
 
@@ -814,6 +819,7 @@ async function handleRegisterServiceWorker(enableSW: any) {
         await initConceptConnection();
         reject(error);
         console.error("Service Worker registration failed:", error);
+        UpdatePackageLogWithError(logData, 'handleRegisterServiceWorker', error)
       });
   })
 }

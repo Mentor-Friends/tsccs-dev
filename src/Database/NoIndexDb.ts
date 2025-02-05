@@ -3,37 +3,44 @@ import { SettingData } from "../DataStructures/SettingData";
 import { IndexDb } from "./indexeddb";
 
 export function openDatabase(databaseName:string){
-    Logger.logfunction("openDatabase", [databaseName, "noindexdb"]);
+    const logData : any = Logger.logfunction("openDatabase", [databaseName, "noindexdb"]);
+    Logger.logUpdate(logData);
     return IndexDb.db;
 }
 
 export function storeToDatabase(databaseName:string, object:any){
-    Logger.logfunction("storeToDatabase", [databaseName, "noindexdb"]);
+    const logData : any = Logger.logfunction("storeToDatabase", [databaseName, "noindexdb"]);
+    Logger.logUpdate(logData);
 }
 
 export function GetStatsFromDatabase(){
-    Logger.logfunction("GetStatsFromDatabase", [ "noindexdb"]);
+    const logData : any = Logger.logfunction("GetStatsFromDatabase", [ "noindexdb"]);
     var settingsData:SettingData = new SettingData(true);
+    Logger.logUpdate(logData);
     return settingsData;
 }
 
 export function AiUpdateFlag(object:SettingData){
-    Logger.logfunction("GetStatsFromDatabase", [object, "noindexdb"]);
+    const logData : any = Logger.logfunction("GetStatsFromDatabase", [object, "noindexdb"]);
+    Logger.logUpdate(logData);
 }
 
 export async function getFromDatabaseWithType(databaseName:string, type:string, id:number){
-    Logger.logfunction("getFromDatabaseWithType", [databaseName, "noindexdb"]);
+    const logData : any = Logger.logfunction("getFromDatabaseWithType", [databaseName, "noindexdb"]);
+    Logger.logUpdate(logData)
 }
 
 export async function getObjectsFromIndexDb(databaseName:string){
-    Logger.logfunction("getObjectsFromIndexDb", [databaseName, "noindexdb"]);
+    const logData : any = Logger.logfunction("getObjectsFromIndexDb", [databaseName, "noindexdb"]);
+    Logger.logUpdate(logData)
 }
 
 export function removeFromDatabase(databaseName:string, id:number){
-    Logger.logfunction("removeFromDatabase", [databaseName, "noindexdb"]);
-
+    const logData : any = Logger.logfunction("removeFromDatabase", [databaseName, "noindexdb"]);
+    Logger.logUpdate(logData)
 }
 
 export async function getAllFromLocalDb(databaseName:string){
-    Logger.logfunction("getAllFromLocalDb", [databaseName, "noindexdb"]);
+    const logData : any = Logger.logfunction("getAllFromLocalDb", [databaseName, "noindexdb"]);
+    Logger.logUpdate(logData)
 }

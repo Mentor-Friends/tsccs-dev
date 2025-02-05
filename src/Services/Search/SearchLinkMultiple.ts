@@ -6,7 +6,7 @@ import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInO
 import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
-  Logger.logfunction("SearchLinkMultipleAll", arguments);
+  const logData : any = Logger.logfunction("SearchLinkMultipleAll", arguments);
   try{
     try {
       if (serviceWorker) {
@@ -66,6 +66,7 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
 
       
     let out = await DataIdBuildLayer(linkers, conceptIds, connections, reverse, mainCompositionId, searchQuery[0], format );
+    Logger.logUpdate(logData);
     return out;
   }
   catch(e){

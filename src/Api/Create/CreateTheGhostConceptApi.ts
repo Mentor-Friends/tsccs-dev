@@ -6,11 +6,11 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { Connection, Logger } from "../../app";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 
 
 export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[]){
-  Logger.logfunction("CreateTheGhostConceptApi",[conceptData.length, connectionData.length] )
+  const logData : any = Logger.logfunction("CreateTheGhostConceptApi",[conceptData.length, connectionData.length] )
   try {
     const CHUNK_SIZE = 1000
     let result: any = {
@@ -28,7 +28,7 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
       
       if (Array.isArray(response?.concepts)) result.concepts = [...result.concepts, ...response.concepts]
       if (Array.isArray(response?.connections)) result.connections = [...result.connections, ...response.connections]
-
+      Logger.logUpdate(logData);
       return result
     }
 
@@ -62,11 +62,12 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
       if (Array.isArray(connectionsRes?.concepts)) result.concepts = [...result.concepts, ...connectionsRes.concepts]
       if (Array.isArray(connectionsRes?.connections)) result.connections = [...result.connections, ...connectionsRes.connections]
     }
-    
+    Logger.logUpdate(logData);
     return result
 
   } catch (error) {
     console.log(error)
+    UpdatePackageLogWithError(logData, 'CreateTheGhostConceptApi', error);
     throw error
   }
     

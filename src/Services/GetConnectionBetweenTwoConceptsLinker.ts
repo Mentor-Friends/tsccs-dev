@@ -21,7 +21,7 @@ export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concep
             handleServiceWorkerException(error)
         }
     }
-    Logger.logfunction("GetConnectionBetweenTwoConceptsLinker");
+    const logData : any = Logger.logfunction("GetConnectionBetweenTwoConceptsLinker");
     let typeConcept: Concept = CreateDefaultConcept();
     if(linker != ""){
         let typeLinker = "";
@@ -48,5 +48,7 @@ export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concep
     if (!forward) 
         connections = await GetCompositionConnectionsBetweenTwoConcepts(toTheConcept.id, ofTheConcept.id, typeConcept.id);
     else connections = await GetCompositionConnectionsBetweenTwoConcepts(ofTheConcept.id, toTheConcept.id, typeConcept.id);
+
+    Logger.logUpdate(logData);
     return connections;
 }

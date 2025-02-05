@@ -5,12 +5,12 @@ import { FindConceptsFromConnections } from '../Services/FindConeceptsFromConnec
 import { FindConnectionsOfCompositionsBulkInMemory } from '../Services/FindConnectionsOfCompositionBulkInMemory';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
-import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from '../app';
 
 
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
-  Logger.logfunction("GetAllConnectionsOfCompositionBulk", arguments);
+  const logData : any = Logger.logfunction("GetAllConnectionsOfCompositionBulk", arguments);
   if (serviceWorker) {
     try {
       const res: any = await sendMessage('GetAllConnectionsOfCompositionBulk', {composition_ids})
@@ -31,11 +31,12 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
 
   CheckForConnectionDeletion(connectionList, oldConnectionList);
   await FindConceptsFromConnections(connectionList);
+  Logger.logUpdate(logData)
   return connectionList;
 }
 
 export async function GetAllConnectionsOfCompositionOnline(composition_ids: number[] = []){
-  Logger.logfunction("GetAllConnectionsOfCompositionOnline", arguments);
+  const logData :any = Logger.logfunction("GetAllConnectionsOfCompositionOnline", arguments);
   var connectionList: Connection[] = [];
 
   try{
@@ -56,6 +57,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_ids: numb
         console.log('Get all connections of composition bulk error message: ', "Cannot get response");
         HandleHttpError(response);
       }
+      Logger.logUpdate(logData)
       return connectionList;
     }
     catch (error) {
@@ -65,5 +67,6 @@ export async function GetAllConnectionsOfCompositionOnline(composition_ids: numb
         console.log('Get all connections of composition bulk unexpected error: ', error);
       }
       HandleInternalError(error,BaseUrl.GetAllConnectionsOfCompositionBulkUrl() );
+      UpdatePackageLogWithError(logData, 'GetAllConnectionsOfCompositionOnline', error )
     }
 }

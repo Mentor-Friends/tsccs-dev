@@ -14,13 +14,14 @@ export function DecodeCountInfo(countStrings: string[] = []){
 }
 
 export async function GetConnectionTypeForCount(countInfos: CountInfo[]){
-    Logger.logfunction("GetConnectionTypeForCount", arguments);
+    const logData : any = Logger.logfunction("GetConnectionTypeForCount", arguments);
     let CountDictionary:any = {};
     for(let i =0; i<countInfos.length; i++){
         let concept: Concept = await GetConcept(countInfos[i].connectionTypeId);
         countInfos[i].connectionType = concept.characterValue;
         CountDictionary[countInfos[i].conceptId] = countInfos[i];
     }
+    Logger.logUpdate(logData);
     return CountDictionary;
 }
 

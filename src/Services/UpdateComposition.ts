@@ -27,7 +27,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 export default async function UpdateComposition(
   patcherStructure: PatcherStructure
 ) {
-  Logger.logfunction("UpdateComposition");
+  const logData : any = Logger.logfunction("UpdateComposition");
   if (serviceWorker) {
     try {
       const res: any = await sendMessage("UpdateComposition", {
@@ -216,5 +216,7 @@ export default async function UpdateComposition(
   CompositionBinaryTree.addCompositionToTree(compositionCache);
   SyncData.SyncDataOnline();
   let x = compositionCache.GetDataCache();
+
+  Logger.logUpdate(logData);
   return x;
 }

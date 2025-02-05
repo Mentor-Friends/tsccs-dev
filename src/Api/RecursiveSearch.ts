@@ -8,16 +8,18 @@ import { resolveObjectURL } from "buffer";
 import {
   HandleHttpError,
   HandleInternalError,
+  UpdatePackageLogWithError,
 } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { formatConnectionsDataId } from "../Services/Search/SearchWithTypeAndLinker";
+import { log } from "console";
 
 export async function RecursiveSearchApi(
   composition: number = 0,
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction("RecursiveSearchApi", arguments);
+  const logData : any = Logger.logfunction("RecursiveSearchApi", arguments);
   let concepts: any[] = [];
 
   try {
@@ -61,6 +63,7 @@ export async function RecursiveSearchApi(
       console.log("recursive search error ", response.status);
       HandleHttpError(response);
     }
+    Logger.logUpdate(logData);
   } catch (error) {
     if (error instanceof Error) {
       console.log("recursive search error message: ", error.message);
@@ -68,6 +71,7 @@ export async function RecursiveSearchApi(
       console.log("recursive search unexpected error: ", error);
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
+    UpdatePackageLogWithError(logData, 'RecursiveSearchApi', error);
   }
   return concepts;
 }
@@ -137,7 +141,7 @@ export async function RecursiveSearchApiRaw(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction("RecursiveSearchApiRaw", arguments);
+  const logData : any = Logger.logfunction("RecursiveSearchApiRaw", arguments);
   let concepts: any[] = [];
 
   try {
@@ -171,11 +175,13 @@ export async function RecursiveSearchApiRaw(
       let conceptIds = result.compositionIds;
       let connections = result.internalConnections;
       let externalConnections = result.externalConnections;
+      Logger.logUpdate(logData);
       return result;
     } else {
       console.log("recursive search error ", response.status);
       HandleHttpError(response);
     }
+    Logger.logUpdate(logData);
     return [];
   } catch (error) {
     if (error instanceof Error) {
@@ -184,6 +190,7 @@ export async function RecursiveSearchApiRaw(
       console.log("recursive search unexpected error: ", error);
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
+    UpdatePackageLogWithError(logData, 'RecursiveSearchApiRaw', error);
   }
 }
 
@@ -192,7 +199,7 @@ export async function RecursiveSearchApiRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments);
+  const logData : any = Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments);
   let concepts: any[] = [];
 
   try {
@@ -231,6 +238,7 @@ export async function RecursiveSearchApiRawFullLinker(
       console.log("recursive search error ", response.status);
       HandleHttpError(response);
     }
+    Logger.logUpdate(logData);
     return [];
   } catch (error) {
     if (error instanceof Error) {
@@ -239,6 +247,7 @@ export async function RecursiveSearchApiRawFullLinker(
       console.log("recursive search unexpected error: ", error);
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
+    UpdatePackageLogWithError(logData, 'RecursiveSearchApiRawFullLinker', error);
   }
 }
 
@@ -247,7 +256,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments);
+  const logData : any = Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments);
   let concepts: any[] = [];
 
   try {
@@ -281,11 +290,13 @@ export async function RecursiveSearchApiNewRawFullLinker(
       let conceptIds = result.compositionIds;
       let connections = result.internalConnections;
       let externalConnections = result.externalConnections;
+      Logger.logUpdate(logData);
       return result;
     } else {
       console.log("recursive search error ", response.status);
       HandleHttpError(response);
     }
+    Logger.logUpdate(logData);
     return [];
   } catch (error) {
     if (error instanceof Error) {
@@ -294,6 +305,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
       console.log("recursive search unexpected error: ", error);
     }
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
+    UpdatePackageLogWithError(logData, 'RecursiveSearchApiNewRawFullLinker', error);
   }
 }
 

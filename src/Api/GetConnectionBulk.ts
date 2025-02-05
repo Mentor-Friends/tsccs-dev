@@ -3,7 +3,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 /**
@@ -12,7 +12,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
  * @returns the list of  connections that have been fetched
  */
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
-    Logger.logfunction("GetConnectionBulk", connectionIds.length);
+    const logData : any = Logger.logfunction("GetConnectionBulk", connectionIds.length);
 
     let connectionList:Connection[] = [];
     try{
@@ -73,7 +73,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
     
     
     
-    
+            Logger.logUpdate(logData);
             }
         }
 
@@ -85,6 +85,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
           console.log('Get Connection Bulk unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConnectionBulkUrl());
+        UpdatePackageLogWithError(logData, 'GetConnectionBulk', error);
       }
       await FindConceptsFromConnections(connectionList);
 

@@ -1,4 +1,5 @@
 import { Concept } from "../DataStructures/Concept";
+import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { BaseUrl, Logger } from "../app";
 
 /**
@@ -20,11 +21,12 @@ export class LocalIndexDb{
  * @returns a promise that either resolves or rejects opening the database.
  */
 export function openDatabase(databaseName:string): Promise<IDBDatabase>{ 
-  Logger.logfunction("openDatabase", arguments);
+  const logData : any = Logger.logfunction("openDatabase", arguments);
   return new Promise(function(resolve, reject){
   // if the indexdb is already initialized then you do not need to again initialize the db so you can get 
   // from memory.
   if(LocalIndexDb.db){
+    Logger.logUpdate(logData);
     resolve( LocalIndexDb.db);
   }
 
@@ -44,8 +46,8 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         console.error("Why didn't you allow my web app to use IndexedDB?!",event);
         indexedDB.deleteDatabase(localDbName);
         openDatabase(databaseName);
+        UpdatePackageLogWithError(logData, 'openDatabase', event);
         reject(event);
-
     };
   
     // in case that the database is allowed to be opened then we return the database object.
@@ -54,6 +56,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         
       var target = event.target as IDBOpenDBRequest;
        LocalIndexDb.db = target.result as IDBDatabase;
+       Logger.logUpdate(logData);
       resolve(LocalIndexDb.db);
   
   };
@@ -144,7 +147,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
    * @returns all the objects that are in the database
    */
   export async function getObjectsFromLocalIndexDb(databaseName:string){
-    Logger.logfunction("getObjectsFromLocalIndexDb", arguments);
+    const logData : any = Logger.logfunction("getObjectsFromLocalIndexDb", arguments);
     return new Promise(function(resolve, reject){
     openDatabase(databaseName).then((db)=>{
 
@@ -162,8 +165,8 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         for(var i=0; i<students.length; i++){
             ConceptList.push(students[i]);
         }
+        Logger.logUpdate(logData);
         resolve(ConceptList); 
-
       }
     }).catch((event)=>{
       let errorObject = {
@@ -172,7 +175,9 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         "message":"Cannot get objects from database because you cannot open the Local database",
         "data": event
       };
+      UpdatePackageLogWithError(logData, 'getObjectsFromLocalIndexDb', errorObject)
       reject(errorObject);
+      
     });
 
   });
@@ -186,13 +191,14 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
  * @returns a promise that if a store is successful then the obejct is returned else rejects with the event.
  */
   export function storeToDatabase(databaseName:string, object:any){
-    Logger.logfunction("storeToDatabase", [databaseName, "localindexdb"]);
+    const logData : any = Logger.logfunction("storeToDatabase", [databaseName, "localindexdb"]);
     return new Promise(function(resolve, reject){
      openDatabase(databaseName).then((db)=> {
       let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
       let objStore = transaction.objectStore(databaseName);
       const request = objStore.add(object);
       request.onsuccess = (event) => {
+        Logger.logUpdate(logData);
         resolve(object);
 
       }
@@ -204,6 +210,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
           "data": event,
           "body": object
         };
+        UpdatePackageLogWithError(logData, 'storeToDatabase', errorObject);
         reject(errorObject);
       }
      }).catch((event)=>{
@@ -213,6 +220,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         "message":"Cannot store to database because you cannot open the Local database",
         "data": event
       };
+      UpdatePackageLogWithError(logData, 'storeToDatabase', errorObject);
       reject(errorObject);
     });
     });
@@ -225,7 +233,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
    * @returns returns the object if it is updated successfully.
    */
   export function UpdateToDatabase(databaseName:string, object:any){
-    Logger.logfunction("UpdateToDatabase", arguments);
+    const logData : any = Logger.logfunction("UpdateToDatabase", arguments);
     return new Promise(function(resolve, reject){
       // console.log("this is wriring to the database local", object);
     openDatabase(databaseName).then((db)=>{
@@ -233,6 +241,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
       let objStore = transaction.objectStore(databaseName);
        const request = objStore.put(object);
        request.onsuccess = (event) =>{
+        Logger.logUpdate(logData);
         resolve(object);
        }
        request.onerror = (event) => {
@@ -243,6 +252,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
           "data": event,
           "body": object
         };
+        UpdatePackageLogWithError(logData, 'UpdateToDatabase', errorObject);
         reject(errorObject);
        }
     }).catch((event)=>{
@@ -252,6 +262,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         "message":"Cannot update to database because you cannot open the Local database",
         "data": event
       };
+      UpdatePackageLogWithError(logData, 'UpdateToDatabase', errorObject);
       reject(errorObject);
     });
     });
@@ -293,13 +304,14 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
    * @returns an id if the deletion is successful and error with even in case it cannot.
    */
   export function removeFromDatabase(databaseName:string, id:number){
-    Logger.logfunction("removeFromDatabase", arguments);
+    const logData : any = Logger.logfunction("removeFromDatabase", arguments);
     return new Promise(function(resolve, reject){
     openDatabase(databaseName).then((db)=>{
       let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
       let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
       let getRequest = objectStore.delete(id);
       getRequest.onsuccess = function(event:Event) {
+        Logger.logUpdate(logData);
         resolve(id);
       };
       getRequest.onerror = function (event:Event){
@@ -310,6 +322,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
           "data": event,
           "body": id
         };
+        UpdatePackageLogWithError(logData, 'removeFromDatabase', errorObject);
         reject(errorObject);
       }
     }).catch((event)=>{
@@ -319,6 +332,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
         "message":"Cannot remove object from database because you cannot open the Local database",
         "data": event
       };
+      UpdatePackageLogWithError(logData, 'removeFromDatabase', errorObject);
       reject(errorObject);
     });
   });
