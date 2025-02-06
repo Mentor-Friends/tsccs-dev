@@ -8,13 +8,16 @@ export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Conc
     let startTime = performance.now()
     try{
         if (serviceWorker) {
+            logData.serviceWorker = true;
             try {
                 const res: any = await sendMessage('CreateConnectionBetweenTwoConceptsLocal', {ofTheConcept, toTheConcept, linker, both, actions})
                 if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
                 if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                Logger.logUpdate(logData);
                 return res.data
             } catch (error) {
                 console.error('CreateConnectionBetweenTwoConceptsLocal sw error: ', error);
+                UpdatePackageLogWithError(logData, 'CreateConnectionBetweenTwoConceptsLocal', error);
                 handleServiceWorkerException(error);
             }
           }

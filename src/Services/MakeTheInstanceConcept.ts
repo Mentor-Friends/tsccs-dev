@@ -4,6 +4,7 @@ import { MakeTheNameInBackend } from "../Api/MakeTheNameInBackend";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
 import { handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
 
@@ -32,6 +33,7 @@ export default async function MakeTheInstanceConcept(
 ) {
   const logData : any = Logger.logfunction("MakeTheInstanceConcept", arguments);
   if (serviceWorker) {
+    logData.serviceWorker = true;
     try {
       const res: any = await sendMessage("MakeTheInstanceConcept", {
         type,
@@ -42,9 +44,11 @@ export default async function MakeTheInstanceConcept(
         passedSessionId,
         referentId,
       });
+      Logger.logUpdate(logData);  
       return res.data;
     } catch (error) {
       console.error("MakeTheInstanceConcept sw error: ", error);
+      UpdatePackageLogWithError(logData, 'MakeTheInstanceConcept', error);
       handleServiceWorkerException(error);
     }
   }

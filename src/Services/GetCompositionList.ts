@@ -3,6 +3,7 @@ import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCo
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { LocalConceptsData } from "../DataStructures/Local/LocalConceptData";
 import { Concept, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionLocalWithId, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { GetComposition, GetCompositionFromMemory, GetCompositionWithId, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetConceptByCharacter, { GetConceptByCharacterUpdated } from "./GetConceptByCharacter";
 import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
@@ -12,11 +13,14 @@ import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
 export  async function GetCompositionList(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
    const logData : any = Logger.logfunction("GetCompositionList", arguments);
    if (serviceWorker) {
+      logData.serviceWorker = true;
       try {
          const res: any = await sendMessage('GetCompositionList', { compositionName, userId, inpage, page })
+         Logger.logUpdate(logData); 
          return res.data
       } catch (error) {
          console.error('GetCompositionList sw error: ', error)
+         UpdatePackageLogWithError(logData, 'GetCompositionList', error);
          handleServiceWorkerException(error)
       }
     }

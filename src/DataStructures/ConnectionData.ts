@@ -212,14 +212,17 @@ export class ConnectionData {
 
     try{    
       if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
           const res: any = await sendMessage(
             "ConnectionData__GetConnectionsOfCompositionLocal",
             { id }
           );
+          Logger.logUpdate(logData); 
           return res.data;
         } catch (error) {
           console.error("GetConnectionsOfCompositionLocal sw error: ", error);
+          UpdatePackageLogWithError(logData, 'GetConnectionsOfCompositionLocal', error);
           handleServiceWorkerException(error);
         }
       }
@@ -259,6 +262,7 @@ export class ConnectionData {
       let connections: Connection[] = [];
       try {
         if (serviceWorker) {
+          
           try {
             const res: any = await sendMessage("ConnectionData__GetConnectionsOfConcept", { id });
             return res.data;

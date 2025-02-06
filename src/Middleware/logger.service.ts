@@ -424,7 +424,7 @@ export interface LogData {
     /**
      * The parameters used in the function.
      * This should include all inputs to the function.
-     * @example [ "userId", "includeMetadata" ]
+     * @example [ "userId", "concept" ]
      */
     functionParameters?: any[];
 
@@ -437,9 +437,15 @@ export interface LogData {
 
     /**
      * A list of concepts (features or modules) used during the function execution.
-     * @example [ "Authentication", "Data Retrieval" ]
+     * @example [105292435 , 105292431  ]
      */
     conceptsUsed?: string[];
+
+    /**
+     * Service worker
+     * @example boolean
+     */
+    serviceWorker? : boolean 
 }
 
 /**

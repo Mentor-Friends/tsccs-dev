@@ -27,11 +27,14 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
 
     try{
       if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
           const res: any = await sendMessage('GetConceptBulk', {passedConcepts})
+          Logger.logUpdate(logData); 
           return res.data
         } catch (error) {
           console.error('GetConceptBulk sw error: ', error);
+          UpdatePackageLogWithError(logData, 'GetConceptBulk', error);
           handleServiceWorkerException(error);
         }
       }

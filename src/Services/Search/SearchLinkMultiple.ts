@@ -2,6 +2,7 @@ import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { DATAID, JUSTDATA, LISTNORMAL, NORMAL } from "../../Constants/FormatConstants";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
 import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../../app";
+import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetCompositionFromConnectionsWithDataIdInObjectNew, GetConnectionDataPrefetch } from "../GetCompositionBulk";
 import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 
@@ -10,12 +11,15 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
   try{
     try {
       if (serviceWorker) {
+        logData.serviceWorker = true;
         const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
         // console.log('data received search from sw', res)
+        Logger.logUpdate(logData); 
         return res.data
       }
     } catch (error) { 
       console.error('SearchLinkMultipleAll error sw: ', error)
+      UpdatePackageLogWithError(logData, 'SearchLinkMultipleAll', error);
       handleServiceWorkerException(error)
     }
   
@@ -71,6 +75,7 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
   }
   catch(e){
     console.log("this is the error in the search link multiple", e);
+    UpdatePackageLogWithError(logData, 'SearchLinkMultipleAll', e);
     throw e;
   }
 

@@ -235,6 +235,7 @@ export class AccessTracker {
 
     /**
      * Fetch suggested connections from the server with proper error handling.
+     * @param top number of connections to get load
      */
     public static async GetSuggestedConnections(top?:number) {
         try {

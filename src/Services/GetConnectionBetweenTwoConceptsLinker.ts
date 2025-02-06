@@ -1,5 +1,6 @@
 import { GetCompositionConnectionsBetweenTwoConcepts } from "../Api/GetCompositionConnectionsBetweenTwoConcepts";
 import { Concept, Connection, CreateDefaultConcept, handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
 /**
@@ -12,16 +13,19 @@ import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
  * @returns list of connections
  */
 export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concept, toTheConcept: Concept, linker: string, fullLinker: string, forward: boolean = true){
+    const logData : any = Logger.logfunction("GetConnectionBetweenTwoConceptsLinker");
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetConnectionBetweenTwoConceptsLinker', {ofTheConcept, toTheConcept, linker, fullLinker, forward})
+            Logger.logUpdate(logData);
             return res.data
         } catch (error) {
             console.error('GetConnectionBetweenTwoConceptsLinker sw error: ', error)
+            UpdatePackageLogWithError(logData, 'GetConnectionBetweenTwoConceptsLinker', error);
             handleServiceWorkerException(error)
         }
     }
-    const logData : any = Logger.logfunction("GetConnectionBetweenTwoConceptsLinker");
     let typeConcept: Concept = CreateDefaultConcept();
     if(linker != ""){
         let typeLinker = "";

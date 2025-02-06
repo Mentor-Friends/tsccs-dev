@@ -8,11 +8,14 @@ export async function FindConnectionsOfCompositionsBulkInMemory(composition_ids:
   let FinalConnectionList:Connection[] = [];
   try {
     if (serviceWorker) {
+      logData.serviceWorker = true;
       try {
         const res: any = await sendMessage('FindConnectionsOfCompositionsBulkInMemory', {composition_ids})
+        Logger.logUpdate(logData); 
         return res.data
       } catch (error) {
         console.error('FindConnectionsOfCompositionsBulkInMemory sw error: ', error)
+        UpdatePackageLogWithError(logData, 'FindConnectionsOfCompositionsBulkInMemory', error);
         handleServiceWorkerException(error)
       }
     }

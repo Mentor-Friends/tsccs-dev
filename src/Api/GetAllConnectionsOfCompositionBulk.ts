@@ -12,11 +12,14 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
   const logData : any = Logger.logfunction("GetAllConnectionsOfCompositionBulk", arguments);
   if (serviceWorker) {
+    logData.serviceWorker = true;
     try {
       const res: any = await sendMessage('GetAllConnectionsOfCompositionBulk', {composition_ids})
+      Logger.logUpdate(logData);
       return res.data
     } catch (error) {
       console.error('GetAllConnectionsOfCompositionBulk sw error: ', error);
+      UpdatePackageLogWithError(logData, 'GetAllConnectionsOfCompositionBulk', error);
       handleServiceWorkerException(error);
     }
   }
