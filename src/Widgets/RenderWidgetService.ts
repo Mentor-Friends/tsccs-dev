@@ -355,7 +355,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
                       // if ((child.id === Number(widgetElement.getAttribute("data-widgetid"))) && (child.wrapper === widgetElement.id)) {
                       if ((child.wrapper === widgetElement.id)) {
                           const clearedChildWidget = clearDraggedWidget(child);
-                          const childWidget =  await convertWidgetTreeToWidget(clearedChildWidget, widgetElement, isMain, newWidget.widgetState);
+                          const childWidget =  await convertWidgetTreeToWidgetWithWrapper(clearedChildWidget, widgetElement, isMain, newWidget.widgetState);
                           newWidget.childWidgets.push(childWidget);
                           // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
                           newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
