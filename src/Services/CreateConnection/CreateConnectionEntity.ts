@@ -7,7 +7,7 @@ export async function CreateConnectionBetweenEntityLocal(
     concept2Data: Concept,
     linker: string
   ) {
-    Logger.logfunction("CreateConnectionBetweenEntityLocal", [concept1Data.id, concept2Data.id, linker]);
+    const logData : any = Logger.logfunction("CreateConnectionBetweenEntityLocal", [concept1Data.id, concept2Data.id, linker]);
     const userId: number = concept1Data.userId;
     const sessionInformationId = 999;
     const sessionInformationUserId = 999;
@@ -28,4 +28,5 @@ export async function CreateConnectionBetweenEntityLocal(
         1000
       )
     );
+    Logger.logUpdate(logData);
   }

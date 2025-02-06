@@ -1,4 +1,4 @@
-import { HandleFunctionError } from "../Middleware/ErrorHandling";
+import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { GetConceptByCharacterAndType, Logger, MakeTheTypeConcept, MakeTheTypeConceptApi } from "../app";
 import { DATA_TYPES_RULES } from "./constant";
 import { FormErrors, FormFieldData } from "./interface";
@@ -12,7 +12,7 @@ export class Validator {
      * @returns boolean indicating uniqueness
      */
     public async checkUniqueness(type: string, value: string): Promise<boolean> {
-        Logger.logfunction("checkUniqueness")
+        const logData : any = Logger.logfunction("checkUniqueness")
         // Ensure 'the_' is at the start of the type
         if (!type.startsWith('the_')) {
             type = 'the_' + type; 
@@ -32,7 +32,9 @@ export class Validator {
         if(concept.id > 0){
             return false;
         }
+        Logger.logUpdate(logData);
         return true;
+
     }
 
     /**
@@ -67,7 +69,7 @@ export class Validator {
         required: boolean,
         isUnique: boolean = false
     ): Promise< {[fieldName:string] : string } > {
-        Logger.logfunction("validateField")
+        const logData : any = Logger.logfunction("validateField")
         try {
             let startTime = performance.now()
             const errors: { [fieldName: string]: string } = {};
@@ -132,25 +134,12 @@ export class Validator {
                     errors['unique'] = `Value is not unique`;
                 }
             }
-            // Add Log
-            // Logger.logInfo(
-            //     startTime,
-            //     "",
-            //     undefined,
-            //     "Unknown",
-            //     "Unknown",
-            //     200,
-            //     errors,
-            //     "validateField",
-            //     ['fieldName', 'fieldType', 'dataType', 'value', 'pattern', 'conceptType', 'minLength', 'maxLength', 'minValue', 'maxValue', 'accept', 'file', 'required', 'isUnique'],  // Function parameters
-            //     "UnknownUserAgent",
-            //     []
-            // );
+            
+            Logger.logUpdate(logData);
 
             return errors
         } catch (error) {
-            console.error("Error on validate field..");
-            HandleFunctionError(error, "Validation Field Error")
+            UpdatePackageLogWithError(logData, "Validator.validateField", error);
             throw error
         }
     }
@@ -168,7 +157,7 @@ export class Validator {
     public async validateForm(formData: { 
         [key: string]: FormFieldData
     }): Promise<FormErrors> {
-        Logger.logfunction("validateForm");
+        const logData : any = Logger.logfunction("validateForm");
         try{
             let startTime = performance.now()
             const validationErrors: FormErrors = {};
@@ -185,9 +174,10 @@ export class Validator {
                 if (Object.keys(fieldErrors).length > 0) validationErrors[fieldName] = fieldErrors;
     
             }    
+            Logger.logUpdate(logData);
             return validationErrors
         } catch(error){
-            HandleFunctionError(error, "")
+            UpdatePackageLogWithError(logData, "Validator.validateForm", error);
             throw error
         }
     }
@@ -226,20 +216,27 @@ export class Validator {
         required: boolean,
         isUnique: boolean = false
     ){
-        Logger.logfunction("validate");
-        let error:any = {};
-        this.validateField(
-            fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
-        ).then((err) => {
-            if (Object.keys(err).length > 0) {
-                error['status'] = false
-                error['details'] = err;
-            } else {
-                error['status'] = true
-            }
-        })
-        console.error("Error on validate object");
-        return error;
+        const logData : any = Logger.logfunction("validate");
+        try{
+            let error:any = {};
+            this.validateField(
+                fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
+            ).then((err) => {
+                if (Object.keys(err).length > 0) {
+                    error['status'] = false
+                    error['details'] = err;
+                } else {
+                    error['status'] = true
+                }
+            })
+            console.error("Error on validate object");
+            Logger.logUpdate(logData);
+            return error;
+    
+        } catch(error) {
+            UpdatePackageLogWithError(logData, "Validator.validate", error);
+        }
     
     }
 }
+    

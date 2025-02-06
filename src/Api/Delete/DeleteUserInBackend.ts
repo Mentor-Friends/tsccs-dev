@@ -1,12 +1,12 @@
 import { DeleteConceptById, Logger } from "../../app"
 import { BaseUrl } from "../../DataStructures/BaseUrl"
-import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting"
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting"
 import { GetOnlyTokenHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
 export  async function DeleteUserInBackend(
     id: number
   ) {
-    Logger.logfunction("DeleteUserInBackend", arguments);
+    const logData : any = Logger.logfunction("DeleteUserInBackend", arguments);
     try {
     var header = GetRequestHeaderWithAuthorization("application/json", "");
       let queryUrl = BaseUrl.DeleteUserUrl();
@@ -25,6 +25,7 @@ export  async function DeleteUserInBackend(
         let DeleteEmail = Number(returnData.data);
         console.log("this is the delete email concept", DeleteEmail);
         DeleteConceptById(DeleteEmail);
+        Logger.logUpdate(logData);
         return DeleteEmail;
       }
     } catch (error) {
@@ -34,5 +35,6 @@ export  async function DeleteUserInBackend(
         console.log('Delete composition unexpected error: ', error)
       }
       HandleInternalError(error, BaseUrl.DeleteConceptUrl());
+      UpdatePackageLogWithError(logData, 'DeleteUserInBackend', error);
     }
   }

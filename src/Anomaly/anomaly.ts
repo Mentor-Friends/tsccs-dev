@@ -246,12 +246,21 @@ export class Anomaly {
         console.log("Main : ", main);
         const the_exported_list = Object.keys(main);
         let the_function_s_name: string[] = [];
+        console.log("The exported List : ", the_exported_list)
         // the_exported_list.forEach(the_function_name => {
         //     if (typeof main[the_function_name] === 'function') {
         //         the_function_s_name.push(the_function_name);
         //     }
         // });
-        return the_function_s_name;
+        // return the_function_s_name;
+        return the_exported_list;
+    }
+
+    private static getFunctionaAnomalyParameters(){
+        const params = {
+            executionTime : 5,
+
+        }
     }
 
 }

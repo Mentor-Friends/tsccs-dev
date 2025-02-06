@@ -7,7 +7,7 @@ import { BinaryTree, Logger } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAiData(){
-  Logger.logfunction("GetAiData");
+  const logData:any = Logger.logfunction("GetAiData");
     try{
       const start = new Date().getTime();
         var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
@@ -26,6 +26,8 @@ export async function GetAiData(){
         PurgatoryDatabaseUpdated();
         let elapsed = new Date().getTime() - start;
         console.log("The time taken is ", elapsed);
+
+        Logger.logUpdate(logData)
 
 
 }

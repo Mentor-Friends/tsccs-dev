@@ -4,6 +4,7 @@ import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { InnerActions } from "../../Constants/general.const";
 import { Connection, handleServiceWorkerException, LocalSyncData, Logger, sendMessage, serviceWorker } from "../../app";
+import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 
 /**
@@ -24,7 +25,7 @@ import { Connection, handleServiceWorkerException, LocalSyncData, Logger, sendMe
  */
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
-        Logger.logfunction("MakeTheInstanceConceptLocal", arguments);
+        const logData : any = Logger.logfunction("MakeTheInstanceConceptLocal", arguments);
         let startTime = performance.now()
         if (serviceWorker) {
             try {
@@ -108,6 +109,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
             // );
 
             actions.concepts.push(concept)
+            Logger.logUpdate(logData);
             return concept;
         }
         catch(error){
@@ -116,6 +118,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
                 "UnknownUserAgent",
                 []
             );
+            UpdatePackageLogWithError(logData, 'MakeTheInstanceConceptLocal', error);
             throw error;
         }
 

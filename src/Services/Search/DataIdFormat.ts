@@ -11,7 +11,7 @@ import { removeThePrefix } from "../Common/RegexFunction";
    * @returns 
    */
     export async function FormatFunctionDataForData(connections:Connection[], compositionData: any[], reverse: number [] = []){
-      Logger.logfunction("FormatFunctionDataForData", arguments);  
+      const logData : any = Logger.logfunction("FormatFunctionDataForData", arguments);  
       let myConcepts: number[] = [];
         for(let i=0 ; i< connections.length; i++){
           myConcepts.push(connections[i].toTheConceptId);
@@ -139,6 +139,8 @@ import { removeThePrefix } from "../Common/RegexFunction";
           }
       
         }
+
+        Logger.logUpdate(logData);
         return compositionData;
       }
 
@@ -155,8 +157,7 @@ import { removeThePrefix } from "../Common/RegexFunction";
  * @returns 
  */
 export async function FormatFromConnectionsAlteredArrayExternal(connections:Connection[], compositionData: any[], newCompositionData: any, mainComposition: number[], reverse: number [] = [],CountDictionary: any[] ){
-  Logger.logfunction("FormatFromConnectionsAlteredArrayExternal", arguments);  
-  let startTime = new Date().getTime();
+  const logData : any = Logger.logfunction("FormatFromConnectionsAlteredArrayExternal", arguments);  
     let mainData: any[] = [] ;
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
@@ -320,6 +321,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       mainData.push(mymainData);
       
     }
+    Logger.logUpdate(logData);
     return mainData;
   }
 
@@ -335,7 +337,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
    * @returns 
    */
   export async function FormatFunctionData(connections:Connection[], compositionData: any[], reverse: number [] = []){
-    Logger.logfunction("FormatFunctionData", arguments);
+    const logData : any = Logger.logfunction("FormatFunctionData", arguments);
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
       myConcepts.push(connections[i].toTheConceptId);
@@ -421,5 +423,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
       }
   
     }
+
+    Logger.logUpdate(logData);
     return compositionData;
   }
