@@ -180,7 +180,7 @@ import { GetWidgetForTree } from "./WidgetBuild";
         widgetNode.css = widgetInfo?.the_widget_css?.data?.the_css;
         widgetNode.js = widgetInfo?.the_widget_js?.data?.the_js;
         widgetNode.origin = Number(
-          widgetInfo?.the_widget_origin?.data?.the_originid
+          widgetInfo?.the_widget_origin?.data?.the_origin
         );
         widgetNode.version =
           widgetInfo?.the_widget_version?.data?.the_version;

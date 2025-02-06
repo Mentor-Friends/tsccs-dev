@@ -10,7 +10,7 @@ export class Logger {
     private static packageLogsData: any[] = [];
     private static applicationLogsData: any[] = [];
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 30 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app";
     private static mftsccsBrowser:string = "mftsccs";
