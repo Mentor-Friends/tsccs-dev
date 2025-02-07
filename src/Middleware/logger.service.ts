@@ -134,9 +134,12 @@ export class Logger {
             logData.startTime = logData.startTime ?? updateTime;
     
             const responseTime = updateTime - logData.startTime;
-    
+
             // Update log data with execution details
             logData.responseTime = `${responseTime} ms`;
+            if (!logData.serviceWorker === true) {
+                logData.serviceWorker = false;
+            }
             // logData.endTime = updateTime;
             // console.log("Updated Log Data:", logData);
         } catch (error) {
