@@ -13,11 +13,14 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
   let connectionList:Connection[] = []; 
   try{
     if (serviceWorker) {
+      logData.serviceWorker = true;
       try {
         const res: any = await sendMessage('GetConnectionOfTheConcept', {typeId, ofTheConceptId, userId, inpage, page})
+        Logger.logUpdate(logData);  
         return res.data
       } catch (error) {
         console.error('GetConnectionOfTheConcept sw error: ', error);
+        UpdatePackageLogWithError(logData, 'GetConnectionOfTheConcept', error);
         handleServiceWorkerException(error);
       }
     }
@@ -37,6 +40,7 @@ export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:n
           connectionList = await response.json() as Connection[];
         }
         else{
+          UpdatePackageLogWithError(logData, 'GetConnectionOfTheConcept', response.status);
           HandleHttpError(response);
           console.log("Get connection of concept error", response.status);
         }

@@ -22,6 +22,7 @@ import { CompositionBinaryTree } from "../DataStructures/Composition/Composition
 import { Composition } from "../DataStructures/Composition/Composition";
 import { CreateTheCompositionWithCache } from "./Composition/CreateCompositionCache";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 // function to update the cache composition
 export default async function UpdateComposition(
@@ -29,13 +30,16 @@ export default async function UpdateComposition(
 ) {
   const logData : any = Logger.logfunction("UpdateComposition");
   if (serviceWorker) {
+    logData.serviceWorker = true;
     try {
       const res: any = await sendMessage("UpdateComposition", {
         patcherStructure,
       });
+      Logger.logUpdate(logData); 
       return res.data;
     } catch (error) {
       console.error("UpdateComposition sw error: ", error);
+      UpdatePackageLogWithError(logData, 'UpdateComposition', error);
       handleServiceWorkerException(error);
     }
   }

@@ -28,14 +28,17 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
         const logData : any = Logger.logfunction("MakeTheInstanceConceptLocal", arguments);
         let startTime = performance.now()
         if (serviceWorker) {
+            logData.serviceWorker = true;
             try {
                 const res: any = await sendMessage('MakeTheInstanceConceptLocal', {type, referent, composition, userId, accessId, sessionInformationId, referentId, actions})
                 if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
                 if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                Logger.logUpdate(logData);
                 return res.data
             } catch (error) {
-                console.error('MakeTheInstanceConceptLocal error sw: ', error)
-                handleServiceWorkerException(error)
+                console.error('MakeTheInstanceConceptLocal error sw: ', error);
+                UpdatePackageLogWithError(logData, 'MakeTheInstanceConceptLocal', error);
+                handleServiceWorkerException(error);
             }
         }
 
@@ -93,31 +96,16 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
             concept.type = typeConcept;
             LocalSyncData.AddConcept(concept);
              
-            // Add Log
-            // Logger.logInfo(
-            //     startTime,
-            //     userId,
-            //     "create",
-            //     "Unknown",
-            //     "Unknown",
-            //     200,
-            //     concept,
-            //     "MakeTheInstanceConceptLocal",
-            //     ['type', 'referent', 'composition', 'userId', 'accessId', 'sessionInformationId', 'referentId'],
-            //     "UnknownUserAgent",
-            //     []
-            // );
-
             actions.concepts.push(concept)
             Logger.logUpdate(logData);
             return concept;
         }
         catch(error){
-            Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "MakeTheInstanceConceptLocal",
-                [type, referent, composition, userId, accessId, sessionInformationId, referentId],
-                "UnknownUserAgent",
-                []
-            );
+            // Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "MakeTheInstanceConceptLocal",
+            //     [type, referent, composition, userId, accessId, sessionInformationId, referentId],
+            //     "UnknownUserAgent",
+            //     []
+            // );
             UpdatePackageLogWithError(logData, 'MakeTheInstanceConceptLocal', error);
             throw error;
         }

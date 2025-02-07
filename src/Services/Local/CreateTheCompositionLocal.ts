@@ -1,5 +1,6 @@
 import { handleServiceWorkerException, InnerActions, Logger, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
+import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 import { CreateDefaultLConcept } from "../Local/CreateDefaultLConcept";
 import {CreateTheConnectionLocal} from "./CreateTheConnectionLocal";
 import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
@@ -20,13 +21,16 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
 {
     const logData : any = Logger.logfunction("CreateTheCompositionLocal");
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('CreateTheCompositionLocal', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, actions })
             if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+            Logger.logUpdate(logData);  
             return res.data
         } catch (error) {
             console.error('CreateTheCompositionLocal error sw: ', error)
+            UpdatePackageLogWithError(logData, 'CreateTheCompositionLocal', error);
             handleServiceWorkerException(error)
         }
     }

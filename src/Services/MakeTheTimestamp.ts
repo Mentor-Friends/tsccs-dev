@@ -1,5 +1,6 @@
 import { Concept } from "../DataStructures/Concept";
 import { handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import MakeTheConcept from "./MakeTheConcept";
 import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
@@ -8,11 +9,14 @@ export async function MakeTheTimestamp(type:string, referent:string, userId: num
     accessId:number = 4, sessionInformationId: number=999){
         const logData : any = Logger.logfunction("MakeTheTimestamp");
         if (serviceWorker) {
+            logData.serviceWorker = true;
             try {
                 const res: any = await sendMessage('MakeTheTimestamp', {type, referent, userId, accessId, sessionInformationId})
+                Logger.logUpdate(logData);
                 return res.data
             } catch (error) {
                 console.error('MakeTheTimestamp sw error: ', error)
+                UpdatePackageLogWithError(logData, 'MakeTheTimestamp', error);
                 handleServiceWorkerException(error)
             }
         }

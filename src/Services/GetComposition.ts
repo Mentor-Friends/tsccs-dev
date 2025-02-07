@@ -267,11 +267,14 @@ export async function GetCompositionFromMemoryNormal(id:number){
 export async function GetCompositionWithIdFromMemory(id:number){
     const logData : any = Logger.logfunction("GetCompositionWithIdFromMemory", arguments);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetCompositionWithIdFromMemory', {id})
+            Logger.logUpdate(logData);
             return res.data
         } catch (error) {
             console.error('GetCompositionWithIdFromMemory error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionWithIdFromMemory', error);
             handleServiceWorkerException(error)
         }
     }
@@ -319,11 +322,14 @@ export async function GetCompositionWithIdFromMemory(id:number){
 export async function GetCompositionFromMemoryWithConnections(id:number, connectionList:Connection[]){
     const logData : any = Logger.logfunction("GetCompositionFromMemoryWithConnections", arguments);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetCompositionFromMemoryWithConnections', {id, connectionList})
+            Logger.logUpdate(logData); 
             return res.data
         } catch (error) {
             console.error('GetCompositionFromMemoryWithConnections error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionFromMemoryWithConnections', error);
             handleServiceWorkerException(error)
         }
     }
@@ -363,11 +369,14 @@ export async function GetCompositionFromMemoryWithConnections(id:number, connect
 export async function GetCompositionWithIdFromMemoryFromConnection(id:number, connectionList: Connection[]){
     const logData : any = Logger.logfunction("GetCompositionWithIdFromMemoryFromConnection", [id]);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetCompositionWithIdFromMemory', {id})
+            Logger.logUpdate(logData);
             return res.data
         } catch (error) {
             console.error('GetCompositionWithIdFromMemory error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionWithIdFromMemoryFromConnection', error);
             handleServiceWorkerException(error)
         }
     }
@@ -529,11 +538,14 @@ export async function GetCompositionWithIdFromMemoryFromConnections(id:number, c
 export async function GetCompositionWithId(id:number){
     const logData : any = Logger.logfunction("GetCompositionWithId", arguments);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetCompositionWithId', {id})
+            Logger.logUpdate(logData); 
             return res.data
         } catch (error) {
             console.error('GetCompositionWithId error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionWithId', error);
             handleServiceWorkerException(error)
         }
     }

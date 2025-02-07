@@ -134,9 +134,12 @@ export class Logger {
             logData.startTime = logData.startTime ?? updateTime;
     
             const responseTime = updateTime - logData.startTime;
-    
+
             // Update log data with execution details
             logData.responseTime = `${responseTime} ms`;
+            if (!logData.serviceWorker === true) {
+                logData.serviceWorker = false;
+            }
             // logData.endTime = updateTime;
             // console.log("Updated Log Data:", logData);
         } catch (error) {
@@ -424,7 +427,7 @@ export interface LogData {
     /**
      * The parameters used in the function.
      * This should include all inputs to the function.
-     * @example [ "userId", "includeMetadata" ]
+     * @example [ "userId", "concept" ]
      */
     functionParameters?: any[];
 
@@ -437,9 +440,15 @@ export interface LogData {
 
     /**
      * A list of concepts (features or modules) used during the function execution.
-     * @example [ "Authentication", "Data Retrieval" ]
+     * @example [105292435 , 105292431  ]
      */
     conceptsUsed?: string[];
+
+    /**
+     * Service worker
+     * @example boolean
+     */
+    serviceWorker? : boolean 
 }
 
 /**

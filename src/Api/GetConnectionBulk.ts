@@ -17,11 +17,14 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
     let connectionList:Connection[] = [];
     try{
         if (serviceWorker) {
+            logData.serviceWorker = true;
             try {
                 const res: any = await sendMessage('GetConnectionBulk', {connectionIds})
+                Logger.logUpdate(logData);  
                 return res.data
             } catch (error) {
                 console.error('GetConnectionBulk sw error: ', error);
+                UpdatePackageLogWithError(logData, 'GetConnectionBulk', error);
                 handleServiceWorkerException(error);
             }
         }
@@ -45,6 +48,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
             //bulkConnectionFetch = connectionIds;
             // if the case that bulkConnectionFetch does not have any elements then we just return everything we have
             if(bulkConnectionFetch.length == 0){
+                Logger.logUpdate(logData);  
                 return connectionList;
             }
             else{
@@ -67,6 +71,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
                     }
                 }
                 else{
+                    UpdatePackageLogWithError(logData, 'GetConnectionBulk', response.status);
                     HandleHttpError(response);
                     console.log("Get Connection Bulk error", response.status);
                 }
@@ -84,8 +89,8 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
         } else {
           console.log('Get Connection Bulk unexpected error: ', error);
         }
-        HandleInternalError(error, BaseUrl.GetConnectionBulkUrl());
         UpdatePackageLogWithError(logData, 'GetConnectionBulk', error);
+        HandleInternalError(error, BaseUrl.GetConnectionBulkUrl());
       }
       await FindConceptsFromConnections(connectionList);
 

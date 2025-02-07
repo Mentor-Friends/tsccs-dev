@@ -14,11 +14,14 @@ export async function GetConcept(id: number){
     const logData : any = Logger.logfunction("GetConcept", arguments);
     try{
         if (serviceWorker) {
+            logData.serviceWorker = true;
             try {
                 const res: any = await sendMessage('GetConcept', {id})
+                Logger.logUpdate(logData);
                 return res.data
             } catch (error) {
                 console.error('GetConcept sw error: ', error);
+                UpdatePackageLogWithError(logData, 'GetConcept', error);
                 handleServiceWorkerException(error); 
             }
         }

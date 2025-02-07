@@ -18,14 +18,17 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
   var connectionList: Connection[] = [];
   try {
     if (serviceWorker) {
+      logData.serviceWorker = true;
       try {
         const res: any = await sendMessage(
           "GetCompositionConnectionsBetweenTwoConcepts",
           { ofConceptId, toConcept, mainKey }
         );
+        Logger.logUpdate(logData);  
         return res.data;
       } catch (error) {
         console.error("GetCompositionConnectionsBetweenTwoConcepts sw error: ", error);
+        UpdatePackageLogWithError(logData, 'GetCompositionConnectionsBetweenTwoConcepts', error);
         handleServiceWorkerException(error);
       }
     }

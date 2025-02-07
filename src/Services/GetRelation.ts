@@ -6,15 +6,19 @@ import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
   const logData : any = Logger.logfunction("GetRelation",arguments);
   if (serviceWorker) {
+    logData.serviceWorker = true;
     try {
       const res: any = await sendMessage('GetRelation', {id, relation, inpage, page})
+      Logger.logUpdate(logData);
       return res.data
     } catch (error) {
       console.error('GetRelation error sw: ', error)
+      UpdatePackageLogWithError(logData, 'GetRelation', error);
       handleServiceWorkerException(error)
     }
   }
@@ -44,11 +48,14 @@ export async function GetRelation(id:number, relation:string, inpage:number=10, 
 export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1){
   const logData : any = Logger.logfunction("GetRelationRaw",arguments);
   if (serviceWorker) {
+    logData.serviceWorker = true;
     try {
       const res: any = await sendMessage('GetRelationRaw', {id, relation, inpage, page})
+      Logger.logUpdate(logData); 
       return res.data
     } catch (error) {
       console.error('GetRelationRaw error sw: ', error)
+      UpdatePackageLogWithError(logData, 'GetRelationRaw', error);
       handleServiceWorkerException(error)
     }
   }

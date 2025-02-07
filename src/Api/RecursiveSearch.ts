@@ -24,15 +24,18 @@ export async function RecursiveSearchApi(
 
   try {
     if (serviceWorker) {
+      logData.serviceWorker = true;
       try {
         const res: any = await sendMessage("RecursiveSearchApi", {
           composition,
           listLinkers,
           textSearch,
         });
+        Logger.logUpdate(logData);
         return res.data;
       } catch (error) {
         console.error("RecursiveSearchApi sw error: ", error);
+        UpdatePackageLogWithError(logData, 'RecursiveSearchApi', error);
         handleServiceWorkerException(error);
       }
     }
@@ -61,6 +64,7 @@ export async function RecursiveSearchApi(
 
     } else {
       console.log("recursive search error ", response.status);
+      UpdatePackageLogWithError(logData, 'RecursiveSearchApi', response.status);
       HandleHttpError(response);
     }
     Logger.logUpdate(logData);
@@ -70,8 +74,8 @@ export async function RecursiveSearchApi(
     } else {
       console.log("recursive search unexpected error: ", error);
     }
-    HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
     UpdatePackageLogWithError(logData, 'RecursiveSearchApi', error);
+    HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
   }
   return concepts;
 }
@@ -82,20 +86,23 @@ export async function RecursiveSearchApiWithInternalConnections(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  Logger.logfunction("RecursiveSearchApiWithInternalConnections", arguments);
+  const logData:any = Logger.logfunction("RecursiveSearchApiWithInternalConnections", arguments);
   let concepts: any[] = [];
 
   try {  
     if (serviceWorker) {
+      logData.serviceWorker = true;
       try {
         const res: any = await sendMessage("RecursiveSearchApiWithInternalConnections", {
           composition,
           listLinkers,
           textSearch,
         });
+        Logger.logUpdate(logData);  
         return res.data;
       } catch (error) {
         console.error("RecursiveSearchApiWithInternalConnections sw error: ", error);
+        UpdatePackageLogWithError(logData, 'RecursiveSearchApiWithInternalConnections', error);
         handleServiceWorkerException(error);
       }
     }
@@ -121,8 +128,11 @@ export async function RecursiveSearchApiWithInternalConnections(
         connections
       );
 
+      Logger.logUpdate(logData);  
+
     } else {
       console.log("recursive search error ", response.status);
+      UpdatePackageLogWithError(logData, 'GetCompositionConnectionsBetweenTwoConcepts', response.status);
       HandleHttpError(response);
     }
   } catch (error) {
@@ -131,6 +141,7 @@ export async function RecursiveSearchApiWithInternalConnections(
     } else {
       console.log("recursive search unexpected error: ", error);
     }
+    UpdatePackageLogWithError(logData, 'GetCompositionConnectionsBetweenTwoConcepts', error);
     HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
   }
   return concepts;
@@ -146,15 +157,18 @@ export async function RecursiveSearchApiRaw(
 
   try {
     if (serviceWorker) {
+      logData.serviceWorker = true;
       try {
         const res: any = await sendMessage("RecursiveSearchApiRaw", {
           composition,
           listLinkers,
           textSearch,
         });
+        Logger.logUpdate(logData);  
         return res.data;
       } catch (error) {
         console.error("RecursiveSearchApiRaw sw error: ", error);
+        UpdatePackageLogWithError(logData, 'RecursiveSearchApiRaw', error);
         handleServiceWorkerException(error);
       }
     }
@@ -179,6 +193,7 @@ export async function RecursiveSearchApiRaw(
       return result;
     } else {
       console.log("recursive search error ", response.status);
+      UpdatePackageLogWithError(logData, 'RecursiveSearchApiRaw',  response.status);
       HandleHttpError(response);
     }
     Logger.logUpdate(logData);
@@ -189,8 +204,8 @@ export async function RecursiveSearchApiRaw(
     } else {
       console.log("recursive search unexpected error: ", error);
     }
-    HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
     UpdatePackageLogWithError(logData, 'RecursiveSearchApiRaw', error);
+    HandleInternalError(error, BaseUrl.RecursiveSearchUrl());
   }
 }
 
@@ -204,15 +219,18 @@ export async function RecursiveSearchApiRawFullLinker(
 
   try {
     if (serviceWorker) {
+      logData.serviceWorker = true;
       try {
         const res: any = await sendMessage("RecursiveSearchApiRawFullLinker", {
           composition,
           fullLinkers,
           textSearch,
         });
+        Logger.logUpdate(logData);
         return res.data;
       } catch (error) {
         console.error("RecursiveSearchApiRawFullLinker sw error: ", error);
+        UpdatePackageLogWithError(logData, 'RecursiveSearchApiRawFullLinker', error);
         handleServiceWorkerException(error);
       }
     }
@@ -233,9 +251,11 @@ export async function RecursiveSearchApiRawFullLinker(
       let conceptIds = result.compositionIds;
       let connections = result.internalConnections;
       let externalConnections = result.externalConnections;
+      Logger.logUpdate(logData);
       return result;
     } else {
       console.log("recursive search error ", response.status);
+      UpdatePackageLogWithError(logData, 'RecursiveSearchApiRawFullLinker', response.status);
       HandleHttpError(response);
     }
     Logger.logUpdate(logData);
@@ -262,14 +282,17 @@ export async function RecursiveSearchApiNewRawFullLinker(
   try {
     if (serviceWorker) {
       try {
+        logData.serviceWorker = true;
         const res: any = await sendMessage("RecursiveSearchApiNewRawFullLinker", {
           composition,
           fullLinkers,
           textSearch,
         });
+        Logger.logUpdate(logData); 
         return res.data;
       } catch (error) {
         console.error("RecursiveSearchApiNewRawFullLinker sw error: ", error);
+        UpdatePackageLogWithError(logData, 'RecursiveSearchApiNewRawFullLinker', error);
         handleServiceWorkerException(error);
       }
     }
@@ -294,6 +317,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
       return result;
     } else {
       console.log("recursive search error ", response.status);
+      UpdatePackageLogWithError(logData, 'RecursiveSearchApiNewRawFullLinker', response.status);
       HandleHttpError(response);
     }
     Logger.logUpdate(logData);

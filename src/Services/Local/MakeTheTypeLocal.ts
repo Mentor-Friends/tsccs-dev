@@ -5,6 +5,7 @@ import { SplitStrings } from "../SplitStrings";
 import MakeTheConceptLocal from "./MakeTheConceptLocal";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../../app";
 import { InnerActions } from "../../Constants/general.const";
+import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 /**
  * There are two types of concepts. One type of concept is a type concept. These concepts have no actual value and do not mean
@@ -24,15 +25,18 @@ export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: n
 {
     const logData : any = Logger.logfunction("MakeTheTypeConceptLocal", arguments);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage("MakeTheTypeConceptLocal", {
               typeString, sessionId, sessionUserId, userId, actions
             });
             if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
             if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+            Logger.logUpdate(logData);
             return res.data;
         } catch (error) {
             console.error("MakeTheTypeConceptLocal error sw: ", error);
+            UpdatePackageLogWithError(logData, 'MakeTheTypeConceptLocal', error);
             handleServiceWorkerException(error)
         }
     }

@@ -3,6 +3,7 @@ import { GetConnectionBulk } from "../Api/GetConnectionBulk";
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData, GetConceptBulk, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { CheckForConnectionDeletionWithIds } from "./CheckForConnectionDeletion";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { FindConnectionsOfCompositionsBulkInMemory } from "./FindConnectionsOfCompositionBulkInMemory";
 import { GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionFromMemoryWithConnections, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryFromConnection, GetCompositionWithIdFromMemoryNew } from "./GetComposition";
 
@@ -50,11 +51,14 @@ export async function GetCompositionBulkWithDataId(conceptIds:number[]=[]){
 export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[]=[], connectionIds:number[] = []){
     const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataId", [conceptIds]);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetCompositionFromConnectionsWithDataId', {conceptIds, connectionIds})
+            Logger.logUpdate(logData);
             return res.data
         } catch (error) {
             console.error('GetCompositionFromConnectionsWithDataId error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionFromConnectionsWithDataId', error);
             handleServiceWorkerException(error)
         }
     }
@@ -83,11 +87,14 @@ export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[
 export async function GetCompositionFromConnectionsWithDataIdFromConnections(conceptIds:number[]=[], connectionIds:number[] = []){
     const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdFromConnections", arguments);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdFromConnections', {conceptIds, connectionIds})
+            Logger.logUpdate(logData); 
             return res.data
         } catch (error) {
             console.error('GetCompositionFromConnectionsWithDataIdFromConnections error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionFromConnectionsWithDataIdFromConnections', error);
             handleServiceWorkerException(error)
         }
     }
@@ -114,11 +121,14 @@ export async function GetCompositionFromConnectionsWithDataIdFromConnections(con
 export async function GetCompositionFromConnectionsWithDataIdIndex(conceptIds:number[]=[], connectionIds:number[] = []){
     const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdIndex", arguments);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdIndex', {conceptIds, connectionIds})
+            Logger.logUpdate(logData); 
             return res.data
         } catch (error) {
             console.error('GetCompositionFromConnectionsWithDataIdIndex error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionFromConnectionsWithDataIdIndex', error);
             handleServiceWorkerException(error)
         }
     }
@@ -196,11 +206,14 @@ export async function GetCompositionFromConnectionsWithIndexFromConnections(conc
 export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise<Connection[]>{
     const logData : any = Logger.logfunction("GetConnectionDataPrefetch", arguments);
     if (serviceWorker) {
+        logData.serviceWorker = true;
         try {
             const res: any = await sendMessage('GetConnectionDataPrefetch', {connectionIds})
+            Logger.logUpdate(logData);
             return res.data
         } catch (error) {
             console.error('GetConnectionDataPrefetch error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetConnectionDataPrefetch', error);
             handleServiceWorkerException(error)
         }
     }
