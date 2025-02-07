@@ -9,7 +9,7 @@ import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 /**
  * version of the database. If you want to change the database then you must update this version also.
  */
-var version = 9;
+let version = 10;
 
 
 /**

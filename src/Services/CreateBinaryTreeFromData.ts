@@ -1,4 +1,4 @@
-import { DelayFunctionExecution } from "../app";
+import { Concept, DelayFunctionExecution } from "../app";
 import { getObjectsFromIndexDb } from "../Database/indexeddb";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { IdentifierFlags } from "../DataStructures/IdentifierFlags";
@@ -8,7 +8,8 @@ import { IdentifierFlags } from "../DataStructures/IdentifierFlags";
  */
 export default  async function CreateConceptBinaryTreeFromIndexDb(){
     try{
-        let conceptList = await getObjectsFromIndexDb("concept");
+        //let conceptList = await getObjectsFromIndexDb("concept");
+        let conceptList: Concept[] = [];
         if(Array.isArray(conceptList)){
             for(let i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];

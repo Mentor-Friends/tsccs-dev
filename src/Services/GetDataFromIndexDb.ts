@@ -5,13 +5,15 @@ import { LocalConceptsData } from "../DataStructures/Local/LocalConceptData";
 import { LocalConnectionData } from "../DataStructures/Local/LocalConnectionData";
 import { getObjectsFromLocalIndexDb } from "../Database/indexdblocal";
 import { getObjectsFromIndexDb } from "../Database/indexeddb";
+import { Connection } from "../app";
 
 
 
 
  export async function GetConnectionsFromIndexDb(){
     try{
-        let connectionList = await getObjectsFromIndexDb("connection");
+        //let connectionList:Connection[] = await getObjectsFromIndexDb("connection");
+        let connectionList:Connection[] = [];
         if(Array.isArray(connectionList)){
             for(let i=0 ;i < connectionList.length ;i++){
                 ConnectionData.AddConnectionToMemory(connectionList[i]);
@@ -34,8 +36,8 @@ import { getObjectsFromIndexDb } from "../Database/indexeddb";
 
  export async function GetConnectionsFromIndexDbLocal(){
     try{
-        let connectionList = await getObjectsFromLocalIndexDb("localconnection");
-
+        //let connectionList = await getObjectsFromLocalIndexDb("localconnection");
+        let connectionList:Connection[] = [];
         if(Array.isArray(connectionList)){
             for(let i=0 ;i < connectionList.length ;i++){
                 LocalConnectionData.AddConnectionToMemory(connectionList[i]);
