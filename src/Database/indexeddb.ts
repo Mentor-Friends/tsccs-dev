@@ -43,34 +43,8 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
 
   // open the database.
   const request = indexedDB.open(dbName,version);
-
-  // in case that the database is not opened then log the error.
-  // then we delete the database that is already present with the name
-  // then again try to create the database, since this is a temporary database so it might not matter
-  // but this is a point that we might need to be careful about.
-  // we then reject the promise and report this problem.
-  request.onerror = (event) => {
-      console.error("Why didn't you allow my web app to use IndexedDB?!", event);
-      indexedDB.deleteDatabase(dbName);
-      openDatabase(databaseName);
-      UpdatePackageLogWithError(logData, 'openDatabase', event);
-      reject(event);
-  };
-
-  // in case that the database is allowed to be opened then we return the database object.
-  request.onsuccess = function(event:Event) {
-
-      
-    let target = event.target as IDBOpenDBRequest;
-    IndexDb.db = target.result as IDBDatabase;
-    Logger.logUpdate(logData);
-    resolve(IndexDb.db);
-
-};
-
-// in case that the version is upgraded then we delete all the old databases and then create a new database.
-// version upgrade is a way which we can clean up old databases and its structures.
-request.onupgradeneeded = (event) => {
+  console.log("this is the update version", version, request);
+  request.onupgradeneeded = (event) => {
     let target = event.target as IDBOpenDBRequest;
     let db = target.result as IDBDatabase;
     let conceptDb = "concept";
@@ -111,6 +85,34 @@ request.onupgradeneeded = (event) => {
     Logger.logUpdate(logData);
     resolve(db);
   }
+
+  // in case that the database is not opened then log the error.
+  // then we delete the database that is already present with the name
+  // then again try to create the database, since this is a temporary database so it might not matter
+  // but this is a point that we might need to be careful about.
+  // we then reject the promise and report this problem.
+  request.onerror = (event) => {
+      console.error("Why didn't you allow my web app to use IndexedDB?!", event);
+      indexedDB.deleteDatabase(dbName);
+      openDatabase(databaseName);
+      UpdatePackageLogWithError(logData, 'openDatabase', event);
+      reject(event);
+  };
+
+  // in case that the database is allowed to be opened then we return the database object.
+  request.onsuccess = function(event:Event) {
+
+      
+    let target = event.target as IDBOpenDBRequest;
+    IndexDb.db = target.result as IDBDatabase;
+    Logger.logUpdate(logData);
+    resolve(IndexDb.db);
+
+};
+
+// in case that the version is upgraded then we delete all the old databases and then create a new database.
+// version upgrade is a way which we can clean up old databases and its structures.
+
 });
 
 }
