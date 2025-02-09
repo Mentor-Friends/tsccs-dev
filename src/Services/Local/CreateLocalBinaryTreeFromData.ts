@@ -91,7 +91,7 @@ export async function PopulateTheLocalConceptsToMemory(){
                 }
                 if(idList[2]){
                     // BaseUrl.BASE_RANDOMIZER = idList[2].value;
-                    BaseUrl.setRandomizer(idList[2].value)
+                  //  BaseUrl.setRandomizer(idList[2].value)
                 }
             }
         });
@@ -152,7 +152,7 @@ export async function PopulateTheLocalConceptsToMemory(){
                 if(idList[2]){
                     // BaseUrl.BASE_RANDOMIZER = idList[2].value;
                     
-                    BaseUrl.setRandomizer(idList[2].value)
+                   // BaseUrl.setRandomizer(idList[2].value)
     
                 }
             }
