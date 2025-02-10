@@ -47,7 +47,7 @@ export async function GetTheConceptLocal(id: number){
         return lconcept;
     }
     catch(error){
-        Logger.logError(startTime, "unknown", "read", "unknown", undefined, 200, undefined, "GetTheConceptLocal", [id], "unknown", undefined )
+        // Logger.logError(startTime, "unknown", "read", "unknown", undefined, 200, undefined, "GetTheConceptLocal", [id], "unknown", undefined )
         throw error;
     }
 

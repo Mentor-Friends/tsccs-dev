@@ -89,7 +89,8 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
             else{
                 console.log("Get Concept Bulk error", response.status);
                 // Add Log
-                Logger.logError(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", [passedConcepts], "unknown", undefined)
+                // Logger.logError(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", [passedConcepts], "unknown", undefined)
+                UpdatePackageLogWithError(logData, 'GetConceptBulk', response.status )
                 HandleHttpError(response);
             }
 
@@ -108,7 +109,8 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
       }
 
       // Add Log
-      Logger.logError(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", [passedConcepts], "unknown", undefined)
+      // Logger.logError(startTime, "unknown", "read", "unknown", undefined, 500, error, "GetConceptBulk", [passedConcepts], "unknown", undefined)
+      UpdatePackageLogWithError(logData, 'GetConceptBulk', error )
       
       HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
       UpdatePackageLogWithError(logData, 'GetConceptBulk', error)

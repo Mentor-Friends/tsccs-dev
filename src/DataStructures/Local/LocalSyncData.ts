@@ -160,8 +160,7 @@ export class LocalSyncData{
         }
         catch(error){
             // Add Log
-            Logger.logError(startTime, "unknown", undefined, "unknown", undefined, 500, error, "SyncDataOnline", [], "unknown", undefined )
-    
+            // Logger.logError(startTime, "unknown", undefined, "unknown", undefined, 500, error, "SyncDataOnline", [], "unknown", undefined )
             throw error;
         }
 

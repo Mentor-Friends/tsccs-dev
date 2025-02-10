@@ -1,5 +1,5 @@
 import { strict } from "assert";
-import { BaseUrl } from "../app";
+import { Anomaly, BaseUrl } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
@@ -116,6 +116,34 @@ export class Logger {
         }
     }
 
+    public static logfunction(myFunction:string, ...args:any[]){
+        const startTime = Date.now(); 
+        //  if(this.logPackageActivationStatus){
+        let myarguments: any = args;
+        //let size = Object.values(myarguments[0]).length;
+        const applicationId = BaseUrl.getRandomizer();
+        const sessionId = TokenStorage.sessionId;
+        
+        // console.log("info", myfunction.name, myarguments, myarguments[0].length);
+        let logData: LogData = {
+            startTime: startTime,
+            functionName: myFunction,
+            functionParameters: myarguments,
+            requestFrom: BaseUrl.BASE_APPLICATION,
+            sessionId: sessionId,
+            applicationId: applicationId
+        }
+
+        // Call anomaly detection before function execution
+        Anomaly.scanAnomalyOnFunctionStart(logData);
+
+        console.log(this.formatLogData('INFO', "function called", logData));
+        return this.formatLogData('INFO', "function called", logData);
+        // }
+
+    }
+
+    
     /**
      * Updates log data with execution details.
      * @param logData The log data object to be updated.
@@ -140,8 +168,12 @@ export class Logger {
             if (!logData.serviceWorker === true) {
                 logData.serviceWorker = false;
             }
+
+             // Call anomaly detection after function execution
+            Anomaly.scanAnomalyOnFunctionUpdate(logData);
             // logData.endTime = updateTime;
-            // console.log("Updated Log Data:", logData);
+            console.log("Updated Log Data:", logData);
+
         } catch (error) {
             // console.error("Error updating log data:", error);
             UpdatePackageLogWithError(logData, "Logger.logUpdate", error)
@@ -150,68 +182,45 @@ export class Logger {
     }
 
 
-    public static logfunction(myFunction:string, ...args:any[]){
-        const startTime = Date.now(); 
-        //  if(this.logPackageActivationStatus){
-        let myarguments: any = args;
-        //let size = Object.values(myarguments[0]).length;
-        const applicationId = BaseUrl.getRandomizer();
-        const sessionId = TokenStorage.sessionId;
-
-        // console.log("info", myfunction.name, myarguments, myarguments[0].length);
-        let logData: LogData = {
-            startTime: startTime,
-            functionName: myFunction,
-            functionParameters: myarguments,
-            requestFrom: BaseUrl.BASE_APPLICATION,
-            sessionId: sessionId,
-            applicationId: applicationId
-        }
-        return this.formatLogData('INFO', "function called", logData);
-        // }
-
-    }
-
+    // public static logError(
+    //     startTime: number,
+    //     userId: string | number,
+    //     operationType?: "read" | "create" | "update" | "delete" | "search",
+    //     requestFrom?: string,
+    //     requestIP?: string,
+    //     responseStatus?: number,
+    //     responseData?: any,
+    //     functionName?: string,
+    //     functionParameters?: any[],
+    //     userAgent?: string,
+    //     conceptsUsed?: string[]
+    // ): void {
+    //     try{
+    //         const sessionId = getCookie("SessionId");
+    //         const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+    //         const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
     
-    public static logError(
-        startTime: number,
-        userId: string | number,
-        operationType?: "read" | "create" | "update" | "delete" | "search",
-        requestFrom?: string,
-        requestIP?: string,
-        responseStatus?: number,
-        responseData?: any,
-        functionName?: string,
-        functionParameters?: any[],
-        userAgent?: string,
-        conceptsUsed?: string[]
-    ): void {
-        try{
-            const sessionId = getCookie("SessionId");
-            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-    
-            const logData: LogData = {
-                startTime,
-                userId,
-                operationType,
-                requestFrom,
-                requestIP,
-                responseStatus,
-                responseTime,
-                responseSize,
-                sessionId: sessionId?.toString(),
-                functionName,
-                functionParameters,
-                userAgent,
-                conceptsUsed,
-            };
+    //         const logData: LogData = {
+    //             startTime,
+    //             userId,
+    //             operationType,
+    //             requestFrom,
+    //             requestIP,
+    //             responseStatus,
+    //             responseTime,
+    //             responseSize,
+    //             sessionId: sessionId?.toString(),
+    //             functionName,
+    //             functionParameters,
+    //             userAgent,
+    //             conceptsUsed,
+    //         };
         
-            this.formatLogData("ERROR", `Information logged for ${functionName}`, logData);    
-        } catch(error){
-            console.error("Error on logError");
-        }
-    }
+    //         this.formatLogData("ERROR", `Information logged for ${functionName}`, logData);    
+    //     } catch(error){
+    //         console.error("Error on logError");
+    //     }
+    // }
 
     public static logApplication(type: string, message: string, data?: any): void {
         console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
@@ -228,7 +237,7 @@ export class Logger {
 
             this.applicationLogsData.push(logEntry);
             // this.saveLogToLocalStorage(this.appLogs, logEntry)
-            // console.log("Application Log Updated : ", this.applicationLogsData);
+            console.log("Application Log Updated : ", this.applicationLogsData);
 
         } catch (error) {
             console.error("Failed to log application activity:", error);
@@ -349,6 +358,14 @@ export class Logger {
             localStorage?.removeItem(logType);
             // console.log('Logs removed from localStorage');
         }
+    }
+
+    /**
+     * This method return the packageLogs data in memory
+     * @returns package logs
+     */
+    public static getPackageLogsData() {
+        return this.packageLogsData;
     }
 
 }

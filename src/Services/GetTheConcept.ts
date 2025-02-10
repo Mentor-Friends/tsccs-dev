@@ -68,7 +68,7 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     catch(err){
         console.error("this is the error in the getting concept", err);
         // Add Log
-        Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", [id, userId], "unknown", undefined )
+        // Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", [id, userId], "unknown", undefined )
         throw err;
     }
 

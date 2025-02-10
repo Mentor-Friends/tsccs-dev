@@ -1,6 +1,7 @@
 import { DATA_TYPES_RULES } from "../Validator/constant";
 import { FormFieldData } from "../Validator/interface";
 import * as main  from '../../src/app';
+import { Logger } from '../Middleware/logger.service'
 
 /**
  * Class representing the Anomaly detection logic for checking data validity based on predefined rules.
@@ -237,6 +238,89 @@ export class Anomaly {
             throw error;
         }
     }
+
+    /**
+     * Perform anomaly detection before function start.
+     */
+    public static scanAnomalyOnFunctionStart(logData: any) {
+        try {
+            let anomalyDetails: Record<string, string> = {};
+            let severityCount = 0;
+
+            // Check on session id
+            if (!logData?.sessionId) {
+                anomalyDetails.sessionId = "Session ID is missing";
+                severityCount++;
+            }
+
+            // Check on function parameters
+            if (logData?.functionParameters && logData.functionParameters.length > 50) {
+                anomalyDetails.functionParameters = "Too many parameters passed";
+                severityCount++;
+            }
+
+            // If any anomaly detected, store in logData
+            if (severityCount > 0) {
+                logData.anomalyData = {
+                    anomaly: true,
+                    details: anomalyDetails,
+                    severity: severityCount
+                };
+            } else {
+                logData.anomalyData = { anomaly: false, details: {}, severity: 0 };
+            }
+        } catch (error) {
+            console.error("Error in scanAnomalyOnFunctionStart:", error);
+        }
+    }
+
+
+    /**
+     * Perform anomaly detection after function execution.
+     */
+    public static scanAnomalyOnFunctionUpdate(logData: any) {
+        try {
+            let anomalyDetails: Record<string, string> = {};
+            let severityCount = 0;
+            const packageData:any = Logger.getPackageLogsData();
+
+            // Detect slow response time with assumption of 10 sec.
+            if (logData.responseTime && parseInt(logData.responseTime) > 10000) {
+                anomalyDetails.responseTime = "Function execution took too long";
+                severityCount++;
+            }
+
+            // Get the last 10 logs
+            const lastLogs = packageData.slice(-10);
+
+            // Detect repeated failures in the last 10 logs
+            const failedAttempts = lastLogs.filter(
+                (entry:any) => entry.functionName === logData.functionName && entry.level === "ERROR"
+            ).length;
+
+            if (failedAttempts >= 3) {
+                anomalyDetails.errorCount = "Function has failed multiple times consecutively";
+                severityCount++;
+            }
+
+            console.log("Failed attempts : ", failedAttempts);
+            console.log("Scanning on logUpdate : ", logData);
+
+            // If any anomaly detected, store in logData
+            if (severityCount > 0) {
+                logData.anomalyData = {
+                    anomaly: true,
+                    details: anomalyDetails,
+                    severity: severityCount
+                };
+            }
+        } catch (error) {
+            console.error("Error in scanAnomalyOnFunctionUpdate:", error);
+        }
+    }
+
+
+
 
     /**
      * List all the exported functions of the package

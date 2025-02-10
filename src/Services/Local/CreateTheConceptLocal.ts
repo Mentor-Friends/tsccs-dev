@@ -65,7 +65,7 @@ accessId:number, isComposition: boolean = false, referentId:number = 0, actions:
         return concept;
     }
     catch(error){
-        Logger.logError(startTime, userId, "create", "unknown", "unknown", 500, undefined, "createTheConceptLocal", [referent, typecharacter, userId, categoryId, typeId, accessId, isComposition], undefined)
+        // Logger.logError(startTime, userId, "create", "unknown", "unknown", 500, undefined, "createTheConceptLocal", [referent, typecharacter, userId, categoryId, typeId, accessId, isComposition], undefined)
 
         throw error;
     }
