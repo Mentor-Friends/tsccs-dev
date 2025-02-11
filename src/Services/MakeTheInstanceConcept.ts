@@ -79,7 +79,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                     let conceptString = await CreateTheConceptImmediate(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
                         12, 12, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
                     concept = conceptString as Concept;
-                    MakeTheNameInBackend(concept.id, `${referent}`, typeConcept.id, userId);
+                   // MakeTheNameInBackend(concept.id, `${referent}`, typeConcept.id, userId);
 
                 }
                 let end = new Date().getTime();

@@ -24,6 +24,7 @@ export  class Concept{
     referent: number;
     type: Concept | null | void;
     isNew: boolean;
+    updateRecursion: boolean = false;
     isTemp: boolean = false;
 
 

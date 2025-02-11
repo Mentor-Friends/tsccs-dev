@@ -46,9 +46,9 @@ let updated_on:Date = new Date();
     var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,referentId, referentUserId, referent, securityId,
         securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on, updated_on);
     ConceptsData.AddConcept(concept);
-    
-    CreateTheConceptApi([concept]);
-    //SyncData.AddConcept(concept);
+    concept.updateRecursion = true;
+    //CreateTheConceptApi([concept]);
+    SyncData.AddConcept(concept);
     return concept;
     
 }
