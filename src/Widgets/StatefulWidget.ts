@@ -104,9 +104,13 @@ export class StatefulWidget extends BaseWidget{
    render(){
       if (this.element) {
           this.element.innerHTML =  this.getHtml();
-
+          // to remove trailing event listeners from previous render.
+          const parentElementDom:HTMLElement|null = document.getElementById(this.parentElement)
+          if (parentElementDom) {
+            const newElementWithoutTrailingEventListeners =  parentElementDom.cloneNode(true) as HTMLElement;
+            parentElementDom.replaceWith(newElementWithoutTrailingEventListeners)
+          }
         }
-      //console.log("added-widget-container",this.childWidgetElement);
       // addEvents is called after the element has been mounted.
       console.log("this is the rendering", this);
       this.after_render();
