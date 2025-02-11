@@ -262,7 +262,7 @@ import { removeThePrefix } from "../Common/RegexFunction";
  * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
  * @returns 
  */
-export async function FormatConceptsAndConnectionsNormalList(connections: Connection[],compositionData: any[],  mainComposition: number[], newCompositionData: any, reverse: number [] = []){
+export async function FormatConceptsAndConnectionsNormalList(connections: Connection[] = [],compositionData: any[] = [],  mainComposition: number[] = [], newCompositionData: any, reverse: number [] = []){
     let mainData: any[] = [] ;
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){

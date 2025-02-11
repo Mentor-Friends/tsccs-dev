@@ -5,6 +5,7 @@ module.exports = env => ({
    entry: './src/app.ts',
    mode: 'production',
    //devtool: 'inline-source-map',
+   // devtool: false,
    watch: true,
    output: {
       filename: 'bundle.js',
