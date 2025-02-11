@@ -313,10 +313,10 @@ import { GetWidgetForTree } from "./WidgetBuild";
           }
         }
       }
-      console.log("newWidget ->", newWidget);
+      console.log("newWidget ->", newWidget, tree);
   
       // Unwrap specific containers
-      await unwrapContainers(parentElement, ".mftsccs-marking-element");
+     // await unwrapContainers(parentElement, ".mftsccs-marking-element");
       await unwrapContainers(parentElement, ".widget_container");
   
       return newWidget;
@@ -338,6 +338,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   newWidget.componentDidMountFunction = tree.before_render;
   newWidget.addEventFunction = tree.after_render;
   newWidget.mountChildWidgetsFunction = tree.mount_child;
+  newWidget.inDevelopment = true;
   // newWidget.css = newWidget.css ? newWidget.css : "";
   parentElement.innerHTML = "";
   let newParent = parentElement;
@@ -373,7 +374,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
           }
       }
   }
-  console.log("newWidget ->", newWidget);
+  console.log("newWidget ->", newWidget,tree);
   return newWidget;
 }
   
