@@ -157,7 +157,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
       let that = this;
       this.element.onclick = function (event: any) {
         event.preventDefault();
-        event.stopPropagation();
+        // event.stopPropagation();
         that.createTypeEditor(event);
       };
       this.element.id = this.createWidgetWrapperIdentifier();
