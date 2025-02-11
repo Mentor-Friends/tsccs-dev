@@ -153,15 +153,19 @@ export class BuilderStatefulWidget extends StatefulWidget {
     //console.log('mount parent',)
     if (parent) {
       this.element = document.createElement("div");
+      this.element.id = this.createWidgetWrapperIdentifier();
 
       let that = this;
-      this.element.onclick = function (event: any) {
-        event.preventDefault();
-        event.stopPropagation();
-        that.createTypeEditor(event);
-      };
-      this.element.id = this.createWidgetWrapperIdentifier();
-      this.element.className = "p-2 mftsccs-marking-element";
+      if(this.inDevelopment){
+        this.element.onclick = function (event: any) {
+          event.preventDefault();
+         // event.stopPropagation();
+          that.createTypeEditor(event);
+        };
+      this.element.className = "mftsccs-marking-element";
+        
+      }
+
       this.element.innerHTML = this.getHtml();
       parent?.setAttribute("data-type-value", that.widgetType);
       
