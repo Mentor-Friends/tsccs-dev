@@ -241,8 +241,11 @@ async function init(
       return
     }
 
+
     listenPostMessagaes()
     listenBroadCastMessages()
+
+    // check if manual service worker was activated 
     if (enableSW && enableSW.activate && enableSW.manual) {
       await new Promise((resolve, reject) => {
         navigator.serviceWorker.ready
@@ -260,7 +263,9 @@ async function init(
 
         setTimeout(() => reject('Timeout ready'), 30000)
       })
-    } else if (
+    }
+     else if (
+      // this condition starts the service worker if not manually started.
       enableSW &&
       enableSW?.activate
     ) {
@@ -268,15 +273,18 @@ async function init(
         console.log("service worker initialiing");
         await handleRegisterServiceWorker(enableSW)
       } catch (error) {
+        // run on the main thread.
         await initConceptConnection();
         console.error("Unable to start service worker", error);
       }
     } else {
+      // run on the main thread.
       await initConceptConnection();
       console.warn('Service Worker not activated')
     }
     return true;
   } catch (error) {
+    // run on the main thread.
     await initConceptConnection();
     console.warn("Cannot initialize the system", error);
   }
@@ -463,7 +471,7 @@ function listenBroadCastMessages() {
   });
 }
 /**
- * Method to trigger broadcast message listener
+ * If service worker sends any messages then this will listen.
  */
 function listenPostMessagaes() {
   // broadcast event can be listened through both the service worker and other tabs
