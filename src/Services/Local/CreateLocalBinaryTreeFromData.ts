@@ -2,7 +2,7 @@ import { IdentifierFlags } from "../../DataStructures/IdentifierFlags";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 import { GetLockStatus, getObjectsFromLocalIndexDb, LockTheDatabase, UnlockDatabase, UpdateToDatabase } from "../../Database/indexdblocal";
-import { BaseUrl, DelayFunctionExecution, Logger } from "../../app";
+import { BaseUrl, Concept, DelayFunctionExecution, Logger } from "../../app";
 import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 
@@ -12,7 +12,8 @@ import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 export default  async function CreateLocalBinaryTreeFromIndexDb(){
     const logData : any = Logger.logfunction("CreateLocalBinaryTreeFromIndexDb");
     try{
-        let conceptList = await getObjectsFromLocalIndexDb("localconcept");
+        //let conceptList = await getObjectsFromLocalIndexDb("localconcept");
+        let conceptList:Concept[] = [];
         if(Array.isArray(conceptList)){
             for(let i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
@@ -90,7 +91,7 @@ export async function PopulateTheLocalConceptsToMemory(){
                 }
                 if(idList[2]){
                     // BaseUrl.BASE_RANDOMIZER = idList[2].value;
-                    BaseUrl.setRandomizer(idList[2].value)
+                  //  BaseUrl.setRandomizer(idList[2].value)
                 }
             }
         });
@@ -151,7 +152,7 @@ export async function PopulateTheLocalConceptsToMemory(){
                 if(idList[2]){
                     // BaseUrl.BASE_RANDOMIZER = idList[2].value;
                     
-                    BaseUrl.setRandomizer(idList[2].value)
+                   // BaseUrl.setRandomizer(idList[2].value)
     
                 }
             }

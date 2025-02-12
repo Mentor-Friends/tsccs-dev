@@ -117,6 +117,11 @@ export class Logger {
     }
 
     public static logfunction(myFunction:string, ...args:any[]){
+        console.log("The Block list : \n", Anomaly.blockedFunctions);
+        
+        if(Anomaly.isFunctionBlocked(myFunction)){
+            console.warn(`${myFunction} is in block list`);
+        }
         const startTime = Date.now(); 
         //  if(this.logPackageActivationStatus){
         let myarguments: any = args;
@@ -134,34 +139,55 @@ export class Logger {
             applicationId: applicationId
         }
 
+        // --- Measure execution time and memory usage with anomaly detection ---
+        console.time("logFunctionExecutionTime");
+
+        // Measure memory usage before anomaly scan
+        const memoryBeforeWithAnomaly = process.memoryUsage().heapUsed;
+
         // Call anomaly detection before function execution
         Anomaly.scanAnomalyOnFunctionStart(logData);
 
+        // Log memory usage after anomaly scan
+        const memoryAfterWithAnomaly = process.memoryUsage().heapUsed;
+        
+        // --- Measure the time for log formatting and returning ---
+        console.timeEnd("logFunctionExecutionTime");
+
+        // Log memory stats for comparison
+        console.log("Memory Usage with anomaly:");
+        console.log(`Memory used before anomaly scan: ${memoryBeforeWithAnomaly} bytes`);
+        console.log(`Memory used after anomaly scan: ${memoryAfterWithAnomaly} bytes`);
+        console.log(`Memory difference due to anomaly scan: ${memoryAfterWithAnomaly - memoryBeforeWithAnomaly} bytes`);
+
+        // Format and return the log data
         console.log(this.formatLogData('INFO', "function called", logData));
+
         return this.formatLogData('INFO', "function called", logData);
         // }
 
     }
 
-    
     /**
      * Updates log data with execution details.
      * @param logData The log data object to be updated.
-    */
-    public static logUpdate(logData:LogData){
-
+     */
+    public static logUpdate(logData: LogData) {
         try {
-            // console.log("Log Data for update is : ", logData);
             if (!logData) {
                 console.error("logUpdate failed: logData is undefined");
                 return;
             }
-            const updateTime = Date.now();
+
+            // --- Measure initial memory usage ---
+            const initialMemory = process.memoryUsage().heapUsed;
             
-            //  prevent undefined subtraction
-            logData.startTime = logData.startTime ?? updateTime;
-    
-            const responseTime = updateTime - logData.startTime;
+            // Record the start time of the function execution
+            const startTime = Date.now();
+
+            // Prevent undefined subtraction
+            logData.startTime = logData.startTime ?? startTime;
+            const responseTime = startTime - logData.startTime;
 
             // Update log data with execution details
             logData.responseTime = `${responseTime} ms`;
@@ -169,17 +195,89 @@ export class Logger {
                 logData.serviceWorker = false;
             }
 
-             // Call anomaly detection after function execution
+            // --- Without scanAnomalyOnFunctionUpdate ---
+            console.time("logUpdateWithoutAnomaly");
+
+            // Measure memory usage before and after (without anomaly scan)
+            const memoryBeforeWithoutAnomaly = process.memoryUsage().heapUsed;
+            const logDataWithoutAnomaly = { ...logData };  // Clone to avoid mutation
+
+            console.timeEnd("logUpdateWithoutAnomaly");
+
+            // Measure memory usage after without anomaly scan
+            const memoryAfterWithoutAnomaly = process.memoryUsage().heapUsed;
+
+            // Log memory stats for comparison
+            console.log(`Memory Usage without anomaly:`);
+            console.log(`Memory used before: ${memoryBeforeWithoutAnomaly} bytes`);
+            console.log(`Memory used after: ${memoryAfterWithoutAnomaly} bytes`);
+            console.log(`Memory difference: ${memoryAfterWithoutAnomaly - memoryBeforeWithoutAnomaly} bytes`);
+
+            // --- With scanAnomalyOnFunctionUpdate ---
+            console.time("logUpdateWithAnomaly");
+
+            // Measure memory usage before and after (with anomaly scan)
+            const memoryBeforeWithAnomaly = process.memoryUsage().heapUsed;
+
+            // Call anomaly detection after function execution (includes anomaly scan)
             Anomaly.scanAnomalyOnFunctionUpdate(logData);
-            // logData.endTime = updateTime;
+
+            console.timeEnd("logUpdateWithAnomaly");
+
+            // Measure memory usage after with anomaly scan
+            const memoryAfterWithAnomaly = process.memoryUsage().heapUsed;
+
+            // Log memory stats for comparison
+            console.log(`Memory Usage with anomaly:`);
+            console.log(`Memory used before: ${memoryBeforeWithAnomaly} bytes`);
+            console.log(`Memory used after: ${memoryAfterWithAnomaly} bytes`);
+            console.log(`Memory difference: ${memoryAfterWithAnomaly - memoryBeforeWithAnomaly} bytes`);
+
+            // Log final updated data
             console.log("Updated Log Data:", logData);
 
         } catch (error) {
-            // console.error("Error updating log data:", error);
-            UpdatePackageLogWithError(logData, "Logger.logUpdate", error)
+            UpdatePackageLogWithError(logData, "Logger.logUpdate", error);
         }
-
     }
+    
+    // /**
+    //  * Updates log data with execution details.
+    //  * @param logData The log data object to be updated.
+    // */
+    // public static logUpdate(logData:LogData){
+
+    //     try {
+    //         // console.log("Log Data for update is : ", logData);
+    //         if (!logData) {
+    //             console.error("logUpdate failed: logData is undefined");
+    //             return;
+    //         }
+    //         const updateTime = Date.now();
+            
+    //         //  prevent undefined subtraction
+    //         logData.startTime = logData.startTime ?? updateTime;
+    
+    //         const responseTime = updateTime - logData.startTime;
+
+    //         // Update log data with execution details
+    //         logData.responseTime = `${responseTime} ms`;
+    //         if (!logData.serviceWorker === true) {
+    //             logData.serviceWorker = false;
+    //         }
+
+
+    //         // Call anomaly detection after function execution
+    //         Anomaly.scanAnomalyOnFunctionUpdate(logData);
+    //         // logData.endTime = updateTime;
+    //         console.log("Updated Log Data:", logData);
+
+    //     } catch (error) {
+    //         // console.error("Error updating log data:", error);
+    //         UpdatePackageLogWithError(logData, "Logger.logUpdate", error)
+    //     }
+
+    // }
 
 
     // public static logError(
@@ -223,7 +321,7 @@ export class Logger {
     // }
 
     public static logApplication(type: string, message: string, data?: any): void {
-        console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
+        // console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
         if(!this.logApplicationActivationStatus) return;
         try {
             const timestamp = new Date().toLocaleString();
@@ -237,7 +335,7 @@ export class Logger {
 
             this.applicationLogsData.push(logEntry);
             // this.saveLogToLocalStorage(this.appLogs, logEntry)
-            console.log("Application Log Updated : ", this.applicationLogsData);
+            // console.log("Application Log Updated : ", this.applicationLogsData);
 
         } catch (error) {
             console.error("Failed to log application activity:", error);
@@ -252,7 +350,7 @@ export class Logger {
 
         try {
 
-            console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
+            // console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
             
             if(this.applicationLogsData.length === 0){
                 return
@@ -294,7 +392,7 @@ export class Logger {
 
         try {
 
-            console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
+            // console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
             
             if(this.packageLogsData.length === 0) return
             this.packageLogsData = [];

@@ -1,4 +1,4 @@
-import { Logger } from "../../app";
+import { Anomaly, Logger } from "../../app";
 import { FreeSchemaResponse } from "../../DataStructures/Responses/ErrorResponse";
 
 export  function HandleHttpError(response: Response){
@@ -64,6 +64,14 @@ export function UpdatePackageLogWithError(logData: any, functionName: string, er
 
         logData.level = "ERROR";
         logData.errorMessage = error?.message || "Unknown error occurred";
+        
+        // Add into errorTracker
+        // Anomaly.errorTracker.push(logData)
+        Anomaly.addErrorLog(logData);
+
+        console.log("Updated Error Tracker is : \n", Anomaly.errorTracker);
+
+        Anomaly.scanAnomalyOnFunctionUpdate(logData);
         
         // Log additional error details
         // console.error(`Error in function ${functionName}:`, error);

@@ -33,7 +33,7 @@ export class LocalConnectionData{
         }
         if(connection.id != 0){
 
-            UpdateToDatabase("localconnection",connection);
+            //UpdateToDatabase("localconnection",connection);
         }
         this.connectionArray.push(connection);
     }
@@ -75,7 +75,7 @@ export class LocalConnectionData{
     static AddPermanentConnection(connection: Connection){
         if(connection.id > 0){
 
-            removeFromDatabase("localconnection", connection.ghostId);
+            //removeFromDatabase("localconnection", connection.ghostId);
             ConnectionData.AddConnection(ConvertFromLConnectionToConnection(connection));
         }
     }

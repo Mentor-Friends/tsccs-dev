@@ -29,6 +29,7 @@ export async function LoginToBackend(email:string, password:string){
             }
             else{
               console.log('Login tsccs error message: ', response.status);
+              UpdatePackageLogWithError(logData, 'LoginToBackend', result);
               HandleHttpErrorObject(response, result);
             }
 

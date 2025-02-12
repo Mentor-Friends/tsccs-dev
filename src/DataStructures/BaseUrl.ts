@@ -115,7 +115,7 @@ export class BaseUrl{
     }
 
     static PostLogger(){
-        console.log("The Post Logger URL is : ", this.LOG_SERVER)
+        // console.log("The Post Logger URL is : ", this.LOG_SERVER)
         return this.LOG_SERVER + '/api/logger'
     }
 

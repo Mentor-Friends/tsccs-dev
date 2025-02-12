@@ -34,6 +34,22 @@ export class Anomaly {
     private static cacheExpiryThreshold: number = 10 * 60 * 1000;
 
     /**
+     * Stores the error details
+     * @type {any} - the format is undefined yet
+     */
+    public static errorTracker:any = []
+
+    /**
+     *  Global variable to track block status for each function
+     *  */
+    public static blockedFunctions: Record<string, number> = {};
+
+    /**
+     * Block duration in milliseconds (2 minutes)
+     */
+    public static BLOCK_DURATION : number = 2 * 60 * 1000;
+    
+    /**
      * Constructor that initializes anomaly parameters if the cache is not yet initialized.
      * It ensures that the anomaly parameters are loaded and cached for use.
      */
@@ -244,8 +260,8 @@ export class Anomaly {
      */
     public static scanAnomalyOnFunctionStart(logData: any) {
         try {
-            let anomalyDetails: Record<string, string> = {};
-            let severityCount = 0;
+            let anomalyDetails: Record<string, string> = logData?.anomalyData?.details || {};
+            let severityCount = logData?.anomalyData?.severity || 0;
 
             // Check on session id
             if (!logData?.sessionId) {
@@ -253,8 +269,10 @@ export class Anomaly {
                 severityCount++;
             }
 
+            console.log("The function parameters are : ", logData?.functionParameters);
+
             // Check on function parameters
-            if (logData?.functionParameters && logData.functionParameters.length > 50) {
+            if (logData?.functionParameters && logData.functionParameters.length > 1) {
                 anomalyDetails.functionParameters = "Too many parameters passed";
                 severityCount++;
             }
@@ -269,6 +287,11 @@ export class Anomaly {
             } else {
                 logData.anomalyData = { anomaly: false, details: {}, severity: 0 };
             }
+
+            // if severity is higher than 1 then add function to block list
+            if(severityCount > 1){
+                this.addFunctionToBlockList(logData.functionName)
+            }
         } catch (error) {
             console.error("Error in scanAnomalyOnFunctionStart:", error);
         }
@@ -280,10 +303,18 @@ export class Anomaly {
      */
     public static scanAnomalyOnFunctionUpdate(logData: any) {
         try {
-            let anomalyDetails: Record<string, string> = {};
-            let severityCount = 0;
-            const packageData:any = Logger.getPackageLogsData();
-
+            let anomalyDetails: Record<string, string> = logData?.anomalyData?.details || {};
+            let severityCount = logData?.anomalyData?.severity || 0;
+            
+            // const packageData:any = Logger.getPackageLogsData();
+            // console.log("The package log data are : \n", packageData);
+            
+            console.log("Before scanning on logUpdate : ", logData);
+            console.log("The existing anomaly Detials ", anomalyDetails);
+            
+            const errorList = Anomaly.errorTracker;
+            console.log("The tracked error list is : \n", errorList);
+            console.log("Response time in ms : ", logData.responseTime);
             // Detect slow response time with assumption of 10 sec.
             if (logData.responseTime && parseInt(logData.responseTime) > 10000) {
                 anomalyDetails.responseTime = "Function execution took too long";
@@ -291,19 +322,20 @@ export class Anomaly {
             }
 
             // Get the last 10 logs
-            const lastLogs = packageData.slice(-10);
-
+            const lastErrorList = errorList.slice(-10);
+            console.log("The lastErrorList in memory are : \n ", lastErrorList);
+            
             // Detect repeated failures in the last 10 logs
-            const failedAttempts = lastLogs.filter(
+            const failedAttempts = lastErrorList.filter(
                 (entry:any) => entry.functionName === logData.functionName && entry.level === "ERROR"
             ).length;
 
             if (failedAttempts >= 3) {
-                anomalyDetails.errorCount = "Function has failed multiple times consecutively";
+                anomalyDetails.errorCount = `${logData.functionName} function has failed multiple times consecutively`;
                 severityCount++;
             }
 
-            console.log("Failed attempts : ", failedAttempts);
+            // console.log("Failed attempts : ", failedAttempts);
             console.log("Scanning on logUpdate : ", logData);
 
             // If any anomaly detected, store in logData
@@ -313,13 +345,90 @@ export class Anomaly {
                     details: anomalyDetails,
                     severity: severityCount
                 };
+            } else {
+                logData.anomalyData = { anomaly: false, details: {}, severity: 0 };
+            }
+
+            // if severity is higher than 1 then add function to block list
+            if(severityCount > 1){
+                this.addFunctionToBlockList(logData.functionName)
             }
         } catch (error) {
             console.error("Error in scanAnomalyOnFunctionUpdate:", error);
         }
     }
 
+    /**
+     * Add new error log to the error tracker and store only errors from last five minutes
+     */
+    public static addErrorLog(logData:any) {
+        try {
+            console.log("Came to add error log...")
+            Anomaly.errorTracker.push(logData);
+            const currentTime =  Date.now();
+            // Defining thershold of 5 minutes
+            const fiveMinuteAgo = currentTime - ( 5 * 60 * 1000)
 
+            const recentErrors = []            
+            for(let i = Anomaly.errorTracker.length - 1; i >= 0; i--) {
+                const errorLog = Anomaly.errorTracker[i];
+                console.log("The recent error ", errorLog);
+                console.log("Timestamp : ", errorLog.timestamp);
+                console.log("Fice Minute Ago : ", fiveMinuteAgo);
+                if(errorLog.startTime >= fiveMinuteAgo){
+                    recentErrors.push(errorLog);
+                } else {
+                    break;
+                }
+            }
+
+            // replace with recent
+            Anomaly.errorTracker = recentErrors;
+            console.log("Filtered error logs from the last 5 minutes: ", recentErrors);
+        } catch (error) {
+            console.error("Error in addErrorLog:", error);
+        }
+    }
+
+    /**
+     * Add function to block list
+     * @param  {string} functionName - function name to block
+     */
+    public static addFunctionToBlockList(functionName : string){
+        console.log("Came in add function to block list : ", functionName);
+        
+        try{
+            this.blockedFunctions[functionName] = Date.now();
+            console.log(`${functionName} is blocked due to anomaly detection for 5 minutes.`);
+        } catch(error){
+            console.error("Error occured on addFunctionToBlockList : ", error);
+        }
+    }
+
+    /**
+     * Check either function is in block list or not
+     * @returns boolean
+     */
+    public static isFunctionBlocked(functionName:string) : boolean {
+        try{
+
+            const blockTime = this.blockedFunctions[functionName]
+
+            if(!blockTime) {
+                return false;
+            }
+            const currentTime = Date.now();
+            if(currentTime - blockTime >= this.BLOCK_DURATION) {
+                delete this.blockedFunctions[functionName]; // block duration expired and remove from blocked list
+                return false;
+            }
+            // still in block duration 
+            return true
+        } catch(error) {
+            console.error("Error occured at : ", error);
+            return false // for error case return false for not interrupting execution flow
+        }
+    }
 
 
     /**
@@ -338,13 +447,6 @@ export class Anomaly {
         // });
         // return the_function_s_name;
         return the_exported_list;
-    }
-
-    private static getFunctionaAnomalyParameters(){
-        const params = {
-            executionTime : 5,
-
-        }
     }
 
 }

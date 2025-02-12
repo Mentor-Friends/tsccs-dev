@@ -111,21 +111,21 @@ export class SyncData{
 
      }
 
-     static async syncDataLocalDb(){
-        if(this.conceptsSyncArray.length > 0){
-            for(let i=0; i< this.conceptsSyncArray.length;i++){
-                storeToDatabase("localconcept",this.conceptsSyncArray[i]);
-            }
-            this.conceptsSyncArray = [];
-        }
-         if(this.connectionSyncArray.length > 0){
-            for(let i=0; i< this.connectionSyncArray.length;i++){
-                storeToDatabase("localconnection",this.connectionSyncArray[i]);
-            }
-         this.connectionSyncArray = [];
-        }
-        return "done";
-     }
+    //  static async syncDataLocalDb(){
+    //     if(this.conceptsSyncArray.length > 0){
+    //         for(let i=0; i< this.conceptsSyncArray.length;i++){
+    //             storeToDatabase("localconcept",this.conceptsSyncArray[i]);
+    //         }
+    //         this.conceptsSyncArray = [];
+    //     }
+    //      if(this.connectionSyncArray.length > 0){
+    //         for(let i=0; i< this.connectionSyncArray.length;i++){
+    //             storeToDatabase("localconnection",this.connectionSyncArray[i]);
+    //         }
+    //      this.connectionSyncArray = [];
+    //     }
+    //     return "done";
+    //  }
 
 
  

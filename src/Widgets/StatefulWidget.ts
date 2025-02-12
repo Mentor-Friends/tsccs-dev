@@ -11,6 +11,7 @@ export class StatefulWidget extends BaseWidget{
     css:string = "";
     js: string = "";
 
+
     /**
      * These are the child widgets that need to be added to  this widget
      */
@@ -77,6 +78,7 @@ export class StatefulWidget extends BaseWidget{
      * @param newState 
      */
     setState(newState: any) {
+      console.log("this is setting the state", this);
         this.data = newState;
         this.notify();
         this.render();
@@ -88,8 +90,11 @@ export class StatefulWidget extends BaseWidget{
      * this loadChildWidgets will be called which will help the child widgets be rendered to their respective positions.
      */
     loadChildWidgets(){
+      console.log("this is the child Widgets", this.childWidgets);
           this.childWidgets.map((child: any) => {
           let widget = this.getElementById(child.parentElement);
+          console.log("this is the widget for the child", widget);
+
           if(widget){
             widget.innerHTML = "";
           }
@@ -108,7 +113,7 @@ export class StatefulWidget extends BaseWidget{
         }
       //console.log("added-widget-container",this.childWidgetElement);
       // addEvents is called after the element has been mounted.
-      console.log("this is the rendering", this);
+      //console.log("this is the rendering", this);
       this.after_render();
 
       // then after the child widgets are again loaded.
@@ -122,7 +127,7 @@ export class StatefulWidget extends BaseWidget{
       if(element){
 
          let myelement:NodeListOf<Element> =  element?.querySelectorAll('.'+identifier);
-         console.log("this is the element", element,myelement,identifier);
+        //  console.log("this is the element", element,myelement,identifier);
           return myelement;
       }
       return [];
@@ -205,7 +210,7 @@ export class StatefulWidget extends BaseWidget{
     // }
 
     renderChildWidgets(){
-
+      console.log("this is the render child widget", this);
       function renderChildWidgetRecursive(childWidget: StatefulWidget) {
         if (!childWidget) return
         childWidget.childWidgets?.forEach((child: StatefulWidget) => {

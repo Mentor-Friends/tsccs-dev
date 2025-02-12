@@ -181,12 +181,12 @@ export class ApplicationMonitor {
   
         // Check if the URL is in the ignored URLs list
         if (ignoredUrls.includes(urlString)) {
-          console.log("Ignored URLs detected : ", urlString);
+          // console.log("Ignored URLs detected : ", urlString);
           let networkDetails = {
             'url' : urlString,
             'detail' : 'skip'
           }
-          Logger.logApplication("INFO", "Network Request", networkDetails)
+          // Logger.logApplication("INFO", "Network Request", networkDetails)
           return originalFetch(...args);
         }
     

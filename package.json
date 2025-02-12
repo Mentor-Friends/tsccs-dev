@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD
   "name": "test-in-browser",
   "version": "0.0.29",
   "environment": "production",
+=======
+  "name": "mftsccs-browser",
+  "version": "2.1.52-beta",
+ "environment": "production",
+>>>>>>> ba3bc4e09ed09fed0b47503bbfe2ff03ec069aaf
   "description": "Full Pack of concept and connection system",
   "main": "dist/main.bundle.js",
   "types": "dist/types/app.d.ts",
