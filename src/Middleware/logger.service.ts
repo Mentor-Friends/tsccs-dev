@@ -10,7 +10,7 @@ export class Logger {
     private static packageLogsData: any[] = [];
     private static applicationLogsData: any[] = [];
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 120 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app";
     private static mftsccsBrowser:string = "mftsccs";
@@ -45,7 +45,7 @@ export class Logger {
                 this.sendPackageLogsToServer();
                 this.sendApplicationLogsToServer();
             }
-        }, 60000); // Check every minute
+        }, 30000); // Check every half minute
     }
 
     /**
@@ -214,7 +214,7 @@ export class Logger {
     }
 
     public static logApplication(type: string, message: string, data?: any): void {
-        console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
+        //console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
         if(!this.logApplicationActivationStatus) return;
         try {
             const timestamp = new Date().toLocaleString();
@@ -243,7 +243,7 @@ export class Logger {
 
         try {
 
-            console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
+           // console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
             
             if(this.applicationLogsData.length === 0){
                 return
@@ -285,7 +285,7 @@ export class Logger {
 
         try {
 
-            console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
+            //console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
             
             if(this.packageLogsData.length === 0) return
             this.packageLogsData = [];

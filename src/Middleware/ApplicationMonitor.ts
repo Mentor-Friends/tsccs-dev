@@ -186,7 +186,7 @@ export class ApplicationMonitor {
             'url' : urlString,
             'detail' : 'skip'
           }
-          Logger.logApplication("INFO", "Network Request", networkDetails)
+          //Logger.logApplication("INFO", "Network Request", networkDetails)
           return originalFetch(...args);
         }
     
