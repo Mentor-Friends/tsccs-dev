@@ -4,6 +4,7 @@ export class BaseObserver{
      */
     data: any;
 
+    inDevelopment:boolean = false;
 
 
     /**
