@@ -1,9 +1,10 @@
 import { Connection } from "../DataStructures/Connection";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { BaseUrl } from "../app";
+import { BaseUrl, Logger } from "../app";
 
 export async function GetAllLinkerConnectionsToTheConcept(conceptId:number){
+  const logData : any = Logger.logfunction("GetAllLinkerConnectionsToTheConcept", arguments);
   var connections: Connection[] = [];
 
     try{
@@ -20,6 +21,7 @@ export async function GetAllLinkerConnectionsToTheConcept(conceptId:number){
              var connection = result[i] as Connection;
              connections.push(connection);
             }
+            Logger.logUpdate(logData)
           }
           else{
             console.log("Get all linker connection To the concepts error", "cannot get respone" );
@@ -33,6 +35,7 @@ export async function GetAllLinkerConnectionsToTheConcept(conceptId:number){
         console.log('Get all linker connection To the concepts error(Unexpected): ', error);
       }
       HandleInternalError(error,BaseUrl.GetAllLinkerConnectionToConceptUrl() );
+      UpdatePackageLogWithError(logData, 'GetAllLinkerConnectionsToTheConcept', error)
     }
 
     return connections;

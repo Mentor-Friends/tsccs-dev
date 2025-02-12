@@ -3,7 +3,8 @@ import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndTyp
 import { MakeTheNameInBackend } from "../Api/MakeTheNameInBackend";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
-import { MakeTheTypeConceptApi } from "../app";
+import { handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
 
@@ -21,81 +22,147 @@ import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept"
  * @param referentId In case we need this concept to refer to any other concept.
  * @returns a concept which is either newly created or an older concept that already exists.
  */
-export default async function MakeTheInstanceConcept(type:string, referent:string, composition:boolean=false, userId: number, 
-        passedAccessId:number=4, passedSessionId: number=999, referentId: number = 0){
-            let sessionInformationId: number = passedSessionId;
-            let categoryId: number = 4;
-            let categoryUserId: number = userId; 
-            let referentUserId: number = 999;
-            let securityId: number = 999;
-            let securityUserId: number = userId;
-            let sessionInformationUserId: number = userId;
-            // change this
-            let accessId: number = passedAccessId
-            let accessUserId: number = userId;
+export default async function MakeTheInstanceConcept(
+  type: string,
+  referent: string,
+  composition: boolean = false,
+  userId: number,
+  passedAccessId: number = 4,
+  passedSessionId: number = 999,
+  referentId: number = 0
+) {
+  const logData : any = Logger.logfunction("MakeTheInstanceConcept", arguments);
+  if (serviceWorker) {
+    logData.serviceWorker = true;
+    try {
+      const res: any = await sendMessage("MakeTheInstanceConcept", {
+        type,
+        referent,
+        composition,
+        userId,
+        passedAccessId,
+        passedSessionId,
+        referentId,
+      });
+      Logger.logUpdate(logData);  
+      return res.data;
+    } catch (error) {
+      console.error("MakeTheInstanceConcept sw error: ", error);
+      UpdatePackageLogWithError(logData, 'MakeTheInstanceConcept', error);
+      handleServiceWorkerException(error);
+    }
+  }
 
-            let stringToCheck: string = "";
+  let sessionInformationId: number = passedSessionId;
+  let categoryId: number = 4;
+  let categoryUserId: number = userId;
+  let referentUserId: number = 999;
+  let securityId: number = 999;
+  let securityUserId: number = userId;
+  let sessionInformationUserId: number = userId;
+  // change this
+  let accessId: number = passedAccessId;
+  let accessUserId: number = userId;
 
-            let  stringLength:number = referent.length;
-            let typeConcept = CreateDefaultConcept();
-            let concept: Concept;
-            let startsWithThe = type.startsWith("the_");
+  let stringToCheck: string = "";
 
-            if(startsWithThe){
-                stringToCheck = type;
-            }
-            else{
-                stringToCheck = "the_" + type;
-            }
-            if(composition){
-               let   typeConceptString = await MakeTheTypeConceptApi(type, userId);
-               typeConcept = typeConceptString as Concept;
-               let conceptString = await CreateTheConcept(referent,userId, categoryId, typeConcept.id,
-                referentId, accessId, type);
-                concept = conceptString as Concept;
-            }
-            else if(stringLength > 255){
+  let stringLength: number = referent.length;
+  let typeConcept = CreateDefaultConcept();
+  let concept: Concept;
+  let startsWithThe = type.startsWith("the_");
 
-                let typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
-                typeConcept = typeConceptString  as Concept;
-                let conceptString = await CreateTheConcept(referent,userId, categoryId, typeConcept.id,
-                    referentId,accessId , stringToCheck );
+  if (startsWithThe) {
+    stringToCheck = type;
+  } else {
+    stringToCheck = "the_" + type;
+  }
+  if (composition) {
+    let typeConceptString = await MakeTheTypeConceptApi(type, userId);
+    typeConcept = typeConceptString as Concept;
+    let conceptString = await CreateTheConcept(
+      referent,
+      userId,
+      categoryId,
+      typeConcept.id,
+      referentId,
+      accessId,
+      type
+    );
+    concept = conceptString as Concept;
+  } else if (stringLength > 255) {
+    let typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
+    typeConcept = typeConceptString as Concept;
+    let conceptString = await CreateTheConcept(
+      referent,
+      userId,
+      categoryId,
+      typeConcept.id,
+      referentId,
+      accessId,
+      stringToCheck
+    );
+
+    concept = conceptString as Concept;
+
+    let TheTextsData = new TheTexts(
+      userId,
+      referent,
+      securityId,
+      securityUserId,
+      accessId,
+      accessUserId,
+      sessionInformationId,
+      sessionInformationUserId,
+      Date.now().toString(),
+      true
+    );
+
+    CreateTextData(TheTextsData);
+  } else {
+    let typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
+    typeConcept = typeConceptString as Concept;
+    let conceptByCharTypeString = await GetConceptByCharacterAndType(
+      referent,
+      typeConcept.id
+    );
+    let conceptTypeCharacter = conceptByCharTypeString as Concept;
+    concept = conceptTypeCharacter;
+    if (conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0) {
+      // let makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
+      // let makeTheNameConcept = makeTheNameString as Concept;
+      // concept = conceptTypeCharacter;
+      let conceptString = await CreateTheConceptImmediate(
+        referent,
+        userId,
+        categoryId,
+        typeConcept.id,
+        12,
+        accessId,
+        stringToCheck
+      );
+      concept = conceptString as Concept;
+      MakeTheNameInBackend(concept.id, `${referent}`, typeConcept.id, userId);
+    }
+  }
+  // if(concept){
+  //     if(concept.type == null){
+  //         let conceptType = ConceptsData.GetConcept(concept.typeId);
+  //         if(conceptType == null && concept.typeId != null && concept.typeId != undefined){
+  //             let typeConceptStringNew = await GetConcept(concept.typeId);
+  //             let newTypeConcept = typeConceptStringNew as Concept;
+  //             concept.type = newTypeConcept;
+  //         }
+  //     }
+  // }
+  concept.type = typeConcept;
+  // Add Log
+  // Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 200, concept, "MakeTheInstanceConcept", 
+  //   ['type', 'referent', 'composition', 'userId', 'passedAccessId', 'passedSessionId', 'referentId'], 
+  //   "unknown", 
+  //   undefined 
+  // )
+
+  Logger.logUpdate(logData);
     
-                concept = conceptString as Concept;
-
-                let TheTextsData = new TheTexts(userId,referent,securityId,securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,
-                    Date.now().toString(),true);
-
-                CreateTextData(TheTextsData);
-
-            }
-            else{
-                let typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
-                typeConcept = typeConceptString  as Concept;
-                let conceptByCharTypeString = await GetConceptByCharacterAndType(referent,typeConcept.id);
-                let conceptTypeCharacter = conceptByCharTypeString as Concept;
-                concept = conceptTypeCharacter;
-                if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
-                    // let makeTheNameString = await MakeTheName(referent,userId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId,typeConcept.id, typeConcept.userId,conceptTypeCharacter );
-                    // let makeTheNameConcept = makeTheNameString as Concept;
-                    // concept = conceptTypeCharacter;
-                    let conceptString = await CreateTheConceptImmediate(referent,userId, categoryId, typeConcept.id, 
-                        12, accessId, stringToCheck  );
-                    concept = conceptString as Concept;
-                    MakeTheNameInBackend(concept.id, `${referent}`, typeConcept.id, userId);
-
-                }
-            }
-            // if(concept){
-            //     if(concept.type == null){
-            //         let conceptType = ConceptsData.GetConcept(concept.typeId);
-            //         if(conceptType == null && concept.typeId != null && concept.typeId != undefined){
-            //             let typeConceptStringNew = await GetConcept(concept.typeId);
-            //             let newTypeConcept = typeConceptStringNew as Concept;
-            //             concept.type = newTypeConcept;
-            //         }
-            //     }
-            // }
-            concept.type = typeConcept;
-            return concept;
+  return concept;
 }

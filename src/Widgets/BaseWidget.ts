@@ -7,7 +7,6 @@ export class BaseWidget extends BaseObserver{
      * inside of it.
      */
     elementIdentifier: number = 0;
-
     /**
      * This flag is set to denote that that widget has been mounted
      */
@@ -31,6 +30,8 @@ export class BaseWidget extends BaseObserver{
         return null;
   
       }
+
+
 
 
     /**

@@ -10,12 +10,28 @@ export class BaseUrl{
 
     static NODE_URL: string = "http://localhost:5001";
 
+    static LOG_SERVER:string = "https://logdev.freeschema.com";
+
     static MQTT_CONNECTION:any ;
 
     static BASE_APPLICATION = "";
 
-    static BASE_RANDOMIZER = 999;
+    static FLAGS : any= {
+        logApplication: false,
+        logPackage: false,
+        accessTracker: false,
+        isTest: false
+    }
 
+    public static BASE_RANDOMIZER = 999;
+
+    static setRandomizer(id: number) {
+        console.log('set randomizer', id)
+        this.BASE_RANDOMIZER = id
+    }
+    static getRandomizer() {
+        return this.BASE_RANDOMIZER
+    }
 
 
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';
@@ -86,6 +102,22 @@ export class BaseUrl{
        // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
 
+    static PostPrefetchConceptConnections(){
+        return this.NODE_URL + '/api/v1/access-tracker/sync-access-tracker'
+    }
+
+    static GetSuggestedConcepts(){
+        return this.NODE_URL + '/api/v1/access-tracker/list-concepts-file'
+    }
+
+    static GetSuggestedConnections(){
+        return this.NODE_URL + '/api/v1/access-tracker/list-connections-file'
+    }
+
+    static PostLogger(){
+        return this.LOG_SERVER + '/api/logger'
+    }
+
     static GetAllPrefetchConnectionsUrl(){
         return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';
     }
@@ -100,6 +132,11 @@ export class BaseUrl{
     static DeleteConceptUrl(){
         return this.BASE_URL + '/api/delete_concept';
     }
+
+    static DeleteUserUrl(){
+        return this.BASE_URL + '/api/deleteuser';
+    }
+
 
     static RecursiveSearchUrl(){
         return this.BASE_URL + '/api/recursivesearch-concept-connection';
@@ -240,7 +277,28 @@ export class BaseUrl{
         return this.BASE_URL + '/api/freeschema-query';
     }
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR IMAGE UPLOAD //////////////////////
+    static uploadImageUrl(){
+        return this.BASE_URL + '/api/Image/UploadImage';
+    }
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR FILE UPLOAD //////////////////////
+    static uploadFileUrl(){
+        return this.BASE_URL + '/api/Image/UploadFile';
+    }
 
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////// API FOR SENDING MAIL ////////////////////////
+    static sendMail(){
+        return this.BASE_URL + '/api/sendmail';
+    }
+    static sendBulkMail(){
+        return this.BASE_URL + '/api/sendmail/bulk';
+    }
 
+    static getWidgetData(){
+        return this.BASE_URL + '/api/get-widget';
+    }
 }

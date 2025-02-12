@@ -47,12 +47,12 @@ export class UserBinaryTree{
     }
 
     static async getNodeFromTree(userId:number, sessionId: number ){
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return null;
+        // }
         let key = this.compositeKey(userId, sessionId);
         if(this.root){
             var Node = this.root.getFromNode(key, this.root);

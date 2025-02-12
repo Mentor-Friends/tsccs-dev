@@ -1,10 +1,11 @@
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConnectionBulk } from "../Api/GetConnectionBulk";
 import { Connection } from "../DataStructures/Connection";
-import { ConnectionData, GetConceptBulk } from "../app";
+import { ConnectionData, GetConceptBulk, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { CheckForConnectionDeletionWithIds } from "./CheckForConnectionDeletion";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { FindConnectionsOfCompositionsBulkInMemory } from "./FindConnectionsOfCompositionBulkInMemory";
-import { GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryNew } from "./GetComposition";
+import { GetCompositionFromMemory, GetCompositionFromMemoryNormal, GetCompositionFromMemoryWithConnections, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryFromConnection, GetCompositionWithIdFromMemoryNew } from "./GetComposition";
 
 /**
  * ## Format JUSTDATA ##
@@ -48,14 +49,64 @@ export async function GetCompositionBulkWithDataId(conceptIds:number[]=[]){
  * @returns list of compositions created from the passed conceptIds and connectionIds.
  */
 export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[]=[], connectionIds:number[] = []){
-    let newConnections = await GetConnectionBulk(connectionIds);
-    let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
+    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataId", [conceptIds]);
+    if (serviceWorker) {
+        logData.serviceWorker = true;
+        try {
+            const res: any = await sendMessage('GetCompositionFromConnectionsWithDataId', {conceptIds, connectionIds})
+            Logger.logUpdate(logData);
+            return res.data
+        } catch (error) {
+            console.error('GetCompositionFromConnectionsWithDataId error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionFromConnectionsWithDataId', error);
+            handleServiceWorkerException(error)
+        }
+    }
+      
+    // let newConnections = await GetConnectionBulk(connectionIds);
+    // let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
     //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
     let compositions: any[] = [];
     for(let i=0; i< conceptIds.length;i++){
         let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
         compositions.push(comp);
     }
+    Logger.logUpdate(logData);
+    return compositions;
+}
+
+/**
+ * ## FORMAT DATAIDDATE ##
+ * This is just a different version of GetCompositionFromConnectionsWithDataId, This has the added functionality that 
+ * it also prints out internal connections.
+ * This function converts the conceptIds and internal connectionIds to compositions in data-Id format.
+ * @param conceptIds This is the list of concept ids that need to be converted to compositions. 
+ * @param connectionIds These are the internal connectionIds that need to be passed to create the compositions.
+ * @returns list of compositions created from the passed conceptIds and connectionIds.
+ */
+export async function GetCompositionFromConnectionsWithDataIdFromConnections(conceptIds:number[]=[], connectionIds:number[] = []){
+    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdFromConnections", arguments);
+    if (serviceWorker) {
+        logData.serviceWorker = true;
+        try {
+            const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdFromConnections', {conceptIds, connectionIds})
+            Logger.logUpdate(logData); 
+            return res.data
+        } catch (error) {
+            console.error('GetCompositionFromConnectionsWithDataIdFromConnections error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionFromConnectionsWithDataIdFromConnections', error);
+            handleServiceWorkerException(error)
+        }
+    }
+      
+    let newConnections = await GetConnectionBulk(connectionIds);
+    //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
+    let compositions: any[] = [];
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionWithIdFromMemoryFromConnection(conceptIds[i], newConnections);
+        compositions.push(comp);
+    }
+    Logger.logUpdate(logData);
     return compositions;
 }
 
@@ -68,6 +119,20 @@ export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[
  * @returns dictionary of compositions created from the passed conceptIds and connectionIds with conceptId as its index .
  */
 export async function GetCompositionFromConnectionsWithDataIdIndex(conceptIds:number[]=[], connectionIds:number[] = []){
+    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdIndex", arguments);
+    if (serviceWorker) {
+        logData.serviceWorker = true;
+        try {
+            const res: any = await sendMessage('GetCompositionFromConnectionsWithDataIdIndex', {conceptIds, connectionIds})
+            Logger.logUpdate(logData); 
+            return res.data
+        } catch (error) {
+            console.error('GetCompositionFromConnectionsWithDataIdIndex error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetCompositionFromConnectionsWithDataIdIndex', error);
+            handleServiceWorkerException(error)
+        }
+    }
+
     let newConnections = await GetConnectionBulk(connectionIds);
     let myNewConnections = newConnections as Connection[];
     let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
@@ -77,6 +142,7 @@ export async function GetCompositionFromConnectionsWithDataIdIndex(conceptIds:nu
         let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
         compositions[conceptIds[i]] = comp;
     }
+    Logger.logUpdate(logData);
     return compositions;
 }
 
@@ -101,12 +167,56 @@ export async function GetCompositionFromConnectionsWithIndex(conceptIds:number[]
     return compositions;
 }
 
+
+/**
+ * ## FORMAT DATAIDDATE ##
+ * This is just a different version of GetCompositionFromConnectionsWithDataId, This has the added functionality that 
+ * it also prints out internal connections.
+ * This function converts the conceptIds and internal connectionIds to compositions in data-Id format.
+ * @param conceptIds This is the list of concept ids that need to be converted to compositions. 
+ * @param connectionIds These are the internal connectionIds that need to be passed to create the compositions.
+ * @returns list of compositions created from the passed conceptIds and connectionIds.
+ */
+export async function GetCompositionFromConnectionsWithIndexFromConnections(conceptIds:number[]=[], connectionIds:number[] = []){
+    if (serviceWorker) {
+        try {
+            const res: any = await sendMessage('GetCompositionFromConnectionsWithIndexFromConnections', {conceptIds, connectionIds})
+            return res.data
+        } catch (error) {
+            console.error('GetCompositionFromConnectionsWithIndexFromConnections error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
+      
+    let newConnections = await GetConnectionBulk(connectionIds);
+    //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
+    let compositions: any[] = [];
+    for(let i=0; i< conceptIds.length;i++){
+        let comp = await GetCompositionFromMemoryWithConnections(conceptIds[i], newConnections);
+        compositions[conceptIds[i]] = comp;
+    }
+    return compositions;
+}
+
 /**
  * Used to prefetch all the connections and their related concepts.
  * @param connectionIds these are the connection ids that are used to fetch all the connections and also their related concepts.
  * @returns all the connections that are passed as ids.
  */
 export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise<Connection[]>{
+    const logData : any = Logger.logfunction("GetConnectionDataPrefetch", arguments);
+    if (serviceWorker) {
+        logData.serviceWorker = true;
+        try {
+            const res: any = await sendMessage('GetConnectionDataPrefetch', {connectionIds})
+            Logger.logUpdate(logData);
+            return res.data
+        } catch (error) {
+            console.error('GetConnectionDataPrefetch error sw: ', error)
+            UpdatePackageLogWithError(logData, 'GetConnectionDataPrefetch', error);
+            handleServiceWorkerException(error)
+        }
+    }
     let remainingConnections: number[] = [];
     let connectionsAll:Connection[] = [];
     let remainingIds: any = {};
@@ -120,7 +230,7 @@ export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise
             connectionsAll.push(connection);
         }
     }
-    for(let i=0; i< connectionIds.length; i++){
+    for(let i=0; i< remainingConnections.length; i++){
         remainingIds[connectionIds[i]] = false;
     }
     //await ConnectionData.GetConnectionBulkData(connectionIds, connectionsAll, remainingIds);
@@ -136,8 +246,10 @@ export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise
     for(let j=0 ; j< connectionsAll.length; j++){
         prefetchConcepts.push(connectionsAll[j].ofTheConceptId);
         prefetchConcepts.push(connectionsAll[j].toTheConceptId);
+        prefetchConcepts.push(connectionsAll[j].typeId);
     }
     await GetConceptBulk(prefetchConcepts);
+    Logger.logUpdate(logData);
     return connectionsAll;
 }
 
@@ -150,7 +262,7 @@ export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise
  * @returns a dictionary / object that has key as their conceptId and the value as their composition object.
  */
 export async function GetCompositionFromConnectionsWithDataIdInObject(conceptIds:number[]=[], connections:number[] = []){
-
+    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdInObject", arguments);
     // get all the connections that are not available in memory from the api.
     await GetConnectionBulk(connections);
     // create a list of compositions from the fetched concepts and connections.
@@ -159,6 +271,7 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(conceptIds
         let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
         compositions[conceptIds[i]] = comp;
     }
+    Logger.logUpdate(logData);
     return compositions;
 }
 
@@ -221,6 +334,8 @@ export async function GetCompositionFromConnectionsInObjectNormal(conceptIds:num
     for(let i=0; i< conceptIds.length;i++){
         let comp = await GetCompositionFromMemoryNormal(conceptIds[i]);
         compositions[conceptIds[i]] = comp;
+        console.log("this is the normal data", conceptIds[i], comp);
+
     }
     return compositions;
 }

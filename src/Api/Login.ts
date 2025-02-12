@@ -1,8 +1,10 @@
+import { Logger } from "../app";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { TokenStorage } from '../DataStructures/Security/TokenStorage';
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleHttpErrorObject, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 
 export async function LoginToBackend(email:string, password:string){
+  const logData : any = Logger.logfunction("LoginToBackend", arguments);
     try{
         let object = {
             'email': email,
@@ -13,24 +15,21 @@ export async function LoginToBackend(email:string, password:string){
         myHeaders.append("Content-Type", "application/json");
 
         let requestObject = JSON.stringify(object);
-
             const response = await fetch(BaseUrl.LoginUrl(),{
                 method: 'POST',
                 headers: myHeaders,
                 body: requestObject
             });
+            const result = await response.json();
             if(response.ok){
-              const result = await response.json();
-              console.log(result.data);
               TokenStorage.BearerAccessToken = result.data.token;
-              console.log("this is the token",TokenStorage.BearerAccessToken);
+              Logger.logUpdate(logData);
              return result;
 
             }
             else{
               console.log('Login tsccs error message: ', response.status);
-              HandleHttpError(response);
-
+              HandleHttpErrorObject(response, result);
             }
 
     }
@@ -41,5 +40,6 @@ export async function LoginToBackend(email:string, password:string){
           console.log(' Login tsccs  unexpected error: ', error);
         }
        HandleInternalError(error,BaseUrl.LoginUrl() );
+       UpdatePackageLogWithError(logData, 'LoginToBackend', error);
       }
 }

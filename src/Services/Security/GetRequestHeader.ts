@@ -3,12 +3,21 @@ import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 export function GetRequestHeader(contentType:string ='application/json', 
     Accept: string = 'application/json'
 ){
-
-    var headers = {
-        'Content-Type':contentType,
-        'Authorization': "Bearer " + TokenStorage.BearerAccessToken,
-        'Accept': Accept,
-    };
+    let headers = {};
+    let token:string = TokenStorage.BearerAccessToken;
+    if(token != ""){
+        headers = {
+            'Content-Type':contentType,
+            'Authorization': "Bearer " + TokenStorage.BearerAccessToken,
+            'Accept': Accept,
+        };
+    }
+    else{
+        headers = {
+            'Content-Type':contentType,
+            'Accept': Accept
+        };
+    }
     
     return headers;
 }
@@ -19,11 +28,21 @@ token: string = "",Accept: string = 'application/json',
     if(token == ""){
         token = TokenStorage.BearerAccessToken;
     }
-    var headers = {
-        'Content-Type':contentType,
-        'Authorization': "Bearer " + token,
-        'Accept': Accept
-    };
+    let headers = {};
+    if(token != ""){
+        headers = {
+            'Content-Type':contentType,
+            'Authorization': "Bearer " + token,
+            'Accept': Accept
+        };
+    }
+    else{
+        headers = {
+            'Content-Type':contentType,
+            'Accept': Accept
+        };
+    }
+
     
     return headers;
 }

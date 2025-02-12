@@ -1,10 +1,12 @@
+import { dispatchIdEvent } from "../../app";
 import {  Connection } from "./../Connection";
+import { ConnectionBinaryTree } from "./ConnectionBinaryTree";
 
 export class ConnectionNode{
     key:any;
     value:Connection;
-    leftNode: ConnectionNode | null;
-    rightNode: ConnectionNode | null;
+    leftNode: ConnectionNode | null = null;
+    rightNode: ConnectionNode | null = null;
     currentNode: ConnectionNode | null;
     variants: ConnectionNode [] = [] ;
     height:number = 1;
@@ -51,58 +53,76 @@ export class ConnectionNode{
         return node;
     }
 
+    getMax(a: number, b:number){
+        if( a > b){
+            return a;
+        }
+        return b;
+    }
+
      public addNode(passedNode:ConnectionNode, node:ConnectionNode|null, height:number){
-        if(node  == null){
-            node = passedNode;
+        // try{
+            if(node  == null){
+                //node = passedNode;
+                //ConnectionBinaryTree.connectionAll.push(node.value);
+                return passedNode;
+            }
+    
+            let LeftNode = node.leftNode;
+            let RightNode = node.rightNode;
+    
+            if(passedNode.key < node.key){
+                node.leftNode = this.addNode(passedNode,LeftNode,height);
+            }
+    
+            else if(passedNode.key > node.key){
+               node.rightNode =  this.addNode(passedNode,RightNode,height);
+            }
+    
+            // else if (node.key == passedNode.key && node.key != ""){
+            //     node.currentNode = passedNode;
+            // }
+            else{
+                return node;
+            }
+    
+            node.height = 1 + this.getMax(this.getHeight(node.leftNode), this.getHeight(node.rightNode));
+            let balancingFactor = this.getBalanceFactor(node);
+
+            // this is left heavy
+            if(balancingFactor > 1){
+                if(node.leftNode){
+                    if(this.getBalanceFactor(node.leftNode) >= 0){
+                        return this.rightRotate(node);
+                    }
+                    if(this.getBalanceFactor(node.leftNode) < 0){
+                        node.leftNode = this.leftRotate(node.leftNode);
+                        return this.rightRotate(node);
+                        
+                    }
+                }
+    
+            }
+    
+            // this is right heavy
+            if(balancingFactor < -1){
+                if(node.rightNode){
+                    if(this.getBalanceFactor(node.rightNode) <= 0){
+                        return this.leftRotate(node);
+                    }
+                    if (this.getBalanceFactor(node.rightNode) > 0){
+                        node.rightNode = this.rightRotate(node.rightNode);
+                        return this.leftRotate(node);
+                    }
+                }
+            }
             return node;
-        }
-
-        let LeftNode = node.leftNode;
-        let RightNode = node.rightNode;
-
-        if(node.key > passedNode.key){
-            node.leftNode = this.addNode(passedNode,LeftNode,height);
-        }
-
-        else if(node.key < passedNode.key){
-           node.rightNode =  this.addNode(passedNode,RightNode,height);
-        }
-
-        // else if (node.key == passedNode.key && node.key != ""){
-        //     node.currentNode = passedNode;
         // }
-        else{
-            return node;
-        }
+        // catch(error){
+        //     console.log("this is the error in binary tree making", error, passedNode, node, height);
+        //     //throw error;
+        // }
 
-        node.height = 1 + Math.max(this.getHeight(node.leftNode), this.getHeight(node.rightNode));
-
-        let balancingFactor = this.getBalanceFactor(node);
-        if(balancingFactor > 1){
-            if(node.leftNode){
-                if(passedNode.key < node.leftNode.key){
-                    return this.rightRotate(node);
-                }
-                else if(passedNode.key > node.leftNode.key){
-                    node.leftNode = this.leftRotate(node.leftNode);
-                    return this.rightRotate(node);
-                }
-            }
-
-        }
-
-        if(balancingFactor < -1){
-            if(node.rightNode){
-                if(passedNode.key > node.rightNode.key){
-                    return this.leftRotate(node);
-                }
-                else if (passedNode.key < node.rightNode.key){
-                    node.rightNode = this.rightRotate(node.rightNode);
-                    return this.leftRotate(node);
-                }
-            }
-        }
-        return node;
         
     }
 
@@ -151,7 +171,7 @@ export class ConnectionNode{
             return node;
         }
 
-        node.height = 1 + Math.max(this.getHeight(node.leftNode), this.getHeight(node.rightNode));
+        node.height = 1 + this.getMax(this.getHeight(node.leftNode), this.getHeight(node.rightNode));
         if(debugFlag){
             console.log("height here", node.height);
         }
@@ -224,11 +244,14 @@ export class ConnectionNode{
                 y.leftNode = T2;
     
                 x.rightNode = y;
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(y.rightNode)) + 1;
+                y.height = this.getMax(this.getHeight(y.leftNode), this.getHeight(y.rightNode)) + 1;
                         
-                x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
+                x.height = this.getMax(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
                 return x;
             }
+            console.log("this is the error in right rotation", y, x);
+            throw new Error("Cannot perform right rotation: left node is null.");
+
            // return x;
         }
         return y;
@@ -243,10 +266,12 @@ export class ConnectionNode{
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode),this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = this.getMax(this.getHeight(x.leftNode),this.getHeight(x.rightNode)) + 1;
+                y.height = this.getMax(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
+            console.log("this is the error in left rotation", x, y);
+            throw new Error("Cannot perform left rotation: right node is null.");
             //return y;
         }
         return x;
@@ -270,24 +295,31 @@ export class ConnectionNode{
       }
 
     public getFromNode(id: number, node: ConnectionNode | null) :ConnectionNode | null{
-        if(node){
-            if(id == node.key){
-                if(node.value.count){
-                    node.value.count++ ;
+        try{
+            if(node){
+               // console.log("this is the node test", id, node, node.leftNode, node.rightNode);
+                if(id == node.key){
+                    if(node.value.count){
+                        node.value.count++ ;
+                    }
+                    else{
+                        node.value.count = 1;
+                    }
+                    return node;
                 }
-                else{
-                    node.value.count = 1;
+                else if(id < node.key){
+                    return this.getFromNode(id, node.leftNode);
+                }
+                else if (id > node.key) {
+                    return this.getFromNode(id, node.rightNode);
                 }
                 return node;
             }
-            else if(id < node.key){
-                return this.getFromNode(id, node.leftNode);
-            }
-            else if (id > node.key) {
-                return this.getFromNode(id, node.rightNode);
-            }
-            return node;
         }
+        catch(exception){
+            console.log("this is the exception", id, node, node?.leftNode, node?.rightNode);
+        }
+
         return node;
 
     }
@@ -376,7 +408,8 @@ export class ConnectionNode{
          * This is dispatched incase the connection is deleted and others are listening
          */
         let event = new Event(`${passedNode.value.ofTheConceptId}`);
-        dispatchEvent(event);
+        // dispatchEvent(event);
+        dispatchIdEvent(passedNode.value.ofTheConceptId)
         if(passedNode.leftNode == null){
             let temp = passedNode.rightNode;
             passedNode = null;

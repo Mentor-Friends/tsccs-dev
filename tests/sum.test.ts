@@ -25,7 +25,7 @@ let accessToken = "";
 
 
 test('init', async()=>{
-    return init(url, "", "", nodeUrl, false, applicationName, false).then(data=>{
+    return init(url, "", "", nodeUrl, false, applicationName).then(data=>{
         expect(data).toBe(true);
     })
 });

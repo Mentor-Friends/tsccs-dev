@@ -3,9 +3,10 @@ import { GetConceptByCharacterValueUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept } from "../app";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { CreateDefaultConcept, Logger } from "../app";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 export async function GetConceptByCharacterValue(characterValue: string){
+  const logData : any = Logger.logfunction("GetConceptByCharacterValue", arguments);
   let result:Concept = CreateDefaultConcept();
     try{
             const formdata = new FormData();
@@ -19,12 +20,12 @@ export async function GetConceptByCharacterValue(characterValue: string){
             if(result.id > 0){
               ConceptsData.AddConcept(result);
             }
+            Logger.logUpdate(logData);
           }
           else{
             HandleHttpError(response);
             console.log("Error in Getting concept by character value Error", response.status);
           }
-
 
     }
     catch (error) {
@@ -34,6 +35,7 @@ export async function GetConceptByCharacterValue(characterValue: string){
           console.log('Error in Getting concept by character value unexpected error: ', error);
         }
        HandleInternalError(error,BaseUrl.GetConceptByCharacterValueUrl() );
+       UpdatePackageLogWithError(logData, 'GetConceptByCharacterValue', error);
       }
       return result;
 

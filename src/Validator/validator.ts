@@ -1,4 +1,5 @@
-import { GetConceptByCharacterAndType, MakeTheTypeConcept } from "../app";
+import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
+import { GetConceptByCharacterAndType, Logger, MakeTheTypeConcept, MakeTheTypeConceptApi } from "../app";
 import { DATA_TYPES_RULES } from "./constant";
 import { FormErrors, FormFieldData } from "./interface";
 
@@ -11,6 +12,7 @@ export class Validator {
      * @returns boolean indicating uniqueness
      */
     public async checkUniqueness(type: string, value: string): Promise<boolean> {
+        const logData : any = Logger.logfunction("checkUniqueness")
         // Ensure 'the_' is at the start of the type
         if (!type.startsWith('the_')) {
             type = 'the_' + type; 
@@ -21,15 +23,18 @@ export class Validator {
         const userId: number = 999;
 
         // Create the type concept based on session data
-        let type_concept: any = await MakeTheTypeConcept(type, sessionId, sessionUserId, userId);
+        let type_concept: any = await MakeTheTypeConceptApi(type, userId);
         let type_concept_id: number = type_concept.id;
 
         // Check if the concept exists for the provided value and type_concept_id
         let concept = await GetConceptByCharacterAndType(value, type_concept_id);
-        if (!concept || !concept.id) {
-            return true;
+        console.log("This is the concept for validator", concept);
+        if(concept.id > 0){
+            return false;
         }
-        return false;
+        Logger.logUpdate(logData);
+        return true;
+
     }
 
     /**
@@ -46,12 +51,14 @@ export class Validator {
      * @param file - The file input (if any), used for file type validation.
      * @param required - Whether the field is required.
      * @param isUnique - Whether the field value should be unique.
-     * @returns An array of error messages if validation fails, or an empty array if the field is valid.
+     * @returns An object of error messages if validation fails
      */
     public async validateField(
         fieldName: string,
+        fieldType: string | null,
         dataType: string | null,
         value: string | null,
+        pattern:string | null,
         conceptType: string | null,
         maxLength: number | null,
         minLength: number | null,
@@ -60,63 +67,81 @@ export class Validator {
         accept: string | null,
         file: File | null,
         required: boolean,
-        isUnique: boolean = false // Optional parameter for uniqueness check
-    ): Promise<string[]> {
-        const errors: string[] = [];
-
-        // 1. Validate required field (must not be empty)
-        if (required && (value === null || value === '')) {
-            errors.push(`${fieldName} is required`);
-        }
-
-        // 2. Validate using regex pattern for the data type
-        if (dataType && value) {
-            const pattern = DATA_TYPES_RULES[dataType];
-            if (pattern && value !== '' && !pattern.test(value)) {
-                errors.push(`Invalid format for ${dataType} in ${fieldName}`);
+        isUnique: boolean = false
+    ): Promise< {[fieldName:string] : string } > {
+        const logData : any = Logger.logfunction("validateField")
+        try {
+            let startTime = performance.now()
+            const errors: { [fieldName: string]: string } = {};
+    
+            // 1. Validate required field (must not be empty)
+            if (required && (value === null || value === '')) {
+                errors['required'] = `This is required field`;
             }
-        }
-
-        // 3. Validate maxLength
-        if (value && maxLength !== null && value.length > maxLength) {
-            errors.push(`${fieldName} exceeds the maximum length of ${maxLength}`);
-        }
-
-        // 4. Validate minLength
-        if (value && minLength !== null && value.length < minLength) {
-            errors.push(`${fieldName} must be at least ${minLength} characters long`);
-        }
-
-        // 5. Validate minValue (only for numeric fields)
-        if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
-            errors.push(`${fieldName} must be greater than or equal to ${minValue}`);
-        }
-
-        // 6. Validate maxValue (only for numeric fields)
-        if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
-            errors.push(`${fieldName} must be less than or equal to ${maxValue}`);
-        }
-
-        // 7. File validation: Check if this is a file input
-        if (dataType === 'file' && file) {
-            if (accept) {
-                const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
-                const fileExtension = file.name.split('.').pop()?.toLowerCase();
-                if (fileExtension && !acceptedTypes.includes(fileExtension)) {
-                    errors.push(`${fieldName} must be a valid file type: ${acceptedTypes.join(', ')}`);
+    
+            // 2. Validate using regex pattern for the data type
+            if (dataType && value) {
+                let pattern = DATA_TYPES_RULES[dataType];
+                
+                if (pattern && value !== '' && !pattern.test(value)) {
+                    errors['dataType'] = `Invalid value for ${dataType}`;
                 }
             }
-        }
-
-        // 8. Check if the field needs to be unique and perform uniqueness validation
-        if (conceptType && isUnique && value) {
-            const isUniqueValue = await this.checkUniqueness(conceptType, value);
-            if (!isUniqueValue) {
-                errors.push(`${fieldName} is not unique`);
+    
+            // 3. Check if the provided pattern match with the value or not
+            if (pattern && value) {
+                const regex = typeof pattern  === 'string' ? new RegExp(pattern) : pattern
+                if (value !== '' && !regex.test(value)) {
+                    errors['pattern'] = `Pattern doesn't match with value`;
+                }
             }
-        }
+    
+            // 4. Validate maxLength
+            if (value && maxLength !== null && value.length > maxLength) {
+                errors['maxLength'] = `Length exceeds the maximum length of ${maxLength}`;
+            }
+    
+            // 5. Validate minLength
+            if (value && minLength !== null && value.length < minLength) {
+                errors['minLength'] = `Length must be at least ${minLength} characters long`;
+            }
+    
+            // 6. Validate minValue (only for numeric fields)
+            if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
+                errors['minValue'] = `Value must be greater than or equal to ${minValue}`;
+            }
+    
+            // 7. Validate maxValue (only for numeric fields)
+            if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
+                errors['maxValue'] = `Value must be less than or equal to ${maxValue}`;
+            }
+    
+            // 8. File validation: Check if this is a file input
+            if (file) {
+                if (fieldType && accept) {
+                    const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
+                    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+                    if (fileExtension && !acceptedTypes.includes(fileExtension)) {
+                        errors['accept'] = `File must be a valid file type: ${acceptedTypes.join(', ')}`;
+                    }
+                }
+            }
+    
+            // 9. Check if the field needs to be unique and perform uniqueness validation
+            if (conceptType && isUnique && value) {
+                const isUniqueValue = await this.checkUniqueness(conceptType, value);
+                if (!isUniqueValue) {
+                    errors['unique'] = `Value is not unique`;
+                }
+            }
+            
+            Logger.logUpdate(logData);
 
-        return errors;
+            return errors
+        } catch (error) {
+            UpdatePackageLogWithError(logData, "Validator.validateField", error);
+            throw error
+        }
     }
 
     /**
@@ -132,23 +157,86 @@ export class Validator {
     public async validateForm(formData: { 
         [key: string]: FormFieldData
     }): Promise<FormErrors> {
-        const validationErrors: FormErrors = {}
-
-        // Iterate through the fields in the form data
-        for (const fieldName in formData) {
-            const { value, dataType, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
-
-            // Call the validateField function to validate each field
-            const fieldErrors = await this.validateField(
-                fieldName, dataType, value, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
-            );
-
-            // If there are errors, add them to the errors object
-            if (fieldErrors.length > 0) {
-                validationErrors[fieldName] = fieldErrors;
-            }
+        const logData : any = Logger.logfunction("validateForm");
+        try{
+            let startTime = performance.now()
+            const validationErrors: FormErrors = {};
+    
+            // Iterate through the fields in the form data
+            for (const fieldName in formData) {
+                const { value, fieldType, dataType, pattern, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
+    
+                // Call the validateField function to validate each field
+                const fieldErrors = await this.validateField(
+                    fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
+                );
+    
+                if (Object.keys(fieldErrors).length > 0) validationErrors[fieldName] = fieldErrors;
+    
+            }    
+            Logger.logUpdate(logData);
+            return validationErrors
+        } catch(error){
+            UpdatePackageLogWithError(logData, "Validator.validateForm", error);
+            throw error
         }
+    }
 
-        return validationErrors;
+    /**
+     * 
+     * @param fieldName 
+     * @param fieldType 
+     * @param dataType 
+     * @param value 
+     * @param pattern 
+     * @param conceptType 
+     * @param maxLength 
+     * @param minLength 
+     * @param minValue 
+     * @param maxValue 
+     * @param accept 
+     * @param file 
+     * @param required 
+     * @param isUnique 
+     * @returns Object with status and details
+     */
+    public validate(
+        fieldName: string,
+        fieldType: string | null,
+        dataType: string | null,
+        value: string | null,
+        pattern:string | null,
+        conceptType: string | null,
+        maxLength: number | null,
+        minLength: number | null,
+        minValue: number | null,
+        maxValue: number | null,
+        accept: string | null,
+        file: File | null,
+        required: boolean,
+        isUnique: boolean = false
+    ){
+        const logData : any = Logger.logfunction("validate");
+        try{
+            let error:any = {};
+            this.validateField(
+                fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
+            ).then((err) => {
+                if (Object.keys(err).length > 0) {
+                    error['status'] = false
+                    error['details'] = err;
+                } else {
+                    error['status'] = true
+                }
+            })
+            console.error("Error on validate object");
+            Logger.logUpdate(logData);
+            return error;
+    
+        } catch(error) {
+            UpdatePackageLogWithError(logData, "Validator.validate", error);
+        }
+    
     }
 }
+    

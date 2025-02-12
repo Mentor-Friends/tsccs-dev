@@ -1,0 +1,28 @@
+//import { BuilderStatefulWidget } from "../default/StatefulWidget"
+
+import { TMainLibrary } from "../DataStructures/TypeLibrary";
+import { BuilderStatefulWidget } from "./BuilderStatefulWidget";
+
+
+export class WidgetTree{
+    id: number = 0;
+    name: string = "";
+    html: string = "";
+    css: string = "";
+    js: string = "";
+    library: TMainLibrary = { css:[], js: [] };
+    timestamp:string ="";
+    widgetId: number = 0;
+    type: string = "";
+    clean: string = "";
+    after_render: string = "";
+    before_render: string = "";
+    update: string = "";
+    origin: number = 0;
+    version: number = 0;
+    mount_child: string = "";
+    children:WidgetTree[] = [];
+    wrapper: string = '0';
+    widget: BuilderStatefulWidget = new BuilderStatefulWidget();
+
+}

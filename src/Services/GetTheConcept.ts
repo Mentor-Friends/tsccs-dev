@@ -1,8 +1,10 @@
+import { AccessTracker } from "../AccessTracker/accessTracker";
 import { GetConcept } from "../Api/GetConcept";
-import { convertFromLConceptToConcept, GetUserGhostId } from "../app";
+import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
+
 
 /**
  * 
@@ -11,7 +13,31 @@ import { CreateDefaultConcept } from "./CreateDefaultConcept";
  * @returns Concept if it exists
  */
 export default async function GetTheConcept(id: number, userId: number = 999){
+    let startTime = performance.now()
+    //Logger.logfunction(GetTheConcept,arguments);
+
+    if(AccessTracker.activateStatus){
+        try{
+            AccessTracker.incrementConcept(id)
+        } catch {
+            console.error("Error adding connection in access tracker");
+            Logger.log("ERROR", "Error Adding Connection")
+        }
+    }
+
+
     try{
+        if (serviceWorker) {
+            try {
+                console.time("serviceworker");
+                const res: any = await sendMessage('GetTheConcept', {id, userId})
+                console.timeEnd("serviceworker");
+                return res.data
+            } catch (error) {
+                console.error('GetTheConcept sw error: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
         let concept = CreateDefaultConcept();
         if(id < 0){
            let lconcept:Concept =  await GetUserGhostId(userId, id);
@@ -35,11 +61,14 @@ export default async function GetTheConcept(id: number, userId: number = 999){
                 }
             }
         }
-    
+        // Add Log
+        // Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined )
         return concept;
     }
     catch(err){
         console.error("this is the error in the getting concept", err);
+        // Add Log
+        Logger.logError(startTime, userId, "read", "unknown", undefined, 500, err, "GetTheConcept", [id, userId], "unknown", undefined )
         throw err;
     }
 

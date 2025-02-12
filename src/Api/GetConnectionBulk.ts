@@ -1,11 +1,10 @@
-import { Concept } from "./../DataStructures/Concept";
 import { ConnectionData } from "./../DataStructures/ConnectionData";
-import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 /**
  * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched
@@ -13,9 +12,22 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  * @returns the list of  connections that have been fetched
  */
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
-    let connectionList:Connection[] = [];
+    const logData : any = Logger.logfunction("GetConnectionBulk", connectionIds.length);
 
+    let connectionList:Connection[] = [];
     try{
+        if (serviceWorker) {
+            logData.serviceWorker = true;
+            try {
+                const res: any = await sendMessage('GetConnectionBulk', {connectionIds})
+                Logger.logUpdate(logData);  
+                return res.data
+            } catch (error) {
+                console.error('GetConnectionBulk sw error: ', error);
+                UpdatePackageLogWithError(logData, 'GetConnectionBulk', error);
+                handleServiceWorkerException(error);
+            }
+        }
         if(connectionIds.length > 0){
             let bulkConnectionFetch:number[] = [];
            // if the connections are already present in the local memory then take it from there 
@@ -36,6 +48,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
             //bulkConnectionFetch = connectionIds;
             // if the case that bulkConnectionFetch does not have any elements then we just return everything we have
             if(bulkConnectionFetch.length == 0){
+                Logger.logUpdate(logData);  
                 return connectionList;
             }
             else{
@@ -58,13 +71,14 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
                     }
                 }
                 else{
+                    UpdatePackageLogWithError(logData, 'GetConnectionBulk', response.status);
                     HandleHttpError(response);
                     console.log("Get Connection Bulk error", response.status);
                 }
     
     
     
-    
+            Logger.logUpdate(logData);
             }
         }
 
@@ -75,6 +89,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
         } else {
           console.log('Get Connection Bulk unexpected error: ', error);
         }
+        UpdatePackageLogWithError(logData, 'GetConnectionBulk', error);
         HandleInternalError(error, BaseUrl.GetConnectionBulkUrl());
       }
       await FindConceptsFromConnections(connectionList);

@@ -1,3 +1,4 @@
+import { dispatchIdEvent } from "../../app";
 import { NodePrimitive } from "./NodePrimitive";
 
 export class ConnectionOfNode extends NodePrimitive{
@@ -24,10 +25,10 @@ export class ConnectionOfNode extends NodePrimitive{
 
     public addNode(passedNode: ConnectionOfNode, node: ConnectionOfNode | null, height: number){
         if(node == null){
-            node= passedNode;
+            //node= passedNode;
             // let event = new Event(`${passedNode.key}`);
             // dispatchEvent(event);
-            return node;
+            return passedNode;
         }
 
         let LeftNode = node.leftNode;
@@ -45,11 +46,11 @@ export class ConnectionOfNode extends NodePrimitive{
         let balancingFactor = this.getBalanceFactor(node);
         if(balancingFactor > 1){
             if(node.leftNode){
-                if(passedNode.key < node.leftNode.key){
+                if(this.getBalanceFactor(node.leftNode) >= 0){
                     let returner =  this.rightRotate(node);
                    return returner;
                 }
-                else if(passedNode.key > node.leftNode.key){
+                if(this.getBalanceFactor(node.leftNode) < 0){
                     node.leftNode = this.leftRotate(node.leftNode);
                     let returner =  this.rightRotate(node);
                         return returner;
@@ -59,12 +60,12 @@ export class ConnectionOfNode extends NodePrimitive{
         }
         if(balancingFactor < -1){
             if(node.rightNode){
-                if(passedNode.key > node.rightNode.key){
+                if(this.getBalanceFactor(node.rightNode) <= 0){
 
                     let returner =  this.leftRotate(node);
                     return returner;
                 }
-                else if (passedNode.key < node.rightNode.key){
+                if (this.getBalanceFactor(node.rightNode) > 0){
                     node.rightNode = this.rightRotate(node.rightNode);
                     let returner = this.leftRotate(node);
                     return returner;

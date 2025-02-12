@@ -1,7 +1,8 @@
 import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
-import { LocalSyncData } from "../../app";
+import { Logger } from "../../Middleware/logger.service";
+import { handleServiceWorkerException, InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
 
 /**
  * This function creates a connection for the concept connection system. This connection will only be created in real sense
@@ -17,8 +18,20 @@ import { LocalSyncData } from "../../app";
  * @returns a connection that is created and stored in the local system.
  */
 export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, 
-     typeId: number,orderId:number = 1, typeString: string = "", userId: number = 999
+     typeId: number,orderId:number = 1, typeString: string = "", userId: number = 999, actions: InnerActions = {concepts: [], connections: []}
     ){  
+        let startTime = performance.now()
+        if (serviceWorker) {
+            try {
+                const res: any = await sendMessage('CreateTheConnectionLocal', { ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, actions })
+                if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                return res.data
+            } catch (error) {
+                console.log('CreateTheConnectionLocal error sw: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
         try{
             let accessId : number = 4;
             // let randomid = -Math.floor(Math.random() * 100000000);
@@ -34,13 +47,35 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
                   connection = new Connection(randomid, realOfTheConceptId, realToTheConceptId, userId, typeId, orderId, accessId);
                  connection.isTemp = true;
                  connection.typeCharacter = typeString;
-                 await LocalSyncData.AddConnection(connection);
+                 LocalSyncData.AddConnection(connection);
                  LocalConnectionData.AddConnection(connection);
+                 actions.connections.push(connection)
                  //storeToDatabase("localconnection", connection);
              }
-             return connection;
+
+            //  Add Log
+            // Logger.logInfo(
+            //     startTime, 
+            //     userId, 
+            //     "create",
+            //     "Unknown",
+            //     "Unknown",
+            //     200,
+            //     connection,
+            //     "CreateTheConnectionLocal",
+            //     ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'],
+            //     "UnknownUserAgent",
+            //     []
+            // );
+            
+            return connection;
         }
         catch(error){
+            Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "CreateTheConnectionLocal",
+                [ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId],
+                "UnknownUserAgent",
+                []
+            );
             throw error;
         }
 

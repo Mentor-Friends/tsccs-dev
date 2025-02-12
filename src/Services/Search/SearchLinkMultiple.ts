@@ -1,19 +1,35 @@
 import { SearchLinkMultipleApi } from "../../Api/Search/SearchLinkMultipleApi";
 import { DATAID, JUSTDATA, LISTNORMAL, NORMAL } from "../../Constants/FormatConstants";
 import { SearchQuery } from "../../DataStructures/SearchQuery";
-import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept } from "../../app";
+import { Connection, GetConceptBulk, GetConnectionBulk, GetTheConcept, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../../app";
+import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetCompositionFromConnectionsWithDataIdInObjectNew, GetConnectionDataPrefetch } from "../GetCompositionBulk";
 import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
-  let conceptIds: number[] = [];
-  let linkers: number [] = [];
-  let connections: number[] = [];
-  let reverse: number[] = [];
-  let mainCompositionId: number = searchQuery[0].composition;
-  let conceptsConnections: any = {} ;
-  let result: any = {};
+  const logData : any = Logger.logfunction("SearchLinkMultipleAll", arguments);
   try{
+    try {
+      if (serviceWorker) {
+        logData.serviceWorker = true;
+        const res: any = await sendMessage('SearchLinkMultipleAll', {searchQuery, token, caller, format})
+        // console.log('data received search from sw', res)
+        Logger.logUpdate(logData); 
+        return res.data
+      }
+    } catch (error) { 
+      console.error('SearchLinkMultipleAll error sw: ', error)
+      UpdatePackageLogWithError(logData, 'SearchLinkMultipleAll', error);
+      handleServiceWorkerException(error)
+    }
+  
+    let conceptIds: number[] = [];
+    let linkers: number [] = [];
+    let connections: number[] = [];
+    let reverse: number[] = [];
+    let mainCompositionId: number = searchQuery[0].composition;
+    let conceptsConnections: any = {} ;
+    let result: any = {};
 
     if(caller?.isDataLoaded){
         conceptsConnections.compositionIds = caller.conceptIds?.slice();
@@ -28,7 +44,9 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
 
     }
     else{
-        conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
+      console.log('calling api')
+      conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
+      console.log('calling api end')
 
         if(caller){
           caller.conceptIds = conceptsConnections.compositionIds?.slice();
@@ -52,10 +70,12 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
 
       
     let out = await DataIdBuildLayer(linkers, conceptIds, connections, reverse, mainCompositionId, searchQuery[0], format );
+    Logger.logUpdate(logData);
     return out;
   }
   catch(e){
     console.log("this is the error in the search link multiple", e);
+    UpdatePackageLogWithError(logData, 'SearchLinkMultipleAll', e);
     throw e;
   }
 
@@ -72,35 +92,39 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
  * @returns 
  */
 export async function DataIdBuildLayer(linkers: number [], conceptIds: number[], connections: number[], reverse:number[], mainCompositionId: number, searchQuery: SearchQuery, format: number = DATAID){
-  let startTime = new Date().getTime();
-  let prefetchConnections = await GetConnectionDataPrefetch(linkers);
-  let concepts: any;
-  let out: any;
-  if(format == JUSTDATA){
-    concepts = await GetCompositionFromConnectionsInObject(conceptIds, connections);
-     out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
-
-  } 
-  else if (format == NORMAL){
-     concepts = await GetCompositionFromConnectionsInObjectNormal(conceptIds, connections);
-     out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
+  try {
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let concepts: any;
+    let out: any;
+    if(format == JUSTDATA){
+      concepts = await GetCompositionFromConnectionsInObject(conceptIds, connections);
+       out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
+  
+    } 
+    else if (format == NORMAL){
+       concepts = await GetCompositionFromConnectionsInObjectNormal(conceptIds, connections);
+       out = await FormatFromConnections(linkers, concepts, mainCompositionId, reverse);
+    }
+    else if(format == 100){
+      concepts = await GetCompositionFromConnectionsWithDataIdInObjectNew(conceptIds, connections);
+  
+  
+      out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
+    }
+    else if(format == LISTNORMAL){
+        out = await formatDataArrayNormal(linkers, conceptIds, connections, searchQuery.ofCompositions , reverse );
+  
+    }
+    else{
+      concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds, connections);
+       out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
+   }
+  
+    return out;
+  } catch (err) {
+    console.log('Error Occured in build layer', err)
+    return undefined
   }
-  else if(format == 100){
-    concepts = await GetCompositionFromConnectionsWithDataIdInObjectNew(conceptIds, connections);
-
-
-    out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
-  }
-  else if(format == LISTNORMAL){
-      out = await formatDataArrayNormal(linkers, conceptIds, connections, searchQuery.ofCompositions , reverse );
-
-  }
-  else{
-    concepts = await GetCompositionFromConnectionsWithDataIdInObject(conceptIds, connections);
-     out = await FormatFromConnectionsAltered(prefetchConnections, concepts, mainCompositionId, reverse);
- }
-
-  return out;
 }
 
 
@@ -293,7 +317,10 @@ export async function FormatConceptsAndConnections(connections: Connection[], co
 
   for(let i=0 ; i< mainComposition.length; i++){
     let mymainData = compositionData[mainComposition[i]];
-    mainData.push(mymainData);
+    if(mymainData){
+      mainData.push(mymainData);
+
+    }
     
   }
   return mainData;
@@ -398,7 +425,10 @@ export async function FormatFromConnectionsAlteredArray(connections:Connection[]
   }
   for(let i=0 ; i< mainComposition.length; i++){
     let mymainData = compositionData[mainComposition[i]];
-    mainData.push(mymainData);
+    if(mymainData){
+      mainData.push(mymainData);
+
+    }
     
   }
   return mainData;

@@ -3,12 +3,12 @@ import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
-import { Connection } from "../../app";
+import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
+import { Connection, Logger } from "../../app";
 export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
+  const logData : any = Logger.logfunction("CreateTheGhostConnectionApi", [connectionData.length]);
   let result:Connection[] = [];
     try{
-
 
       var header = GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
       var jsonData = JSON.stringify(connectionData);
@@ -27,6 +27,7 @@ export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
               HandleHttpError(response);
             }
 
+            Logger.logUpdate(logData);
 
     }
     catch (error) {
@@ -35,6 +36,7 @@ export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
         } else {
           console.log(' Create the connection unexpected error: ', error);
         }
+        UpdatePackageLogWithError(logData, 'CreateTheGhostConnectionApi', error);
         throw error;
       }
 }

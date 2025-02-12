@@ -4,9 +4,11 @@ import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
-import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
+import { Logger } from "../../app";
 
 export async function CreateTheCharacter(characterData: TheCharacter){
+  const logData : any = Logger.logfunction("CreateTheCharacter", characterData);
     try{
 
       var characterData = CharacterRepository.GetCharacter(characterData.data);
@@ -26,6 +28,7 @@ export async function CreateTheCharacter(characterData: TheCharacter){
       var savingCharacter = new TheCharacter(result.userId, characterData.data, 0, 0, 4,4,999,999,"",false);
       savingCharacter.id = result.id;
       CharacterRepository.AddCharacter(savingCharacter);
+      Logger.logUpdate(logData);
       return result;
       }
       else{
@@ -41,6 +44,7 @@ export async function CreateTheCharacter(characterData: TheCharacter){
         } else {
           console.log('create the character unexpected error: ', error);
         }
+        UpdatePackageLogWithError(logData, 'CreateTheCharacter', error);
         throw error;
       }
 }

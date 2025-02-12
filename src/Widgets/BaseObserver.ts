@@ -4,6 +4,7 @@ export class BaseObserver{
      */
     data: any;
 
+    inDevelopment:boolean = false;
 
 
     /**
@@ -17,6 +18,7 @@ export class BaseObserver{
     * This is called by any data change. So that any data change will notify all the callback functions to execute.
     */
     notify(){
+        console.log("this is the subscribers", this.subscribers);
         this.subscribers.map((subscriber: any) => {
             subscriber(this.data)
         });

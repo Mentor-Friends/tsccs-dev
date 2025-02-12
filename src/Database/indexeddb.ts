@@ -3,6 +3,8 @@ import { Concept } from "../DataStructures/Concept";
 import { Settings } from "../DataStructures/Settings";
 import { SettingData } from "../DataStructures/SettingData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
+import { Logger } from "../app";
+import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 
 /**
  * version of the database. If you want to change the database then you must update this version also.
@@ -23,12 +25,13 @@ export class IndexDb{
  * @returns a promise that either resolves or rejects opening the database.
  */
 export function openDatabase(databaseName:string): Promise<IDBDatabase>{
-
+  const logData : any = Logger.logfunction("openDatabase", [databaseName, "indexdb"]);
   return new Promise(function(resolve, reject){
   
   // if the indexdb is already initialized then you do not need to again initialize the db so you can get 
   // from memory.
   if(IndexDb.db){
+    Logger.logUpdate(logData);
     resolve( IndexDb.db);
   }
 
@@ -50,6 +53,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
       console.error("Why didn't you allow my web app to use IndexedDB?!", event);
       indexedDB.deleteDatabase(dbName);
       openDatabase(databaseName);
+      UpdatePackageLogWithError(logData, 'openDatabase', event);
       reject(event);
   };
 
@@ -59,6 +63,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
       
     let target = event.target as IDBOpenDBRequest;
     IndexDb.db = target.result as IDBDatabase;
+    Logger.logUpdate(logData);
     resolve(IndexDb.db);
 
 };
@@ -103,6 +108,7 @@ request.onupgradeneeded = (event) => {
         // you can do something here after the db has been created.
       }
     }
+    Logger.logUpdate(logData);
     resolve(db);
   }
 });
@@ -119,6 +125,7 @@ request.onupgradeneeded = (event) => {
  * @returns a promise that if a store is successful then the obejct is returned else rejects with the event.
  */
 export function storeToDatabase(databaseName:string, object:any): Promise<any>{
+  const logData : any = Logger.logfunction("storeToDatabase", [databaseName, "indexdb"]);
   return new Promise(function(resolve, reject){
     console.log("this is storing to the database", object);
     openDatabase(databaseName).then((db: IDBDatabase)=>{
@@ -127,6 +134,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
         let objStore = transaction.objectStore(databaseName);
         const request = objStore.add(object);
         request.onsuccess = (event) =>{
+          Logger.logUpdate(logData);
           resolve(object);
         }
         request.onerror = (event) => {
@@ -137,6 +145,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "data": event,
             "body": object
           };
+          UpdatePackageLogWithError(logData, 'storeToDatabase', errorObject);
           reject(errorObject);
         }
       }
@@ -147,6 +156,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
         "message":"Cannot store to the database because you cannot open the database",
         "data": event
       };
+      UpdatePackageLogWithError(logData, 'storeToDatabase', errorObject);
       reject(errorObject);
     });
   });
@@ -160,13 +170,15 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    * @returns returns the object if it is updated successfully.
    */
  export function UpdateToDatabase(databaseName:string, object:any){
+  const logData : any = Logger.logfunction("UpdateToDatabase", [databaseName, "indexdb"]);
   return new Promise(function(resolve, reject){
-    console.log("this is wriring to the database", object);
+    // console.log("this is wriring to the database", object);
   openDatabase(databaseName).then((db)=>{
     let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
     let objStore = transaction.objectStore(databaseName);
      const request = objStore.put(object);
      request.onsuccess = (event) =>{
+      Logger.logUpdate(logData)
       resolve(object);
      }
      request.onerror = (event) => {
@@ -177,6 +189,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
         "data": event,
         "body": object
       };
+      UpdatePackageLogWithError(logData, 'UpdateToDatabase', errorObject);
       reject(errorObject);
      }
   }).catch((event)=>{
@@ -186,6 +199,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
       "message":"Cannot update to database because you cannot open the database",
       "data": event
     };
+    UpdatePackageLogWithError(logData, 'UpdateToDatabase', errorObject);
     reject(errorObject);
   });
   });
@@ -199,6 +213,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
  * @returns This returns the last object from the database.
  */
   export function GetLastSettingsFromDatabase(){
+    const logData : any = Logger.logfunction("GetLastSettingsFromDatabase", ["indexdb"]);
     return new Promise(function(resolve, reject){
       let databaseName:string = "settings";
       openDatabase(databaseName).then((db: IDBDatabase)=>{
@@ -213,9 +228,11 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
               settingsData = settingsArray[i];
               settingsData = settingsData as SettingData;
             }
+            Logger.logUpdate(logData);
             resolve(settingsData); 
           }
           allobjects.onerror = (event) =>{
+            UpdatePackageLogWithError(logData, 'GetLastSettingsFromDatabase', event);
             reject(event);
           }
         }).catch((event)=>{
@@ -225,6 +242,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "message":"Cannot get last object from database because you cannot open the database",
             "data": event
           };
+            UpdatePackageLogWithError(logData, 'GetLastSettingsFromDatabase', errorObject);
             reject(errorObject);
         });
       });
@@ -238,6 +256,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    *  ai data from the api.
    */
   export function AiUpdateFlag(object:SettingData){
+    const logData : any = Logger.logfunction("AiUpdateFlag", ["indexdb"]);
     return new Promise(function(resolve, reject){
       let databaseName:string = "settings";
       openDatabase(databaseName).then((db)=>{
@@ -245,6 +264,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
         let objStore = transaction.objectStore(databaseName);
         const request = objStore.put(object);
         request.onsuccess = (event) => {
+          Logger.logUpdate(logData);
           resolve(object);
         }
         request.onerror = (event) => {
@@ -255,6 +275,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "data": event,
             "body": object
           };
+          UpdatePackageLogWithError(logData, 'AiUpdateFlag', errorObject);
           reject(errorObject);
         }
         })
@@ -265,6 +286,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "message":"Cannot update AI flag because you cannot open the database",
             "data": event
           };
+          UpdatePackageLogWithError(logData, 'AiUpdateFlag', errorObject);
           reject(errorObject);
       });
     });
@@ -278,6 +300,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    * @returns all the objects that are in the database
    */
   export async function getObjectsFromIndexDb(databaseName:string){
+    const logData : any = Logger.logfunction("getObjectsFromIndexDb", [databaseName, "indexdb"]);
     return new Promise(function(resolve, reject){
       openDatabase(databaseName).then((db: IDBDatabase)=>{
 
@@ -294,6 +317,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
           for(let i=0; i<students.length; i++){
               ConceptList.push(students[i]);
           }
+          Logger.logUpdate(logData);
           resolve(ConceptList); 
 
         }
@@ -305,6 +329,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
           "message":"Cannot get objects from the database because you cannot open the database",
           "data": event
         };
+        UpdatePackageLogWithError(logData, 'getObjectsFromIndexDb', errorObject);
         reject(errorObject);
     });
 
@@ -320,12 +345,14 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
    * @returns an id if the deletion is successful and error with even in case it cannot.
    */
   export function removeFromDatabase(databaseName:string, id:number){
+    const logData : any = Logger.logfunction("removeFromDatabase", [databaseName, "indexdb"]);
     return new Promise(function(resolve, reject){
       openDatabase(databaseName).then((db) => {
         let transaction = db.transaction(databaseName, "readwrite") as IDBTransaction;
         let objectStore =transaction.objectStore(databaseName) as IDBObjectStore;
         const request = objectStore.delete(Number(id));
         request.onsuccess = function(event:Event) {
+            Logger.logUpdate(logData);
             resolve(id);
           };
         request.onerror = (event) => {
@@ -335,6 +362,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "message":"Cannot remove from the database" + databaseName,
             "data": event
           };
+          UpdatePackageLogWithError(logData, 'removeFromDatabase', errorObject);
           reject(errorObject);
         }
 
@@ -347,6 +375,7 @@ export function storeToDatabase(databaseName:string, object:any): Promise<any>{
             "body": id
 
           };
+          UpdatePackageLogWithError(logData, 'removeFromDatabase', errorObject);
           reject(errorObject);
       });
     });

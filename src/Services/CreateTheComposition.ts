@@ -1,11 +1,22 @@
+import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { SyncData } from "../DataStructures/SyncData";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import {createTheConnection} from "./CreateTheConnection";
 import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
-export default  async function CreateTheComposition(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null)
+export default async function CreateTheComposition(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null)
 {
+    if (serviceWorker) {
+        try {
+            const res: any = await sendMessage('CreateTheComposition', {json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId})
+            return res.data
+        } catch (err) {
+            console.error('CreateTheComposition sw error: ', err);
+            handleServiceWorkerException(err);
+        }
+    }
+
     let localUserId:number = userId ?? 999;
     let localAccessId: number = accessId ?? 4;
     let localSessionId: number = sessionInformationId ?? 999;
