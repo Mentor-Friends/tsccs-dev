@@ -5,7 +5,7 @@ import { BaseUrl, Logger } from "../app";
 /**
  * version of the database. If you want to change the database then you must update this version also.
  */
-var version = 9;
+let version = 10;
 
 
 /**
@@ -37,6 +37,55 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
     let localDbName = BaseUrl.BASE_URL + "_FreeSchemaLocal" + BaseUrl.BASE_APPLICATION;
     const request = indexedDB.open(localDbName,version);
 
+      // in case that the version is upgraded then we delete all the old databases and then create a new database.
+  // version upgrade is a way which we can clean up old databases and its structures.
+  request.onupgradeneeded = (event) => {
+
+    var target = event.target as IDBOpenDBRequest;
+    var db = target.result as IDBDatabase;
+    var conceptDb = "localconcept";
+    var connectionDb = "localconnection";
+    var idDb = "localid";
+    console.log("this is the version upgrade", version)
+    if (db.objectStoreNames.contains(conceptDb)){
+      db.deleteObjectStore(conceptDb);
+
+    }
+    if (db.objectStoreNames.contains(connectionDb)){
+      db.deleteObjectStore(connectionDb);
+
+    }
+    if (db.objectStoreNames.contains(idDb)){
+       db.deleteObjectStore(idDb);
+
+    }
+    if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
+      let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
+      objectStore.transaction.oncomplete = (event: Event) => {
+      }
+    }
+    if (!db.objectStoreNames.contains(connectionDb)) { // if there's no database name
+      let  objectStore = db.createObjectStore(connectionDb, {keyPath: 'id'}); // create it
+      objectStore.transaction.oncomplete = (event: Event) => {
+      }
+    }
+    if (!db.objectStoreNames.contains(idDb)) { // if there's no database name
+      let  objectStore = db.createObjectStore(idDb, {keyPath: 'id'}); // create it
+      objectStore.transaction.oncomplete = (event: Event) => {
+          // this is the event in which we initialize the local database
+          // we assume the start of the localconcept by -100, localconnection by -200 and a random value 
+          // which will enable us to identify this local database from others.
+          storeToDatabase(idDb,{"id":0, "value": -100});
+          storeToDatabase(idDb,{"id":1, "value": -200});
+          // storeToDatabase(idDb,{"id":3, "value": BaseUrl.BASE_RANDOMIZER});
+          
+          storeToDatabase(idDb,{"id":3, "value": BaseUrl.getRandomizer()});
+      }
+    }
+
+    resolve(db);
+  }
+
   // in case that the database is not opened then log the error.
   // then we delete the database that is already present with the name
   // then again try to create the database, since this is a temporary database so it might not matter
@@ -61,54 +110,7 @@ export function openDatabase(databaseName:string): Promise<IDBDatabase>{
   
   };
   
-  // in case that the version is upgraded then we delete all the old databases and then create a new database.
-  // version upgrade is a way which we can clean up old databases and its structures.
-  request.onupgradeneeded = (event) => {
 
-      var target = event.target as IDBOpenDBRequest;
-      var db = target.result as IDBDatabase;
-      var conceptDb = "localconcept";
-      var connectionDb = "localconnection";
-      var idDb = "localid";
-      console.log("this is the version upgrade", version)
-      if (db.objectStoreNames.contains(conceptDb)){
-        db.deleteObjectStore(conceptDb);
-
-      }
-      if (db.objectStoreNames.contains(connectionDb)){
-        db.deleteObjectStore(connectionDb);
-
-      }
-      if (db.objectStoreNames.contains(idDb)){
-         db.deleteObjectStore(idDb);
-
-      }
-      if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
-        let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
-        objectStore.transaction.oncomplete = (event: Event) => {
-        }
-      }
-      if (!db.objectStoreNames.contains(connectionDb)) { // if there's no database name
-        let  objectStore = db.createObjectStore(connectionDb, {keyPath: 'id'}); // create it
-        objectStore.transaction.oncomplete = (event: Event) => {
-        }
-      }
-      if (!db.objectStoreNames.contains(idDb)) { // if there's no database name
-        let  objectStore = db.createObjectStore(idDb, {keyPath: 'id'}); // create it
-        objectStore.transaction.oncomplete = (event: Event) => {
-            // this is the event in which we initialize the local database
-            // we assume the start of the localconcept by -100, localconnection by -200 and a random value 
-            // which will enable us to identify this local database from others.
-            storeToDatabase(idDb,{"id":0, "value": -100});
-            storeToDatabase(idDb,{"id":1, "value": -200});
-            // storeToDatabase(idDb,{"id":3, "value": BaseUrl.BASE_RANDOMIZER});
-            
-            storeToDatabase(idDb,{"id":3, "value": BaseUrl.getRandomizer()});
-        }
-      }
-
-      resolve(db);
-    }
   });
   
   }
