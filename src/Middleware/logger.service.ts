@@ -117,77 +117,82 @@ export class Logger {
     }
 
     public static logfunction(myFunction:string, ...args:any[]){
-        console.log("The Block list : \n", Anomaly.blockedFunctions);
+        const logFunctionStart = Date.now();
+        try{
+            console.log("The Block list : \n", Anomaly.blockedFunctions);
         
-        if(Anomaly.isFunctionBlocked(myFunction)){
-            console.warn(`${myFunction} is in block list`);
+            if(Anomaly.isFunctionBlocked(myFunction)){
+                console.warn(`${myFunction} is in block list`);
+            }
+            const startTime = Date.now(); 
+            //  if(this.logPackageActivationStatus){
+            let myarguments: any = args;
+            //let size = Object.values(myarguments[0]).length;
+            const applicationId = BaseUrl.getRandomizer();
+            const sessionId = TokenStorage.sessionId;
+            
+            // console.log("info", myfunction.name, myarguments, myarguments[0].length);
+            let logData: LogData = {
+                startTime: startTime,
+                functionName: myFunction,
+                functionParameters: myarguments,
+                requestFrom: BaseUrl.BASE_APPLICATION,
+                sessionId: sessionId,
+                applicationId: applicationId
+            }
+
+            // --------------- Without Anomaly Detection on logFunction ---------------------------
+            const logFunctionEnd = Date.now();
+            let memoryBeforeAnomaly = getMemoryUsage();
+            
+            // --------------- With Anomaly Detection on logFunction ------------------------
+            Anomaly.scanAnomalyOnFunctionStart(logData);
+            const logFunctionWithAnomaly = Date.now()
+            let memoryAfterAnomaly = getMemoryUsage();
+
+            // const memoryAfterAnomaly = process.memoryUsage().heapUsed;
+            
+            // // Memory stats for comparison
+            console.log(`------------Memory usage on logFunction:-----------`);
+            console.log(`Memory used before: ${memoryBeforeAnomaly} bytes`);
+            console.log(`Memory used after: ${memoryAfterAnomaly} bytes`);
+            console.log(`Memory difference: ${memoryAfterAnomaly - memoryBeforeAnomaly} bytes`);
+
+            // Time stats for comparison
+            console.log(`------------Time usage on logFunction:-----------`);
+            const timeForLogUpdate = logFunctionEnd - logFunctionEnd
+            const timeForLogUpdateWithAnomalyDetection = logFunctionWithAnomaly - logFunctionEnd 
+            console.log(`Time used for logFunction: ${timeForLogUpdate} ms`);
+            console.log(`Time used for logFunction with Anomaly Detection : ${timeForLogUpdateWithAnomalyDetection} ms`);
+            console.log(`Time difference: ${timeForLogUpdateWithAnomalyDetection - timeForLogUpdate} ms`);
+
+            return this.formatLogData('INFO', "function called", logData);
+        } catch (err) {
+            console.error('Error occured on logFunction : ', err);
         }
-        const startTime = Date.now(); 
-        //  if(this.logPackageActivationStatus){
-        let myarguments: any = args;
-        //let size = Object.values(myarguments[0]).length;
-        const applicationId = BaseUrl.getRandomizer();
-        const sessionId = TokenStorage.sessionId;
-        
-        // console.log("info", myfunction.name, myarguments, myarguments[0].length);
-        let logData: LogData = {
-            startTime: startTime,
-            functionName: myFunction,
-            functionParameters: myarguments,
-            requestFrom: BaseUrl.BASE_APPLICATION,
-            sessionId: sessionId,
-            applicationId: applicationId
-        }
 
-        // --- Measure execution time and memory usage with anomaly detection ---
-        console.time("logFunctionExecutionTime");
-
-        // Measure memory usage before anomaly scan
-        const memoryBeforeWithAnomaly = process.memoryUsage().heapUsed;
-
-        // Call anomaly detection before function execution
-        Anomaly.scanAnomalyOnFunctionStart(logData);
-
-        // Log memory usage after anomaly scan
-        const memoryAfterWithAnomaly = process.memoryUsage().heapUsed;
-        
-        // --- Measure the time for log formatting and returning ---
-        console.timeEnd("logFunctionExecutionTime");
-
-        // Log memory stats for comparison
-        console.log("Memory Usage with anomaly:");
-        console.log(`Memory used before anomaly scan: ${memoryBeforeWithAnomaly} bytes`);
-        console.log(`Memory used after anomaly scan: ${memoryAfterWithAnomaly} bytes`);
-        console.log(`Memory difference due to anomaly scan: ${memoryAfterWithAnomaly - memoryBeforeWithAnomaly} bytes`);
-
-        // Format and return the log data
-        console.log(this.formatLogData('INFO', "function called", logData));
-
-        return this.formatLogData('INFO', "function called", logData);
         // }
 
     }
-
+    
     /**
      * Updates log data with execution details.
      * @param logData The log data object to be updated.
-     */
-    public static logUpdate(logData: LogData) {
+    */
+    public static logUpdate(logData:LogData){
+        const logUpdateStart = Date.now()
         try {
+            // console.log("Log Data for update is : ", logData);
             if (!logData) {
                 console.error("logUpdate failed: logData is undefined");
                 return;
             }
-
-            // --- Measure initial memory usage ---
-            const initialMemory = process.memoryUsage().heapUsed;
+            const updateTime = Date.now();
             
-            // Record the start time of the function execution
-            const startTime = Date.now();
-
-            // Prevent undefined subtraction
-            logData.startTime = logData.startTime ?? startTime;
-            const responseTime = startTime - logData.startTime;
+            //  prevent undefined subtraction
+            logData.startTime = logData.startTime ?? updateTime;
+    
+            const responseTime = updateTime - logData.startTime;
 
             // Update log data with execution details
             logData.responseTime = `${responseTime} ms`;
@@ -195,130 +200,82 @@ export class Logger {
                 logData.serviceWorker = false;
             }
 
-            // --- Without scanAnomalyOnFunctionUpdate ---
-            console.time("logUpdateWithoutAnomaly");
-
-            // Measure memory usage before and after (without anomaly scan)
-            const memoryBeforeWithoutAnomaly = process.memoryUsage().heapUsed;
-            const logDataWithoutAnomaly = { ...logData };  // Clone to avoid mutation
-
-            console.timeEnd("logUpdateWithoutAnomaly");
+            // ------------------ Without Anomaly Detection on logUpdate ----------------------
+            const memoryBeforeAnomaly = getMemoryUsage();
+            const logUpdateEndWithoutAnomaly = Date.now();
+            
+            // Call anomaly detection after function execution
+            Anomaly.scanAnomalyOnFunctionUpdate(logData);
+            const logUpdateEndWithAnomaly = Date.now();
+            // logData.endTime = updateTime;
 
             // Measure memory usage after without anomaly scan
-            const memoryAfterWithoutAnomaly = process.memoryUsage().heapUsed;
+            const memoryAfterAnomaly = getMemoryUsage();
 
-            // Log memory stats for comparison
-            console.log(`Memory Usage without anomaly:`);
-            console.log(`Memory used before: ${memoryBeforeWithoutAnomaly} bytes`);
-            console.log(`Memory used after: ${memoryAfterWithoutAnomaly} bytes`);
-            console.log(`Memory difference: ${memoryAfterWithoutAnomaly - memoryBeforeWithoutAnomaly} bytes`);
+            // // Memory stats for comparison
+            console.log(`------------Memory Usage  on logUpdate:-----------`);
+            console.log(`Memory used before: ${memoryBeforeAnomaly} bytes`);
+            console.log(`Memory used after: ${memoryAfterAnomaly} bytes`);
+            console.log(`Memory difference: ${memoryAfterAnomaly - memoryBeforeAnomaly} bytes`);
 
-            // --- With scanAnomalyOnFunctionUpdate ---
-            console.time("logUpdateWithAnomaly");
-
-            // Measure memory usage before and after (with anomaly scan)
-            const memoryBeforeWithAnomaly = process.memoryUsage().heapUsed;
-
-            // Call anomaly detection after function execution (includes anomaly scan)
-            Anomaly.scanAnomalyOnFunctionUpdate(logData);
-
-            console.timeEnd("logUpdateWithAnomaly");
-
-            // Measure memory usage after with anomaly scan
-            const memoryAfterWithAnomaly = process.memoryUsage().heapUsed;
-
-            // Log memory stats for comparison
-            console.log(`Memory Usage with anomaly:`);
-            console.log(`Memory used before: ${memoryBeforeWithAnomaly} bytes`);
-            console.log(`Memory used after: ${memoryAfterWithAnomaly} bytes`);
-            console.log(`Memory difference: ${memoryAfterWithAnomaly - memoryBeforeWithAnomaly} bytes`);
+            // Time stats for comparison
+            console.log(`------------Time usage on logUpdate:-----------`);
+            const timeForLogUpdate = logUpdateEndWithoutAnomaly - logUpdateStart
+            const timeForLogUpdateWithAnomalyDetection = logUpdateEndWithAnomaly - logUpdateEndWithoutAnomaly
+            console.log(`Time used for logUpdate: ${timeForLogUpdate} ms`);
+            console.log(`Time used for logUpdate with Anomaly Detection : ${timeForLogUpdateWithAnomalyDetection} ms`);
+            console.log(`Time difference: ${timeForLogUpdateWithAnomalyDetection - timeForLogUpdate} ms`);
 
             // Log final updated data
             console.log("Updated Log Data:", logData);
 
         } catch (error) {
-            UpdatePackageLogWithError(logData, "Logger.logUpdate", error);
+            // console.error("Error updating log data:", error);
+            UpdatePackageLogWithError(logData, "Logger.logUpdate", error)
+        }
+
+    }
+
+
+    public static logError(
+        startTime: number,
+        userId: string | number,
+        operationType?: "read" | "create" | "update" | "delete" | "search",
+        requestFrom?: string,
+        requestIP?: string,
+        responseStatus?: number,
+        responseData?: any,
+        functionName?: string,
+        functionParameters?: any[],
+        userAgent?: string,
+        conceptsUsed?: string[]
+    ): void {
+        try{
+            const sessionId = getCookie("SessionId");
+            const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
+            const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
+    
+            const logData: LogData = {
+                startTime,
+                userId,
+                operationType,
+                requestFrom,
+                requestIP,
+                responseStatus,
+                responseTime,
+                responseSize,
+                sessionId: sessionId?.toString(),
+                functionName,
+                functionParameters,
+                userAgent,
+                conceptsUsed,
+            };
+        
+            this.formatLogData("ERROR", `Information logged for ${functionName}`, logData);    
+        } catch(error){
+            console.error("Error on logError");
         }
     }
-    
-    // /**
-    //  * Updates log data with execution details.
-    //  * @param logData The log data object to be updated.
-    // */
-    // public static logUpdate(logData:LogData){
-
-    //     try {
-    //         // console.log("Log Data for update is : ", logData);
-    //         if (!logData) {
-    //             console.error("logUpdate failed: logData is undefined");
-    //             return;
-    //         }
-    //         const updateTime = Date.now();
-            
-    //         //  prevent undefined subtraction
-    //         logData.startTime = logData.startTime ?? updateTime;
-    
-    //         const responseTime = updateTime - logData.startTime;
-
-    //         // Update log data with execution details
-    //         logData.responseTime = `${responseTime} ms`;
-    //         if (!logData.serviceWorker === true) {
-    //             logData.serviceWorker = false;
-    //         }
-
-
-    //         // Call anomaly detection after function execution
-    //         Anomaly.scanAnomalyOnFunctionUpdate(logData);
-    //         // logData.endTime = updateTime;
-    //         console.log("Updated Log Data:", logData);
-
-    //     } catch (error) {
-    //         // console.error("Error updating log data:", error);
-    //         UpdatePackageLogWithError(logData, "Logger.logUpdate", error)
-    //     }
-
-    // }
-
-
-    // public static logError(
-    //     startTime: number,
-    //     userId: string | number,
-    //     operationType?: "read" | "create" | "update" | "delete" | "search",
-    //     requestFrom?: string,
-    //     requestIP?: string,
-    //     responseStatus?: number,
-    //     responseData?: any,
-    //     functionName?: string,
-    //     functionParameters?: any[],
-    //     userAgent?: string,
-    //     conceptsUsed?: string[]
-    // ): void {
-    //     try{
-    //         const sessionId = getCookie("SessionId");
-    //         const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
-    //         const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
-    
-    //         const logData: LogData = {
-    //             startTime,
-    //             userId,
-    //             operationType,
-    //             requestFrom,
-    //             requestIP,
-    //             responseStatus,
-    //             responseTime,
-    //             responseSize,
-    //             sessionId: sessionId?.toString(),
-    //             functionName,
-    //             functionParameters,
-    //             userAgent,
-    //             conceptsUsed,
-    //         };
-        
-    //         this.formatLogData("ERROR", `Information logged for ${functionName}`, logData);    
-    //     } catch(error){
-    //         console.error("Error on logError");
-    //     }
-    // }
 
     public static logApplication(type: string, message: string, data?: any): void {
         // console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
@@ -398,9 +355,17 @@ export class Logger {
             this.packageLogsData = [];
 
             const chunkSize = 300;
+            
+            const totalStartTime = Date.now() // start time to track entire process
+            const totalMemoryBefore = getMemoryUsage() // memory before starting log sending process
+            
             for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
                 let header= GetRequestHeader();
+
+                let chunkMemoryBefore = getMemoryUsage();
+                const chunkStartTime = Date.now(); // start time for sending current chunk
+                
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: header,
@@ -410,12 +375,36 @@ export class Logger {
                     }
                 ),
                 });
+                
+                // --------------------------- Start Chunk Benchmarking -----------------------
+                const chunkEndTime = Date.now(); // end time for sending current chunk
+                const chunkTime = chunkEndTime - chunkStartTime;
+                const chunkMemoryAfter = getMemoryUsage();  // memory after sending the current chunk
+
+                console.log(`Chunk ${i / chunkSize + 1} sent in ${chunkTime} ms`);
+                console.log(`Memory usage before chunk ${i / chunkSize + 1}: ${chunkMemoryBefore} bytes`);
+                console.log(`Memory usage after chunk ${i / chunkSize + 1}: ${chunkMemoryAfter} bytes`);
+                console.log(`Memory difference for chunk ${i / chunkSize + 1}: ${chunkMemoryAfter - chunkMemoryBefore} bytes`);
+
+                // --------------------------- End Chunk Benchmarking -----------------------
 
                 if (!response.ok) {
                     const responseBody = await response.text();
                    // this.packageLogsData.push(...storedLogs);
                     //console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
+                }
+
+                // Log memory usage after sending all chunks
+                if (i + chunkSize >= storedLogs.length) {
+                    const totalEndTime = Date.now();  // End time for the entire process
+                    const totalTime = totalEndTime - totalStartTime;
+                    let totalMemoryAfter = getMemoryUsage();
+
+                    console.log(`All logs sent in ${totalTime} ms`);
+                    console.log(`Total memory before sending logs: ${totalMemoryBefore} bytes`);
+                    console.log(`Total memory after sending logs: ${totalMemoryAfter} bytes`);
+                    console.log(`Total memory difference: ${totalMemoryAfter - totalMemoryBefore} bytes`);
                 }
             }
 
@@ -591,4 +580,30 @@ export function getCookie(cname:string) {
         console.error("Error on getcookie");
         return ""
     }
+}
+
+// Extend the Performance interface to include the 'memory' property
+interface PerformanceMemory {
+    memory: {
+        usedJSHeapSize: number;
+        totalJSHeapSize: number;
+        jsHeapSizeLimit: number;
+    };
+}
+
+// Extend the global Performance interface
+declare global {
+    interface Performance extends PerformanceMemory {}
+}
+
+/**
+ * Get memory usage in frontend
+ */
+export function getMemoryUsage(): number {
+    // Check if performance.memory is available
+    if (typeof performance !== 'undefined' && performance.memory) {
+        return performance.memory.usedJSHeapSize;
+    }
+    console.log("getMemoryUsage Error...");
+    return 0;
 }
