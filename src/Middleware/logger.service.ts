@@ -123,6 +123,9 @@ export class Logger {
     public static logUpdate(logData:LogData){
 
         try {
+            if(this.logPackageActivationStatus){
+                return;
+            }
             // console.log("Log Data for update is : ", logData);
             if (!logData) {
                 console.error("logUpdate failed: logData is undefined");
@@ -152,22 +155,24 @@ export class Logger {
 
     public static logfunction(myFunction:string, ...args:any[]){
         const startTime = Date.now(); 
-        //  if(this.logPackageActivationStatus){
-        let myarguments: any = args;
-        //let size = Object.values(myarguments[0]).length;
-        const applicationId = BaseUrl.getRandomizer();
-        const sessionId = TokenStorage.sessionId;
+          if(this.logPackageActivationStatus){
+            let myarguments: any = args;
+            //let size = Object.values(myarguments[0]).length;
+            const applicationId = BaseUrl.getRandomizer();
+            const sessionId = TokenStorage.sessionId;
+    
+            // console.log("info", myfunction.name, myarguments, myarguments[0].length);
+            let logData: LogData = {
+                startTime: startTime,
+                functionName: myFunction,
+                functionParameters: myarguments,
+                requestFrom: BaseUrl.BASE_APPLICATION,
+                sessionId: sessionId,
+                applicationId: applicationId
+            }
+            return this.formatLogData('INFO', "function called", logData);
+          }
 
-        // console.log("info", myfunction.name, myarguments, myarguments[0].length);
-        let logData: LogData = {
-            startTime: startTime,
-            functionName: myFunction,
-            functionParameters: myarguments,
-            requestFrom: BaseUrl.BASE_APPLICATION,
-            sessionId: sessionId,
-            applicationId: applicationId
-        }
-        return this.formatLogData('INFO', "function called", logData);
         // }
 
     }
@@ -256,7 +261,10 @@ export class Logger {
             // clear application log from memory
             const chunkSize = 50;
             let header = GetRequestHeader();
-            for (let i = 0; i < storedLogs.length; i += chunkSize) {
+            let i = 0;
+            while(storedLogs.length != 0)
+            {                
+            //for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
@@ -272,6 +280,7 @@ export class Logger {
                    // this.applicationLogsData.push(...storedLogs);
                    // console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
                 }
+                i++;
             }
             
         } catch (error) {
@@ -291,7 +300,10 @@ export class Logger {
             this.packageLogsData = [];
 
             const chunkSize = 300;
-            for (let i = 0; i < storedLogs.length; i += chunkSize) {
+            let i = 0;
+            while(storedLogs.length != 0)
+            {   
+            //for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(i, i + chunkSize);
                 let header= GetRequestHeader();
                 const response = await fetch(BaseUrl.PostLogger(), {
@@ -310,6 +322,7 @@ export class Logger {
                     //console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
                 }
+                i++;
             }
 
             // clear mftsccs log from memory

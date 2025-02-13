@@ -1,4 +1,5 @@
-import { Connection, GetTheConcept, Logger } from "../../app";
+import { Console } from "console";
+import { Concept, Connection, GetTheConcept, Logger } from "../../app";
 import { removeThePrefix } from "../Common/RegexFunction";
 import { AddCount } from "./JustIdFormat";
 
@@ -286,7 +287,11 @@ export async function FormatFromConnectionsAlteredArrayExternal(
   for (let i = 0; i < mainComposition.length; i++) {
     let mymainData: any = {};
     mymainData["id"] = mainComposition[i];
+    let mainConcept:Concept = await GetTheConcept(mymainData["id"]);
     mymainData["data"] = compositionData[mainComposition[i]];
+    mymainData["created_on"] = mainConcept.entryTimeStamp;
+    console.log("this is the main data", mainConcept, mymainData);
+
     mainData.push(mymainData);
   }
   Logger.logUpdate(logData);
