@@ -353,10 +353,8 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
               }
           
             }
-            console.log("this is the main compositions", mainComposition);
             for(let i=0 ; i< mainComposition.length; i++){
               let mymainData: any = {};
-              console.log("this is the main compositions DATA", compositionData[mainComposition[i]]);
               
               mymainData = compositionData[mainComposition[i]];
               if(mymainData){
@@ -374,12 +372,10 @@ export function AddCount(ofTheConceptId: number, CountDictionary: any, newData:a
                       // algorith for count addition
               if(ofTheConceptId in CountDictionary){
                 let countInfo: CountInfo = CountDictionary[ofTheConceptId];
-                console.log("this is the count info",countInfo);
 
                 if(countInfo){
                   let connType = countInfo.connectionType + "_count";
                   newData[connType] = countInfo.count;
-                  console.log("this is the data updated", newData);
                 }
               }
 }

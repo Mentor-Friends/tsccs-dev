@@ -290,7 +290,6 @@ export async function FormatFromConnectionsAlteredArrayExternal(
     let mainConcept:Concept = await GetTheConcept(mymainData["id"]);
     mymainData["data"] = compositionData[mainComposition[i]];
     mymainData["created_on"] = mainConcept.entryTimeStamp;
-    console.log("this is the main data", mainConcept, mymainData);
 
     mainData.push(mymainData);
   }

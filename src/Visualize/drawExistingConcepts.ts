@@ -35,7 +35,6 @@ export async function printAllConceptsOfIdWithoutData(ctx:any,id:number){
      conceptIds.push(id);
      let fakeConcept = CreateDefaultConcept();
      let mainConceptCircle = new ConceptCircle(fakeConcept, ctx);
-     console.log("this is the concept id", conceptIds);
     for(let i=0 ; i< connections.length; i++){
      if(!checkIfExists(connections[i].ofTheConceptId, conceptIds))
      {
@@ -91,7 +90,6 @@ export async function printAllConceptsOfId(ctx:any,id:number){
     var printConcepts:any = {};
     var conceptIds = [];
     conceptIds.push(id);
-    console.log("this is the concept id", conceptIds);
    for(let i=0 ; i< connections.length; i++){
     if(!checkIfExists(connections[i].ofTheConceptId, conceptIds))
     {

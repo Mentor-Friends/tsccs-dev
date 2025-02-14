@@ -51,10 +51,8 @@ export async function BuildWidgetFromId(id:number){
         reverse = result.reverse;
         mainCompositionIds = result.mainCompositionIds;
         countInfoStrings = result.countinfo;
-        console.log("this is the concept", result);
         let countInfos = DecodeCountInfo(countInfoStrings);
         data = await formatConnectionsDataId(linkers, conceptIds, mainCompositionIds, reverse,countInfos, order);
-        console.log("this is the widget build data", data);
         return data;
       }
       catch(e){

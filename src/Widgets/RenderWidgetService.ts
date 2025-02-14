@@ -28,7 +28,6 @@ import { GetWidgetForTree } from "./WidgetBuild";
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
         const bulkWidget = await BuildWidgetFromId(widgetId);
-        console.log("this is the bulk widget", bulkWidget);
         const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
         if (!widgetTree.name) {
           attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
@@ -71,7 +70,6 @@ import { GetWidgetForTree } from "./WidgetBuild";
         visitedWidgets: number[] = [],
         token: string = ""){
         const bulkWidget = await BuildWidgetFromId(widgetId);
-        console.log("this is the bulk widget", bulkWidget);
         const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
         return widgetTree;
       }
@@ -169,7 +167,6 @@ import { GetWidgetForTree } from "./WidgetBuild";
       try {
         const widgetNode = new WidgetTree();
         const output = GetWidgetForTree(bulkWidget, widgetId);
-        console.log("this is the output", output);
         //const output: any = await getWidgetCodeFromId(widgetId, token);
         visitedWidgets.push(widgetId);
   
@@ -205,7 +202,6 @@ import { GetWidgetForTree } from "./WidgetBuild";
         widgetNode.mount_child =
           widgetInfo?.the_widget_mount_child?.data?.the_mount_child;
         const childWidgets = widgetInfo?.the_widget_s_child;
-        console.log("widget info", widgetNode);
 
         // if there are children present in the widget then convert the children to widget and put it inside of the tree.
         if (childWidgets?.length) {
@@ -215,14 +211,12 @@ import { GetWidgetForTree } from "./WidgetBuild";
                 ?.id ||
               childWidgets[i]?.data.the_child_widget?.the_child_widget_parent
                 ?.data?.the_parent;
-                console.log("this is the child Widget", childWidgetId);
             const childWidget: WidgetTree = await getWidgetBulkFromId(
               childWidgetId,
               visitedWidgets,
               bulkWidget,
               token
             );
-            console.log("this is the child Widget", childWidget);
             const childWidgetTypeValue =
               childWidgets[i]?.data?.the_child_widget?.the_child_widget_type
                 ?.data?.the_type;
@@ -300,12 +294,10 @@ import { GetWidgetForTree } from "./WidgetBuild";
                   // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
                   newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
                   childWidget.dataChange((value: Concept) => {
-                    console.log("This is the data change in child", value);
                     const type = value?.type?.characterValue;
                     if (type) {
                       newWidget.childrenData[type] = value;
                     }
-                    console.log("new child data", newWidget.childrenData);
                   });
                 }
               }

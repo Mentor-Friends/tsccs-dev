@@ -127,7 +127,7 @@ export class Logger {
                 return;
             }
 
-            console.log("Log Data for update is : ", logData);
+            //console.log("Log Data for update is : ", logData);
             if (!logData) {
                 console.error("logUpdate failed: logData is undefined");
                 return;
@@ -157,11 +157,11 @@ export class Logger {
 
     public static logfunction(myFunction:string, ...args:any[]){
         const startTime = Date.now(); 
-        console.log("Existing Package Log : ", this.packageLogsData);
-        console.log("Package Log Activation Status: ", this.logPackageActivationStatus);
+      // console.log("Existing Package Log : ", this.packageLogsData.length);
+        //console.log("Package Log Activation Status: ", this.logPackageActivationStatus);
         
           if(this.logPackageActivationStatus){
-            console.log("Inside Package Log Activation Status: ");
+           // console.log("Inside Package Log Activation Status: ");
             let myarguments: any = args;
             //let size = Object.values(myarguments[0]).length;
             const applicationId = BaseUrl.getRandomizer();
@@ -308,7 +308,7 @@ export class Logger {
             if(storedLogs.length === 0) return
             // if(this.packageLogsData.length === 0) return
             this.packageLogsData = [];
-            console.log("Stored Logs for send : ", storedLogs);
+            //console.log("Stored Logs for send : ", storedLogs);
 
             const chunkSize = 300;
             let i = 0;
@@ -492,7 +492,6 @@ export function getCookie(cname:string) {
     try{
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
-        console.log("this is the decoded cookie", decodedCookie);
         let ca = decodedCookie.split(';');
         for(let i = 0; i <ca.length; i++) {
           let c = ca[i];

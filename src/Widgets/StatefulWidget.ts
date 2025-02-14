@@ -78,7 +78,6 @@ export class StatefulWidget extends BaseWidget{
      * @param newState 
      */
     setState(newState: any) {
-      console.log("this is setting the state", this);
         this.data = newState;
         this.notify();
         this.render();
@@ -90,10 +89,8 @@ export class StatefulWidget extends BaseWidget{
      * this loadChildWidgets will be called which will help the child widgets be rendered to their respective positions.
      */
     loadChildWidgets(){
-      console.log("this is the child Widgets", this.childWidgets);
           this.childWidgets.map((child: any) => {
           let widget = this.getElementById(child.parentElement);
-          console.log("this is the widget for the child", widget);
 
           if(widget){
             widget.innerHTML = "";

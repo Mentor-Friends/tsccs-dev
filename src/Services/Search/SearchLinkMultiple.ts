@@ -44,9 +44,7 @@ export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: s
 
     }
     else{
-      console.log('calling api')
       conceptsConnections = await  SearchLinkMultipleApi(searchQuery, token);
-      console.log('calling api end')
 
         if(caller){
           caller.conceptIds = conceptsConnections.compositionIds?.slice();

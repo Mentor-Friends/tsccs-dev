@@ -337,7 +337,8 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
           messagedProcessed = true
-          if (type != 'checkProcess') console.log('received from sw', type, messageId)
+         // if (type != 'checkProcess') 
+            //console.log('received from sw', type, messageId)
           clearInterval(checkProcessInterval)
           if (!event.data.success) {
             if (event?.data?.status == 401) {
@@ -364,7 +365,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
         if (type != 'checkProcess') console.log('sent to sw', type, messageId)
         navigator.serviceWorker.controller.postMessage({ type, payload: newPayload })
       } else if (serviceWorker) {
-        console.log('sent to sw', type, messageId)
+        // console.log('sent to sw', type, messageId)
         console.warn(`controller not found but serviceWorker is available. messageId: ${messageId}, type: ${type}`)
         // if (serviceWorkerReady) console.warn('service worker was registered already but navigator is empty!!!', serviceWorker)
         try {
@@ -740,7 +741,7 @@ async function handleRegisterServiceWorker(enableSW: any) {
         );
         // process queue if exist
         setInterval(() => {
-          console.log('message process interrval calling', messageQueue)
+          //console.log('message process interrval calling', messageQueue)
           if (messageQueue.length)
             processMessageQueue()
         }, 2000)

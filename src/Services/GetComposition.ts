@@ -128,7 +128,6 @@ export async function GetComposition(id:number){
     let returnOutput: any = {};
     let connectionListString = await GetAllConnectionsOfComposition(id);
     connectionList = connectionListString as Connection[];
-    console.log("this is the connection list online", connectionList);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     let compositionList:number[] = [];
 
@@ -396,7 +395,6 @@ export async function GetCompositionWithIdFromMemoryFromConnection(id:number, co
      concept = conceptString as Concept;
     }
     let output = await recursiveFetchConcept(concept, connectionList, compositionList);
-    console.log("this is the output", output, concept);
    // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
      let mainString = concept?.type?.characterValue ?? "";
      returnOutput[mainString] = output;
@@ -446,7 +444,6 @@ export async function GetCompositionWithIdFromMemoryNew(id:number){
 
     //console.log("this is the connection list which has to be looped", connectionList);
     let output = await recursiveFetchConceptSingleLoop(concept, connectionList, compositionList);
-    console.log("this is the time for the data to be made", new Date().getTime() - startTime);
    // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
      let mainString = concept?.type?.characterValue ?? "";
      returnOutput = output;
