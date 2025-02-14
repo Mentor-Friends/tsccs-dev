@@ -35,6 +35,17 @@ export class StatefulWidget extends BaseWidget{
      */
     element: HTMLElement | null = null;
 
+    // Helper methods to query elements within the widget's element
+    getElementById(id: string): HTMLElement | null {
+      return this.element ? this.element.querySelector(`#${id}`) : null;
+    }
+    querySelector(selector: string): Element | null {
+      return this.element ? this.element.querySelector(selector) : null;
+    }
+    
+    querySelectorAll(selector: string): NodeListOf<Element> | null{
+      return this.element ? this.element.querySelectorAll(selector) : null;
+    }
 
     getElement(){
       return this.element;
