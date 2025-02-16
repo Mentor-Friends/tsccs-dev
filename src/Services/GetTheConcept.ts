@@ -3,6 +3,7 @@ import { GetConcept } from "../Api/GetConcept";
 import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
+import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 
 
@@ -40,7 +41,7 @@ export default async function GetTheConcept(id: number, userId: number = 999){
         }
         let concept = CreateDefaultConcept();
         if(id < 0){
-           let lconcept:Concept =  await GetUserGhostId(userId, id);
+           let lconcept:Concept =  await GetUserGhostId(userId, id, TokenStorage.sessionId);
            concept = convertFromLConceptToConcept(lconcept)
            return concept;
         }

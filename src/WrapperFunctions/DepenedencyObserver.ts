@@ -40,6 +40,35 @@ export class DependencyObserver{
                     if(!that.compositionIds.includes(myEvent?.detail)){
                         that.compositionIds.unshift(myEvent?.detail);
                         that.listenToEvent(myEvent?.detail);
+
+                        let newId = myEvent?.detail;
+                        let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(newId, newId);
+                        for(let i=0 ;i< newConnection.length; i++){
+                        
+                            await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
+                                 if(conn.typeId == that.mainConcept){
+                                     if(!that.internalConnections.includes(conn.id)){
+                                         that.internalConnections.push(conn.id);
+                                     }
+                                 }
+                                 else{
+                                     if(!that.linkers.includes(conn.id)){
+                                         that.linkers.push(conn.id);
+                                     }
+                                     
+
+                                 }
+                                 if(!that.conceptIds.includes(conn.toTheConceptId)){
+                                     that.conceptIds.push(conn.toTheConceptId);
+                                 }
+                                 if(!that.compositionIds.includes(conn.ofTheConceptId)){
+                                     that.compositionIds.push(conn.ofTheConceptId);
+                                 }
+
+                             });
+                         
+
+                         }
                     }
                     that.isUpdating = false;
                     await that.bind();
@@ -62,7 +91,6 @@ export class DependencyObserver{
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id: number) {
-        console.log("this is listening to the id adding event", id);
         window.addEventListener(`${id}`, (event) => {
             if(!this.isUpdating){
                 this.isUpdating = true;
@@ -70,7 +98,6 @@ export class DependencyObserver{
 
                 setTimeout( async function(){
                     let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
-                    console.log("this is the new connections", newConnection);
                     for(let i=0 ;i< newConnection.length; i++){
                         
                                await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{

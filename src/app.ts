@@ -432,7 +432,7 @@ const broadcastActions: any = {
   },
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
-      let event = new Event(payload.id || '');
+      let event = new CustomEvent(payload.id || '', payload.data);
       dispatchEvent(event);
     }
     // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
@@ -627,14 +627,16 @@ async function initConceptConnection() {
  * @param data any
  */
 export function dispatchIdEvent(id: number|string, data:any = {}) {
-  // console.log('id event dispatched', id)
-  if (serviceWorker || typeof window != undefined) {
+   console.log('id event dispatched', id)
+  if (serviceWorker || typeof window  != "undefined") {
     // let event = new Event(`${id}`);
+    console.log('id event dispatched inside sw', id, serviceWorker, typeof window)
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
   } 
   else {
-    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
+    console.log('id event dispatched in payload ', id)
+    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id, data}})
 
   }
 }
