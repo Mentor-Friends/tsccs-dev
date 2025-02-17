@@ -627,15 +627,12 @@ async function initConceptConnection() {
  * @param data any
  */
 export function dispatchIdEvent(id: number|string, data:any = {}) {
-   console.log('id event dispatched', id)
   if (serviceWorker || typeof window  != "undefined") {
     // let event = new Event(`${id}`);
-    console.log('id event dispatched inside sw', id, serviceWorker, typeof window)
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
   } 
   else {
-    console.log('id event dispatched in payload ', id)
     broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id, data}})
 
   }

@@ -26,8 +26,8 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             }
             let result:any = await FreeschemaQueryApi(this.query, "");
             this.conceptIds = result.conceptIds;
-            this.internalConnections = result.internalConnections;
-            this.linkers = result.linkers;
+            this.internalConnections = result.internalConnections ?? [];
+            this.linkers = result.linkers ?? [];
             this.reverse = result.reverse;
             this.compositionIds = result.mainCompositionIds;
             for(let i=0 ;i<this.compositionIds.length; i++){
@@ -36,18 +36,11 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.countInfoStrings = result.countinfo;
         }
         else{
-            // let result:any = await FreeschemaQueryApi(this.query, "");
-            // this.conceptIds = result.conceptIds;
-            // this.internalConnections = result.internalConnections;
-            // this.linkers = result.linkers;
-            // this.reverse = result.reverse;
-            // this.compositionIds = result.mainCompositionIds;
+
             for(let i=0 ;i<this.compositionIds.length; i++){
                 this.listenToEvent(this.compositionIds[i]);
             }
-           // this.countInfoStrings = result.countinfo;
         }
-        console.log("again going to build", this.compositionIds);
         return await this.build();
     }
     

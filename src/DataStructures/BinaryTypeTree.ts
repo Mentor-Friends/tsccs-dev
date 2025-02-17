@@ -27,7 +27,6 @@ export class BinaryTypeTree{
 
     // new method with just ids 
     static async addType(node: TypeNode){
-        console.log("this is the adding type", node);
         if(this.root == null){
             this.root = node;
             let event = new CustomEvent(`${node.key}`, {detail: node.value[0]});

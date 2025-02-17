@@ -30,10 +30,7 @@ export class StatefulWidget extends BaseWidget{
     parentElement: string = "";
 
 
-    /**
-     * This is the element that is a copy of the element that is mounted.
-     */
-    element: HTMLElement | null = null;
+
 
 
     getElement(){
