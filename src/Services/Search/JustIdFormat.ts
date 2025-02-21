@@ -56,7 +56,8 @@ import GetTheConcept from "../GetTheConcept";
                     }
                     let data = {
                         "id": ofTheConcept.id,
-                        [mytype] : value
+                        [mytype] : value,
+                        "created_on": connections[i].entryTimeStamp
                     }
                     let reverseCharater = dataCharacter + "_reverse";
       
@@ -140,7 +141,13 @@ import GetTheConcept from "../GetTheConcept";
                         }
                     }
                     else{
+                      if(Array.isArray(newData[key])){
+                        newData[key].push(data[mytype]);
+      
+                      }else{
                         newData[key] = [];
+                        newData[key].push(data[mytype]);
+                      }
                     }
       
 

@@ -121,7 +121,13 @@ export async function FormatFunctionDataForData(
               newData[key][dataCharacter] = data;
             }
           } else {
-            newData[key] = [];
+            if(Array.isArray(newData[key])){
+              newData[key].push(data);
+
+            }else{
+              newData[key] = [];
+              newData[key].push(data);
+            }
           }
         } catch (ex) {
           console.log("this is error", ex);

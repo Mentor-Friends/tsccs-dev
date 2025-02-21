@@ -411,7 +411,13 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
                 }
               }
               else{
-                newData[key] = [];
+                if(Array.isArray(newData[key])){
+                  newData[key].push(value);
+
+                }else{
+                  newData[key] = [];
+                  newData[key].push(value);
+                }
               }
 
     

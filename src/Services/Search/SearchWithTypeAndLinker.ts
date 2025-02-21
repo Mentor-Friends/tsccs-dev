@@ -161,7 +161,6 @@ export async function formatConnectionsJustId(linkers: number[], conceptIds: num
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
      prefetchConnections = orderTheConnections(prefetchConnections, order);
-
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
     compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
