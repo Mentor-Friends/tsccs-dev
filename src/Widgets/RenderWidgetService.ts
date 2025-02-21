@@ -322,7 +322,7 @@ import { GetWidgetForTree } from "./WidgetBuild";
  * @returns the widgetree with widgets attached inside of it.
  * Also this will add the tree to the dom.
  */
-export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, parentElement:HTMLElement, isMain:boolean = true, state?:object){
+export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, parentElement:HTMLElement, isMain:boolean = true, state?:object, isInDevelopment?: boolean){
   let newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
   newWidget.html = tree.html;
   newWidget.widgetState = {...state};
@@ -330,7 +330,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   newWidget.componentDidMountFunction = tree.before_render;
   newWidget.addEventFunction = tree.after_render;
   newWidget.mountChildWidgetsFunction = tree.mount_child;
-  newWidget.inDevelopment = true;
+  newWidget.inDevelopment = isInDevelopment === false ? false : true;
   // newWidget.css = newWidget.css ? newWidget.css : "";
   parentElement.innerHTML = "";
   let newParent = parentElement;
@@ -348,7 +348,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
                       // if ((child.id === Number(widgetElement.getAttribute("data-widgetid"))) && (child.wrapper === widgetElement.id)) {
                       if ((child.wrapper === widgetElement.id)) {
                           const clearedChildWidget = clearDraggedWidget(child);
-                          const childWidget =  await convertWidgetTreeToWidgetWithWrapper(clearedChildWidget, widgetElement, isMain, newWidget.widgetState);
+                          const childWidget =  await convertWidgetTreeToWidgetWithWrapper(clearedChildWidget, widgetElement, isMain, newWidget.widgetState, isInDevelopment);
                           newWidget.childWidgets.push(childWidget);
                           // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
                           newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
