@@ -125,7 +125,13 @@ import { removeThePrefix } from "../Common/RegexFunction";
 
                 }
                 else{
-                  newData[key] = [];
+                  if(Array.isArray(newData[key])){
+                    newData[key].push(data);
+      
+                  }else{
+                    newData[key] = [];
+                    newData[key].push(data);
+                  }
                 }
 
   

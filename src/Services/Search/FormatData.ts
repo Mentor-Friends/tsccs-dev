@@ -233,7 +233,13 @@ import { removeThePrefix } from "../Common/RegexFunction";
               }
             }
             else{
-              newData[key] = [];
+              if(Array.isArray(newData[key])){
+                newData[key].push(value);
+
+              }else{
+                newData[key] = [];
+                newData[key].push(value);
+              }
             }
 
   

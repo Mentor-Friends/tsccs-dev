@@ -48,9 +48,9 @@ export async function MakeTheTypeConceptApi(type:string, userId:number){
       }
       catch (error) {
         if (error instanceof Error) {
-          console.log('Make The Type Concept Api error : ', error.message);
+          console.log('Make The Type Concept Api error : ', error.message, type);
         } else {
-          console.log('Make The Type Concept Api error : ', error);
+          console.log('Make The Type Concept Api error : ', error, type);
         }
         throw error;
       }

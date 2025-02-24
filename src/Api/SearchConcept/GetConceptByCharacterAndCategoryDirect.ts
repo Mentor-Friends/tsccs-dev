@@ -22,7 +22,7 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
           }
           else{
           //  throw new Error(`Error! status: ${response.status}`);
-            console.log("This is the concept by category and character error", response.status);
+            console.log("This is the concept by category and character direct api error", response.status);
             HandleHttpError(response);
             }
       return concept;
@@ -30,9 +30,9 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log(' This is the concept by category and character error message: ', error.message);
+          console.log(' This is the concept by category and character direct api error message: ', error.message, characterValue, category_id,BaseUrl.GetConceptByCharacterAndCategoryDirectUrl() );
         } else {
-          console.log(' This is the concept by category and character unexpected error: ', error);
+          console.log(' This is the concept by category and character unexpected direct api error: ', error,characterValue, category_id,BaseUrl.GetConceptByCharacterAndCategoryDirectUrl());
         }
         throw error;
       }

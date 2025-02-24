@@ -49,7 +49,7 @@ export class SearchLinkMultipleAllObservable{
  * @param format the format in which the output should be displayed (NORMAL, DATAID,JUSTDATA,DATAIDDATE)
  */
 export async function SchemaQueryListener(query: FreeschemaQuery, token: string){
-    let isDataLoaded = true;
+    let format = query.outputFormat;
      query.outputFormat = ALLID;
     let result:any = await FreeschemaQueryApi(query, "");
     let conceptIds = result.conceptIds;
@@ -58,7 +58,6 @@ export async function SchemaQueryListener(query: FreeschemaQuery, token: string)
     let reverse = result.reverse;
     let mainCompositionIds = result.mainCompositionIds;
     let countInfoStrings = result.countinfo;
-    let format = query.outputFormat;
     let order = query.order;
     let data:any;
     let countInfos = DecodeCountInfo(countInfoStrings);

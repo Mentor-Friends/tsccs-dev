@@ -88,6 +88,7 @@ import { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
+export {DATAID, NORMAL, JUSTDATA,ALLID,DATAIDDATE,RAW,LISTNORMAL} from './Constants/FormatConstants';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }

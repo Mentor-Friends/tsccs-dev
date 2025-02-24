@@ -140,7 +140,13 @@ import GetTheConcept from "../GetTheConcept";
                         }
                     }
                     else{
+                      if(Array.isArray(newData[key])){
+                        newData[key].push(data[mytype]);
+      
+                      }else{
                         newData[key] = [];
+                        newData[key].push(data[mytype]);
+                      }
                     }
       
 

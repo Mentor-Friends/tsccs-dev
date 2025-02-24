@@ -23,7 +23,7 @@ export async function GetReservedIds(){
     }
     catch (error) {
         if (error instanceof Error) {
-          console.log('get reserved ids error message: ', error.message);
+          console.log('get reserved ids error message: ', error.message, BaseUrl.GetReservedConnectionIdUrl());
         } else {
           console.log('get reserved ids  unexpected error: ', error);
         }
