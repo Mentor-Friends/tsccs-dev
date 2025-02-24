@@ -85,7 +85,7 @@ export class Logger {
         if (!this.shouldLog(level)) return;
 
         const logEntry : any = {
-            timestamp: new Date().toLocaleString(),
+            timestamp: new Date().toISOString(),
             level,
             message,
             ...data,
