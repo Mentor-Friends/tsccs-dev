@@ -10,7 +10,6 @@ const conceptCache = new Map<number, Promise<Concept>>();
 
 export async function GetConcept(id: number){
     let result = CreateDefaultConcept();
-    console.log('id', id)
     // check the cache
     if (conceptCache.has(id)) return conceptCache.get(id) || result;
 

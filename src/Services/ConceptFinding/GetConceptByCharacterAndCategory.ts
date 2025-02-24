@@ -11,7 +11,6 @@ export async function GetConceptByCharacterAndCategory(character: string){
         return concept;
     }
     let characterLength = character.length;
-    console.log("this is the character length ", characterLength);
     var splittedStringArray = SplitStrings(character);
     if(splittedStringArray.length > 1){
         let category = 1;
