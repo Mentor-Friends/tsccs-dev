@@ -46,7 +46,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 concept = conceptString as Concept;
                 let end = new Date().getTime();
                 let time = end - startTime;
-                console.log('Execution time in type test for composition: ' + time + "--------" +  type);
+                // console.log('Execution time in type test for composition: ' + time + "--------" +  type);
             }
             else if(stringLength > 255){
 
@@ -63,7 +63,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 CreateTextData(TheTextsData);
                 let end = new Date().getTime();
                 let time = end - startTime;
-                console.log('Execution time in type test for text: ' + time + "--------" +  type);
+                // console.log('Execution time in type test for text: ' + time + "--------" +  type);
 
             }
             else{
@@ -84,7 +84,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 }
                 let end = new Date().getTime();
                 let time = end - startTime;
-                console.log('Execution time in type test: ' + time + "--------" +  type);
+                // console.log('Execution time in type test: ' + time + "--------" +  type);
             }
             // if(concept){
             //     if(concept.type == null){
