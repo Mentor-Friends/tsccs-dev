@@ -19,9 +19,9 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     }
     if( concept.id != 0){
 
-        if(concept.type == null){
+        if(concept.type == null) {
 
-    var conceptType = await ConceptsData.GetConcept(concept.typeId);
+            var conceptType = await ConceptsData.GetConcept(concept.typeId);
             if(conceptType == null && concept.typeId != null && concept.typeId != undefined){
                 var typeConceptString = await GetConcept(concept.typeId);
                 var typeConcept = typeConceptString as Concept;
