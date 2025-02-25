@@ -477,7 +477,6 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   
     async function unwrapWidgetContainers(widgetContainerEl: any, queryParam: string) {
       // Select all div elements with the queryParam
-      console.log(widgetContainerEl, "this is the widget container element")
       if (widgetContainerEl && widgetContainerEl.nodeType === 1) {
         const widgetContainers = widgetContainerEl.querySelectorAll(queryParam);
     
