@@ -62,7 +62,7 @@ import { GetWidgetForTree } from "./WidgetBuild";
             element.removeAttribute("onclick");
           }); // remove the onclick event from the widget container
       } catch (error) {
-        console.error("Error Caught Rendering Widget");
+        console.error(`Error Caught Rendering Widget: ${error}`);
       }
     }
 
@@ -477,18 +477,20 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   
     async function unwrapWidgetContainers(widgetContainerEl: any, queryParam: string) {
       // Select all div elements with the queryParam
-      const widgetContainers = widgetContainerEl.querySelectorAll(queryParam);
-  
-      // Loop through each div and replace it with its inner content
-      widgetContainers.forEach((element: any) => {
-        // Move all child nodes of the div before the div
-        while (element.firstChild) {
-          element.parentNode.insertBefore(element.firstChild, element);
-        }
-        // Remove the empty div
-        element.remove();
-      });
-  
+      if (widgetContainerEl && widgetContainerEl.nodeType === 1) {
+        const widgetContainers = widgetContainerEl.querySelectorAll(queryParam);
+    
+        // Loop through each div and replace it with its inner content
+        widgetContainers.forEach((element: any) => {
+          // Move all child nodes of the div before the div
+          while (element.firstChild) {
+            element.parentNode.insertBefore(element.firstChild, element);
+          }
+          // Remove the empty div
+          element.remove();
+        });
+    
+      }
       return widgetContainerEl;
     }
   

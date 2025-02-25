@@ -251,7 +251,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(
             isComp = true;
           }
           if (linkerConceptValue == "") {
-            linkerConceptValue = toTheConcept?.type?.characterValue ?? "";
+            linkerConceptValue = toTheConcept?.type?.characterValue || "";
           }
           try {
             let mytype = toTheConcept?.type?.characterValue ?? "none";
