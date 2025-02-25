@@ -279,7 +279,7 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                       isComp = true;
                     }
                     if(linkerConceptValue == ""){
-                      linkerConceptValue = toTheConcept?.type?.characterValue;
+                      linkerConceptValue = toTheConcept?.type?.characterValue || "";
                     }
                     try{
                         let mytype = toTheConcept?.type?.characterValue ?? "none";
