@@ -79,7 +79,7 @@ export async function FormatFunctionDataForData(
           console.log("this is error", ex);
         }
       }
-    } else {
+    } 
       if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
         let newData: any;
         let linkerConcept = await GetTheConcept(connections[i].typeId);
@@ -132,7 +132,6 @@ export async function FormatFunctionDataForData(
         } catch (ex) {
           console.log("this is error", ex);
         }
-      }
     }
   }
 
@@ -222,7 +221,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(
           }
         }
       }
-    } else {
+    } 
       if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
         if (ofTheConcept.id in compositionData) {
           let newData: any;
@@ -287,7 +286,6 @@ export async function FormatFromConnectionsAlteredArrayExternal(
             console.log("this is error", ex);
           }
         }
-      }
     }
   }
   for (let i = 0; i < mainComposition.length; i++) {
@@ -360,7 +358,7 @@ export async function FormatFunctionData(
           console.log("this is error", ex);
         }
       }
-    } else {
+    } 
       if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
         let newData: any;
         let linkerConcept = await GetTheConcept(connections[i].typeId);
@@ -385,7 +383,6 @@ export async function FormatFunctionData(
         } catch (ex) {
           console.log("this is error", ex);
         }
-      }
     }
   }
 
