@@ -94,7 +94,7 @@ export class Logger {
         this.packageLogsData.push(logEntry);
         // console.log("Log Update Test for functions : ", this.packageLogsData);
         if(level == "ERROR"){
-            this.sendPackageLogsToServer();
+            this.sendPackageLogsToServer(); 
             this.sendApplicationLogsToServer();
         }
         //this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
@@ -228,7 +228,7 @@ export class Logger {
         //console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
         if(!this.logApplicationActivationStatus) return;
         try {
-            const timestamp = new Date().toLocaleString();
+            const timestamp = new Date().toISOString();
             
             const logEntry = {
                 timestamp: timestamp,
