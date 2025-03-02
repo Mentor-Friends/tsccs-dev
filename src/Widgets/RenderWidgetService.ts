@@ -34,7 +34,7 @@ import { GetWidgetForTree } from "./WidgetBuild";
   
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
-        const bulkWidget = await BuildWidgetFromId(widgetId);
+        const bulkWidget = await BuildWidgetFromId(widgetId, false);
         await materializeWidget(widgetId, bulkWidget, attachNode, props);
       } catch (error) {
         console.error(`Error Caught Rendering Widget: ${error}`);
@@ -80,7 +80,7 @@ import { GetWidgetForTree } from "./WidgetBuild";
       export async function getWidgetFromId(widgetId: number,
         visitedWidgets: number[] = [],
         token: string = ""){
-        const bulkWidget = await BuildWidgetFromId(widgetId);
+        const bulkWidget = await BuildWidgetFromId(widgetId,false);
         const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
         return widgetTree;
       }

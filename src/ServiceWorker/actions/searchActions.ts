@@ -77,7 +77,7 @@ export const searchActions: Actions = {
     },
 
     BuildWidgetFromId: async (payload: any) => {
-        const data = await BuildWidgetFromId(payload.id)
+        const data = await BuildWidgetFromId(payload.id, payload.renderLatest)
         return { success:true, data};
     },
     
