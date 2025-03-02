@@ -15,61 +15,72 @@ import { GetWidgetForTree } from "./WidgetBuild";
       attachNode: HTMLElement,
       props?: any
     ) {
-      const widgets = await GetRelation(widgetId, "the_widget_latest");
-      if (widgets?.length == 0)
-        await renderWidget(widgetId, attachNode, props);
-      else {
-        const latestWidgetId = widgets?.[0]?.id;
-        if (latestWidgetId)
-          await renderWidget(latestWidgetId, attachNode, props);
+      // const widgets = await GetRelation(widgetId, "the_widget_latest");
+      // if (widgets?.length == 0)
+      //   await renderWidget(widgetId, attachNode, props);
+      // else {
+      //   const latestWidgetId = widgets?.[0]?.id;
+      //   if (latestWidgetId)
+      //     await renderWidget(latestWidgetId, attachNode, props);
+      // }
+
+      try {
+        const bulkWidget = await BuildWidgetFromId(widgetId, true);
+        await materializeWidget(widgetId, bulkWidget, attachNode, props);
+      } catch (error) {
+        console.error(`Error Caught Rendering Widget: ${error}`);
       }
     }
   
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
-        const bulkWidget = await BuildWidgetFromId(widgetId);
-        const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
-        if (!widgetTree.name) {
-          attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
-          return 
-        }
-        const appElement = attachNode;
-        const newWidget = await convertWidgetTreeToWidget(
-        // await convertWidgetTreeToWidget(
-          widgetTree,
-          appElement,
-          undefined,
-          props
-        );
-        console.log("this is the tree newWidget", widgetTree);
-        // add newWidget css to the page
-        const style = document.createElement("style");
-        style.innerHTML = widgetTree.css + newWidget.css;
-        appElement.appendChild(style);
-        // add newWidget js to the page
-        const script = document.createElement("script");
-        script.innerHTML = widgetTree.js;
-        appElement.appendChild(script);
-  
-        // remove class wb-initial-empty from all elements that have it from fspagePreview
-        const wbInitialEmpty = appElement.querySelectorAll(".wb-initial-empty");
-        wbInitialEmpty.forEach((el) => {
-          el.classList.remove("wb-initial-empty");
-        }); // add the css for the class fspage-preview
-        document
-          .querySelectorAll('[onclick="widgetSelected(event)"]')
-          .forEach((element) => {
-            element.removeAttribute("onclick");
-          }); // remove the onclick event from the widget container
+        const bulkWidget = await BuildWidgetFromId(widgetId, false);
+        await materializeWidget(widgetId, bulkWidget, attachNode, props);
       } catch (error) {
         console.error(`Error Caught Rendering Widget: ${error}`);
       }
     }
 
+    export async function materializeWidget(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props?: any){
+      const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
+      if (!widgetTree.name) {
+        attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
+        return 
+      }
+      const appElement = attachNode;
+      const newWidget = await convertWidgetTreeToWidget(
+      // await convertWidgetTreeToWidget(
+        widgetTree,
+        appElement,
+        undefined,
+        props
+      );
+      console.log("this is the tree newWidget", widgetTree);
+      // add newWidget css to the page
+      const style = document.createElement("style");
+      style.innerHTML = widgetTree.css + newWidget.css;
+      appElement.appendChild(style);
+      // add newWidget js to the page
+      const script = document.createElement("script");
+      script.innerHTML = widgetTree.js;
+      appElement.appendChild(script);
+
+      // remove class wb-initial-empty from all elements that have it from fspagePreview
+      const wbInitialEmpty = appElement.querySelectorAll(".wb-initial-empty");
+      wbInitialEmpty.forEach((el) => {
+        el.classList.remove("wb-initial-empty");
+      }); // add the css for the class fspage-preview
+      document
+        .querySelectorAll('[onclick="widgetSelected(event)"]')
+        .forEach((element) => {
+          element.removeAttribute("onclick");
+        }); // remove the onclick event from the widget container
+    }
+
       export async function getWidgetFromId(widgetId: number,
         visitedWidgets: number[] = [],
         token: string = ""){
-        const bulkWidget = await BuildWidgetFromId(widgetId);
+        const bulkWidget = await BuildWidgetFromId(widgetId,false);
         const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
         return widgetTree;
       }

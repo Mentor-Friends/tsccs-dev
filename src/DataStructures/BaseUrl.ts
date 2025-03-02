@@ -301,4 +301,8 @@ export class BaseUrl{
     static getWidgetData(){
         return this.BASE_URL + '/api/get-widget';
     }
+
+    static getLatestWidgetData(){
+        return this.BASE_URL + '/api/get-latest-widget';
+    }
 }

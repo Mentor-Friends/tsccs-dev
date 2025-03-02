@@ -5,12 +5,12 @@ import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../Services/Search/SearchWithTypeAndLinker";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 
-export async function BuildWidgetFromId(id:number){
+export async function BuildWidgetFromId(id:number, renderLatest:boolean=false){
     Logger.logfunction("BuildWidgetFromId", arguments);
       try{
         try {
           if (serviceWorker) {
-            const res: any = await sendMessage('BuildWidgetFromId', {id})
+            const res: any = await sendMessage('BuildWidgetFromId', {id, renderLatest})
             // console.log('data received search from sw', res)
             return res.data
           }
@@ -30,6 +30,9 @@ export async function BuildWidgetFromId(id:number){
         let data : any = {};
     let header = GetRequestHeader("application/json");
     let queryUrl = BaseUrl.getWidgetData() + "?id=" + id;
+    if(renderLatest){
+      queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
+    }
         const response = await fetch(queryUrl,{
             method: 'GET',
             headers: header
