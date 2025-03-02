@@ -5,7 +5,7 @@ import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../Services/Search/SearchWithTypeAndLinker";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 
-export async function BuildWidgetFromId(id:number){
+export async function BuildWidgetFromId(id:number, renderLatest:boolean = false){
     Logger.logfunction("BuildWidgetFromId", arguments);
       try{
         try {
@@ -30,6 +30,11 @@ export async function BuildWidgetFromId(id:number){
         let data : any = {};
     let header = GetRequestHeader("application/json");
     let queryUrl = BaseUrl.getWidgetData() + "?id=" + id;
+    if(renderLatest){
+      console.log("this is the widget for render latest", renderLatest);
+      queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
+    }
+    console.log("this is the widget for render latest outside", queryUrl,renderLatest);
         const response = await fetch(queryUrl,{
             method: 'GET',
             headers: header
