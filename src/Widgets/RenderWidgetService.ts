@@ -203,6 +203,25 @@ import { GetWidgetForTree } from "./WidgetBuild";
           widgetInfo?.the_widget_mount_child?.data?.the_mount_child;
         const childWidgets = widgetInfo?.the_widget_s_child;
 
+        // libraries
+        const widgetLibraryCSS = widgetInfo?.the_widget_s_css_library?.map((cssLibary: any) => {
+          const cssLibraryOrder = cssLibary?.data?.the_css_library?.the_css_library_order?.data?.the_order
+          const cssLibraryURL = cssLibary?.data?.the_css_library?.the_css_library_url?.data?.the_url
+          return {
+            order: cssLibraryOrder,
+            url: cssLibraryURL
+          }
+        })
+        const widgetLibraryJS = widgetInfo?.the_widget_s_js_library?.map((jsLibary: any) => {
+          const jsLibraryOrder = jsLibary?.data?.the_js_library?.the_js_library_order?.data?.the_order
+          const jsLibraryURL = jsLibary?.data?.the_js_library?.the_js_library_url?.data?.the_url
+          return {
+            order: jsLibraryOrder,
+            url: jsLibraryURL
+          }
+        })
+        widgetNode.library = {css: widgetLibraryCSS || [], js: widgetLibraryJS || []}
+
         // if there are children present in the widget then convert the children to widget and put it inside of the tree.
         if (childWidgets?.length) {
           for (let i = 0; i < childWidgets.length; i++) {

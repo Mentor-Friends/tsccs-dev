@@ -228,7 +228,7 @@ export class Logger {
         //console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
         if(!this.logApplicationActivationStatus) return;
         try {
-            const timestamp = new Date().toLocaleString();
+            const timestamp = new Date().toISOString();
             
             const logEntry = {
                 timestamp: timestamp,
