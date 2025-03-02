@@ -205,16 +205,16 @@ import { GetWidgetForTree } from "./WidgetBuild";
 
         // libraries
         const widgetLibraryCSS = widgetInfo?.the_widget_s_css_library?.map((cssLibary: any) => {
-          const cssLibraryOrder = cssLibary?.data?.the_css_library?.the_css_library_order?.[0]?.data?.the_order
-          const cssLibraryURL = cssLibary?.data?.the_css_library?.the_css_library_url?.[0]?.data?.the_url
+          const cssLibraryOrder = cssLibary?.data?.the_css_library?.the_css_library_order?.data?.the_order
+          const cssLibraryURL = cssLibary?.data?.the_css_library?.the_css_library_url?.data?.the_url
           return {
             order: cssLibraryOrder,
             url: cssLibraryURL
           }
         })
         const widgetLibraryJS = widgetInfo?.the_widget_s_js_library?.map((jsLibary: any) => {
-          const jsLibraryOrder = jsLibary?.data?.the_js_library?.the_js_library_order?.[0]?.data?.the_order
-          const jsLibraryURL = jsLibary?.data?.the_js_library?.the_js_library_url?.[0]?.data?.the_url
+          const jsLibraryOrder = jsLibary?.data?.the_js_library?.the_js_library_order?.data?.the_order
+          const jsLibraryURL = jsLibary?.data?.the_js_library?.the_js_library_url?.data?.the_url
           return {
             order: jsLibraryOrder,
             url: jsLibraryURL
