@@ -1,5 +1,5 @@
 import { BuilderStatefulWidget, BuildWidgetFromId, Concept, GetRelation, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
-import { GetWidgetForTree } from "./WidgetBuild";
+import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
       const widgets = await GetRelation(pageId, "the_page_body");
@@ -15,27 +15,28 @@ import { GetWidgetForTree } from "./WidgetBuild";
       attachNode: HTMLElement,
       props?: any
     ) {
-      try{
-      const widgets = await GetRelation(widgetId, "the_widget_latest");
-      if (widgets?.length == 0)
-        await renderWidget(widgetId, attachNode, props);
-      else {
-        const latestWidgetId = widgets?.[0]?.id;
-        if (latestWidgetId)
-          await renderWidget(latestWidgetId, attachNode, props);
-        }
-      }
-      catch (error) {
-        console.error(`Error Caught Rendering Widget: ${error}`);
-      }
-
-      // try {
-      //   const bulkWidget = await BuildWidgetFromId(widgetId, true);
-      //   console.log("this is the bulk widget", bulkWidget);
-      //   await materializeWidget(widgetId, bulkWidget, attachNode, props);
-      // } catch (error) {
+      // try{
+      // const widgets = await GetRelation(widgetId, "the_widget_latest");
+      // if (widgets?.length == 0)
+      //   await renderWidget(widgetId, attachNode, props);
+      // else {
+      //   const latestWidgetId = widgets?.[0]?.id;
+      //   if (latestWidgetId)
+      //     await renderWidget(latestWidgetId, attachNode, props);
+      //   }
+      // }
+      // catch (error) {
       //   console.error(`Error Caught Rendering Widget: ${error}`);
       // }
+
+      try {
+        const bulkWidget = await BuildWidgetFromIdForLatest(widgetId, true);
+        let latestWidgetId = bulkWidget.mainId;
+        let bulkWidgetData = bulkWidget.data;
+        await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
+      } catch (error) {
+        console.error(`Error Caught Rendering Widget: ${error}`);
+      }
     }
   
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
