@@ -15,21 +15,27 @@ import { GetWidgetForTree } from "./WidgetBuild";
       attachNode: HTMLElement,
       props?: any
     ) {
-      // const widgets = await GetRelation(widgetId, "the_widget_latest");
-      // if (widgets?.length == 0)
-      //   await renderWidget(widgetId, attachNode, props);
-      // else {
-      //   const latestWidgetId = widgets?.[0]?.id;
-      //   if (latestWidgetId)
-      //     await renderWidget(latestWidgetId, attachNode, props);
-      // }
-
-      try {
-        const bulkWidget = await BuildWidgetFromId(widgetId, true);
-        await materializeWidget(widgetId, bulkWidget, attachNode, props);
-      } catch (error) {
+      try{
+      const widgets = await GetRelation(widgetId, "the_widget_latest");
+      if (widgets?.length == 0)
+        await renderWidget(widgetId, attachNode, props);
+      else {
+        const latestWidgetId = widgets?.[0]?.id;
+        if (latestWidgetId)
+          await renderWidget(latestWidgetId, attachNode, props);
+        }
+      }
+      catch (error) {
         console.error(`Error Caught Rendering Widget: ${error}`);
       }
+
+      // try {
+      //   const bulkWidget = await BuildWidgetFromId(widgetId, true);
+      //   console.log("this is the bulk widget", bulkWidget);
+      //   await materializeWidget(widgetId, bulkWidget, attachNode, props);
+      // } catch (error) {
+      //   console.error(`Error Caught Rendering Widget: ${error}`);
+      // }
     }
   
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {

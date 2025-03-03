@@ -68,8 +68,9 @@ export async function BuildWidgetFromId(id:number, renderLatest:boolean=false){
 export function GetWidgetForTree(data:any, id:number){
 
     for(let i=0; i<data.length; i++){
-        if(id == data[i].id){
-            return data[i];
-        }
+      if(data[i].id == id){
+        return data[i];
+
+      }
     }
 }
