@@ -30,7 +30,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       // }
 
       try {
-        const bulkWidget = await BuildWidgetFromIdForLatest(widgetId, true);
+        const bulkWidget = await BuildWidgetFromIdForLatest(widgetId);
         let latestWidgetId = bulkWidget.mainId;
         let bulkWidgetData = bulkWidget.data;
         await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
@@ -41,7 +41,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
   
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
-        const bulkWidget = await BuildWidgetFromId(widgetId, false);
+        const bulkWidget = await BuildWidgetFromId(widgetId);
         await materializeWidget(widgetId, bulkWidget, attachNode, props);
       } catch (error) {
         console.error(`Error Caught Rendering Widget: ${error}`);
@@ -87,7 +87,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       export async function getWidgetFromId(widgetId: number,
         visitedWidgets: number[] = [],
         token: string = ""){
-        const bulkWidget = await BuildWidgetFromId(widgetId,false);
+        const bulkWidget = await BuildWidgetFromId(widgetId);
         const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
         return widgetTree;
       }

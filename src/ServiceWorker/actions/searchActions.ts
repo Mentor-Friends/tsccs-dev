@@ -77,12 +77,12 @@ export const searchActions: Actions = {
     },
 
     BuildWidgetFromId: async (payload: any) => {
-        const data = await BuildWidgetFromId(payload.id, payload.renderLatest)
+        const data = await BuildWidgetFromId(payload.id)
         return { success:true, data};
     },
 
     BuildWidgetFromIdForLatest: async (payload: any) => {
-        const data = await BuildWidgetFromIdForLatest(payload.id, payload.renderLatest)
+        const data = await BuildWidgetFromIdForLatest(payload.id)
         return { success:true, data};
     },
     

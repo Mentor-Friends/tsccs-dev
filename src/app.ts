@@ -144,6 +144,7 @@ export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 
 export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
+export {CreateData} from './Services/automated/automated-concept-connection';
 type listeners = {
   listenerId: string | number
   callback: any,
