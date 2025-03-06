@@ -54,11 +54,13 @@ export class ApplicationMonitor {
           message: event.reason ? event.reason.message : event.reason,
           stack: event.reason ? event.reason.stack : null,
           requestFrom: BaseUrl.BASE_APPLICATION,
+          sessionId: sessionId
         });
         Logger.log("ERROR", "Unhandled Promise Rejection", {
           message: event.reason ? event.reason.message : event.reason,
           stack: event.reason ? event.reason.stack : null,
           requestFrom: BaseUrl.BASE_APPLICATION,
+          sessionId: sessionId
         });
       };
     } catch(error) {
@@ -325,6 +327,7 @@ export class ApplicationMonitor {
         const message = "WebSocket Open"
         const data = {
           "url" : url.toString(),
+          "requestFrom" : BaseUrl.BASE_APPLICATION,
           "sessionId": sessionId
         }
         Logger.logApplication("INFO", message, data)
@@ -356,6 +359,7 @@ export class ApplicationMonitor {
           const message = "WebSocket Closed"
           const data = {
             "url" : url,
+            "requestFrom" : BaseUrl.BASE_APPLICATION,
             sessionId:sessionId
           }
           Logger.logApplication("INFO", message, data)
