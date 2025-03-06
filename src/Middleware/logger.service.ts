@@ -129,7 +129,7 @@ export class Logger {
 
             //console.log("Log Data for update is : ", logData);
             if (!logData) {
-                console.error("logUpdate failed: logData is undefined");
+                // console.error("logUpdate failed: logData is undefined");
                 return;
             }
 
@@ -224,7 +224,7 @@ export class Logger {
         }
     }
 
-    public static logApplication(type: string, message: string, data?: any): void {
+    public static logApplication(level: string, message: string, data?: any): void {
         //console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
         if(!this.logApplicationActivationStatus) return;
         try {
@@ -232,7 +232,7 @@ export class Logger {
             
             const logEntry = {
                 timestamp: timestamp,
-                type: type,
+                level: level,
                 message: message,
                 data: data || null,
             };
@@ -262,7 +262,6 @@ export class Logger {
             this.applicationLogsData = []
 
              const accessToken = TokenStorage.BearerAccessToken;
-            // if(!accessToken) return;
 
             // clear application log from memory
             const chunkSize = 50;
@@ -270,9 +269,8 @@ export class Logger {
             let i = 0;
             while(storedLogs.length != 0)
             {                
-                console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
+                // console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
 
-            //for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 const chunk = storedLogs.slice(0, chunkSize);
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
@@ -285,8 +283,6 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                   // this.applicationLogsData.push(...storedLogs);
-                   // console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
                 }
                 storedLogs.splice(0, chunkSize);
                 i = i+chunkSize;
@@ -314,12 +310,13 @@ export class Logger {
             let i = 0;
             while(storedLogs.length != 0)
             {   
-                console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
+                // console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
                 const chunk = storedLogs.slice(0, chunkSize)
                 // console.log("Chunk : ", chunk);
                 
             //for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 // const chunk = storedLogs.slice(i, i + chunkSize);
+                // console.log("Package Log URL : ", BaseUrl.PostLogger);
                 
                 let header= GetRequestHeader();
                 const response = await fetch(BaseUrl.PostLogger(), {
@@ -382,7 +379,6 @@ export class Logger {
             // console.log('Logs removed from localStorage');
         }
     }
-
 }
 
 

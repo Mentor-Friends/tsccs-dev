@@ -1,5 +1,6 @@
 import { BaseUrl } from "../app";
 import { Logger } from "./logger.service";
+import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 export class ApplicationMonitor {
   static initialize() {
@@ -28,7 +29,9 @@ export class ApplicationMonitor {
     try{
       console.log("this is the window", window);
       // console.log("Into initGlobalErrorHandlers.")
-      if(typeof window === undefined) return;
+      if(typeof window === undefined) return;      
+      const sessionId = TokenStorage.sessionId || "unknown";
+      
       // Track runtime errors
       window.onerror = (message, source, lineno, colno, error) => {
         const errorDetails = {
@@ -37,8 +40,10 @@ export class ApplicationMonitor {
           lineno,
           colno,
           stack: error?.stack || 'undefined',
+          requestFrom: BaseUrl.BASE_APPLICATION,
+          sessionId: sessionId
         };
-        console.log("This is the window error", errorDetails);
+        // console.log("This is the window error", errorDetails);
         Logger.logApplication("ERROR", "Runtime Error", errorDetails);
         Logger.log("ERROR","Runtime Error",errorDetails );
       };
@@ -48,10 +53,12 @@ export class ApplicationMonitor {
         Logger.logApplication("ERROR", "Unhandled Promise Rejection", {
           message: event.reason ? event.reason.message : event.reason,
           stack: event.reason ? event.reason.stack : null,
+          requestFrom: BaseUrl.BASE_APPLICATION,
         });
         Logger.log("ERROR", "Unhandled Promise Rejection", {
           message: event.reason ? event.reason.message : event.reason,
           stack: event.reason ? event.reason.stack : null,
+          requestFrom: BaseUrl.BASE_APPLICATION,
         });
       };
     } catch(error) {
@@ -64,6 +71,7 @@ export class ApplicationMonitor {
     try {
       const originalConsoleError = console.error;
       console.log("Inside originalConsoleError...");
+      const sessionId = TokenStorage.sessionId || 'unknown';
       
       console.error = function (...args) {
         const message = "Console Error";
@@ -72,7 +80,11 @@ export class ApplicationMonitor {
         const safeArgs = args.map(arg => safeStringify(arg));
         
         // Log error details with safe arguments
-        const errorDetails = { arguments: safeArgs };
+        const errorDetails = { 
+          arguments: safeArgs,
+          requestFrom: BaseUrl.BASE_APPLICATION,
+          sessionId: sessionId
+        };
         Logger.logApplication("ERROR", message, errorDetails);
         Logger.log("ERROR", message, errorDetails);
   
@@ -90,12 +102,15 @@ export class ApplicationMonitor {
       // Log unhandled errors
       window.addEventListener("error", (event) => {
         console.log("Inside error event...")
+        const sessionId = TokenStorage.sessionId || 'unknown';
         const errorDetails = {
           error: event.error?.message || event.message,
           source: event.filename,
           line: event.lineno,
           column: event.colno,
-          stack: event.error ? safeStringify(event.error.stack) : undefined
+          stack: event.error ? safeStringify(event.error.stack) : undefined,
+          requestFrom: BaseUrl.BASE_APPLICATION,
+          sessionId: sessionId
         }
         const message = "Unhandled Error"
         Logger.logApplication("ERROR", message, errorDetails)
@@ -112,9 +127,12 @@ export class ApplicationMonitor {
       // Log unhandled promise rejections
       window.addEventListener("unhandledrejection", (event) => {
         console.log("Inside unhandledrejection...")
+        const sessionId = TokenStorage.sessionId || 'unknown';
         const errorDetails = {
           reason: event.reason?.message || String(event.reason),
           stack: event.reason?.stack || "No stack trace available",
+          requestFrom: BaseUrl.BASE_APPLICATION,
+          sessionId : sessionId
         };
         Logger.logApplication("ERROR", "Unhandled Promise Rejection", errorDetails);
         Logger.log("ERROR", "Unhandled Promise Rejection", errorDetails);
@@ -128,6 +146,7 @@ export class ApplicationMonitor {
   // Log user interactions
   static logUserInteractions() {
     document.addEventListener("click", (event) => {
+      const sessionId = TokenStorage.sessionId || 'unknown';
       const target = event.target as HTMLElement;
       const message = "User Click"
       const details = {
@@ -135,17 +154,22 @@ export class ApplicationMonitor {
         id: target.id,
         classes: target.className,
         text: target.innerText?.slice(0, 50),
+        requestFrom: BaseUrl.BASE_APPLICATION,
+        sessionId: sessionId      
       }
        Logger.logApplication("INFO", message, details)
     });
 
     document.addEventListener("input", (event) => {
       const target = event.target as HTMLElement;
+      const sessionId = TokenStorage.sessionId || 'unknown';
       const message = "User Input"
       const details = {
         element: target.tagName,
         id: target.id,
         value: (target as HTMLInputElement).value,
+        requestFrom: BaseUrl.BASE_APPLICATION,
+        sessionId: sessionId
       }
       // Logger.logApplication("INFO", message, details)
 
@@ -153,8 +177,11 @@ export class ApplicationMonitor {
 
     document.addEventListener("scroll", () => {
       const message = "User Scroll"
+      const sessionId = TokenStorage.sessionId || 'unknown';
       const details = {
         position: window.scrollY,
+        requestFrom: BaseUrl.BASE_APPLICATION,
+        sessionId: sessionId     
       }
       // Logger.logApplication("INFO", message, details)
     });
@@ -163,6 +190,7 @@ export class ApplicationMonitor {
   static logNetworkRequests() {
     try {
       if(typeof window === undefined) return
+      const sessionId = TokenStorage.sessionId || 'unknown';
 
       const originalFetch = window?.fetch;
       // console.log("Original Fetch is equals to : ", originalFetch);
@@ -197,6 +225,8 @@ export class ApplicationMonitor {
             method: options?.method || "GET",
             url: urlString,
             body: options?.body,
+            requestFrom: BaseUrl.BASE_APPLICATION,
+            sessionId:sessionId  
           }
         };
     
@@ -209,6 +239,8 @@ export class ApplicationMonitor {
             message: "Network Response",
             url: urlString,
             status: response.status,
+            requestFrom: BaseUrl.BASE_APPLICATION,
+            sessionId:sessionId    
           };
     
           // Logger.logApplication("INFO", "Successful Network Request", networkDetails)
@@ -220,6 +252,8 @@ export class ApplicationMonitor {
             message: "Network Request Failed",
             url: urlString,
             error: error instanceof Error ? error.message : String(error),
+            requestFrom: BaseUrl.BASE_APPLICATION,   
+            sessionId: sessionId       
           };
     
           // Log or process networkDetails if needed
@@ -242,9 +276,12 @@ export class ApplicationMonitor {
     }
     window?.addEventListener("load", () => {
       const timing = performance.timing;
+      const sessionId = TokenStorage.sessionId || 'unknown';
       const details = {
         loadTime: timing.loadEventEnd - timing.navigationStart,
         domContentLoadedTime: timing.domContentLoadedEventEnd - timing.navigationStart,
+        requestFrom: BaseUrl.BASE_APPLICATION,   
+        sessionId: sessionId       
       }
       // Logger.logApplication("INFO", "Performance Metrics", details)
     });
@@ -253,9 +290,12 @@ export class ApplicationMonitor {
   // Log route changes (SPAs)
   static logRouteChanges() {
     const pushState = history.pushState;
+    const sessionId = TokenStorage.sessionId || 'unknown';
     history.pushState = function (...args) {
       const urlChange = {
         url: args[2]?.toString(),
+        requestFrom: BaseUrl.BASE_APPLICATION,
+        sessionId: sessionId
       }
       Logger.logApplication("INFO", "Route Change", urlChange )
       return pushState.apply(this, args);
@@ -263,7 +303,9 @@ export class ApplicationMonitor {
 
     window?.addEventListener("popstate", () => {
       const urlChange = {
-        url: location.href
+        url: location.href,
+        requestFrom:BaseUrl.BASE_APPLICATION,
+        sessionId:sessionId
       }
       Logger.logApplication("INFO", "Route Changed (Back/Forward)", urlChange)
     });
@@ -274,6 +316,7 @@ export class ApplicationMonitor {
     if(typeof window === undefined){
       return
     }
+    const sessionId = TokenStorage.sessionId || 'unknown';
     const originalWebSocket = WebSocket;
     window.WebSocket = class extends originalWebSocket {
       constructor(url: string | URL, protocols?: string | string[]) {
@@ -281,7 +324,8 @@ export class ApplicationMonitor {
   
         const message = "WebSocket Open"
         const data = {
-          "url" : url.toString()
+          "url" : url.toString(),
+          "sessionId": sessionId
         }
         Logger.logApplication("INFO", message, data)
 
@@ -289,7 +333,9 @@ export class ApplicationMonitor {
           const message = "WebSocket Message"
           const data = {
             "url" : url,
-            "data" : event.data
+            "data" : event.data,
+            "requestFrom" : BaseUrl.BASE_APPLICATION,
+            "sessionId":sessionId
           }
           Logger.logApplication("INFO", message, data)
 
@@ -300,6 +346,8 @@ export class ApplicationMonitor {
           const data = {
             "url" : url,
             "error" : error instanceof Error ? error.message : String(error),
+            "requestFrom" : BaseUrl.BASE_APPLICATION,
+            "sessionId":sessionId
           }
           Logger.logApplication("ERROR", message, data)
         });
@@ -308,6 +356,7 @@ export class ApplicationMonitor {
           const message = "WebSocket Closed"
           const data = {
             "url" : url,
+            sessionId:sessionId
           }
           Logger.logApplication("INFO", message, data)
         });
