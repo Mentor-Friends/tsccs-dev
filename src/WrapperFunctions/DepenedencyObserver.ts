@@ -33,6 +33,7 @@ export class DependencyObserver{
                 let that = this;
                 
                 setTimeout( async function(){
+                    console.log("listen to event type", id);
                     let myEvent = event as CustomEvent;
                     if(!that.compositionIds.includes(myEvent?.detail)){
                         that.compositionIds.unshift(myEvent?.detail);
@@ -72,7 +73,7 @@ export class DependencyObserver{
                     that.notify();
 
 
-                }, 200);
+                }, 500);
             }
             else{
                 console.log("rejected this");
@@ -94,6 +95,7 @@ export class DependencyObserver{
                 let that = this;
 
                 setTimeout( async function(){
+                    console.log("listen to event type 2 ", id);
                     let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
                     for(let i=0 ;i< newConnection.length; i++){
                         
@@ -126,7 +128,7 @@ export class DependencyObserver{
                     that.notify();
 
 
-                }, 200);
+                }, 500);
             }
             else{
                 console.log("rejected this");
@@ -149,6 +151,7 @@ export class DependencyObserver{
                     let that = this;
     
                     setTimeout( async function(){
+                        console.log("listen to connection type", id);
                         let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
                         for(let i=0 ;i< newConnection.length; i++){
                             
@@ -184,7 +187,7 @@ export class DependencyObserver{
                         that.notify();
     
     
-                    }, 200);
+                    }, 500);
                 }
                 else{
                     console.log("rejected this");
@@ -201,6 +204,12 @@ export class DependencyObserver{
         console.log("this is the old execute data");
     }
 
+    async update(){
+        this.isDataLoaded = false;
+        await this.bind();
+        this.notify();
+    }
+
     /**
      * 
      * @param callback the function that needs to be called with the data.
@@ -210,7 +219,7 @@ export class DependencyObserver{
         this.subscribers.push(callback);
             console.log('again executing data');
           await this.bind();
-          return callback(this.data);
+          return callback(this.data, this);
       }
 
 
@@ -233,7 +242,7 @@ export class DependencyObserver{
         this.subscribers.map(subscriber => {
             console.log('notify')
 
-            subscriber(this.data)
+            subscriber(this.data, this)
         });
 
       }

@@ -67,7 +67,8 @@ export class StatefulWidget extends BaseWidget{
    /**
     * This is called after the data has been udpated by some other component.
     */
-   update(){}
+   update(){
+   }
 
 
     /**

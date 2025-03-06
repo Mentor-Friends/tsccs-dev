@@ -8,6 +8,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     query: FreeschemaQuery = new FreeschemaQuery();
     countInfoStrings: string [] = [];
     order: string = "DESC";
+    totalCount:number = 0;
     constructor(query: FreeschemaQuery, token: string){
         super();
         this.query = query;
@@ -30,6 +31,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.linkers = result.linkers ?? [];
             this.reverse = result.reverse;
             this.compositionIds = result.mainCompositionIds;
+            this.totalCount = result.mainCount;
             for(let i=0 ;i<this.compositionIds.length; i++){
                 this.listenToEvent(this.compositionIds[i]);
             }
@@ -37,9 +39,9 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         }
         else{
 
-            for(let i=0 ;i<this.compositionIds.length; i++){
-                this.listenToEvent(this.compositionIds[i]);
-            }
+            // for(let i=0 ;i<this.compositionIds.length; i++){
+            //     this.listenToEvent(this.compositionIds[i]);
+            // }
         }
         return await this.build();
     }
