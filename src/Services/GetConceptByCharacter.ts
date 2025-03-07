@@ -5,7 +5,7 @@ import { ConceptsData } from "../DataStructures/ConceptData";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 export default async function GetConceptByCharacter(characterValue: string){
-    const logData : any = Logger.logfunction("GetConceptByCharacter", arguments);
+    const logData : any = Logger.logfunction("GetConceptByCharacter", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -32,7 +32,7 @@ export default async function GetConceptByCharacter(characterValue: string){
 }
 
 export  async function GetConceptByCharacterUpdated(characterValue: string){
-    const logData : any = Logger.logfunction("GetConceptByCharacterUpdated", arguments);
+    const logData : any = Logger.logfunction("GetConceptByCharacterUpdated", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {

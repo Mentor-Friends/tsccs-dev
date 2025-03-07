@@ -108,7 +108,7 @@ export class Logger {
         message: string,
         data?:any | null
     ) : void {
-        if(!this.logPackageActivationStatus) return;
+        if(!this.logPackageActivationStatus) return ;
         try{
             this.formatLogData(level, message, data || null)
         } catch(error){
@@ -124,13 +124,13 @@ export class Logger {
 
         try {
             if(!this.logPackageActivationStatus){
-                return;
+                return {};
             }
 
             //console.log("Log Data for update is : ", logData);
             if (!logData) {
                 // console.error("logUpdate failed: logData is undefined");
-                return;
+                return {};
             }
 
             const updateTime = Date.now();
@@ -156,28 +156,29 @@ export class Logger {
 
 
     public static logfunction(myFunction:string, ...args:any[]){
+        if(!this.logPackageActivationStatus) return {};
         const startTime = Date.now(); 
       // console.log("Existing Package Log : ", this.packageLogsData.length);
         //console.log("Package Log Activation Status: ", this.logPackageActivationStatus);
         
-          if(this.logPackageActivationStatus){
-           // console.log("Inside Package Log Activation Status: ");
-            let myarguments: any = args;
-            //let size = Object.values(myarguments[0]).length;
-            const applicationId = BaseUrl.getRandomizer();
-            const sessionId = TokenStorage.sessionId;
-    
-            // console.log("info", myfunction.name, myarguments, myarguments[0].length);
-            let logData: LogData = {
-                startTime: startTime,
-                functionName: myFunction,
-                functionParameters: myarguments,
-                requestFrom: BaseUrl.BASE_APPLICATION,
-                sessionId: sessionId,
-                applicationId: applicationId
-            }
-            return this.formatLogData('INFO', "function called", logData);
-          }
+        //   if(this.logPackageActivationStatus){
+        // console.log("Inside Package Log Activation Status: ");
+        let myarguments: any = args;
+        //let size = Object.values(myarguments[0]).length;
+        const applicationId = BaseUrl.getRandomizer();
+        const sessionId = TokenStorage.sessionId;
+
+        // console.log("info", myfunction.name, myarguments, myarguments[0].length);
+        let logData: LogData = {
+            startTime: startTime,
+            functionName: myFunction,
+            functionParameters: myarguments,
+            requestFrom: BaseUrl.BASE_APPLICATION,
+            sessionId: sessionId,
+            applicationId: applicationId
+        }
+        return this.formatLogData('INFO', "function called", logData);
+        //   }
 
         // }
 

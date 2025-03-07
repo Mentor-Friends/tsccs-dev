@@ -9,7 +9,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
-  const logData : any = Logger.logfunction("GetRelation",arguments);
+  const logData : any = Logger.logfunction("GetRelation",arguments) || {};
   if (serviceWorker) {
     logData.serviceWorker = true;
     try {
@@ -46,7 +46,7 @@ export async function GetRelation(id:number, relation:string, inpage:number=10, 
 }
 
 export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1){
-  const logData : any = Logger.logfunction("GetRelationRaw",arguments);
+  const logData : any = Logger.logfunction("GetRelationRaw",arguments) || {};
   if (serviceWorker) {
     logData.serviceWorker = true;
     try {

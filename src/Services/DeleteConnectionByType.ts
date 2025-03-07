@@ -10,7 +10,7 @@ import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
  * @returns 
  */
 export async function DeleteConnectionByType(id: number, linker: string){
-    const logData : any = Logger.logfunction("DeleteConnectionByType", arguments);
+    const logData : any = Logger.logfunction("DeleteConnectionByType", arguments) || {}
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {

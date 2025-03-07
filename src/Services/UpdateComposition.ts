@@ -28,7 +28,7 @@ import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 export default async function UpdateComposition(
   patcherStructure: PatcherStructure
 ) {
-  const logData : any = Logger.logfunction("UpdateComposition");
+  const logData : any = Logger.logfunction("UpdateComposition") || {}
   if (serviceWorker) {
     logData.serviceWorker = true;
     try {

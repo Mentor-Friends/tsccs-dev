@@ -11,7 +11,7 @@ import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from 
  * @returns 
  */
 export async function GetConcept(id: number){    
-    const logData : any = Logger.logfunction("GetConcept", arguments);
+    const logData : any = Logger.logfunction("GetConcept", arguments) || {};
     try{
         if (serviceWorker) {
             logData.serviceWorker = true;

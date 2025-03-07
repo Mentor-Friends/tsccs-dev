@@ -23,7 +23,7 @@ import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number, actions: InnerActions = {concepts: [], connections: []}
     ): Promise<Concept>
 {
-    const logData : any = Logger.logfunction("MakeTheTypeConceptLocal", arguments);
+    const logData : any = Logger.logfunction("MakeTheTypeConceptLocal", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
