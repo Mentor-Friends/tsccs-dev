@@ -204,6 +204,10 @@ export class DependencyObserver{
         console.log("this is the old execute data");
     }
 
+    /**
+     * This function tries to fetch the data again from the backend. This can be useful if your data parameters are changed
+     * This is helpful in re-querying mechanism like pagination.
+     */
     async update(){
         this.isDataLoaded = false;
         await this.bind();
