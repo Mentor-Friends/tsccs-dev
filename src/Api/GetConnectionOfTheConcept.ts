@@ -9,7 +9,7 @@ import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from 
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
-  const logData : any = Logger.logfunction("GetConnectionOfTheConcept", arguments);
+  const logData : any = Logger.logfunction("GetConnectionOfTheConcept", arguments) || {};
   let connectionList:Connection[] = []; 
   try{
     if (serviceWorker) {

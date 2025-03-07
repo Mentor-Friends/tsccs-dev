@@ -207,7 +207,7 @@ export class ConnectionData {
 
   // commented
   static async GetConnectionsOfCompositionLocal(id: number) {
-    const logData : any = Logger.logfunction("ConnectionData.GetConnectionsOfCompositionLocal", arguments);
+    const logData : any = Logger.logfunction("ConnectionData.GetConnectionsOfCompositionLocal", arguments) || {};
     let connections: Connection[] = [];
 
     try{    

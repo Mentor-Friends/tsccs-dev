@@ -4,7 +4,7 @@ import { Logger } from "../../Middleware/logger.service";
 import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, actions: InnerActions = {concepts: [], connections: []}){
-    const logData : any = Logger.logfunction("CreateConnectionBetweenTwoConceptsLocal", arguments);
+    const logData : any = Logger.logfunction("CreateConnectionBetweenTwoConceptsLocal", arguments) || {};
     let startTime = performance.now()
     try{
         if (serviceWorker) {

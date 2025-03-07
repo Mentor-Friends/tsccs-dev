@@ -9,7 +9,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1){
-  const logData : any = Logger.logfunction("GetLink", arguments);
+  const logData : any = Logger.logfunction("GetLink", arguments) || {};
 
   if (serviceWorker) {
     logData.serviceWorker = true;
