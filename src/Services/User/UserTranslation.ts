@@ -6,6 +6,7 @@ export async function GetUserGhostId(userId:number,  ghostId:number, sessionId:n
 
     let userNode =   await UserBinaryTree.getNodeFromTree(userId, sessionId);
     let realConcept: Concept = CreateDefaultLConcept();
+    console.log("this is the usernode", userNode);
     if(userNode){
         for(let i=0 ; i<userNode.value.length; i++ ){
             let testConcept: Concept = userNode.value[i];

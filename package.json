@@ -1,6 +1,10 @@
 {
   "name": "mftsccs-browser",
+<<<<<<< Updated upstream
   "version": "2.1.76-beta",
+=======
+  "version": "2.1.78-beta",
+>>>>>>> Stashed changes
  "environment": "production",
   "description": "Full Pack of concept and connection system",
   "main": "dist/main.bundle.js",
