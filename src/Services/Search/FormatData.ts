@@ -169,6 +169,11 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
         mymainData["id"] = mainComposition[i];
         mainData.push(mymainData);
       }
+      else{
+        mymainData = {};
+        mymainData["id"] = mainComposition[i];
+        mainData.push(mymainData);
+      }
 
       
     }

@@ -73,10 +73,10 @@ export class DependencyObserver{
                     that.notify();
 
 
-                }, 500);
+                }, 200);
             }
             else{
-                console.log("rejected this");
+                console.log("rejected this listenToEventType",id);
             }
 
         });
@@ -128,10 +128,10 @@ export class DependencyObserver{
                     that.notify();
 
 
-                }, 500);
+                }, 200);
             }
             else{
-                console.log("rejected this");
+                console.log("rejected this listen event", id);
             }
 
         });
@@ -187,10 +187,10 @@ export class DependencyObserver{
                         that.notify();
     
     
-                    }, 500);
+                    }, 200);
                 }
                 else{
-                    console.log("rejected this");
+                    console.log("rejected this connection type", id, connectionType);
                 }
     
             });

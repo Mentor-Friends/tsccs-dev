@@ -81,6 +81,18 @@ export class StatefulWidget extends BaseWidget{
         this.render();
     }
 
+    setProperty(newProperty:any){
+      Object.assign(this, newProperty);
+      this.notify();
+      this.render();
+    }
+
+    setPropertyForRender(newProperty:any){
+      Object.assign(this, newProperty);
+      //this.notify();
+      this.render();
+    }
+
 
     /**
      * If any child widgets are registered in the widget. Then without any other changes to the contents and state

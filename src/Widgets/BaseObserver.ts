@@ -33,6 +33,6 @@ export class BaseObserver{
      */
     dataChange(callback: any){
         this.subscribers.push(callback);
-        return callback(this.data);
+        //return callback(this.data);
       }
 }

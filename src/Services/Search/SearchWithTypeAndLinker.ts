@@ -132,6 +132,7 @@ export async function formatConnections(linkers: number[], conceptIds: number []
     let newCompositionData: any [] = [];
     compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
     compositionData = await formatFunctionForData(prefetchConnections, compositionData, reverse);
+
     let output:any  = await FormatConceptsAndConnectionsNormalList(prefetchConnections, compositionData, mainCompositionIds, newCompositionData, reverse );
     return output;
 }

@@ -20,11 +20,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         if(!this.isDataLoaded){
              this.isDataLoaded = true;
             this.query.outputFormat = ALLID;
-            if(this.query.type != ""){
-                let concept = await MakeTheTypeConceptApi(this.query.type, 999);
-                this.listenToEventType(concept.id);
 
-            }
             let result:any = await FreeschemaQueryApi(this.query, "");
             this.conceptIds = result.conceptIds;
             this.internalConnections = result.internalConnections ?? [];
@@ -32,9 +28,9 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.reverse = result.reverse;
             this.compositionIds = result.mainCompositionIds;
             this.totalCount = result.mainCount;
-            for(let i=0 ;i<this.compositionIds.length; i++){
-                this.listenToEvent(this.compositionIds[i]);
-            }
+            // for(let i=0 ;i<this.compositionIds.length; i++){
+            //     this.listenToEvent(this.compositionIds[i]);
+            // }
             this.countInfoStrings = result.countinfo;
         }
         else{
@@ -43,7 +39,17 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             //     this.listenToEvent(this.compositionIds[i]);
             // }
         }
-        return await this.build();
+        let output =  await this.build();
+        for(let i=0 ;i<this.compositionIds.length; i++){
+            this.listenToEvent(this.compositionIds[i]);
+        }
+        if(this.query.type != ""){
+            let concept = await MakeTheTypeConceptApi(this.query.type, 999);
+            this.listenToEventType(concept.id);
+
+        }
+        return output;
+
     }
     
     async build(){

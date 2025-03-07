@@ -362,6 +362,10 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
                 mymainData["id"] = mainComposition[i];
           
               }
+              else{
+                mymainData = {};
+                mymainData["id"] = mainComposition[i];
+              }
               mainData.push(mymainData);
               
             }
