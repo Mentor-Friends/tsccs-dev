@@ -81,8 +81,8 @@ export class Logger {
         level: string,
         message: string,
         data?: LogData
-    ): void {
-        if (!this.shouldLog(level)) return;
+    ) {
+        // if (!this.shouldLog(level)) return ;
 
         const logEntry : any = {
             timestamp: new Date().toISOString(),
@@ -107,8 +107,8 @@ export class Logger {
         level: 'INFO' | 'ERROR' | 'DEBUG' | 'WARNING',
         message: string,
         data?:any | null
-    ) : void {
-        if(!this.logPackageActivationStatus) return ;
+    ) {
+        if(!this.logPackageActivationStatus) return;
         try{
             this.formatLogData(level, message, data || null)
         } catch(error){
