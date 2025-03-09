@@ -14,7 +14,7 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
   toConcept: number,
   mainKey: number
 ) {
-  const logData : any = Logger.logfunction("GetCompositionConnectionsBetweenTwoConcepts", arguments);
+  const logData : any = Logger.logfunction("GetCompositionConnectionsBetweenTwoConcepts", arguments) || {};
   var connectionList: Connection[] = [];
   try {
     if (serviceWorker) {

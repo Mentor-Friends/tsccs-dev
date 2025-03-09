@@ -264,7 +264,7 @@ export async function GetCompositionFromMemoryNormal(id:number){
  * @returns 
  */
 export async function GetCompositionWithIdFromMemory(id:number){
-    const logData : any = Logger.logfunction("GetCompositionWithIdFromMemory", arguments);
+    const logData : any = Logger.logfunction("GetCompositionWithIdFromMemory", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -319,7 +319,7 @@ export async function GetCompositionWithIdFromMemory(id:number){
  * @returns 
  */
 export async function GetCompositionFromMemoryWithConnections(id:number, connectionList:Connection[]){
-    const logData : any = Logger.logfunction("GetCompositionFromMemoryWithConnections", arguments);
+    const logData : any = Logger.logfunction("GetCompositionFromMemoryWithConnections", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -366,7 +366,7 @@ export async function GetCompositionFromMemoryWithConnections(id:number, connect
  * @returns 
  */
 export async function GetCompositionWithIdFromMemoryFromConnection(id:number, connectionList: Connection[]){
-    const logData : any = Logger.logfunction("GetCompositionWithIdFromMemoryFromConnection", [id]);
+    const logData : any = Logger.logfunction("GetCompositionWithIdFromMemoryFromConnection", [id]) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -533,7 +533,7 @@ export async function GetCompositionWithIdFromMemoryFromConnections(id:number, c
  * @returns 
  */
 export async function GetCompositionWithId(id:number){
-    const logData : any = Logger.logfunction("GetCompositionWithId", arguments);
+    const logData : any = Logger.logfunction("GetCompositionWithId", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {

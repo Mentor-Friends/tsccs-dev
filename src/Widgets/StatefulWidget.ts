@@ -166,12 +166,12 @@ export class StatefulWidget extends BaseWidget{
       //console.log("added-widget-container",this.childWidgetElement);
       // addEvents is called after the element has been mounted.
       //console.log("this is the rendering", this);
+      this.loadChildWidgets();
       this.after_render();
-
       // then after the child widgets are again loaded.
-      if(this.widgetMounted){
-        this.loadChildWidgets();
-      }
+      // if(this.widgetMounted){
+      // }
+
     }
 
     getElementByClassName(identifier: string){

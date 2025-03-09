@@ -10,7 +10,7 @@ import MakeTheCharacter from "./MakeTheCharacter";
 import { SplitStrings } from "./SplitStrings";
 
 export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number) {
-    const logData : any = Logger.logfunction("MakeTheTypeConcept", arguments);
+    const logData : any = Logger.logfunction("MakeTheTypeConcept", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {

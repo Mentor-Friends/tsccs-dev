@@ -25,8 +25,7 @@ import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
  */
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
-        const logData : any = Logger.logfunction("MakeTheInstanceConceptLocal", arguments);
-        let startTime = performance.now()
+        const logData : any = Logger.logfunction("MakeTheInstanceConceptLocal", arguments) || {};
         if (serviceWorker) {
             logData.serviceWorker = true;
             try {

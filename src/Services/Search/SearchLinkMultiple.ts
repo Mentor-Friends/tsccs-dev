@@ -7,7 +7,7 @@ import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInO
 import { formatDataArrayNormal } from "./SearchWithTypeAndLinker";
 
 export async function SearchLinkMultipleAll(searchQuery: SearchQuery[], token: string="", caller:any = null, format:number = DATAID){
-  const logData : any = Logger.logfunction("SearchLinkMultipleAll", arguments);
+  const logData : any = Logger.logfunction("SearchLinkMultipleAll", arguments) || {};
   try{
     try {
       if (serviceWorker) {
