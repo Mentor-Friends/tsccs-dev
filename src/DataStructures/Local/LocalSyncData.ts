@@ -18,6 +18,9 @@ type syncContainer = {
 
 export class LocalSyncData{
     static  conceptsSyncArray:Concept[] = [];
+
+    static conceptDeleteIds:number[] = [];
+    static connectionDeleteIds:number[] = [];
     static  connectionSyncArray: Connection[] = [];
     static ghostIdMap = new Map();
     static transactionCollections: syncContainer[] = []
