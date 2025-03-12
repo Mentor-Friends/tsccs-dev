@@ -142,6 +142,8 @@ export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 
+export {CreateConnection} from './Services/Local/CreateTheConnectionLocal';
+
 export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 export {CreateData} from './Services/automated/automated-concept-connection';

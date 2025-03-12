@@ -65,6 +65,14 @@ export default async function GetTheConcept(id: number, userId: number = 999){
                         concept.type = typeConcept;
                     }
                 }
+                if(concept.referentId != 0 && concept.referent == null){
+                    let conceptReferrent = await ConceptsData.GetConcept(concept.referentId);
+                    if(conceptReferrent == null && concept.referentId != 0 && concept.referentId != undefined && concept.referentId != null){
+                        let referentConceptString = await GetConcept(concept.referentId);
+                        let referentConcept = referentConceptString as Concept;
+                        concept.referent = referentConcept;
+                    }
+                }
             }
             // Add Log
             // Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined )

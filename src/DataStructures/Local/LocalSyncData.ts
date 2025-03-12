@@ -97,8 +97,11 @@ export class LocalSyncData{
                 }
             }
 
+            // initialize the arrays that need to be synced.
             let conceptsArray: Concept[] = [];
             let connectionsArray: Connection[] = [];
+
+            // if transaction is implemented then take the concepts from the transaction
             if (transactionId && this.transactionCollections.some(tran => tran.id == transactionId)) {
                 const transaction = this.transactionCollections.find(tran => tran.id == transactionId)
                 // remove current transaction from list
@@ -144,6 +147,7 @@ export class LocalSyncData{
             }
             //if(connectionsArray.length > 0){
                 await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, toSyncConcepts);
+                await this.CreateReferentRelationship(toSyncConcepts);
                 let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray);
                 let concepts = result.concepts;
                 let connections = result.connections;
@@ -169,6 +173,30 @@ export class LocalSyncData{
         }
 
      }
+
+     static async CreateReferentRelationship(concepts:Concept[]){
+        for(let i=0; i<concepts.length; i++){
+            let referentId = concepts[i].referentId;
+            if(referentId < 0){
+                let referentConcept = this.CheckIfTheConceptIdExists(referentId, concepts);
+                if(referentConcept.id == 0){
+                    referentConcept = await LocalConceptsData.GetConceptByGhostId(referentId);
+                    if(referentConcept.id != 0){
+
+                    }
+                    else{
+                        referentConcept = await LocalConceptsData.GetConcept(referentId);
+                        // if this has already been synced before and is a composition type then do not send it again
+                       // if(!ofTheConcept.isSynced && !ofTheConcept.isComposition){
+                        this.AddConceptIfDoesNotExist(referentConcept,concepts)
+                     //   }
+                    }
+
+                }
+            }
+        }
+     }
+
 
     static ConvertGhostIdsInConnections(connectionArray: Connection[]){
         for(let i= 0 ;i < connectionArray.length; i++){
@@ -253,6 +281,7 @@ export class LocalSyncData{
 
                 }
             }
+
 
 
         }

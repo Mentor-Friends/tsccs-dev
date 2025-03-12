@@ -19,6 +19,7 @@ export  class Concept{
     isComposition: boolean = false;
     isTemp: boolean = false;
     isSynced : boolean = false;
+    referent: Concept | null | void = null;
     // applicationId: number = BaseUrl.BASE_RANDOMIZER;
     applicationId: number = BaseUrl.getRandomizer();
     x:number = 0;

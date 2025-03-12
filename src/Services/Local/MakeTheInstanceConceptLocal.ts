@@ -3,7 +3,7 @@ import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { InnerActions } from "../../Constants/general.const";
-import { Connection, handleServiceWorkerException, LocalSyncData, Logger, sendMessage, serviceWorker } from "../../app";
+import { Connection, GetTheConceptLocal, handleServiceWorkerException, LocalSyncData, Logger, sendMessage, serviceWorker } from "../../app";
 import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 
@@ -52,6 +52,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     
             let  stringLength:number = referent.length;
             let typeConcept;
+            let referrentConcept;
             let concept: Concept;
             let startsWithThe = type.startsWith("the_");
     
@@ -66,8 +67,19 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
                typeConcept = typeConceptString as Concept;
                 
                let conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId,true, referentId, actions );
-    
-                concept = conceptString as Concept;
+               concept = conceptString as Concept;
+               
+               let lastSection = getLastSection(stringToCheck);
+                let the_last_section = "the_" + lastSection;
+                if(the_last_section != stringToCheck){
+                    let referredConceptString = await MakeTheInstanceConceptLocal(the_last_section, "", true, userId, accessId, sessionInformationId);
+                    referrentConcept = referredConceptString as Concept;
+                    LocalSyncData.AddConcept(referrentConcept);
+                    concept.referent = referrentConcept;
+                    concept.referentId = referrentConcept?.id;
+                }
+
+
             }
             else if(stringLength > 255){
     
@@ -91,6 +103,10 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
                     concept = conceptString as Concept;
                 }
             }
+            if(referentId != 0){
+                let referentConcept = await GetTheConceptLocal(referentId);
+                concept.referent = referentConcept;
+            }
     
             concept.type = typeConcept;
             LocalSyncData.AddConcept(concept);
@@ -110,4 +126,8 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
         }
 
 
+}
+
+function getLastSection(str:string) {
+    return str.split("_").pop();
 }

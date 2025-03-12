@@ -2,7 +2,7 @@ import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 import { Logger } from "../../Middleware/logger.service";
-import { handleServiceWorkerException, InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
+import { Concept, handleServiceWorkerException, InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
 
 /**
  * This function creates a connection for the concept connection system. This connection will only be created in real sense
@@ -81,4 +81,74 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
 
 
       
+}
+
+
+export async  function CreateConnection(ofTheConcept:Concept, toTheConcept:Concept, 
+    typeConcept: Concept,orderId:number = 1, userId: number = 999, actions: InnerActions = {concepts: [], connections: []}
+   ){  
+       let startTime = performance.now()
+       if (serviceWorker) {
+           try {
+               const res: any = await sendMessage('CreateConnection', { ofTheConcept, toTheConcept, typeConcept, orderId, userId, actions })
+               if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+               if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+               return res.data
+           } catch (error) {
+               console.log('CreateConnection error sw: ', error)
+               handleServiceWorkerException(error)
+           }
+       }
+       try{
+           let accessId : number = 4;
+           // let randomid = -Math.floor(Math.random() * 100000000);
+           let randomid = await LocalId.getConnectionId();
+            let realOfTheConceptId = 0;
+            let realToTheConceptId = 0;
+            let realTypeId = 0;
+            realOfTheConceptId = ofTheConcept.id;
+            if(ofTheConcept.referentId != 0){
+                realOfTheConceptId = ofTheConcept.referentId;
+            }
+            realToTheConceptId = toTheConcept.id;
+            realTypeId = typeConcept.id;
+            let connection = new Connection(0,0,0,0,0,0,0);
+            if(realOfTheConceptId != realToTheConceptId){
+                 connection = new Connection(randomid, realOfTheConceptId, realToTheConceptId, userId, realTypeId, orderId, accessId);
+                connection.isTemp = true;
+                connection.typeCharacter = typeConcept.characterValue;
+                LocalSyncData.AddConnection(connection);
+                LocalConnectionData.AddConnection(connection);
+                actions.connections.push(connection)
+                //storeToDatabase("localconnection", connection);
+            }
+
+           //  Add Log
+           // Logger.logInfo(
+           //     startTime, 
+           //     userId, 
+           //     "create",
+           //     "Unknown",
+           //     "Unknown",
+           //     200,
+           //     connection,
+           //     "CreateTheConnectionLocal",
+           //     ['ofTheConceptId', 'toTheConceptId', 'typeId', 'orderId', 'typeString', 'userId'],
+           //     "UnknownUserAgent",
+           //     []
+           // );
+           
+           return connection;
+       }
+       catch(error){
+           Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "CreateConnection",
+               [ofTheConcept, toTheConcept, typeConcept, orderId, userId],
+               "UnknownUserAgent",
+               []
+           );
+           throw error;
+       }
+
+
+     
 }
