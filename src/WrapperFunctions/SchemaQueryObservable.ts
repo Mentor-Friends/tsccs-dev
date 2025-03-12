@@ -1,11 +1,10 @@
-import { FreeschemaQuery, FreeschemaQueryApi, Logger } from "../app";
+import { FreeschemaQuery, FreeschemaQueryApi, Logger, MakeTheTypeConceptApi } from "../app";
 import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
 import { DependencyObserver } from "./DepenedencyObserver";
 
 export class SearchLinkMultipleAllObservable extends DependencyObserver{
-    mainCompositionIds: number [] =[];
     query: FreeschemaQuery = new FreeschemaQuery();
     countInfoStrings: string [] = [];
     order: string = "DESC";
@@ -18,36 +17,46 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
 
     async bind() {
         if(!this.isDataLoaded){
-            this.isDataLoaded = true;
+             this.isDataLoaded = true;
             this.query.outputFormat = ALLID;
+            if(this.query.type != ""){
+                let concept = await MakeTheTypeConceptApi(this.query.type, 999);
+                this.listenToEventType(concept.id);
+
+            }
             let result:any = await FreeschemaQueryApi(this.query, "");
             this.conceptIds = result.conceptIds;
-            this.internalConnections = result.internalConnections;
-            this.linkers = result.linkers;
+            this.internalConnections = result.internalConnections ?? [];
+            this.linkers = result.linkers ?? [];
             this.reverse = result.reverse;
-            this.mainCompositionIds = result.mainCompositionIds;
+            this.compositionIds = result.mainCompositionIds;
+            for(let i=0 ;i<this.compositionIds.length; i++){
+                this.listenToEvent(this.compositionIds[i]);
+            }
             this.countInfoStrings = result.countinfo;
+        }
+        else{
+
+            for(let i=0 ;i<this.compositionIds.length; i++){
+                this.listenToEvent(this.compositionIds[i]);
+            }
         }
         return await this.build();
     }
     
     async build(){
-        Logger.logfunction("build", ["schemaquery", this.mainCompositionIds]);
+        Logger.logfunction("build", ["schemaquery", this.compositionIds]);
         let countInfos = DecodeCountInfo(this.countInfoStrings);
 
         if(this.format == DATAID){
-            console.time("format");
-            this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse,countInfos, this.order);
-            console.timeEnd("format");
+            this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.compositionIds, this.reverse,countInfos, this.order);
         }
         else if(this.format == JUSTDATA){
-            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos, this.order);
+            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
         }
         else{
-        console.time("format");
 
-            this.data = await formatConnections(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse, countInfos);
-            console.timeEnd("format");
+            this.data = await formatConnections(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos);
 
             //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
         }

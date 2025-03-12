@@ -10,7 +10,7 @@ export class Logger {
     private static packageLogsData: any[] = [];
     private static applicationLogsData: any[] = [];
     private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
-    private static readonly SYNC_INTERVAL_MS = 120 * 1000; // 120 Sec
+    private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app";
     private static mftsccsBrowser:string = "mftsccs";
@@ -45,7 +45,7 @@ export class Logger {
                 this.sendPackageLogsToServer();
                 this.sendApplicationLogsToServer();
             }
-        }, 60000); // Check every minute
+        }, 30000); // Check every half minute
     }
 
     /**
@@ -81,11 +81,11 @@ export class Logger {
         level: string,
         message: string,
         data?: LogData
-    ): void {
-        if (!this.shouldLog(level)) return;
+    ) {
+        // if (!this.shouldLog(level)) return ;
 
         const logEntry : any = {
-            timestamp: new Date().toLocaleString(),
+            timestamp: new Date().toISOString(),
             level,
             message,
             ...data,
@@ -94,7 +94,7 @@ export class Logger {
         this.packageLogsData.push(logEntry);
         // console.log("Log Update Test for functions : ", this.packageLogsData);
         if(level == "ERROR"){
-            this.sendPackageLogsToServer();
+            this.sendPackageLogsToServer(); 
             this.sendApplicationLogsToServer();
         }
         //this.saveLogToLocalStorage(this.mftsccsBrowser, logEntry)
@@ -107,7 +107,7 @@ export class Logger {
         level: 'INFO' | 'ERROR' | 'DEBUG' | 'WARNING',
         message: string,
         data?:any | null
-    ) : void {
+    ) {
         if(!this.logPackageActivationStatus) return;
         try{
             this.formatLogData(level, message, data || null)
@@ -123,11 +123,16 @@ export class Logger {
     public static logUpdate(logData:LogData){
 
         try {
-            // console.log("Log Data for update is : ", logData);
-            if (!logData) {
-                console.error("logUpdate failed: logData is undefined");
-                return;
+            if(!this.logPackageActivationStatus){
+                return {};
             }
+
+            //console.log("Log Data for update is : ", logData);
+            if (!logData) {
+                // console.error("logUpdate failed: logData is undefined");
+                return {};
+            }
+
             const updateTime = Date.now();
             
             //  prevent undefined subtraction
@@ -151,8 +156,13 @@ export class Logger {
 
 
     public static logfunction(myFunction:string, ...args:any[]){
+        if(!this.logPackageActivationStatus) return {};
         const startTime = Date.now(); 
-        //  if(this.logPackageActivationStatus){
+      // console.log("Existing Package Log : ", this.packageLogsData.length);
+        //console.log("Package Log Activation Status: ", this.logPackageActivationStatus);
+        
+        //   if(this.logPackageActivationStatus){
+        // console.log("Inside Package Log Activation Status: ");
         let myarguments: any = args;
         //let size = Object.values(myarguments[0]).length;
         const applicationId = BaseUrl.getRandomizer();
@@ -168,6 +178,8 @@ export class Logger {
             applicationId: applicationId
         }
         return this.formatLogData('INFO', "function called", logData);
+        //   }
+
         // }
 
     }
@@ -213,15 +225,15 @@ export class Logger {
         }
     }
 
-    public static logApplication(type: string, message: string, data?: any): void {
-        console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
+    public static logApplication(level: string, message: string, data?: any): void {
+        //console.log("LogApplicationActivationStatus  : ", this.logApplicationActivationStatus)
         if(!this.logApplicationActivationStatus) return;
         try {
-            const timestamp = new Date().toLocaleString();
+            const timestamp = new Date().toISOString();
             
             const logEntry = {
                 timestamp: timestamp,
-                type: type,
+                level: level,
                 message: message,
                 data: data || null,
             };
@@ -243,21 +255,24 @@ export class Logger {
 
         try {
 
-            console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
+           // console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
             
-            if(this.applicationLogsData.length === 0){
+            if(storedLogs.length === 0){
                 return
             }
             this.applicationLogsData = []
 
              const accessToken = TokenStorage.BearerAccessToken;
-            // if(!accessToken) return;
 
             // clear application log from memory
             const chunkSize = 50;
             let header = GetRequestHeader();
-            for (let i = 0; i < storedLogs.length; i += chunkSize) {
-                const chunk = storedLogs.slice(i, i + chunkSize);
+            let i = 0;
+            while(storedLogs.length != 0)
+            {                
+                // console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
+
+                const chunk = storedLogs.slice(0, chunkSize);
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: header,
@@ -269,9 +284,10 @@ export class Logger {
 
                 if (!response.ok) {
                     const responseBody = await response.text();
-                   // this.applicationLogsData.push(...storedLogs);
-                   // console.error("Failed to send app-logs:-", response.status, response.statusText, responseBody);
                 }
+                storedLogs.splice(0, chunkSize);
+                i = i+chunkSize;
+                i++;
             }
             
         } catch (error) {
@@ -285,14 +301,24 @@ export class Logger {
 
         try {
 
-            console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
-            
-            if(this.packageLogsData.length === 0) return
+            //console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
+            if(storedLogs.length === 0) return
+            // if(this.packageLogsData.length === 0) return
             this.packageLogsData = [];
+            //console.log("Stored Logs for send : ", storedLogs);
 
             const chunkSize = 300;
-            for (let i = 0; i < storedLogs.length; i += chunkSize) {
-                const chunk = storedLogs.slice(i, i + chunkSize);
+            let i = 0;
+            while(storedLogs.length != 0)
+            {   
+                // console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
+                const chunk = storedLogs.slice(0, chunkSize)
+                // console.log("Chunk : ", chunk);
+                
+            //for (let i = 0; i < storedLogs.length; i += chunkSize) {
+                // const chunk = storedLogs.slice(i, i + chunkSize);
+                // console.log("Package Log URL : ", BaseUrl.PostLogger);
+                
                 let header= GetRequestHeader();
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
@@ -310,6 +336,10 @@ export class Logger {
                     //console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
                 }
+                
+                storedLogs.splice(0, chunkSize);
+                // i += chunkSize;
+                i++;
             }
 
             // clear mftsccs log from memory
@@ -350,7 +380,6 @@ export class Logger {
             // console.log('Logs removed from localStorage');
         }
     }
-
 }
 
 
@@ -460,7 +489,6 @@ export function getCookie(cname:string) {
     try{
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
-        console.log("this is the decoded cookie", decodedCookie);
         let ca = decodedCookie.split(';');
         for(let i = 0; i <ca.length; i++) {
           let c = ca[i];

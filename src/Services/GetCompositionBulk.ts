@@ -49,7 +49,7 @@ export async function GetCompositionBulkWithDataId(conceptIds:number[]=[]){
  * @returns list of compositions created from the passed conceptIds and connectionIds.
  */
 export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[]=[], connectionIds:number[] = []){
-    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataId", [conceptIds]);
+    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataId", [conceptIds]) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -85,7 +85,7 @@ export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[
  * @returns list of compositions created from the passed conceptIds and connectionIds.
  */
 export async function GetCompositionFromConnectionsWithDataIdFromConnections(conceptIds:number[]=[], connectionIds:number[] = []){
-    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdFromConnections", arguments);
+    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdFromConnections", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -119,7 +119,7 @@ export async function GetCompositionFromConnectionsWithDataIdFromConnections(con
  * @returns dictionary of compositions created from the passed conceptIds and connectionIds with conceptId as its index .
  */
 export async function GetCompositionFromConnectionsWithDataIdIndex(conceptIds:number[]=[], connectionIds:number[] = []){
-    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdIndex", arguments);
+    const logData : any = Logger.logfunction("GetCompositionFromConnectionsWithDataIdIndex", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -204,7 +204,7 @@ export async function GetCompositionFromConnectionsWithIndexFromConnections(conc
  * @returns all the connections that are passed as ids.
  */
 export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise<Connection[]>{
-    const logData : any = Logger.logfunction("GetConnectionDataPrefetch", arguments);
+    const logData : any = Logger.logfunction("GetConnectionDataPrefetch", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {

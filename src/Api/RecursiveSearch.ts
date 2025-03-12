@@ -19,7 +19,7 @@ export async function RecursiveSearchApi(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  const logData : any = Logger.logfunction("RecursiveSearchApi", arguments);
+  const logData : any = Logger.logfunction("RecursiveSearchApi", arguments) || {};
   let concepts: any[] = [];
 
   try {
@@ -86,7 +86,7 @@ export async function RecursiveSearchApiWithInternalConnections(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  const logData:any = Logger.logfunction("RecursiveSearchApiWithInternalConnections", arguments);
+  const logData:any = Logger.logfunction("RecursiveSearchApiWithInternalConnections", arguments) || {};
   let concepts: any[] = [];
 
   try {  
@@ -152,7 +152,7 @@ export async function RecursiveSearchApiRaw(
   listLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  const logData : any = Logger.logfunction("RecursiveSearchApiRaw", arguments);
+  const logData : any = Logger.logfunction("RecursiveSearchApiRaw", arguments) || {};
   let concepts: any[] = [];
 
   try {
@@ -214,7 +214,7 @@ export async function RecursiveSearchApiRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  const logData : any = Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments);
+  const logData : any = Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments) || {};
   let concepts: any[] = [];
 
   try {
@@ -276,7 +276,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
   fullLinkers: string[] = [],
   textSearch: string = ""
 ) {
-  const logData : any = Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments);
+  const logData : any = Logger.logfunction("RecursiveSearchApiRawFullLinker", arguments) || {};
   let concepts: any[] = [];
 
   try {

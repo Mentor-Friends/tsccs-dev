@@ -30,10 +30,7 @@ export class StatefulWidget extends BaseWidget{
     parentElement: string = "";
 
 
-    /**
-     * This is the element that is a copy of the element that is mounted.
-     */
-    element: HTMLElement | null = null;
+
 
     // Helper methods to query elements within the widget's element
     getElementById(id: string): HTMLElement | null {
@@ -89,7 +86,6 @@ export class StatefulWidget extends BaseWidget{
      * @param newState 
      */
     setState(newState: any) {
-      console.log("this is setting the state", this);
         this.data = newState;
         this.notify();
         this.render();
@@ -101,10 +97,8 @@ export class StatefulWidget extends BaseWidget{
      * this loadChildWidgets will be called which will help the child widgets be rendered to their respective positions.
      */
     loadChildWidgets(){
-      console.log("this is the child Widgets", this.childWidgets);
           this.childWidgets.map((child: any) => {
           let widget = this.getElementById(child.parentElement);
-          console.log("this is the widget for the child", widget);
 
           if(widget){
             widget.innerHTML = "";
@@ -125,12 +119,12 @@ export class StatefulWidget extends BaseWidget{
       //console.log("added-widget-container",this.childWidgetElement);
       // addEvents is called after the element has been mounted.
       //console.log("this is the rendering", this);
+      this.loadChildWidgets();
       this.after_render();
-
       // then after the child widgets are again loaded.
-      if(this.widgetMounted){
-        this.loadChildWidgets();
-      }
+      // if(this.widgetMounted){
+      // }
+
     }
 
     getElementByClassName(identifier: string){

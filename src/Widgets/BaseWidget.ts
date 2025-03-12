@@ -3,6 +3,10 @@ import { BaseObserver } from "./BaseObserver";
 export class BaseWidget extends BaseObserver{
 
     /**
+     * This is the element that is a copy of the element that is mounted.
+     */
+      element: HTMLElement | null = null;
+    /**
      * This is a random identifier to the widget that is used to identify the widget and other elements
      * inside of it.
      */
@@ -13,7 +17,7 @@ export class BaseWidget extends BaseObserver{
         widgetMounted: boolean = false;
 
     getComponent(): HTMLElement | null{
-        let component = document.getElementById(this.elementIdentifier.toString());
+        let component = this.element;
         return component;
       }
   

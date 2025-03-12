@@ -26,7 +26,7 @@ export async function handleMessageEvent(event: any) {
   let addedActions = false
 
   try {
-    if (type != 'checkProcess') console.log('received', type, payload?.messageId)
+   // if (type != 'checkProcess') console.log('received', type, payload?.messageId)
     if (!type || !payload.TABID) return;
     processMessageQueue.push(payload.messageId)
 
@@ -116,7 +116,7 @@ export async function handleMessageEvent(event: any) {
     actionsLock = false
   
     if (addedActions) delete responseData.actions
-    if (type != 'checkProcess') console.log('sent', type, payload?.messageId)
+    //if (type != 'checkProcess') console.log('sent', type, payload?.messageId)
 
     processMessageQueue = await Promise.all(processMessageQueue.filter(item => item != payload.messageId))
     event.source.postMessage(responseData)
@@ -324,7 +324,7 @@ export const checkSWInitialization = () => {
         payload: {},
       });
   
-      console.log("Message posted to broadcastChannel");
+    //  console.log("Message posted to broadcastChannel");
       return false
     }
     return true

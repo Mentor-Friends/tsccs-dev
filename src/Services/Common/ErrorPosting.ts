@@ -66,7 +66,7 @@ export function UpdatePackageLogWithError(logData: any, functionName: string, er
         logData.errorMessage = error?.message || "Unknown error occurred";
         
         // Log additional error details
-        // console.error(`Error in function ${functionName}:`, error);
+         console.error(`Error in function ${functionName}:`, error);
     } catch (err) {
         console.error("Failed to handle package function error:", err);
     }

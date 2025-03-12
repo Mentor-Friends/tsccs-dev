@@ -13,7 +13,7 @@ import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
  * @returns list of connections
  */
 export async function GetConnectionBetweenTwoConceptsLinker(ofTheConcept: Concept, toTheConcept: Concept, linker: string, fullLinker: string, forward: boolean = true){
-    const logData : any = Logger.logfunction("GetConnectionBetweenTwoConceptsLinker");
+    const logData : any = Logger.logfunction("GetConnectionBetweenTwoConceptsLinker") || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {

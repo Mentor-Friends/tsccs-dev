@@ -130,15 +130,9 @@ export async function formatConnections(linkers: number[], conceptIds: number []
     prefetchConnections = orderTheConnections(prefetchConnections);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
-    let time1 = new Date().getTime();
     compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
-    console.log("format1", new Date().getTime() - time1);
-    let time2 = new Date().getTime();
     compositionData = await formatFunctionForData(prefetchConnections, compositionData, reverse);
-    console.log("format2", new Date().getTime() - time2);
-    let time3 = new Date().getTime();
     let output:any  = await FormatConceptsAndConnectionsNormalList(prefetchConnections, compositionData, mainCompositionIds, newCompositionData, reverse );
-    console.log("format3", new Date().getTime() - time3);
     return output;
 }
 
@@ -167,7 +161,6 @@ export async function formatConnectionsJustId(linkers: number[], conceptIds: num
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
      prefetchConnections = orderTheConnections(prefetchConnections, order);
-
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
     compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
@@ -200,18 +193,11 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
     prefetchConnections = orderTheConnections(prefetchConnections, order);
-    console.log("this is the prfetch connections", prefetchConnections);
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
-    let time1 = new Date().getTime();
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
-    console.log("format1", new Date().getTime() - time1);
-    let time2 = new Date().getTime();
     compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
-    console.log("format2", new Date().getTime() - time2);
-    let time3 = new Date().getTime();
      let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse, CountDictionary );
-     console.log("format2", new Date().getTime() - time3);
      return output;
 }
 

@@ -1,5 +1,5 @@
 import { BuilderStatefulWidget, BuildWidgetFromId, Concept, GetRelation, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
-import { GetWidgetForTree } from "./WidgetBuild";
+import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
       const widgets = await GetRelation(pageId, "the_page_body");
@@ -15,63 +15,79 @@ import { GetWidgetForTree } from "./WidgetBuild";
       attachNode: HTMLElement,
       props?: any
     ) {
-      const widgets = await GetRelation(widgetId, "the_widget_latest");
-      if (widgets?.length == 0)
-        await renderWidget(widgetId, attachNode, props);
-      else {
-        const latestWidgetId = widgets?.[0]?.id;
-        if (latestWidgetId)
-          await renderWidget(latestWidgetId, attachNode, props);
+      // try{
+      // const widgets = await GetRelation(widgetId, "the_widget_latest");
+      // if (widgets?.length == 0)
+      //   await renderWidget(widgetId, attachNode, props);
+      // else {
+      //   const latestWidgetId = widgets?.[0]?.id;
+      //   if (latestWidgetId)
+      //     await renderWidget(latestWidgetId, attachNode, props);
+      //   }
+      // }
+      // catch (error) {
+      //   console.error(`Error Caught Rendering Widget: ${error}`);
+      // }
+
+      try {
+        const bulkWidget = await BuildWidgetFromIdForLatest(widgetId);
+        let latestWidgetId = bulkWidget.mainId;
+        let bulkWidgetData = bulkWidget.data;
+        await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
+      } catch (error) {
+        console.error(`Error Caught Rendering Widget: ${error}`);
       }
     }
   
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
         const bulkWidget = await BuildWidgetFromId(widgetId);
-        console.log("this is the bulk widget", bulkWidget);
-        const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
-        if (!widgetTree.name) {
-          attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
-          return 
-        }
-        const appElement = attachNode;
-        const newWidget = await convertWidgetTreeToWidget(
-        // await convertWidgetTreeToWidget(
-          widgetTree,
-          appElement,
-          undefined,
-          props
-        );
-        console.log("this is the tree newWidget", widgetTree);
-        // add newWidget css to the page
-        const style = document.createElement("style");
-        style.innerHTML = widgetTree.css + newWidget.css;
-        appElement.appendChild(style);
-        // add newWidget js to the page
-        const script = document.createElement("script");
-        script.innerHTML = widgetTree.js;
-        appElement.appendChild(script);
-  
-        // remove class wb-initial-empty from all elements that have it from fspagePreview
-        const wbInitialEmpty = appElement.querySelectorAll(".wb-initial-empty");
-        wbInitialEmpty.forEach((el) => {
-          el.classList.remove("wb-initial-empty");
-        }); // add the css for the class fspage-preview
-        document
-          .querySelectorAll('[onclick="widgetSelected(event)"]')
-          .forEach((element) => {
-            element.removeAttribute("onclick");
-          }); // remove the onclick event from the widget container
+        await materializeWidget(widgetId, bulkWidget, attachNode, props);
       } catch (error) {
-        console.error("Error Caught Rendering Widget");
+        console.error(`Error Caught Rendering Widget: ${error}`);
       }
+    }
+
+    export async function materializeWidget(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props?: any){
+      const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
+      if (!widgetTree.name) {
+        attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
+        return 
+      }
+      const appElement = attachNode;
+      const newWidget = await convertWidgetTreeToWidget(
+      // await convertWidgetTreeToWidget(
+        widgetTree,
+        appElement,
+        undefined,
+        props
+      );
+      console.log("this is the tree newWidget", widgetTree);
+      // add newWidget css to the page
+      const style = document.createElement("style");
+      style.innerHTML = widgetTree.css + newWidget.css;
+      appElement.appendChild(style);
+      // add newWidget js to the page
+      const script = document.createElement("script");
+      script.innerHTML = widgetTree.js;
+      appElement.appendChild(script);
+
+      // remove class wb-initial-empty from all elements that have it from fspagePreview
+      const wbInitialEmpty = appElement.querySelectorAll(".wb-initial-empty");
+      wbInitialEmpty.forEach((el) => {
+        el.classList.remove("wb-initial-empty");
+      }); // add the css for the class fspage-preview
+      document
+        .querySelectorAll('[onclick="widgetSelected(event)"]')
+        .forEach((element) => {
+          element.removeAttribute("onclick");
+        }); // remove the onclick event from the widget container
     }
 
       export async function getWidgetFromId(widgetId: number,
         visitedWidgets: number[] = [],
         token: string = ""){
         const bulkWidget = await BuildWidgetFromId(widgetId);
-        console.log("this is the bulk widget", bulkWidget);
         const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
         return widgetTree;
       }
@@ -169,7 +185,6 @@ import { GetWidgetForTree } from "./WidgetBuild";
       try {
         const widgetNode = new WidgetTree();
         const output = GetWidgetForTree(bulkWidget, widgetId);
-        console.log("this is the output", output);
         //const output: any = await getWidgetCodeFromId(widgetId, token);
         visitedWidgets.push(widgetId);
   
@@ -205,7 +220,25 @@ import { GetWidgetForTree } from "./WidgetBuild";
         widgetNode.mount_child =
           widgetInfo?.the_widget_mount_child?.data?.the_mount_child;
         const childWidgets = widgetInfo?.the_widget_s_child;
-        console.log("widget info", widgetNode);
+
+        // libraries
+        const widgetLibraryCSS = widgetInfo?.the_widget_s_css_library?.map((cssLibary: any) => {
+          const cssLibraryOrder = cssLibary?.data?.the_css_library?.the_css_library_order?.data?.the_order
+          const cssLibraryURL = cssLibary?.data?.the_css_library?.the_css_library_url?.data?.the_url
+          return {
+            order: cssLibraryOrder,
+            url: cssLibraryURL
+          }
+        })
+        const widgetLibraryJS = widgetInfo?.the_widget_s_js_library?.map((jsLibary: any) => {
+          const jsLibraryOrder = jsLibary?.data?.the_js_library?.the_js_library_order?.data?.the_order
+          const jsLibraryURL = jsLibary?.data?.the_js_library?.the_js_library_url?.data?.the_url
+          return {
+            order: jsLibraryOrder,
+            url: jsLibraryURL
+          }
+        })
+        widgetNode.library = {css: widgetLibraryCSS || [], js: widgetLibraryJS || []}
 
         // if there are children present in the widget then convert the children to widget and put it inside of the tree.
         if (childWidgets?.length) {
@@ -215,14 +248,12 @@ import { GetWidgetForTree } from "./WidgetBuild";
                 ?.id ||
               childWidgets[i]?.data.the_child_widget?.the_child_widget_parent
                 ?.data?.the_parent;
-                console.log("this is the child Widget", childWidgetId);
             const childWidget: WidgetTree = await getWidgetBulkFromId(
               childWidgetId,
               visitedWidgets,
               bulkWidget,
               token
             );
-            console.log("this is the child Widget", childWidget);
             const childWidgetTypeValue =
               childWidgets[i]?.data?.the_child_widget?.the_child_widget_type
                 ?.data?.the_type;
@@ -300,12 +331,10 @@ import { GetWidgetForTree } from "./WidgetBuild";
                   // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
                   newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
                   childWidget.dataChange((value: Concept) => {
-                    console.log("This is the data change in child", value);
                     const type = value?.type?.characterValue;
                     if (type) {
                       newWidget.childrenData[type] = value;
                     }
-                    console.log("new child data", newWidget.childrenData);
                   });
                 }
               }
@@ -330,7 +359,7 @@ import { GetWidgetForTree } from "./WidgetBuild";
  * @returns the widgetree with widgets attached inside of it.
  * Also this will add the tree to the dom.
  */
-export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, parentElement:HTMLElement, isMain:boolean = true, state?:object){
+export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, parentElement:HTMLElement, isMain:boolean = true, state?:object, isInDevelopment?: boolean){
   let newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
   newWidget.html = tree.html;
   newWidget.widgetState = {...state};
@@ -338,7 +367,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   newWidget.componentDidMountFunction = tree.before_render;
   newWidget.addEventFunction = tree.after_render;
   newWidget.mountChildWidgetsFunction = tree.mount_child;
-  newWidget.inDevelopment = true;
+  newWidget.inDevelopment = isInDevelopment === false ? false : true;
   // newWidget.css = newWidget.css ? newWidget.css : "";
   parentElement.innerHTML = "";
   let newParent = parentElement;
@@ -356,7 +385,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
                       // if ((child.id === Number(widgetElement.getAttribute("data-widgetid"))) && (child.wrapper === widgetElement.id)) {
                       if ((child.wrapper === widgetElement.id)) {
                           const clearedChildWidget = clearDraggedWidget(child);
-                          const childWidget =  await convertWidgetTreeToWidgetWithWrapper(clearedChildWidget, widgetElement, isMain, newWidget.widgetState);
+                          const childWidget =  await convertWidgetTreeToWidgetWithWrapper(clearedChildWidget, widgetElement, isMain, newWidget.widgetState, isInDevelopment);
                           newWidget.childWidgets.push(childWidget);
                           // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
                           newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
@@ -485,18 +514,20 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   
     async function unwrapWidgetContainers(widgetContainerEl: any, queryParam: string) {
       // Select all div elements with the queryParam
-      const widgetContainers = widgetContainerEl.querySelectorAll(queryParam);
-  
-      // Loop through each div and replace it with its inner content
-      widgetContainers.forEach((element: any) => {
-        // Move all child nodes of the div before the div
-        while (element.firstChild) {
-          element.parentNode.insertBefore(element.firstChild, element);
-        }
-        // Remove the empty div
-        element.remove();
-      });
-  
+      if (widgetContainerEl && widgetContainerEl.nodeType === 1) {
+        const widgetContainers = widgetContainerEl.querySelectorAll(queryParam);
+    
+        // Loop through each div and replace it with its inner content
+        widgetContainers.forEach((element: any) => {
+          // Move all child nodes of the div before the div
+          while (element.firstChild) {
+            element.parentNode.insertBefore(element.firstChild, element);
+          }
+          // Remove the empty div
+          element.remove();
+        });
+    
+      }
       return widgetContainerEl;
     }
   

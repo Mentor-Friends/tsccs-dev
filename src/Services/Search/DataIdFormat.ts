@@ -1,4 +1,5 @@
-import { Connection, GetTheConcept, Logger } from "../../app";
+import { Console } from "console";
+import { Concept, Connection, GetTheConcept, Logger } from "../../app";
 import { removeThePrefix } from "../Common/RegexFunction";
 import { AddCount } from "./JustIdFormat";
 
@@ -78,7 +79,7 @@ export async function FormatFunctionDataForData(
           console.log("this is error", ex);
         }
       }
-    } else {
+    } 
       if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
         let newData: any;
         let linkerConcept = await GetTheConcept(connections[i].typeId);
@@ -120,12 +121,17 @@ export async function FormatFunctionDataForData(
               newData[key][dataCharacter] = data;
             }
           } else {
-            newData[key] = [];
+            if(Array.isArray(newData[key])){
+              newData[key].push(data);
+
+            }else{
+              newData[key] = [];
+              newData[key].push(data);
+            }
           }
         } catch (ex) {
           console.log("this is error", ex);
         }
-      }
     }
   }
 
@@ -215,7 +221,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(
           }
         }
       }
-    } else {
+    } 
       if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
         if (ofTheConcept.id in compositionData) {
           let newData: any;
@@ -244,7 +250,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(
             isComp = true;
           }
           if (linkerConceptValue == "") {
-            linkerConceptValue = toTheConcept?.type?.characterValue;
+            linkerConceptValue = toTheConcept?.type?.characterValue || "";
           }
           try {
             let mytype = toTheConcept?.type?.characterValue ?? "none";
@@ -280,13 +286,15 @@ export async function FormatFromConnectionsAlteredArrayExternal(
             console.log("this is error", ex);
           }
         }
-      }
     }
   }
   for (let i = 0; i < mainComposition.length; i++) {
     let mymainData: any = {};
     mymainData["id"] = mainComposition[i];
+    let mainConcept:Concept = await GetTheConcept(mymainData["id"]);
     mymainData["data"] = compositionData[mainComposition[i]];
+    mymainData["created_on"] = mainConcept.entryTimeStamp;
+
     mainData.push(mymainData);
   }
   Logger.logUpdate(logData);
@@ -350,7 +358,7 @@ export async function FormatFunctionData(
           console.log("this is error", ex);
         }
       }
-    } else {
+    } 
       if (ofTheConcept.id != 0 && toTheConcept.id != 0) {
         let newData: any;
         let linkerConcept = await GetTheConcept(connections[i].typeId);
@@ -375,7 +383,6 @@ export async function FormatFunctionData(
         } catch (ex) {
           console.log("this is error", ex);
         }
-      }
     }
   }
 

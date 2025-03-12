@@ -128,7 +128,6 @@ export async function GetComposition(id:number){
     let returnOutput: any = {};
     let connectionListString = await GetAllConnectionsOfComposition(id);
     connectionList = connectionListString as Connection[];
-    console.log("this is the connection list online", connectionList);
     //connectionList = ConnectionData.GetConnectionsOfComposition(id);
     let compositionList:number[] = [];
 
@@ -265,7 +264,7 @@ export async function GetCompositionFromMemoryNormal(id:number){
  * @returns 
  */
 export async function GetCompositionWithIdFromMemory(id:number){
-    const logData : any = Logger.logfunction("GetCompositionWithIdFromMemory", arguments);
+    const logData : any = Logger.logfunction("GetCompositionWithIdFromMemory", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -320,7 +319,7 @@ export async function GetCompositionWithIdFromMemory(id:number){
  * @returns 
  */
 export async function GetCompositionFromMemoryWithConnections(id:number, connectionList:Connection[]){
-    const logData : any = Logger.logfunction("GetCompositionFromMemoryWithConnections", arguments);
+    const logData : any = Logger.logfunction("GetCompositionFromMemoryWithConnections", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -367,7 +366,7 @@ export async function GetCompositionFromMemoryWithConnections(id:number, connect
  * @returns 
  */
 export async function GetCompositionWithIdFromMemoryFromConnection(id:number, connectionList: Connection[]){
-    const logData : any = Logger.logfunction("GetCompositionWithIdFromMemoryFromConnection", [id]);
+    const logData : any = Logger.logfunction("GetCompositionWithIdFromMemoryFromConnection", [id]) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -396,7 +395,6 @@ export async function GetCompositionWithIdFromMemoryFromConnection(id:number, co
      concept = conceptString as Concept;
     }
     let output = await recursiveFetchConcept(concept, connectionList, compositionList);
-    console.log("this is the output", output, concept);
    // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
      let mainString = concept?.type?.characterValue ?? "";
      returnOutput[mainString] = output;
@@ -446,7 +444,6 @@ export async function GetCompositionWithIdFromMemoryNew(id:number){
 
     //console.log("this is the connection list which has to be looped", connectionList);
     let output = await recursiveFetchConceptSingleLoop(concept, connectionList, compositionList);
-    console.log("this is the time for the data to be made", new Date().getTime() - startTime);
    // let output = await recursiveFetchConceptSingleLoop(concept, connectionList,compositionList );
      let mainString = concept?.type?.characterValue ?? "";
      returnOutput = output;
@@ -536,7 +533,7 @@ export async function GetCompositionWithIdFromMemoryFromConnections(id:number, c
  * @returns 
  */
 export async function GetCompositionWithId(id:number){
-    const logData : any = Logger.logfunction("GetCompositionWithId", arguments);
+    const logData : any = Logger.logfunction("GetCompositionWithId", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
