@@ -354,6 +354,7 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
               }
           
             }
+            console.log("this is the mainComposition ", mainComposition, compositionData);
             for(let i=0 ; i< mainComposition.length; i++){
               let mymainData: any = {};
               

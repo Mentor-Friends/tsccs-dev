@@ -28,6 +28,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.reverse = result.reverse;
             this.compositionIds = result.mainCompositionIds;
             this.totalCount = result.mainCount;
+            console.log("thsi is the main composition ids", this.compositionIds,result.mainCompositionIds);
             // for(let i=0 ;i<this.compositionIds.length; i++){
             //     this.listenToEvent(this.compositionIds[i]);
             // }
@@ -60,7 +61,8 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.compositionIds, this.reverse,countInfos, this.order);
         }
         else if(this.format == JUSTDATA){
-            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
+            console.log("thsi is the main composition ids", this.compositionIds);
+            //this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
         }
         else{
 
