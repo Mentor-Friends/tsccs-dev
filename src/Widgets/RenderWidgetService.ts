@@ -30,12 +30,37 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       // }
 
       try {
+        attachNode.innerHTML = `
+  <div style="display: flex; align-items: center; gap: 10px; width: 100%">
+    <div style="
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    "></div>
+    <span>Please Wait...</span>
+  </div>
+  
+  <style>
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+`;
         const bulkWidget = await BuildWidgetFromIdForLatest(widgetId);
         let latestWidgetId = bulkWidget.mainId;
         let bulkWidgetData = bulkWidget.data;
         await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);
+        attachNode.textContent = `Error: ${error.message}`
       }
     }
   
