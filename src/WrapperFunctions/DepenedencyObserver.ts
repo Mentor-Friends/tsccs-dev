@@ -35,7 +35,7 @@ export class DependencyObserver{
                 setTimeout( async function(){
                     let myEvent = event as CustomEvent;
                     if(!that.compositionIds.includes(myEvent?.detail)){
-                        console.log("that composition ids", myEvent?.detail);
+                        console.log("that composition ids", myEvent?.detail, id, myEvent);
                         that.compositionIds.unshift(myEvent?.detail);
                         that.listenToEvent(myEvent?.detail);
 

@@ -90,7 +90,20 @@ export async function getTheReferent(concept:Concept){
     if(concept.referentId != 0 && concept.referentId != 999 && concept.id != concept.referentId){
         let referentConcept = await GetTheConcept(concept.referentId);
         if(referentConcept.typeId != 12){
+            //concept.id = concept.referentId;
+            concept.isPointer = true;
+            concept.pointerId = concept.id;
             concept.id = concept.referentId;
         }
     }
+}
+
+export async function GetTheReferredId(id:number){
+    let referredId = id;
+   let concept:Concept =  await GetTheConcept(id);
+    if(concept.isPointer){
+        referredId = concept.referentId;
+    }
+    return referredId;
+
 }

@@ -107,10 +107,14 @@ export async  function CreateConnection(ofTheConcept:Concept, toTheConcept:Conce
             let realToTheConceptId = 0;
             let realTypeId = 0;
             realOfTheConceptId = ofTheConcept.id;
-            if(ofTheConcept.referentId != 0){
+            if(ofTheConcept.isPointer == true){
                 realOfTheConceptId = ofTheConcept.referentId;
             }
+            console.log("this is the to the concept", toTheConcept);
             realToTheConceptId = toTheConcept.id;
+            if(toTheConcept.isPointer == true){
+                realToTheConceptId = toTheConcept.referentId;
+            }
             realTypeId = typeConcept.id;
             let connection = new Connection(0,0,0,0,0,0,0);
             if(realOfTheConceptId != realToTheConceptId){

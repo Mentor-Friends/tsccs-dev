@@ -69,15 +69,23 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
                let conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId,true, referentId, actions );
                concept = conceptString as Concept;
                
-               let lastSection = getLastSection(stringToCheck);
+               if(referentId != 0){
+                 concept.isPointer = true;
+                 concept.referentId = referentId;
+               }
+               else{
+                let lastSection = getLastSection(stringToCheck);
                 let the_last_section = "the_" + lastSection;
                 if(the_last_section != stringToCheck){
                     let referredConceptString = await MakeTheInstanceConceptLocal(the_last_section, "", true, userId, accessId, sessionInformationId);
                     referrentConcept = referredConceptString as Concept;
                     LocalSyncData.AddConcept(referrentConcept);
+                    concept.isPointer = true;
                     concept.referent = referrentConcept;
                     concept.referentId = referrentConcept?.id;
                 }
+               }
+
 
 
             }

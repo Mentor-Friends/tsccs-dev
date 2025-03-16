@@ -20,6 +20,8 @@ export  class Concept{
     isTemp: boolean = false;
     isSynced : boolean = false;
     referent: Concept | null | void = null;
+    isPointer:boolean = false;
+    pointerId:number = 2;
     // applicationId: number = BaseUrl.BASE_RANDOMIZER;
     applicationId: number = BaseUrl.getRandomizer();
     x:number = 0;

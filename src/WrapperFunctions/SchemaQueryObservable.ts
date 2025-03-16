@@ -46,6 +46,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         }
         if(this.query.type != ""){
             let concept = await MakeTheTypeConceptApi(this.query.type, 999);
+            console.log("this is the listening to the type", concept);
             this.listenToEventType(concept.id);
 
         }
@@ -62,7 +63,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         }
         else if(this.format == JUSTDATA){
             console.log("thsi is the main composition ids", this.compositionIds);
-            //this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
+            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
         }
         else{
 

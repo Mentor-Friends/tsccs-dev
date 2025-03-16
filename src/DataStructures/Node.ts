@@ -49,7 +49,7 @@ export class Node{
 
      public addNode(passedNode:Node, node:Node|null, height:number){
         if(node  == null){
-            dispatchIdEvent(passedNode.key, {detail: passedNode.value})
+            //dispatchIdEvent(passedNode.key, {detail: passedNode.value})
             node = passedNode;
             return node;
         }
