@@ -1,57 +1,113 @@
+import { 
+    Concept,
+    CreateConnectionBetweenEntityLocal, 
+    CreateConnectionBetweenTwoConcepts, 
+    CreateTheConnectionLocal, 
+    FilterSearch, 
+    FreeschemaQuery, 
+    LocalSyncData, 
+    MakeTheTypeConceptLocal 
+} from "../app";
+
+import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 /**
  * Prototype Concept with a specific type and its connections
  */
 export class ProtoType {
-
-    prototypeType : string;
-    connections : { toTypeConcept: string; connectionType : string } [];
+    private prototypeTypeConcept: Concept;
+    private prototypeTypeCharacter: string;
 
     /**
-     * create a prototype instance
-     * @param inputType - of : prototype
+     * Creates a prototype instance and initializes it automatically
+     * @param inputType - Type of prototype
      */
-    constructor(inputType:string){
-        this.prototypeType = ProtoType.formatTypeConcept(inputType);
-        this.connections = []
+    private constructor(prototypeConcept: Concept) {
+        this.prototypeTypeConcept = prototypeConcept;
+        this.prototypeTypeCharacter = prototypeConcept.characterValue;
     }
 
     /**
-     * Return a prototype id
+     * Returns a formatted prototype ID as an object
      * @param inputType - Type Concept value 
-     * @returns Formatted prototype string 
+     * @returns Formatted prototype object 
      */
-    static formatTypeConcept(inputType: string) {
-        if(!inputType.startsWith("the_")) {
-            inputType = "the_" + inputType;
+    private static formatTypeConcept(inputType: string): string {
+        let formattedName = inputType;
+        if (!formattedName.startsWith("the_")) {
+            formattedName = "the_" + formattedName;
         }
-        // Add suffix '_prototype'
-        const prototype_suffix = '_prototype';
-        inputType = `${inputType}_${prototype_suffix}`;
-        return inputType
+
+        return formattedName;
     }
 
     /**
-     * Add a connection to the prototype concept
+     * Creates or returns a type concept prototype
+     * @param ofTypeConcept - Type concept to create a prototype for
+     * @returns The created prototype concept object
+     */
+    private static async createPrototypeTypeConcept(ofTypeConcept: string): Promise<Concept> {
+        const sessionId = TokenStorage.sessionId ? Number(TokenStorage.sessionId) : NaN;
+        const userId = 998;
+
+        let formattedType = ProtoType.formatTypeConcept(ofTypeConcept);
+        
+        // Add suffix '_prototype'
+        if (!formattedType.endsWith("_prototype")) {
+            formattedType += "_prototype";
+        }
+
+        const conceptDetail: Concept = await MakeTheTypeConceptLocal(formattedType, sessionId, userId, userId);
+        return conceptDetail;
+    }
+
+    /**
+     * Initializes the prototype asynchronously and returns the instance
+     * @returns The initialized ProtoType instance
+     */
+    static async create(inputType: string): Promise<ProtoType> {
+        const conceptObject = await ProtoType.createPrototypeTypeConcept(inputType);
+        return new ProtoType(conceptObject);
+    }
+
+    /**
+     * Adds a connection to the prototype concept
      * @param toTypeConcept - The name of the concept being connected
      * @param connectionType - The type of connection [ "requires" or "optional"]
      */
-    addProtoTypeConnection(toTypeConcept: string, connectionType : "requires" | "optional") {
-        const formattedToTypeConcept = ProtoType.formatTypeConcept(toTypeConcept);
-        const formattedConnectionType = `${this.prototypeType}_${connectionType}`;
-        this.connections.push(
-            { 
-                toTypeConcept : formattedToTypeConcept,
-                connectionType : formattedConnectionType
-            }
-        )
+    async addConnection(toTypeConcept: string, connectionType: "requires" | "optional"): Promise<void> {
+        const sessionId = TokenStorage.sessionId ? Number(TokenStorage.sessionId) : NaN;
+        const userId = 998;
+
+        toTypeConcept = ProtoType.formatTypeConcept(toTypeConcept);
+        const targetConcept: Concept = await MakeTheTypeConceptLocal(toTypeConcept, sessionId, userId, userId);
+        const connectionTypeString:string = `${this.prototypeTypeCharacter}_${connectionType}`;
+
+        // Validate the connection from of_the_concept type is already exist to to_the_concept type
+        let validateSource: FreeschemaQuery = new FreeschemaQuery();
+        validateSource.type = this.prototypeTypeCharacter;
+        validateSource.name = "top"
+
+        let filterDestination: FilterSearch = new FilterSearch();
+        filterDestination.type = toTypeConcept;
+
+        
+
+        console.log("Source : ", this.prototypeTypeConcept);
+        console.log("Destination : ", targetConcept);
+        console.log("The Connection Type String is : ", connectionTypeString);
+        const connectionConcept : Concept = await MakeTheTypeConceptLocal(connectionTypeString, sessionId, userId, userId);
+        console.log("Linker : ", connectionConcept);
+
+        await CreateTheConnectionLocal(this.prototypeTypeConcept.id, targetConcept.id, connectionConcept.id);
+        // await LocalSyncData.SyncDataOnline();
     }
 
     /**
-     * Retrieves the list of connections
+     * Retrieves the prototype details
      */
-    getPrototypeConnections() {
-        return this.connections;
+    getPrototypeDetails(): any {
+        return this.prototypeTypeConcept;
     }
 
 
