@@ -1,12 +1,13 @@
+import { resolve } from "path";
 import { 
     Concept,
-    CreateConnectionBetweenEntityLocal, 
-    CreateConnectionBetweenTwoConcepts, 
     CreateTheConnectionLocal, 
     FilterSearch, 
     FreeschemaQuery, 
     LocalSyncData, 
-    MakeTheTypeConceptLocal 
+    MakeTheTypeConceptLocal, 
+    NORMAL, 
+    SchemaQueryListener
 } from "../app";
 
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
@@ -70,6 +71,33 @@ export class ProtoType {
         return new ProtoType(conceptObject);
     }
 
+    private validateExistingConnection(conceptId: number, connectionType:string, toTypeConcept:Concept)  {
+        // Validate the connection from of_the_concept type is already exist to to_the_concept type
+        let requiresConnection = new FreeschemaQuery();
+        requiresConnection.typeConnection = `${this.prototypeTypeCharacter}_requires`;
+        requiresConnection.name = 'requiresConnection';
+
+        let optionalConnection = new FreeschemaQuery();
+        optionalConnection.typeConnection = `${this.prototypeTypeCharacter}_optional`;
+        optionalConnection.name = 'optionalConnection';
+
+        let freeschemaQuery = new FreeschemaQuery();
+        freeschemaQuery.conceptIds = [this.prototypeTypeConcept.id];
+        // freeschemaQuery.type = 'the_example_prototype';
+        freeschemaQuery.name = 'top';
+        freeschemaQuery.freeschemaQueries = [requiresConnection, optionalConnection];
+
+        freeschemaQuery.outputFormat = NORMAL;
+        freeschemaQuery.inpage = 10;
+
+        // return new Promise((resolve))
+
+        // SchemaQueryListener(freeschemaQuery, '').subscribe((data:any) => {
+        //     console.log('This is the data received', data);
+        // });
+
+    }
+
     /**
      * Adds a connection to the prototype concept
      * @param toTypeConcept - The name of the concept being connected
@@ -83,25 +111,16 @@ export class ProtoType {
         const targetConcept: Concept = await MakeTheTypeConceptLocal(toTypeConcept, sessionId, userId, userId);
         const connectionTypeString:string = `${this.prototypeTypeCharacter}_${connectionType}`;
 
-        // Validate the connection from of_the_concept type is already exist to to_the_concept type
-        let validateSource: FreeschemaQuery = new FreeschemaQuery();
-        validateSource.type = this.prototypeTypeCharacter;
-        validateSource.name = "top"
-
-        let filterDestination: FilterSearch = new FilterSearch();
-        filterDestination.type = toTypeConcept;
-
-        
-
         console.log("Source : ", this.prototypeTypeConcept);
         console.log("Destination : ", targetConcept);
         console.log("The Connection Type String is : ", connectionTypeString);
         const connectionConcept : Concept = await MakeTheTypeConceptLocal(connectionTypeString, sessionId, userId, userId);
         console.log("Linker : ", connectionConcept);
 
-        await CreateTheConnectionLocal(this.prototypeTypeConcept.id, targetConcept.id, connectionConcept.id);
+        await CreateTheConnectionLocal(this.prototypeTypeConcept.id, targetConcept.id, connectionConcept.id, 1000);
         // await LocalSyncData.SyncDataOnline();
     }
+
 
     /**
      * Retrieves the prototype details
