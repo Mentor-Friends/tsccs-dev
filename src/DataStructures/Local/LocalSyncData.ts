@@ -156,7 +156,8 @@ export class LocalSyncData{
             
             // Logger.logInfo(startTime, "unknown", undefined, "unknown", undefined, 200, conceptsArray, "SyncDataOnline", [], "unknown", undefined )
     
-            return conceptsArray;
+            // return conceptsArray;
+            return result
         }
         catch(error){
             // Add Log
