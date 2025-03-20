@@ -38,45 +38,38 @@ export class Validator {
     }
 
     /**
-     * Validates a single form field based on its data type, constraints, and uniqueness.
-     * @param fieldName - The name of the field being validated (e.g., "email", "phone").
-     * @param dataType - The expected data type for the field (e.g., "text", "number").
-     * @param value - The value of the field to validate.
-     * @param conceptType - The concept type used for uniqueness check.
-     * @param maxLength - The maximum allowed length for the field value.
-     * @param minLength - The minimum allowed length for the field value.
-     * @param minValue - The minimum allowed value for the field (for numeric fields).
-     * @param maxValue - The maximum allowed value for the field (for numeric fields).
-     * @param accept - The 'accept' attribute value for file inputs.
-     * @param file - The file input (if any), used for file type validation.
-     * @param required - Whether the field is required.
-     * @param isUnique - Whether the field value should be unique.
-     * @returns An object of error messages if validation fails
+     * Validates a single form field based on its constraints and uniqueness.
+     * @param options - An object containing field properties including name, value, type, and validation constraints.
+     * @returns An object containing validation errors if validation fails.
      */
-    public async validateField(
-        fieldName: string,
-        fieldType: string | null,
-        dataType: string | null,
-        value: string | null,
-        pattern:string | null,
-        conceptType: string | null,
-        maxLength: number | null,
-        minLength: number | null,
-        minValue: number | null,
-        maxValue: number | null,
-        accept: string | null,
-        file: File | null,
-        required: boolean,
-        isUnique: boolean = false
-    ): Promise< {[fieldName:string] : string } > {
+    public async validateField(options:FormFieldData): Promise< {[fieldName:string] : string } > {
         const logData : any = Logger.logfunction("validateField")
         try {
             let startTime = performance.now()
             const errors: { [fieldName: string]: string } = {};
-    
+
+            const {
+                name,
+                value,
+                type,
+                dataType,
+                pattern,
+                conceptType,
+                maxLength,
+                minLength,
+                minValue,
+                maxValue,
+                accept,
+                file,
+                required,
+                isUnique
+            } = options;
+        
+            
+            console.log("Validation is happening on : \n", options)
             // 1. Validate required field (must not be empty)
             if (required && (value === null || value === '')) {
-                errors['required'] = `This is required field`;
+                errors['required'] = `The field ${name} is required.`;
             }
     
             // 2. Validate using regex pattern for the data type
@@ -97,28 +90,29 @@ export class Validator {
             }
     
             // 4. Validate maxLength
-            if (value && maxLength !== null && value.length > maxLength) {
+            if (value && maxLength !== undefined && maxLength !== null && value.length > maxLength) {
+            // if (value && maxLength !== null && value.length > maxLength) {
                 errors['maxLength'] = `Length exceeds the maximum length of ${maxLength}`;
             }
     
             // 5. Validate minLength
-            if (value && minLength !== null && value.length < minLength) {
+            if (value && minLength !== null && minLength !== undefined && value.length < minLength) {
                 errors['minLength'] = `Length must be at least ${minLength} characters long`;
             }
     
             // 6. Validate minValue (only for numeric fields)
-            if (minValue !== null && value && !isNaN(Number(value)) && Number(value) < minValue) {
+            if (minValue !== null && minValue !== undefined && value && !isNaN(Number(value)) && Number(value) < minValue) {
                 errors['minValue'] = `Value must be greater than or equal to ${minValue}`;
             }
     
             // 7. Validate maxValue (only for numeric fields)
-            if (maxValue !== null && value && !isNaN(Number(value)) && Number(value) > maxValue) {
+            if (maxValue !== null && maxValue !== undefined && value && !isNaN(Number(value)) && Number(value) > maxValue) {
                 errors['maxValue'] = `Value must be less than or equal to ${maxValue}`;
             }
     
             // 8. File validation: Check if this is a file input
             if (file) {
-                if (fieldType && accept) {
+                if (type && accept) {
                     const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
                     const fileExtension = file.name.split('.').pop()?.toLowerCase();
                     if (fileExtension && !acceptedTypes.includes(fileExtension)) {
@@ -136,7 +130,7 @@ export class Validator {
             }
             
             Logger.logUpdate(logData);
-
+            console.log("Before Validation Result : ", errors)
             return errors
         } catch (error) {
             UpdatePackageLogWithError(logData, "Validator.validateField", error);
@@ -164,13 +158,10 @@ export class Validator {
     
             // Iterate through the fields in the form data
             for (const fieldName in formData) {
-                const { value, fieldType, dataType, pattern, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
+                // const { value, fieldType, dataType, pattern, conceptType, maxLength = null, minLength = null, minValue = null, maxValue = null, accept = null, file = null, required, isUnique } = formData[fieldName];
     
                 // Call the validateField function to validate each field
-                const fieldErrors = await this.validateField(
-                    fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
-                );
-    
+                const fieldErrors = await this.validateField(formData[fieldName]);
                 if (Object.keys(fieldErrors).length > 0) validationErrors[fieldName] = fieldErrors;
     
             }    
@@ -183,45 +174,15 @@ export class Validator {
     }
 
     /**
-     * 
-     * @param fieldName 
-     * @param fieldType 
-     * @param dataType 
-     * @param value 
-     * @param pattern 
-     * @param conceptType 
-     * @param maxLength 
-     * @param minLength 
-     * @param minValue 
-     * @param maxValue 
-     * @param accept 
-     * @param file 
-     * @param required 
-     * @param isUnique 
+     * Take field element attributes
+     * @param options  Object conist of attributes
      * @returns Object with status and details
      */
-    public validate(
-        fieldName: string,
-        fieldType: string | null,
-        dataType: string | null,
-        value: string | null,
-        pattern:string | null,
-        conceptType: string | null,
-        maxLength: number | null,
-        minLength: number | null,
-        minValue: number | null,
-        maxValue: number | null,
-        accept: string | null,
-        file: File | null,
-        required: boolean,
-        isUnique: boolean = false
-    ){
+    public validate(options:FormFieldData){
         const logData : any = Logger.logfunction("validate");
         try{
             let error:any = {};
-            this.validateField(
-                fieldName, fieldType, dataType, value, pattern, conceptType, maxLength, minLength, minValue, maxValue, accept, file, required, isUnique
-            ).then((err) => {
+            this.validateField(options).then((err) => {
                 if (Object.keys(err).length > 0) {
                     error['status'] = false
                     error['details'] = err;
@@ -239,4 +200,3 @@ export class Validator {
     
     }
 }
-    
