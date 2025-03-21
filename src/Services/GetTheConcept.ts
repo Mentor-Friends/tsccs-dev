@@ -1,6 +1,6 @@
 import { AccessTracker } from "../AccessTracker/accessTracker";
 import { GetConcept } from "../Api/GetConcept";
-import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, LocalConceptsData, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
@@ -45,9 +45,8 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     const getConcept = (async () => {
         try{
             if(id < 0){
-            let lconcept:Concept =  await GetUserGhostId(userId, id, TokenStorage.sessionId);
-            concept = convertFromLConceptToConcept(lconcept)
-            return concept;
+            let lconcept:Concept = await LocalConceptsData.GetConceptByGhostId(id);
+            return lconcept;
             }
             concept = await ConceptsData.GetConcept(id);
             if((concept == null || concept.id == 0) && id != null && id != undefined){

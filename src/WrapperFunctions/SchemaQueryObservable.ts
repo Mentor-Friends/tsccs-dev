@@ -8,6 +8,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     query: FreeschemaQuery = new FreeschemaQuery();
     countInfoStrings: string [] = [];
     order: string = "DESC";
+    totalCount:number = 0;
     constructor(query: FreeschemaQuery, token: string){
         super();
         this.query = query;
@@ -30,9 +31,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.linkers = result.linkers ?? [];
             this.reverse = result.reverse;
             this.compositionIds = result.mainCompositionIds;
-            for(let i=0 ;i<this.compositionIds.length; i++){
-                this.listenToEvent(this.compositionIds[i]);
-            }
+            this.totalCount = result.mainCount;
             this.countInfoStrings = result.countinfo;
         }
         else{
@@ -41,7 +40,17 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
                 this.listenToEvent(this.compositionIds[i]);
             }
         }
-        return await this.build();
+        let output = await this.build();
+        for(let i=0 ;i<this.compositionIds.length; i++){
+            this.listenToEvent(this.compositionIds[i]);
+        }
+        if(this.query.type != ""){
+            let concept = await MakeTheTypeConceptApi(this.query.type, 999);
+            console.log("this is the listening to the type", concept);
+            this.listenToEventType(concept.id);
+
+        }
+        return output;
     }
     
     async build(){

@@ -201,6 +201,12 @@ export class DependencyObserver{
         console.log("this is the old execute data");
     }
 
+    async update(){
+        this.isDataLoaded = false;
+        await this.bind();
+        this.notify();
+    }
+
     /**
      * 
      * @param callback the function that needs to be called with the data.
@@ -210,7 +216,7 @@ export class DependencyObserver{
         this.subscribers.push(callback);
             console.log('again executing data');
           await this.bind();
-          return callback(this.data);
+          return callback(this.data,this);
       }
 
 
@@ -233,7 +239,7 @@ export class DependencyObserver{
         this.subscribers.map(subscriber => {
             console.log('notify')
 
-            subscriber(this.data)
+            subscriber(this.data,this)
         });
 
       }
