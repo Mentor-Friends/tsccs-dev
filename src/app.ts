@@ -633,7 +633,7 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
   if (serviceWorker || typeof window  != "undefined") {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
-    console.log("this is the event", event);
+    //console.log("this is the event", event);
     dispatchEvent(event);
   } 
   else {

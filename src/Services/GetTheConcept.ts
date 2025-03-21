@@ -14,7 +14,7 @@ const conceptCache = new Map<number, Promise<Concept>>();
  * @param userId This is the user that calls the concept
  * @returns Concept if it exists
  */
-export default async function GetTheConcept(id: number, userId: number = 999){
+export default async function GetTheConcept(id: number, userId: number = 999, level: number = 0){
     let startTime = performance.now()
     //Logger.logfunction(GetTheConcept,arguments);
 
@@ -65,7 +65,7 @@ export default async function GetTheConcept(id: number, userId: number = 999){
                         concept.type = typeConcept;
                     }
                 }
-                await getTheReferent(concept);
+                await getTheReferent(concept, level + 1);
             }
             // Add Log
             // Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined )
@@ -86,16 +86,21 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     return getConcept
 }
 
-export async function getTheReferent(concept:Concept){
-    if(concept.referentId != 0 && concept.referentId != 999 && concept.id != concept.referentId){
-        let referentConcept = await GetTheConcept(concept.referentId);
-        if(referentConcept.typeId != 12){
-            //concept.id = concept.referentId;
-            concept.isPointer = true;
-            concept.pointerId = concept.id;
-            concept.id = concept.referentId;
+export async function getTheReferent(concept:Concept, level:number = 0){
+    if(level < 2){
+        if(concept.referent != null && concept.referent?.id !=0){
+            //let referentConcept = await GetTheConcept(concept.referentId, level + 1);
+            let lastPart = concept.referent.characterValue.split("_").pop();
+            let referrerLastPart = concept.characterValue.split("_").pop();
+            if(lastPart == referrerLastPart){
+                //concept.id = concept.referentId;
+                concept.isPointer = true;
+                concept.pointerId = concept.id;
+               // concept.id = concept.referentId;
+            }
         }
     }
+
 }
 
 export async function GetTheReferredId(id:number){

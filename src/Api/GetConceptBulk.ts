@@ -113,8 +113,9 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
       HandleInternalError(error,BaseUrl.GetConceptBulkUrl() );
       UpdatePackageLogWithError(logData, 'GetConceptBulk', error)
       }
-
+      console.log("this is the concept bulk result", result);
       return result;
+
     
 }
 
