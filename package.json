@@ -1,7 +1,7 @@
 {
   "name": "mftsccs-browser",
   "version": "2.1.83-beta",
- "environment": "production",
+  "environment": "production",
   "description": "Full Pack of concept and connection system",
   "main": "dist/main.bundle.js",
   "types": "dist/types/app.d.ts",
@@ -48,7 +48,6 @@
   },
   "homepage": "https://github.com/Mentor-Friends/tsccs-dev#readme",
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^44.3.0",
     "ncp": "^2.0.0"
   }
 }
