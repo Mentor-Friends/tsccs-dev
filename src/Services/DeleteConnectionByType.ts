@@ -1,6 +1,8 @@
 import { GetAllLinkerConnectionsFromTheConcept } from "../Api/GetAllLinkerConnectionsFromTheConcept";
 import { GetAllLinkerConnectionsToTheConcept } from "../Api/GetAllLinkerConnectionsToTheConcept";
+import { GetConnectionsByApiTypes } from "../Api/GetConnections/GetConnectionsByTypeApi";
 import { Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter, handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { GetConnectionsByTypes } from "../DataStructures/ConnectionByType/GetConnectionByType";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 /**
