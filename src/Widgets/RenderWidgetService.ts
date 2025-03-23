@@ -1,5 +1,5 @@
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
+import { ckeditorCSS } from "../Constants/ckeditorCSS";
 import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
@@ -91,7 +91,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       console.log("this is the tree newWidget", widgetTree);
       // add newWidget css to the page
       const style = document.createElement("style");
-      style.innerHTML = widgetTree.css + newWidget.css + `/* DOCUMENTATION */
+      style.innerHTML = widgetTree.css + newWidget.css + ckeditorCSS + `/* DOCUMENTATION */
         #widget-details {
           position: absolute;
           right: 0px;
@@ -139,7 +139,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
           <span class="material-symbols-outlined document-preview-close-button" style="cursor: pointer;">close</span>
         </div>
 
-        <div id="documentation-preview" class="my-3"></div>
+        <div id="documentation-preview" class="ck-content"></div>
 
         <div class="text-end mt-3">
           <button class="btn btn-secondary document-preview-close-button">Close</button>
@@ -641,9 +641,6 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
       }
     }
   
-let widgetDocumentData: string = "";
-let documentationEditorInstance: any = null;
-
 /**
  * Opens documentation modal
  * @param widgetId 
@@ -663,54 +660,24 @@ export async function openDocumentationPreviewModal(widgetId: number) {
   await SchemaQueryListener(allWidgetCodes, "").subscribe(async (data: any) => {
     console.log("widget documentation preview data ->", data);
 
-    widgetDocumentData =
+    const widgetDocumentData =
       data?.[0]?.data?.the_widget?.the_widget_documentation?.data
         ?.the_documentation?.the_documentation_text?.data?.the_text || "";
-  });
 
-  await openModal("widget-documentation-preview-modal");
-  showWidgetDocumentation();
+    await openModal("widget-documentation-preview-modal");
+    showWidgetDocumentation(widgetDocumentData);
+  });
+  
 }
 
-export function showWidgetDocumentation() {
+export function showWidgetDocumentation(widgetDocumentData: string) {
   const previewContainer = <HTMLDivElement>(
     document.getElementById("documentation-preview")
   );
 
-  // Check if an editor instance already exists and destroy it
-  if (documentationEditorInstance) {
-    documentationEditorInstance.destroy().then(() => {
-      initializeEditor(previewContainer);
-    });
-  } else {
-    initializeEditor(previewContainer);
-  }
-}
+  previewContainer.innerHTML = ''
+  previewContainer.innerHTML = widgetDocumentData
 
-/**
- * initialize editor to show documentation
- * @param previewContainer 
- */
-export function initializeEditor(previewContainer: HTMLDivElement) {
-  if (previewContainer) {
-    ClassicEditor.create(previewContainer, {
-      licenseKey: "GPL",
-      toolbar: [],
-    })
-      .then((classicEditor) => {
-        documentationEditorInstance = classicEditor;
-
-        // Set initial data in the editor
-        const initialData = widgetDocumentData;
-        documentationEditorInstance.setData(initialData);
-
-        // Enable read-only mode via the API
-        documentationEditorInstance.enableReadOnlyMode("viewing");
-      })
-      .catch((error) => {
-        console.error("Error initializing CKEditor:", error);
-      });
-  }
 }
 
 /**
