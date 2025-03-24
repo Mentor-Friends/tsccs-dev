@@ -4,6 +4,8 @@ import { CompositionBinaryTree } from './Composition/CompositionBinaryTree';
 export class BaseUrl{
     static BASE_URL: string  = "https://localhost:7053/";
 
+    static NODE_CACHE_URL: string = "http://localhost:5555";
+
     static AI_URL: string ="https://ai.freeschema.com";
 
     static MQTT_URL: string = '192.168.1.249';
@@ -37,7 +39,7 @@ export class BaseUrl{
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';
 
     static GetConceptUrl(){
-        return this.BASE_URL + '/api/getConcept';
+        return this.NODE_CACHE_URL + '/api/getConcept';
     }
 
     static GetConnectionUrl(){
@@ -45,11 +47,11 @@ export class BaseUrl{
     }
 
     static GetConceptBulkUrl(){
-        return this.BASE_URL + '/api/get_concept_bulk';
+        return this.NODE_CACHE_URL + '/api/get_concept_bulk';
     }
 
     static GetConnectionBulkUrl(){
-        return this.BASE_URL + '/api/get_connection_bulk';
+        return this.NODE_CACHE_URL + '/api/get_connection_bulk';
     }
 
     static  GetAllConceptsOfUserUrl(){

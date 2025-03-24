@@ -205,6 +205,7 @@ async function init(
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
   flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
   parameters: { logserver?:string} = {},
+  nodeCacheUrl: string = ""
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -212,6 +213,7 @@ async function init(
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
     BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
+    BaseUrl.NODE_CACHE_URL = nodeCacheUrl;
     console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
     updateAccessToken(accessToken);
     //TokenStorage.BearerAccessToken = accessToken;
