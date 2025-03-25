@@ -43,7 +43,7 @@ export class BaseUrl{
     }
 
     static GetConnectionUrl(){
-        return this.BASE_URL + '/api/get-connection-by-id';
+        return this.NODE_CACHE_URL + '/api/get-connection-by-id';
     }
 
     static GetConceptBulkUrl(){
