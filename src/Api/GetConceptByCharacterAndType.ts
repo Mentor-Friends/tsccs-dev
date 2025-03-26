@@ -4,8 +4,16 @@ import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
-export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
+
+const conceptCache = new Map<string, Promise<Concept>>();
+
+
+export async function GetConceptByCharacterAndType(characterValue: string, typeId: number): Promise<Concept>{
   let concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
+  let key = characterValue + typeId;
+  if (conceptCache.has(key)) return conceptCache.get(key) || concept;
+
+  const GetConceptByCharacterAndType = (async () => {
     try{
       if(concept == null || concept.id == 0){
         var json = {
@@ -42,4 +50,10 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
         }
         throw error;
       }
+      finally {
+        conceptCache.delete(key); // Remove from cache after fetching
+      }
+  })()
+  conceptCache.set(key, GetConceptByCharacterAndType);
+  return GetConceptByCharacterAndType;
 }

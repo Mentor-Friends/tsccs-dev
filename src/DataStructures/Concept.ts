@@ -4,7 +4,7 @@ export  class Concept{
     x: number;
     y: number;
     id: number;
-    ghostId: number;
+    ghostId: number;    
     userId: number;
     typeId: number;
     typeUserId: number;
@@ -21,7 +21,7 @@ export  class Concept{
     sessionInformationUserId: number;
     entryTimeStamp: Date;
     updatedTimeStamp:Date;
-    referent: number;
+    referent: Concept| null | void = null;
     type: Concept | null | void;
     isNew: boolean;
     updateRecursion: boolean = false;
@@ -40,7 +40,6 @@ export  class Concept{
         this.categoryId = categoryId;
         this.categoryUserId = categoryUserId;
         this.referentId = referentId;
-        this.referent = referentId;
         this.referentUserId = referentUserId;
         this.characterValue = `${characterValue}`;
         this.securityId = securityId;

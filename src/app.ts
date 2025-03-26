@@ -59,6 +59,8 @@ export {ViewInternalData} from './Services/View/ViewInternalData';
 export {convertFromLConceptToConcept} from './Services/Conversion/ConvertConcepts';
 export {SearchLinkInternal} from './Services/Search/SearchLinkInternal';
 export { HandleHttpError } from './Services/Common/ErrorPosting'; 
+export {GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
+export {GetConceptByCharacterAndCategoryDirectApi} from './Api/SearchConcept/GetConceptByCharacterAndCategoryDirect';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
