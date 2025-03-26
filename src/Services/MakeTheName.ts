@@ -17,7 +17,7 @@ export async function MakeTheName(theCharacterData:string, userId: number, secur
         var referentInfo: ReferentInfo;
         var characterConcept;
         if(existingConcept.id > 0 && existingConcept.userId >0){
-            characterConcept = await  GetTheReferent(existingConcept.id, existingConcept.userId,  existingConcept.referent);
+            characterConcept = await  GetTheReferent(existingConcept.id, existingConcept.userId,  existingConcept.referentId);
         }
         else{
            characterConcept = await  MakeTheCharacter(theCharacterData,userId, securityId, accessId,accessUserId, sessionId) as Concept;
