@@ -87,7 +87,6 @@ export class SyncData{
             if(this.conceptsSyncArray.length > 0){
                 let conceptsArray = this.conceptsSyncArray.slice();
                 this.conceptsSyncArray = [];
-                console.log("this is the concepts api ", conceptsArray);
                 CreateTheConceptApi(conceptsArray);
             }
              if(this.connectionSyncArray.length > 0){
