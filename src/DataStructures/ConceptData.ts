@@ -86,19 +86,19 @@ export class ConceptsData{
         this.conceptDictionary[concept.id] = concept;
  
         if(contains){
-         this.RemoveConcept(concept);
+         this.RemoveConcept(concept.id);
         }
          this.conceptsArray.push(concept);
      }
 
-    static RemoveConcept(concept: Concept){
-       for(var i=0; i<this.conceptsArray.length; i++){
-        if(this.conceptsArray[i].id == concept.id){
-            this.conceptsArray.splice(i, 1);
-        }
-       }
-
-       removeFromDatabase("concept",concept.id);
+    static async RemoveConcept(conceptId: number){
+    //    for(var i=0; i<this.conceptsArray.length; i++){
+    //     if(this.conceptsArray[i].id == concept.id){
+    //         this.conceptsArray.splice(i, 1);
+    //     }
+    //    }
+       await BinaryTree.removeNodeFromTree(conceptId);
+    //    removeFromDatabase("concept",concept.id);
     }
 
     static async GetConcept(id: number){
