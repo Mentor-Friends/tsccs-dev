@@ -2,211 +2,121 @@ export { init, updateAccessToken };
 
 import CreateConceptBinaryTreeFromIndexDb from "./Services/CreateBinaryTreeFromData";
 
-import { IdentifierFlags } from "./DataStructures/IdentifierFlags";
-export { SearchLinkMultipleApi } from "./Api/Search/SearchLinkMultipleApi";
-export { SplitStrings } from "./Services/SplitStrings";
-export {
-  GetCompositionList,
-  GetCompositionListWithId,
-} from "./Services/GetCompositionList";
-export {
-  GetCompositionListLocal,
-  GetCompositionListLocalWithId,
-} from "./Services/Local/GetCompositionListLocal";
-export { GetAllConnectionsOfComposition } from "./Api/GetAllConnectionsOfComposition";
-export {
-  GetComposition,
-  GetCompositionWithId,
-  recursiveFetch,
-  GetCompositionWithAllIds,
-} from "./Services/GetComposition";
-export {
-  GetCompositionLocal,
-  GetCompositionLocalWithId,
-} from "./Services/Local/GetCompositionLocal";
-export { default as CreateComposition } from "./Services/CreateTheComposition";
-export { CreateTheCompositionLocal } from "./Services/Local/CreateTheCompositionLocal";
-export {
-  CreateConnectionBetweenTwoConcepts,
-  CreateConnectionBetweenTwoConceptsGeneral,
-} from "./Services/CreateConnectionBetweenTwoConcepts";
-export { default as GetTheConcept } from "./Services/GetTheConcept";
-export { default as MakeTheInstanceConcept } from "./Services/MakeTheInstanceConcept";
-export { MakeTheInstanceConceptLocal } from "./Services/Local/MakeTheInstanceConceptLocal";
-export {
-  storeToDatabase,
-  getFromDatabaseWithType,
-  getObjectsFromIndexDb,
-} from "./Database/NoIndexDb";
-export { createTheConnection as CreateTheConnection } from "./Services/CreateTheConnection";
-export { default as GetConceptByCharacter } from "./Services/GetConceptByCharacter";
-export { GetLink, GetLinkRaw } from "./Services/GetLink";
-export { CreateDefaultConcept } from "./Services/CreateDefaultConcept";
-export { MakeTheTypeConceptLocal } from "./Services/Local/MakeTheTypeLocal";
-export { MakeTheTypeConcept } from "./Services/MakeTheTypeConcept";
-export { MakeTheTypeConceptApi } from "./Api/MakeTheTypeConceptApi";
-export {
-  GetLinkerConnectionFromConcepts,
-  GetLinkerConnectionToConcepts,
-} from "./Services/GetLinkerConnectionFromConcept";
-export { DeleteConceptById } from "./Services/DeleteConcept";
-export { DeleteConnectionById } from "./Services/DeleteConnection";
-export { TrashTheConcept } from "./Api/Delete/DeleteConceptInBackend";
-export { GetConnectionById } from "./Services/GetConnections";
-export { MakeTheTimestamp } from "./Services/MakeTheTimestamp";
-export {
-  RecursiveSearchApi,
-  RecursiveSearchApiWithInternalConnections,
-  RecursiveSearchApiRaw,
-  RecursiveSearchApiRawFullLinker,
-  RecursiveSearchApiNewRawFullLinker,
-} from "./Api/RecursiveSearch";
-export {
-  GetCompositionBulkWithDataId,
-  GetCompositionFromConnectionsWithDataIdFromConnections,
-  GetCompositionFromConnectionsWithIndexFromConnections,
-  GetCompositionBulk,
-  GetCompositionFromConnectionsWithDataId,
-} from "./Services/GetCompositionBulk";
-export {
-  uploadAttachment,
-  uploadFile,
-  uploadImage,
-  validDocumentFormats,
-  validImageFormats,
-} from "./Services/Upload";
-export { GetConceptBulk } from "./Api/GetConceptBulk";
-export { GetConnectionBulk } from "./Api/GetConnectionBulk";
-export { GetAllConnectionsOfCompositionBulk } from "./Api/GetAllConnectionsOfCompositionBulk";
+import { IdentifierFlags } from './DataStructures/IdentifierFlags';
+export {SearchLinkMultipleApi} from './Api/Search/SearchLinkMultipleApi';
+export { SplitStrings} from './Services/SplitStrings'; 
+export { GetCompositionList,GetCompositionListWithId }  from './Services/GetCompositionList';
+export { GetCompositionListLocal, GetCompositionListLocalWithId} from './Services/Local/GetCompositionListLocal';
+export {GetAllConnectionsOfComposition} from './Api/GetAllConnectionsOfComposition';
+export {GetComposition,GetCompositionWithId, recursiveFetch,GetCompositionWithAllIds} from './Services/GetComposition';
+export {GetCompositionLocal, GetCompositionLocalWithId} from './Services/Local/GetCompositionLocal';
+export {default as CreateComposition} from './Services/CreateTheComposition';
+export { CreateTheCompositionLocal } from './Services/Local/CreateTheCompositionLocal';
+export {CreateConnectionBetweenTwoConcepts,CreateConnectionBetweenTwoConceptsGeneral} from './Services/CreateConnectionBetweenTwoConcepts';
+export { default as GetTheConcept} from './Services/GetTheConcept';
+export { default as MakeTheInstanceConcept} from './Services/MakeTheInstanceConcept';
+export { MakeTheInstanceConceptLocal} from './Services/Local/MakeTheInstanceConceptLocal';
+export { storeToDatabase,getFromDatabaseWithType,getObjectsFromIndexDb } from './Database/NoIndexDb';
+export { createTheConnection as CreateTheConnection} from './Services/CreateTheConnection';
+export { default as GetConceptByCharacter } from './Services/GetConceptByCharacter';
+export { GetLink,GetLinkRaw } from './Services/GetLink';
+export {CreateDefaultConcept} from './Services/CreateDefaultConcept';
+export { MakeTheTypeConceptLocal} from './Services/Local/MakeTheTypeLocal';
+export {MakeTheTypeConcept} from './Services/MakeTheTypeConcept';
+export {MakeTheTypeConceptApi} from './Api/MakeTheTypeConceptApi';
+export { GetLinkerConnectionFromConcepts, GetLinkerConnectionToConcepts} from './Services/GetLinkerConnectionFromConcept';
+export { DeleteConceptById } from './Services/DeleteConcept';
+export { DeleteConnectionById } from './Services/DeleteConnection';
+export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend'
+export { GetConnectionById } from './Services/GetConnections';
+export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
+export {RecursiveSearchApi,RecursiveSearchApiWithInternalConnections, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker,RecursiveSearchApiNewRawFullLinker} from './Api/RecursiveSearch';
+export {GetCompositionBulkWithDataId,GetCompositionFromConnectionsWithDataIdFromConnections,GetCompositionFromConnectionsWithIndexFromConnections,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
+export {uploadAttachment, uploadFile, uploadImage, validDocumentFormats, validImageFormats} from './Services/Upload'
+export { GetConceptBulk } from './Api/GetConceptBulk';
+export { GetConnectionBulk } from './Api/GetConnectionBulk';
+export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
 
-export { LoginToBackend } from "./Api/Login";
-export { GetConnectionOfTheConcept } from "./Api/GetConnectionOfTheConcept";
-export { default as Signup } from "./Api/Signup";
-export { default as Signin } from "./Api/Signin";
-export { SignupEntity } from "./Api/Signup";
-export { default as UpdateComposition } from "./Services/UpdateComposition";
-export { SearchAllConcepts } from "./Api/Search/Search";
-export { SearchWithLinker } from "./Api/Search/SearchWithLinker";
-export {
-  GetCompositionWithCache,
-  GetCompositionWithDataIdWithCache,
-  GetCompositionWithDataIdBulk,
-} from "./Services/Composition/CompositionCache";
-export { CreateSession } from "./Api/Session/CreateSession";
-export { CreateSessionVisit } from "./Api/Session/CreateSessionVisit";
-export {} from "./Api/GetConceptByCharacterAndType";
-export { GetRelation, GetRelationRaw } from "./Services/GetRelation";
-export { recursiveFetchNew } from "./Services/Composition/BuildComposition";
-export { CreateTheCompositionWithCache } from "./Services/Composition/CreateCompositionCache";
-export { CreateDefaultLConcept } from "./Services/Local/CreateDefaultLConcept";
-export { CreateTheConnectionGeneral } from "./Services/CreateTheConnectionGeneral";
-export { CreateTheConnectionLocal } from "./Services/Local/CreateTheConnectionLocal";
-export {
-  GetCompositionListAll,
-  GetCompositionListAllWithId,
-  GetCompositionListWithIdUpdated,
-} from "./Services/GetCompositionList";
-export {
-  GetUserGhostId,
-  AddGhostConcept,
-} from "./Services/User/UserTranslation";
-export {
-  SearchLinkMultipleAll,
-  FormatFromConnections,
-} from "./Services/Search/SearchLinkMultiple";
-export { GetTheConceptLocal } from "./Services/Local/GetTheConceptLocal";
-export { UpdateCompositionLocal } from "./Services/Local/UpdateCompositionLocal";
-export {
-  GetCompositionFromConnectionsWithDataIdInObject,
-  GetCompositionFromConnectionsWithIndex,
-  GetCompositionFromConnectionsWithDataIdIndex,
-} from "./Services/GetCompositionBulk";
-export { GetRelationLocal } from "./Services/Local/GetRelationLocal";
-export { GetConceptByCharacterAndCategoryLocal } from "./Services/Local/GetConceptByCharacterLocal";
-export { ViewInternalData } from "./Services/View/ViewInternalData";
-export { ViewInternalDataApi } from "./Api/View/ViewInternalDataApi";
-export {
-  convertFromLConceptToConcept,
-  convertFromConceptToLConcept,
-} from "./Services/Conversion/ConvertConcepts";
-export {
-  SearchLinkInternal,
-  SearchLinkInternalAll,
-} from "./Services/Search/SearchLinkInternal";
-export { CreateConnectionBetweenTwoConceptsLocal } from "./Services/Local/CreateConnectionBetweenTwoConceptsLocal";
-export { DeleteConceptLocal } from "./Services/Local/DeleteConceptLocal";
-export { GetConnectionBetweenTwoConceptsLinker } from "./Services/GetConnectionBetweenTwoConceptsLinker";
-export { DelayFunctionExecution } from "./Services/Common/DelayFunction";
-export {
-  GetCompositionWithIdAndDateFromMemory,
-  GetCompositionFromMemoryWithConnections,
-} from "./Services/GetComposition";
-export { GetConceptByCharacterAndType } from "./Api/GetConceptByCharacterAndType";
-export { GetConnectionDataPrefetch } from "./Services/GetCompositionBulk";
-export { FormatFromConnectionsAltered } from "./Services/Search/SearchLinkMultiple";
-export {
-  NORMAL,
-  JUSTDATA,
-  DATAID,
-  DATAIDDATE,
-  RAW,
-  ALLID,
-  LISTNORMAL,
-} from "./Constants/FormatConstants";
-export { PRIVATE, PUBLIC, ADMIN } from "./Constants/AccessConstants";
-export { SearchWithTypeAndLinkerApi } from "./Api/Search/SearchWithTypeAndLinker";
-export { DependencyObserver } from "./WrapperFunctions/DepenedencyObserver";
-export {
-  SearchLinkMultipleAllObservable,
-  searchLinkMultipleListener,
-} from "./WrapperFunctions/SearchLinkMultipleAllObservable";
-export { GetCompositionListener } from "./WrapperFunctions/GetCompositionObservable";
-export { GetCompositionListListener } from "./WrapperFunctions/GetCompositionListObservable";
-export { SearchWithTypeAndLinker } from "./Services/Search/SearchWithTypeAndLinker";
-export { GetLinkListener } from "./WrapperFunctions/GetLinkObservable";
-export { RecursiveSearchListener } from "./WrapperFunctions/RecursiveSearchObservable";
-export { GetLinkListListener } from "./WrapperFunctions/GetLinkListObservable";
-export { SyncData } from "./DataStructures/SyncData";
-export { Concept } from "./DataStructures/Concept";
-export { LConcept } from "./DataStructures/Local/LConcept";
-export { LConnection } from "./DataStructures/Local/LConnection";
-export { Connection } from "./DataStructures/Connection";
-export { ConceptsData } from "./DataStructures/ConceptData";
-export { ConnectionData } from "./DataStructures/ConnectionData";
-export { BinaryTree } from "./DataStructures/BinaryTree";
-export { SearchQuery } from "./DataStructures/SearchQuery";
-export { SignupModel } from "./DataStructures/SignupModel";
-export { SigninModel } from "./DataStructures/SigninModel";
-export { FreeschemaResponse } from "./DataStructures/Responses/StandardResponses";
-export { PatcherStructure } from "./DataStructures/PatcherStructure";
-export { SessionData } from "./DataStructures/Session/SessionData";
-export { Composition } from "./DataStructures/Composition/Composition";
-export { CompositionBinaryTree } from "./DataStructures/Composition/CompositionBinaryTree";
-export { CompositionNode } from "./DataStructures/Composition/CompositionNode";
-export { LocalSyncData } from "./DataStructures/Local/LocalSyncData";
-export { UserBinaryTree } from "./DataStructures/User/UserBinaryTree";
-export { FilterSearch } from "./DataStructures/FilterSearch";
-export { SearchStructure } from "./DataStructures/Search/SearchStructure";
-export { LocalConceptsData } from "./DataStructures/Local/LocalConceptData";
-import {
-  GetConnectionsFromIndexDb,
-  GetConnectionsFromIndexDbLocal,
-} from "./Services/GetDataFromIndexDb";
-import CreateLocalBinaryTreeFromIndexDb, {
-  PopulateTheLocalConceptsToMemory,
-  PopulateTheLocalConnectionToMemory,
-} from "./Services/Local/CreateLocalBinaryTreeFromData";
-import InitializeSystem from "./Services/InitializeSystem";
-import { BaseUrl } from "./DataStructures/BaseUrl";
-import { TokenStorage } from "./DataStructures/Security/TokenStorage";
+export { LoginToBackend } from './Api/Login';
+export {GetConnectionOfTheConcept} from './Api/GetConnectionOfTheConcept';
+export  {default as Signup} from  './Api/Signup';
+export { default as Signin} from './Api/Signin';
+export {SignupEntity} from './Api/Signup';
+export { default as UpdateComposition} from './Services/UpdateComposition';
+export {SearchAllConcepts} from './Api/Search/Search';
+export {SearchWithLinker} from './Api/Search/SearchWithLinker';
+export {GetCompositionWithCache, GetCompositionWithDataIdWithCache, GetCompositionWithDataIdBulk} from './Services/Composition/CompositionCache';
+export {CreateSession} from './Api/Session/CreateSession';
+export {CreateSessionVisit} from './Api/Session/CreateSessionVisit';
+export {  } from './Api/GetConceptByCharacterAndType';
+export {GetRelation, GetRelationRaw} from './Services/GetRelation';
+export { recursiveFetchNew} from './Services/Composition/BuildComposition'
+export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
+export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
+export { CreateTheConnectionGeneral} from './Services/CreateTheConnectionGeneral';
+export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLocal';
+export { GetCompositionListAll, GetCompositionListAllWithId,GetCompositionListWithIdUpdated } from './Services/GetCompositionList';
+export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
+export {SearchLinkMultipleAll,FormatFromConnections} from './Services/Search/SearchLinkMultiple';
+export {GetTheConceptLocal} from './Services/Local/GetTheConceptLocal';
+export {UpdateCompositionLocal} from './Services/Local/UpdateCompositionLocal';
+export {GetCompositionFromConnectionsWithDataIdInObject,GetCompositionFromConnectionsWithIndex,GetCompositionFromConnectionsWithDataIdIndex} from './Services/GetCompositionBulk';
+export {GetRelationLocal} from './Services/Local/GetRelationLocal';
+export {GetConceptByCharacterAndCategoryLocal} from './Services/Local/GetConceptByCharacterLocal'; 
+export {ViewInternalData} from './Services/View/ViewInternalData';
+export {ViewInternalDataApi} from './Api/View/ViewInternalDataApi';
+export {convertFromLConceptToConcept, convertFromConceptToLConcept} from './Services/Conversion/ConvertConcepts';
+export {SearchLinkInternal,SearchLinkInternalAll} from './Services/Search/SearchLinkInternal';
+export {CreateConnectionBetweenTwoConceptsLocal} from './Services/Local/CreateConnectionBetweenTwoConceptsLocal';
+export {DeleteConceptLocal} from './Services/Local/DeleteConceptLocal';
+export {GetConnectionBetweenTwoConceptsLinker} from './Services/GetConnectionBetweenTwoConceptsLinker';
+export {DelayFunctionExecution} from './Services/Common/DelayFunction';
+export {GetCompositionWithIdAndDateFromMemory,GetCompositionFromMemoryWithConnections} from './Services/GetComposition';
+export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
+export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
+export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
+export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL} from './Constants/FormatConstants';
+export {PRIVATE , PUBLIC , ADMIN} from './Constants/AccessConstants';
+export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
+export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
+export {SearchLinkMultipleAllObservable, searchLinkMultipleListener} from './WrapperFunctions/SearchLinkMultipleAllObservable';
+export {GetCompositionListener} from './WrapperFunctions/GetCompositionObservable';
+export {GetCompositionListListener} from './WrapperFunctions/GetCompositionListObservable';
+export {SearchWithTypeAndLinker} from './Services/Search/SearchWithTypeAndLinker';
+export {GetLinkListener} from './WrapperFunctions/GetLinkObservable';
+export {RecursiveSearchListener} from './WrapperFunctions/RecursiveSearchObservable'
+export {GetLinkListListener} from './WrapperFunctions/GetLinkListObservable';
+export {SyncData} from './DataStructures/SyncData';
+export {Concept} from './DataStructures/Concept';
+export {LConcept} from './DataStructures/Local/LConcept';
+export {LConnection} from './DataStructures/Local/LConnection';
+export {Connection} from './DataStructures/Connection';
+export {ConceptsData} from './DataStructures/ConceptData';
+export { ConnectionData } from './DataStructures/ConnectionData';
+export {BinaryTree} from './DataStructures/BinaryTree';
+export {SearchQuery} from './DataStructures/SearchQuery';
+export {SignupModel} from './DataStructures/SignupModel';
+export {SigninModel} from './DataStructures/SigninModel';
+export {FreeschemaResponse} from './DataStructures/Responses/StandardResponses'
+export {PatcherStructure} from './DataStructures/PatcherStructure';
+export {SessionData} from './DataStructures/Session/SessionData';
+export {Composition} from './DataStructures/Composition/Composition';
+export {CompositionBinaryTree} from './DataStructures/Composition/CompositionBinaryTree';
+export {CompositionNode} from './DataStructures/Composition/CompositionNode';
+export {LocalSyncData} from './DataStructures/Local/LocalSyncData';
+export {UserBinaryTree} from './DataStructures/User/UserBinaryTree';
+export {FilterSearch} from './DataStructures/FilterSearch';
+export {SearchStructure} from './DataStructures/Search/SearchStructure';
+export {LocalConceptsData} from './DataStructures/Local/LocalConceptData';
+import {GetConnectionsFromIndexDb,GetConnectionsFromIndexDbLocal} from './Services/GetDataFromIndexDb';
+import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConceptsToMemory, PopulateTheLocalConnectionToMemory } from './Services/Local/CreateLocalBinaryTreeFromData';
+import InitializeSystem from './Services/InitializeSystem';
+import { BaseUrl } from './DataStructures/BaseUrl';
+import { TokenStorage } from './DataStructures/Security/TokenStorage';
 import { broadcastChannel } from "./Constants/general.const";
 export { Logger } from "./Middleware/logger.service";
 import { WidgetTree } from "./Widgets/WidgetTree";
-import {
-  HandleHttpError,
-  HandleInternalError,
-  UpdatePackageLogWithError,
-} from "./Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "./Services/Common/ErrorPosting";
 import { ApplicationMonitor } from "./Middleware/ApplicationMonitor";
 import { FreeSchemaResponse } from "./DataStructures/Responses/ErrorResponse";
 import { AccessTracker } from "./app";
@@ -217,52 +127,39 @@ export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
-export { Anomaly } from "./Anomaly/anomaly";
-export { Validator } from "./Validator/validator";
-export { createFormFieldData } from "./Validator/utils";
-export { BaseUrl } from "./DataStructures/BaseUrl";
-export { StatefulWidget } from "./Widgets/StatefulWidget";
-export {
-  DeleteConnectionByType,
-  GetAllTheConnectionsByTypeAndOfTheConcept,
-} from "./Services/DeleteConnectionByType";
-export { FreeschemaQuery } from "./DataStructures/Search/FreeschemaQuery";
-export { FreeschemaQueryApi } from "./Api/Search/FreeschemaQueryApi";
-export { SchemaQueryListener } from "./WrapperFunctions/SchemaQueryObservable";
-export { WidgetTree } from "./Widgets/WidgetTree";
-export { DeleteUser } from "./Services/DeleteConcept";
-export { AccessTracker } from "./AccessTracker/accessTracker";
-export { CreateConnectionBetweenEntityLocal } from "./Services/CreateConnection/CreateConnectionEntity";
-export { BuildWidgetFromId } from "./Widgets/WidgetBuild";
+export { Anomaly } from './Anomaly/anomaly';
+export { Validator } from './Validator/validator';
+export { createFormFieldData } from './Validator/utils';
+export {BaseUrl} from './DataStructures/BaseUrl';
+export {StatefulWidget} from './Widgets/StatefulWidget';
+export {DeleteConnectionByType, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
+export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
+export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
+export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
+export {WidgetTree} from './Widgets/WidgetTree';
+export { DeleteUser } from './Services/DeleteConcept';
+export { AccessTracker } from './AccessTracker/accessTracker'
+export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
+export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 
-export {
-  renderLatestWidget,
-  renderPage,
-  renderWidget,
-  convertWidgetTreeToWidgetWithWrapper,
-  getWidgetFromId,
-  convertWidgetTreeToWidget,
-  unwrapContainers,
-  getWidgetBulkFromId,
-} from "./Widgets/RenderWidgetService";
+export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
-export { CreateData } from "./Services/automated/automated-concept-connection";
+export {CreateData} from './Services/automated/automated-concept-connection';
 type listeners = {
-  listenerId: string | number;
-  callback: any;
-  createdAt: number;
-};
+  listenerId: string | number
+  callback: any,
+  createdAt: number
+}
 export var serviceWorker: any;
-const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2);
+const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
 export let subscribedListeners: listeners[] = [];
 // let serviceWorkerReady = false;
 let messageQueue: any[] = [];
 // for sw use only START
-export let hasActivatedSW: boolean = false;
-export function setHasActivatedSW(value: boolean) {
-  hasActivatedSW = value;
-}
+export let hasActivatedSW: boolean = false
+export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
 // for sw use only END
+
 
 /**
  * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
@@ -273,19 +170,19 @@ function updateAccessToken(accessToken: string = "", session?: any) {
   TokenStorage.BearerAccessToken = accessToken;
 
   // because in the service worker document is not defined.
-  if (typeof document == undefined) {
+  if(typeof document == undefined){
     // for the service worker
     TokenStorage.sessionId = session;
-  } else {
+  }
+  else{
     // for the main thread
     TokenStorage.sessionId = parseInt(getCookie("SessionId"));
   }
-  if (serviceWorker)
-    sendMessage("updateAccessToken", {
-      accessToken,
-      session: parseInt(getCookie("SessionId")),
-    });
+  if (serviceWorker) sendMessage('updateAccessToken', { accessToken, session: parseInt(getCookie("SessionId"))})
 }
+
+
+
 
 /**
  *
@@ -305,87 +202,77 @@ async function init(
   nodeUrl: string = "",
   enableAi: boolean = true,
   applicationName: string = "",
-  enableSW:
-    | { activate: boolean; scope?: string; pathToSW?: string; manual?: boolean }
-    | undefined = undefined,
-  flags: {
-    logApplication?: boolean;
-    logPackage?: boolean;
-    accessTracker?: boolean;
-    isTest?: boolean;
-  } = {},
-  parameters: { logserver?: string } = {}
+  enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
+  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
+  parameters: { logserver?:string} = {},
 ) {
   try {
     BaseUrl.BASE_URL = url;
     BaseUrl.AI_URL = aiurl;
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
-    BaseUrl.LOG_SERVER =
-      parameters.logserver ?? "https://logdev.freeschema.com";
-    console.log(
-      "setting the logserver",
-      BaseUrl.LOG_SERVER,
-      parameters.logserver
-    );
+    BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
+    console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
     updateAccessToken(accessToken);
     //TokenStorage.BearerAccessToken = accessToken;
     let randomizer = Math.floor(Math.random() * 100000000);
     // BaseUrl.BASE_RANDOMIZER = randomizer;
     // BaseUrl.BASE_RANDOMIZER = 999;
-
-    BaseUrl.setRandomizer(randomizer);
+    
+    BaseUrl.setRandomizer(randomizer)
 
     // Change Default Flags
     const defaultFlags = {
       logApplication: false,
       logPackage: false,
       accessTracker: false,
-      isTest: false,
+      isTest: false
     };
-    BaseUrl.FLAGS = defaultFlags;
+    BaseUrl.FLAGS = defaultFlags
 
     // Merge Provided Flags with Defaults
     BaseUrl.FLAGS = { ...defaultFlags, ...flags };
 
-    initializeFlags(BaseUrl.FLAGS);
+    initializeFlags(BaseUrl.FLAGS)
     // console.log("BaseUrl.FLAGS before sending to service worker : ",  BaseUrl.FLAGS)
 
     if (!("serviceWorker" in navigator)) {
       await initConceptConnection();
       console.warn("Service Worker not supported in this browser.");
-      return;
+      return
     }
 
-    listenPostMessagaes();
-    listenBroadCastMessages();
 
-    // check if manual service worker was activated
+    listenPostMessagaes()
+    listenBroadCastMessages()
+
+    // check if manual service worker was activated 
     if (enableSW && enableSW.activate && enableSW.manual) {
       await new Promise((resolve, reject) => {
         navigator.serviceWorker.ready
-          .then(async (registration) => {
-            console.log("registraions ready", registration);
-            serviceWorker = registration.active;
-            await initServiceWorker();
-            resolve("done");
-          })
-          .catch((err) => {
-            console.error("Error: Ready service worker", err);
-            reject(err);
-          })
-          .finally(() => console.log("Finally service worker ready done"));
+        .then(async (registration) => {
+          console.log('registraions ready', registration)
+          serviceWorker = registration.active
+          await initServiceWorker()
+          resolve('done')
+        })
+        .catch(err => {
+          console.error("Error: Ready service worker", err)
+          reject(err);
+        })
+        .finally(() => console.log('Finally service worker ready done'))
 
-        setTimeout(() => reject("Timeout ready"), 30000);
-      });
-    } else if (
+        setTimeout(() => reject('Timeout ready'), 30000)
+      })
+    }
+     else if (
       // this condition starts the service worker if not manually started.
       enableSW &&
       enableSW?.activate
     ) {
       try {
         console.log("service worker initialiing");
-        await handleRegisterServiceWorker(enableSW);
+        await handleRegisterServiceWorker(enableSW)
       } catch (error) {
         // run on the main thread.
         await initConceptConnection();
@@ -394,7 +281,7 @@ async function init(
     } else {
       // run on the main thread.
       await initConceptConnection();
-      console.warn("Service Worker not activated");
+      console.warn('Service Worker not activated')
     }
     return true;
   } catch (error) {
@@ -411,165 +298,115 @@ async function init(
  * @returns Promise<any>
  */
 export async function sendMessage(type: string, payload: any, retryCount = 0) {
-  let messagedProcessed = false;
+  let messagedProcessed = false
   const messageId = Math.random().toString(36).substring(2); // Generate a unique message ID
-  payload.messageId = messageId;
-  payload.TABID = TABID;
+  payload.messageId = messageId
+  payload.TABID = TABID
   // let actions = payload.actions
 
-  const newPayload = JSON.parse(JSON.stringify(payload));
+  const newPayload = JSON.parse(JSON.stringify(payload))
 
-  let checkProcessInterval: any;
-  if (type != "checkProcess" && retryCount == 0) {
+  let checkProcessInterval: any
+  if (type != 'checkProcess' && retryCount == 0) {
     checkProcessInterval = setInterval(async () => {
-      console.log(
-        "process took more than one second",
-        messageId,
-        type,
-        messagedProcessed
-      );
+      console.log('process took more than one second', messageId, type, messagedProcessed)
       // if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
       //   console.log("Message process missing")
       //   throw Error('Failed to handle type ' + type + ' ' + messageId)
       // }
-      if (
-        !messagedProcessed &&
-        !(await checkIfExecutingProcess(messageId, type))
-      ) {
-        clearInterval(checkProcessInterval);
-        if (!messagedProcessed) {
-          console.log(
-            "Failed to handle type " + type + " message not found " + messageId,
-            "retrying: ",
-            retryCount == 0,
-            type
-          );
-          if (retryCount == 0 && type != "checkProcess") {
-            console.log("retrying ", type, messageId);
-            const res = await sendMessage(type, payload, retryCount + 1);
-            return res;
-          } else {
-            // throw Error('Failed to handle type ' + type + ' ' + messageId)
-            console.log("Failed to handle type " + type + " " + messageId);
+      if (!messagedProcessed && !await checkIfExecutingProcess(messageId, type)) {
+        clearInterval(checkProcessInterval)
+          if (!messagedProcessed) {
+            console.log('Failed to handle type ' + type + ' message not found ' + messageId, 'retrying: ', retryCount == 0, type)
+            if (retryCount == 0 && type != 'checkProcess') {
+              console.log('retrying ', type, messageId)
+              const res = await sendMessage(type, payload, retryCount + 1)
+              return res
+            } else {
+              // throw Error('Failed to handle type ' + type + ' ' + messageId)
+              console.log('Failed to handle type ' + type + ' ' + messageId)
+            }
           }
-        }
         // throw Error('Failed to handle type ' + type + ' ' + messageId)
       }
-    }, 2000);
+    }, 2000)
   }
 
   return new Promise((resolve, reject) => {
-    if (!(navigator.serviceWorker.controller || serviceWorker))
-      console.log(
-        "will go to queue",
-        navigator.serviceWorker.controller,
-        serviceWorker,
-        type
-      );
-    if (navigator.serviceWorker.controller || serviceWorker) {
+    if (!((navigator.serviceWorker.controller || serviceWorker))) console.log('will go to queue', navigator.serviceWorker.controller, serviceWorker, type)
+    if ((navigator.serviceWorker.controller || serviceWorker)) {
       const responseHandler = (event: any) => {
-        if (event?.data?.messageId == messageId) {
-          // Check if the message ID matches
-          messagedProcessed = true;
-          // if (type != 'checkProcess')
-          //console.log('received from sw', type, messageId)
-          clearInterval(checkProcessInterval);
+        if (event?.data?.messageId == messageId) { // Check if the message ID matches
+          messagedProcessed = true
+         // if (type != 'checkProcess') 
+            //console.log('received from sw', type, messageId)
+          clearInterval(checkProcessInterval)
           if (!event.data.success) {
             if (event?.data?.status == 401) {
-              reject(
-                HandleHttpError(
-                  new Response("Unauthorized", {
-                    status: 401,
-                    statusText: event?.data?.statusText,
-                  })
-                )
-              );
+              reject(HandleHttpError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
             } else if (event?.data?.status == 500) {
-              reject(
-                HandleInternalError(
-                  new Response("Internal Server Error", {
-                    status: 500,
-                    statusText: event?.data?.statusText,
-                  })
-                )
-              );
+              reject(HandleInternalError(new Response('Internal Server Error', {status: 500, statusText: event?.data?.statusText})))
             } else {
-              console.error("Error in the response from worker:", event);
-              reject(
-                `Failed to handle action ${type} ${JSON.stringify(
-                  payload
-                )}, Response: ${JSON.stringify(event.data)}`
-              );
+              console.error('Error in the response from worker:', event)
+              reject(`Failed to handle action ${type} ${JSON.stringify(payload)}, Response: ${JSON.stringify(event.data)}`)
             }
           }
           if (event.data?.actions) {
-            payload.actions = JSON.parse(JSON.stringify(event.data.actions));
+            payload.actions = JSON.parse(JSON.stringify(event.data.actions))
           }
           resolve(event.data);
-          navigator.serviceWorker.removeEventListener(
-            "message",
-            responseHandler
-          );
+          navigator.serviceWorker.removeEventListener("message", responseHandler);
         }
       };
-
+  
       navigator.serviceWorker.addEventListener("message", responseHandler);
-
+  
       // Send the message to the service worker
       if (navigator.serviceWorker.controller) {
-        if (type != "checkProcess") console.log("sent to sw", type, messageId);
-        navigator.serviceWorker.controller.postMessage({
-          type,
-          payload: newPayload,
-        });
+        if (type != 'checkProcess') console.log('sent to sw', type, messageId)
+        navigator.serviceWorker.controller.postMessage({ type, payload: newPayload })
       } else if (serviceWorker) {
         // console.log('sent to sw', type, messageId)
-        console.warn(
-          `controller not found but serviceWorker is available. messageId: ${messageId}, type: ${type}`
-        );
+        console.warn(`controller not found but serviceWorker is available. messageId: ${messageId}, type: ${type}`)
         // if (serviceWorkerReady) console.warn('service worker was registered already but navigator is empty!!!', serviceWorker)
         try {
-          serviceWorker.postMessage({ type, payload: newPayload });
-        } catch (err) {
-          console.log("Retrying again on catch service worker", err);
+          serviceWorker.postMessage({ type, payload: newPayload })
+        } catch(err) {
+          console.log('Retrying again on catch service worker', err)
           serviceWorker.postMessage({ type, payload: newPayload });
         }
       } else {
-        console.warn(
-          `Service Worker hasn't loaded yet. messageId: ${messageId}, type: ${type}`
-        );
+        console.warn(`Service Worker hasn't loaded yet. messageId: ${messageId}, type: ${type}`)
 
         // if (serviceWorkerReady) console.warn('service worker was registered already but is not available NOW!!!')
-        console.info("ready", navigator.serviceWorker.ready);
+        console.info('ready', navigator.serviceWorker.ready)
         // wait one second before checking again
         setTimeout(() => {
-          console.warn(
-            `Re-Trying after certain time. messageId: ${messageId}, type: ${type}`
-          );
+          console.warn(`Re-Trying after certain time. messageId: ${messageId}, type: ${type}`)
           if (serviceWorker) {
-            console.info("This is triggered ");
+            console.info('This is triggered ')
             serviceWorker?.postMessage({ type, payload });
           } else {
-            console.log("not ready", type);
-            clearInterval(checkProcessInterval);
+            console.log('not ready', type)
+            clearInterval(checkProcessInterval)
             reject("Service worker not ready");
           }
-        }, 30000); // 30 seconds
+        }, 30000) // 30 seconds
       }
-
+  
       // Timeout for waiting for the response (e.g., 5 seconds)
       setTimeout(() => {
-        clearInterval(checkProcessInterval);
+        clearInterval(checkProcessInterval)
         reject(`No response from service worker after timeout: ${type}`);
         navigator.serviceWorker.removeEventListener("message", responseHandler);
       }, 210000); // 3.5 minutes
     } else {
-      messageQueue.push({ message: { type, payload: newPayload } });
-      console.log("Message Queued", type, payload);
-      console.log(navigator.serviceWorker.controller, serviceWorker, type);
-      if (type == "init") {
-        clearInterval(checkProcessInterval);
-        resolve(null);
+      messageQueue.push({message: {type, payload: newPayload}})
+      console.log('Message Queued', type, payload)
+      console.log(navigator.serviceWorker.controller, serviceWorker, type)
+      if (type == 'init') {
+        clearInterval(checkProcessInterval)
+        resolve(null)
       }
     }
   });
@@ -581,7 +418,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
 //        resolve(event.data);
 //        navigator.serviceWorker.removeEventListener("message", responseHandler);
 //      };
-
+ 
 //      navigator.serviceWorker.addEventListener("message", responseHandler);
 //      navigator.serviceWorker.controller?.postMessage({ type, payload });
 //    });
@@ -590,15 +427,13 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
 // actions for message received on broadcast channel (specially from service worker)
 const broadcastActions: any = {
   GetLinkListener: async (payload: any) => {
-    const listener = subscribedListeners.find(
-      (listener) => listener.listenerId == payload.listenerId
-    );
-    listener?.callback(payload.data);
-    return { success: true };
+    const listener = subscribedListeners.find(listener => listener.listenerId == payload.listenerId)
+    listener?.callback(payload.data)
+    return { success: true }
   },
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
-      let event = new CustomEvent(payload.id || "", payload.data);
+      let event = new CustomEvent(payload.id || '', payload.data);
       dispatchEvent(event);
     }
     // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
@@ -606,37 +441,35 @@ const broadcastActions: any = {
     //     client.postMessage({ id, updatedData });
     //   });
     // });
-    return { success: true };
+    return { success: true }
   },
   checkInit: async (payload: any) => {
-    console.log("service worker init 0");
+    console.log('service worker init 0')
     if (navigator.serviceWorker.controller) {
-      console.log("service worker init 1");
-      serviceWorker = navigator.serviceWorker.controller;
+      console.log('service worker init 1')
+      serviceWorker = navigator.serviceWorker.controller
     }
     await initServiceWorker();
-    return { success: true };
-  },
-};
+    return { success: true }
+  }
+}
 
 /**
  * Method to trigger broadcast message listener
  */
 function listenBroadCastMessages() {
   // broadcast event can be listened through both the service worker and other tabs
-  broadcastChannel.addEventListener("message", async (event) => {
+  broadcastChannel.addEventListener('message', async (event) => {
     const { type, payload }: any = event.data;
-    if (!type) return;
-    let responseData: { success: boolean; data?: any } = {
-      success: false,
-      data: undefined,
-    };
-
-    if (broadcastActions[type]) {
-      responseData = await broadcastActions[type](payload);
-    } else {
-      console.warn(`Unable to handle "${type}" case in BC service worker`);
-    }
+      if (!type) return;
+      let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
+    
+      if (broadcastActions[type]) {
+        responseData = await broadcastActions[type](payload);
+      } else {
+        console.warn(`Unable to handle "${type}" case in BC service worker`)
+      }
+    
   });
 }
 /**
@@ -644,40 +477,42 @@ function listenBroadCastMessages() {
  */
 function listenPostMessagaes() {
   // broadcast event can be listened through both the service worker and other tabs
-  navigator.serviceWorker.addEventListener("message", async (event: any) => {
+  navigator.serviceWorker.addEventListener('message', async (event: any) => {
     try {
-      if (event.data && event.data.type === "API_401") {
+      if (event.data && event.data.type === 'API_401') {
         const { requestDetails } = event.data;
-
+  
         // Re-create the POST request with the same headers and body
         const requestOptions = {
-          method: requestDetails.method,
-          headers: new Headers(requestDetails.headers),
-          body: requestDetails.body, // Pass the original body
+            method: requestDetails.method,
+            headers: new Headers(requestDetails.headers),
+            body: requestDetails.body  // Pass the original body
         };
-
+  
         // Re-hit the API with the same details
         const apiResponse = await fetch(requestDetails.url, requestOptions);
         const responseBody = await apiResponse?.json(); // Get the response text
-
+  
         // Send the response back to the Service Worker (same client)
         navigator?.serviceWorker?.controller?.postMessage({
-          type: "API_RESPONSE",
-          messageId: event.data.messageId,
-          response: new Response(responseBody, {
-            status: apiResponse.status,
-            statusText: apiResponse.statusText,
-            headers: apiResponse.headers,
-          }),
+            type: 'API_RESPONSE',
+            messageId: event.data.messageId,
+            response: new Response(responseBody, {
+              status: apiResponse.status,
+              statusText: apiResponse.statusText,
+              headers: apiResponse.headers
+            })
         });
-      }
-    } catch (error) {
-      console.error("Error during listenPostMessage", error);
-      navigator?.serviceWorker?.controller?.postMessage({
-        type: "API_RESPONSE",
-        messageId: event.data.messageId,
-      });
     }
+
+  } catch (error) {
+    console.error("Error during listenPostMessage", error)
+    navigator?.serviceWorker?.controller?.postMessage({
+      type: 'API_RESPONSE',
+      messageId: event.data.messageId
+    })
+  }
+    
   });
 }
 
@@ -693,6 +528,7 @@ function listenPostMessagaes() {
  * @returns Promise<any>
  */
 async function initConceptConnection() {
+  
   /**
    * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
    * We use some sort of AI algorithm to initilize these concepts with the most used concept.
@@ -761,12 +597,12 @@ async function initConceptConnection() {
    */
   await PopulateTheLocalConnectionToMemory().catch((event) => {
     console.log("This is the error in populating binary tree");
-    throw event;
-  });
+   throw event;
+ });
 
-  //  await PopulateTheLocalConceptsToMemory().catch((event)=>{
-  //   console.log("This is the error in populating binary tree");
-  //  });
+//  await PopulateTheLocalConceptsToMemory().catch((event)=>{
+//   console.log("This is the error in populating binary tree");
+//  });
 
   /**
    * This process gets the connections from indexdb and loads it to the connections array which is inside of
@@ -791,46 +627,38 @@ async function initConceptConnection() {
  * @param id number|string
  * @param data any
  */
-export function dispatchIdEvent(id: number | string, data: any = {}) {
-  if (serviceWorker || typeof window != "undefined") {
+export function dispatchIdEvent(id: number|string, data:any = {}) {
+  if (serviceWorker || typeof window  != "undefined") {
     // let event = new Event(`${id}`);
-    let event = new CustomEvent(`${id}`, data);
+    let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
-  } else {
-    broadcastChannel.postMessage({
-      type: "dispatchEvent",
-      payload: { id, data },
-    });
+  } 
+  else {
+    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id, data}})
+
   }
 }
 
 async function processMessageQueue() {
-  console.log("message queue", messageQueue);
+  console.log('message queue', messageQueue)
   // process init if exist in queue
-  const initQueueItem = messageQueue.find(
-    (item) => item?.message?.type == "init"
-  );
+  const initQueueItem = messageQueue.find(item => item?.message?.type == 'init')
   if (initQueueItem) {
-    console.log(
-      "Processing Init Queue poped",
-      initQueueItem?.type,
-      initQueueItem
-    );
+    console.log('Processing Init Queue poped', initQueueItem?.type, initQueueItem);
     // remove current init items
     const index = messageQueue.indexOf(initQueueItem);
-    if (index > -1) {
-      // only splice array when item is found
+    if (index > -1) { // only splice array when item is found
       messageQueue.splice(index, 1); // 2nd parameter means remove one item only
     }
-    await sendMessage(initQueueItem?.type, initQueueItem?.payload);
+    await sendMessage(initQueueItem?.type, initQueueItem?.payload)
   }
 
-  console.log("message queue while", messageQueue);
-
+  console.log('message queue while', messageQueue)
+  
   while (messageQueue.length > 0) {
     const { message, resolve, reject } = messageQueue.shift();
-    console.log("Queue poped", message.type, message);
-    await sendMessage(message.type, message.payload);
+    console.log('Queue poped', message.type, message);
+    await sendMessage(message.type, message.payload)
   }
 }
 
@@ -841,18 +669,18 @@ async function processMessageQueue() {
 export const handleServiceWorkerException = (error: any) => {
   // if (error instanceof FreeSchemaResponse && error.getStatus() != 401) {
   if (error instanceof FreeSchemaResponse) {
-    console.error("FreeSchemaResponse Error", error);
-    throw error;
+    console.error('FreeSchemaResponse Error', error)
+    throw error
   }
   // if (error instanceof FreeSchemaResponse && error.getStatus() == 401) console.error('401 triggered in sw defaulting')
-  console.error("Service Worker Error", error);
-};
+  console.error('Service Worker Error', error)
+}
 
 /**
  * Function to setup initial flag
  */
 function initializeFlags(flags: any) {
-  const updateLog: any = Logger.logfunction("initializeFlags", arguments);
+  const updateLog:any = Logger.logfunction("initializeFlags",arguments);
   try {
     if (flags.logApplication) {
       ApplicationMonitor.initialize();
@@ -881,13 +709,13 @@ function initializeFlags(flags: any) {
     }
 
     // update the existing log
-    Logger.logUpdate(updateLog);
-
+    Logger.logUpdate(updateLog)
+    
     // throw new Error("Forced error for testing!");
-
-    return flags;
+    
+    return flags
   } catch (error) {
-    UpdatePackageLogWithError(updateLog, "initializeFlags", error);
+    UpdatePackageLogWithError(updateLog, 'initializeFlags', error);
     throw error;
   }
 }
@@ -897,10 +725,7 @@ function initializeFlags(flags: any) {
  * @param enableSW any
  */
 async function handleRegisterServiceWorker(enableSW: any) {
-  const logData: any = Logger.logfunction(
-    "handleRegisterServiceWorker",
-    arguments
-  );
+  const logData:any = Logger.logfunction("handleRegisterServiceWorker",arguments);
   await new Promise<void>((resolve, reject) => {
     let success = false;
 
@@ -910,13 +735,17 @@ async function handleRegisterServiceWorker(enableSW: any) {
         scope: enableSW.scope ?? "/",
       })
       .then(async (registration) => {
-        console.log("Service Worker registered:", registration);
+        console.log(
+          "Service Worker registered:",
+          registration
+        );
         // process queue if exist
         setInterval(() => {
           //console.log('message process interrval calling', messageQueue)
-          if (messageQueue.length) processMessageQueue();
-        }, 2000);
-
+          if (messageQueue.length)
+            processMessageQueue()
+        }, 2000)
+        
         // Add Listeners before initializing the service worker
 
         // Listen for updates to the service worker
@@ -926,34 +755,29 @@ async function handleRegisterServiceWorker(enableSW: any) {
           console.log("new worker", newWorker);
           if (newWorker) {
             newWorker.onstatechange = async () => {
-              console.warn(
-                "on state change triggered",
-                newWorker.state,
-                navigator.serviceWorker.controller
-              );
+              console.warn("on state change triggered", newWorker.state, navigator.serviceWorker.controller);
               if (newWorker.state === "installing") {
                 console.log("Service Worker installing");
-                serviceWorker = undefined;
+                serviceWorker = undefined
                 // serviceWorkerReady = false
               }
               // if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
-              if (
-                (newWorker.state === "activated" ||
-                  newWorker.state === "redundant") &&
-                navigator.serviceWorker.controller
-              ) {
+              if ((newWorker.state === "activated" || newWorker.state === 'redundant') && navigator.serviceWorker.controller) {
                 // && navigator.serviceWorker.controller) {
                 // serviceWorkerReady = true;
                 serviceWorker = newWorker;
-                console.log("New Service Worker is active", registration);
+                console.log(
+                  "New Service Worker is active",
+                  registration
+                );
                 // serviceWorker = registration.active;
                 // Send init message now that it's active
                 setTimeout(() => {
-                  console.log("Message Processed after some time");
+                  console.log('Message Processed after some time')
                   processMessageQueue();
-                }, 5000);
-                await initServiceWorker();
-
+                }, 5000)
+                await initServiceWorker()
+                
                 success = true;
                 processMessageQueue();
                 resolve();
@@ -963,44 +787,35 @@ async function handleRegisterServiceWorker(enableSW: any) {
         };
 
         // Listen for the activation of the new service worker
-        registration.addEventListener("controllerchange", async () => {
-          console.warn(
-            "controller change triggered",
-            navigator.serviceWorker.controller
-          );
+        registration.addEventListener('controllerchange', async () => {
+          console.warn('controller change triggered', navigator.serviceWorker.controller)
           if (navigator.serviceWorker.controller) {
-            serviceWorker = navigator.serviceWorker.controller;
-            console.warn(
-              "Service worker has been activated; controller change"
-            );
-            await initServiceWorker();
+            serviceWorker = navigator.serviceWorker.controller
+            console.warn('Service worker has been activated; controller change');
+            await initServiceWorker()
             // The new service worker is now controlling the page
             // You can reload the page if necessary or handle the update process here
           }
         });
 
-        // state change
-        if (
-          registration.installing ||
-          registration.waiting ||
-          registration.active
-        ) {
-          registration.addEventListener("statechange", async (event: any) => {
-            if (event?.target?.state === "activating") {
-              serviceWorker = navigator.serviceWorker.controller;
-              console.warn("Service Worker is activating statechange");
-              await initServiceWorker();
+        // state change 
+        if (registration.installing || registration.waiting || registration.active) {
+          registration.addEventListener('statechange', async (event: any) => {
+            if (event?.target?.state === 'activating') {
+              serviceWorker = navigator.serviceWorker.controller
+              console.warn('Service Worker is activating statechange');
+              await initServiceWorker()
             }
           });
         }
-
+        
         // If the service worker is already active, mark it as ready
         if (registration.active) {
           // serviceWorkerReady = true;
           console.log("active sw");
           serviceWorker = registration.active;
 
-          await initServiceWorker();
+          await initServiceWorker()
           processMessageQueue();
           resolve();
         } else {
@@ -1009,18 +824,16 @@ async function handleRegisterServiceWorker(enableSW: any) {
             if (!success) reject("Not Completed Initialization");
           }, 10000);
         }
+
+
       })
       .catch(async (error) => {
         await initConceptConnection();
         reject(error);
         console.error("Service Worker registration failed:", error);
-        UpdatePackageLogWithError(
-          logData,
-          "handleRegisterServiceWorker",
-          error
-        );
+        UpdatePackageLogWithError(logData, 'handleRegisterServiceWorker', error)
       });
-  });
+  })
 }
 
 /**
@@ -1034,21 +847,19 @@ async function initServiceWorker() {
     nodeUrl: BaseUrl.NODE_URL,
     enableAi: false,
     applicationName: BaseUrl.BASE_APPLICATION,
-    flags: BaseUrl.FLAGS,
+    flags: BaseUrl.FLAGS
   });
 }
 
 async function checkIfExecutingProcess(messageId: string, type: string) {
   try {
-    const res: any = await sendMessage("checkProcess", {
-      checkMessageId: messageId,
-    });
-    console.log("check interval data res for type ", type, messageId, res.data);
-    if (res?.data?.processing) return true;
-    else false;
+    const res: any = await sendMessage("checkProcess", {checkMessageId: messageId})
+    console.log('check interval data res for type ', type, messageId, res.data)
+    if (res?.data?.processing) return true
+    else false
   } catch (error) {
-    console.error("error on checing executing process", type, messageId, error);
-    return false;
+    console.error('error on checing executing process', type, messageId, error)
+    return false
   }
 }
 
@@ -1095,4 +906,4 @@ if (!myCacheServer) {
   );
 } else {
   BaseUrl.NODE_CACHE_URL = myCacheServer;
-}
+} 
