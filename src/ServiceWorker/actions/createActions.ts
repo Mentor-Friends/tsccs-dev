@@ -114,7 +114,7 @@ export const createActions: Actions = {
         return { success: true, data, actions: payload.actions }
     },
     CreateData: async (payload) =>{
-        const data = await CreateData(payload.json, payload.ofConcept, payload.typeConcept)
+        const data = await CreateData(payload.json, payload.ofConcept, payload.typeConcept, payload.actions)
         return { success: true, data, actions: payload.actions}
     }
 }

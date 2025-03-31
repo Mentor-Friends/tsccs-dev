@@ -63,6 +63,7 @@ export class LocalSyncData{
             if(existingConcept.id != 0){
                 contains = true;
             }
+            console.log("this is the concept adding", concept, contains, this.conceptsSyncArray);
             if(!contains){
              this.conceptsSyncArray.push(concept);
             }
@@ -108,10 +109,11 @@ export class LocalSyncData{
                 connectionsArray = transaction.data.connections.slice();
             } else if (Array.isArray(actions?.concepts) && Array.isArray(actions?.connections)) {
                 // filter concepts from conceptsSyncArray and connectionSyncArray and sync only belonging to this tab
-                
+                console.log("this is the concepts and connections array", actions?.concepts, actions?.connections);
                 conceptsArray = actions.concepts.filter(concept => this.conceptsSyncArray.some(con => concept.id == con.id || concept.ghostId == con.ghostId)).slice()
                 connectionsArray = actions.connections.filter(connection => this.connectionSyncArray.some(conn => connection.id == conn.id || connection.ghostId == conn.ghostId)).slice()
 
+                console.log("this is the concepts and connections array", conceptsArray, connectionsArray);
                 // remove the concepts and connections from the array that belongs to the actions/tab
                 this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => !actions.concepts.some(con => concept.id == con.id || concept.ghostId == con.ghostId))
                 this.connectionSyncArray = this.connectionSyncArray.filter(connection => !actions.connections.some(conn => connection.id == conn.id || connection.ghostId == conn.ghostId))

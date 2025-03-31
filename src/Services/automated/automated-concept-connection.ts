@@ -1,10 +1,12 @@
-import { Concept, CreateDefaultConcept, CreateTheConnectionLocal, handleServiceWorkerException, MakeTheInstanceConceptLocal, MakeTheTypeConceptLocal, sendMessage, serviceWorker } from "../../app";
+import { Concept, CreateDefaultConcept, CreateTheConnectionLocal, handleServiceWorkerException, InnerActions, MakeTheInstanceConceptLocal, MakeTheTypeConceptLocal, sendMessage, serviceWorker } from "../../app";
 
-export  async function CreateData(json: any, ofConcept:Concept | null=null , typeConcept: string ="")
+export  async function CreateData(json: any, ofConcept:Concept | null=null , typeConcept: string ="",actions: InnerActions = {concepts: [], connections: []})
 {
     if (serviceWorker) {
         try {
-            const res: any = await sendMessage('CreateData', {json, ofConcept, typeConcept})
+            const res: any = await sendMessage('CreateData', {json, ofConcept, typeConcept, actions})
+            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
             return res.data
         } catch (err) {
             console.error('CreateTheComposition sw error: ', err);
@@ -23,13 +25,14 @@ export  async function CreateData(json: any, ofConcept:Concept | null=null , typ
         if((typeof json[key] != 'string' && typeof json[key] != 'number') ){
             if(ofConcept == null || ofConcept.id == 0){
                // let TypeConcept = await MakeTheTypeConceptLocal(prefixedKey, localSessionId, localUserId, localUserId);
-                let conceptString = await MakeTheInstanceConceptLocal(prefixedKey, "", true, localUserId, localAccessId, localSessionId);
+                let conceptString = await MakeTheInstanceConceptLocal(prefixedKey, "", true, localUserId, localAccessId, localSessionId, undefined, actions);
                 let concept = conceptString as Concept;
                 MainConcept = concept;
                 if(Array.isArray(json[key])){
                     prefixedKey = addArrayPrefix(prefixedKey);
                 }
-                await CreateData(json[key], MainConcept,  prefixedKey );
+                console.log("this is the test 1", concept, json[key], ofConcept, key);
+                await CreateData(json[key], MainConcept,  prefixedKey, actions );
     
             }
             else{
@@ -39,31 +42,34 @@ export  async function CreateData(json: any, ofConcept:Concept | null=null , typ
                     console.log("this is the prefix", prefixedKey);
                 }
                 let withoutSKey = removeArrayPrefix(key);
-                let conceptString = await MakeTheInstanceConceptLocal(prefixedKey, "", true, localUserId, localAccessId, localSessionId  );
+                let conceptString = await MakeTheInstanceConceptLocal(prefixedKey, "", true, localUserId, localAccessId, localSessionId,undefined, actions  );
                 let concept = conceptString as Concept;
                 MainConcept = concept;
 
                 let typeConnectionString = createTypeString(typeConcept, withoutSKey);
 
 
-                let TypeConcept = await MakeTheTypeConceptLocal(typeConnectionString, localSessionId, localUserId, localUserId);
+                let TypeConcept = await MakeTheTypeConceptLocal(typeConnectionString, localSessionId, localUserId, localUserId, actions);
                 console.log("this is the type ", TypeConcept);
-                await CreateTheConnectionLocal(ofConcept.id, concept.id, TypeConcept.id, orderId, TypeConcept.characterValue, localUserId );
+                await CreateTheConnectionLocal(ofConcept.id, concept.id, TypeConcept.id, orderId, TypeConcept.characterValue, localUserId, actions );
                 if(Array.isArray(json[key])){
                     prefixedKey = addArrayPrefix(prefixedKey);
                     console.log("this is the prefix after", prefixedKey);
                 }
-                await CreateData(json[key], concept, prefixedKey );
+                console.log("this is the test 2", concept, json[key], ofConcept, key);
+                await CreateData(json[key], concept, prefixedKey, actions );
             }
         }
         else{
             let typeConnectionString = createTypeString(typeConcept, key);
-            let TypeConcept = await MakeTheTypeConceptLocal(typeConnectionString, localSessionId, localUserId, localUserId);
+            let TypeConcept = await MakeTheTypeConceptLocal(typeConnectionString, localSessionId, localUserId, localUserId, actions);
 
-            let conceptString = await MakeTheInstanceConceptLocal(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
+            let conceptString = await MakeTheInstanceConceptLocal(key, json[key].toString(), false, localUserId, localAccessId, localSessionId, undefined, actions);
             let concept = conceptString as Concept;
+            console.log("this is the test", concept, TypeConcept, ofConcept, key);
+
             if(ofConcept != null){
-                await CreateTheConnectionLocal(ofConcept.id, concept.id, TypeConcept.id, orderId, typeConnectionString, localUserId);
+                await CreateTheConnectionLocal(ofConcept.id, concept.id, TypeConcept.id, orderId, typeConnectionString, localUserId, actions);
             }
         }
 

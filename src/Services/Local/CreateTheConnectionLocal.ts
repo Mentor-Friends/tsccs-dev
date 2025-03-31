@@ -48,6 +48,7 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
                  connection.isTemp = true;
                  connection.typeCharacter = typeString;
                  LocalSyncData.AddConnection(connection);
+                 console.log("this is the adding connection", connection);
                  LocalConnectionData.AddConnection(connection);
                  actions.connections.push(connection)
                  //storeToDatabase("localconnection", connection);
