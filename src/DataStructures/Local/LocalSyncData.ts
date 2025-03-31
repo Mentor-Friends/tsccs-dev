@@ -63,7 +63,6 @@ export class LocalSyncData{
             if(existingConcept.id != 0){
                 contains = true;
             }
-            console.log("this is the concept adding", concept, contains, this.conceptsSyncArray);
             if(!contains){
              this.conceptsSyncArray.push(concept);
             }
