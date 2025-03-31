@@ -13,8 +13,9 @@ export const createFormFieldData = (fieldName: string): FormFieldData => {
     if (!inputElement) {
         console.warn(`Element with NAME "${fieldName}" not found.`);
         return {
+            name: null,
             value: null,
-            fieldType: null,
+            type: null,
             dataType: null,
             pattern : null,
             conceptType: null,
@@ -33,22 +34,25 @@ export const createFormFieldData = (fieldName: string): FormFieldData => {
     const required = inputElement.hasAttribute('required') || inputElement.getAttribute('data-required') === 'true';
     const isUnique = inputElement.hasAttribute('isUnique') && inputElement.getAttribute('isUnique') === 'true';
 
+
     // Proceed to gather data if the element exists
     const data: FormFieldData = {
+        name: inputElement.name,
         value: inputElement.value,
-        fieldType: inputElement.type,
+        type: inputElement.type,
         dataType: inputElement.getAttribute('data-type'),
         pattern: inputElement.getAttribute('data-pattern'),
         conceptType: inputElement.getAttribute('concept-type'),
-        maxLength: inputElement.getAttribute('data-maxlength') ? parseInt(inputElement.getAttribute('data-maxlength')!) : null,
-        minLength: inputElement.getAttribute('data-minlength') ? parseInt(inputElement.getAttribute('data-minlength')!) : null,
-        minValue: inputElement.getAttribute('data-min') ? parseInt(inputElement.getAttribute('data-min')!) : null,
-        maxValue: inputElement.getAttribute('data-max') ? parseInt(inputElement.getAttribute('data-max')!) : null,
+        maxLength: inputElement.getAttribute('maxlength') ? parseInt(inputElement.getAttribute('maxlength')!) : null,
+        minLength: inputElement.getAttribute('minlength') ? parseInt(inputElement.getAttribute('minlength')!) : null,
+        minValue: inputElement.getAttribute('min') ? parseInt(inputElement.getAttribute('min')!) : null,
+        maxValue: inputElement.getAttribute('max') ? parseInt(inputElement.getAttribute('max')!) : null,
         accept: inputElement.getAttribute('accept') || null,
         file: inputElement.type === 'file' ? inputElement.files?.[0] || null : null,
         required: required,
         isUnique:isUnique
     };
+
     return data;
 };
 
