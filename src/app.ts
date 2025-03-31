@@ -242,7 +242,7 @@ async function init(
       return
     }
 
-
+    await initializeCacheServer()
     listenPostMessagaes()
     listenBroadCastMessages()
 
@@ -863,47 +863,49 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
   }
 }
 
-const myCacheServer = sessionStorage.getItem("myCacheServer")
+async function initializeCacheServer() {
+  const myCacheServer = sessionStorage.getItem("myCacheServer")
 
-async function getCacheServer(data?: any) {
-  try {
-      const response = await fetch(BaseUrl.getMyCacheServer(), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          "my-coords": data ? data.coords : "location denied",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to sync data to the server.");
-      }
-
-      const cacheRes = await response.json();
-
-      if (cacheRes.success) {
-        sessionStorage.setItem("myCacheServer", cacheRes.nearestServer);
-        BaseUrl.NODE_CACHE_URL = cacheRes.nearestServer;
-      }
-
-  } catch (error: any) {
-    console.error("error getting cache server", error.message);
-  }
-}
-
-if (!myCacheServer) {
-  navigator.geolocation.getCurrentPosition(
-    async (data) => {
-      await getCacheServer(data);
-    },
-    async (error) => {
-      if (error.code === error.PERMISSION_DENIED) {
-        await getCacheServer();
-      }
+  async function getCacheServer(data?: any) {
+    try {
+        const response = await fetch(BaseUrl.getMyCacheServer(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "my-coords": data ? data.coords : "location denied",
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to sync data to the server.");
+        }
+  
+        const cacheRes = await response.json();
+  
+        if (cacheRes.success) {
+          sessionStorage.setItem("myCacheServer", cacheRes.nearestServer);
+          BaseUrl.NODE_CACHE_URL = cacheRes.nearestServer;
+        }
+  
+    } catch (error: any) {
+      console.error("error getting cache server", error.message);
     }
-  );
-} else {
-  BaseUrl.NODE_CACHE_URL = myCacheServer;
-} 
+  }
+  
+  if (!myCacheServer) {
+    navigator.geolocation.getCurrentPosition(
+      async (data) => {
+        await getCacheServer(data);
+      },
+      async (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          await getCacheServer();
+        }
+      }
+    );
+  } else {
+    BaseUrl.NODE_CACHE_URL = myCacheServer;
+  } 
+}
