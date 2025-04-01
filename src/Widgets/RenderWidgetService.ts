@@ -1,4 +1,5 @@
-import { BuilderStatefulWidget, BuildWidgetFromId, Concept, GetRelation, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
+import { BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
+import { ckeditorCSS } from "../Constants/ckeditorCSS";
 import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
@@ -90,12 +91,79 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       console.log("this is the tree newWidget", widgetTree);
       // add newWidget css to the page
       const style = document.createElement("style");
-      style.innerHTML = widgetTree.css + newWidget.css;
+      style.innerHTML = widgetTree.css + newWidget.css + ckeditorCSS + `/* DOCUMENTATION */
+        #widget-details {
+          position: absolute;
+          right: 0px;
+          top: 0px;
+        }
+        #widget-details button {
+          background: #fff;
+          border: 1px solid #ccc;
+          border-radius: 0 0 0 0.25rem;
+          height: auto;
+          width: auto;
+        }
+        #widget-details button:hover, 
+        #widget-details button:focus {
+          opacity: 0.75;
+        }
+        #widget-details button span {
+          pointer-events: none;
+          font-size: 1rem;
+        }
+      `;
       appElement.appendChild(style);
       // add newWidget js to the page
       const script = document.createElement("script");
       script.innerHTML = widgetTree.js;
       appElement.appendChild(script);
+
+      const widgetDetailOptionsEl = document.createElement("div");
+      widgetDetailOptionsEl.id = "widget-details";
+      widgetDetailOptionsEl.innerHTML = "";
+      widgetDetailOptionsEl.innerHTML = `
+        <button id="widget-documentation-btn" class="d-flex align-items-center gap-1" title="Documentation">
+          <span class="material-symbols-outlined"> visibility </span>
+        </button>
+      `;
+      appElement.appendChild(widgetDetailOptionsEl);
+
+      const dialogEl = document.createElement("dialog");
+      dialogEl.id = "widget-documentation-preview-modal";
+      dialogEl.className = "col-md-8";
+      dialogEl.innerHTML = "";
+      dialogEl.innerHTML = `
+        <div class="py-2 px-3 bg-secondary text-light fs-4 d-flex justify-content-between align-items-center">
+          <span>Documentation</span>
+          <span class="material-symbols-outlined document-preview-close-button" style="cursor: pointer;">close</span>
+        </div>
+
+        <div id="documentation-preview" class="ck-content"></div>
+
+        <div class="text-end mt-3">
+          <button class="btn btn-secondary document-preview-close-button">Close</button>
+        </div>
+      `;
+      appElement.appendChild(dialogEl);
+
+      const widgetPreviewButton = <HTMLButtonElement>(
+        document.getElementById("widget-documentation-btn")
+      );
+      widgetPreviewButton.addEventListener("click", () => {
+        openDocumentationPreviewModal(
+          widgetTree?.origin || widgetTree?.widgetId
+        );
+      });
+
+      const prieviewCloseButtonList = appElement.querySelectorAll(
+        ".document-preview-close-button"
+      );
+      prieviewCloseButtonList?.forEach((closeButton: any) => {
+        closeButton.addEventListener("click", () => {
+          closeModal("widget-documentation-preview-modal");
+        });
+      });
 
       // remove class wb-initial-empty from all elements that have it from fspagePreview
       const wbInitialEmpty = appElement.querySelectorAll(".wb-initial-empty");
@@ -573,3 +641,61 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
       }
     }
   
+/**
+ * Opens documentation modal
+ * @param widgetId 
+ */
+export async function openDocumentationPreviewModal(widgetId: number) {
+  const documentationQuery = new FreeschemaQuery();
+  documentationQuery.typeConnection = "the_widget_documentation";
+  documentationQuery.name = "documentation";
+  documentationQuery.selectors = ["the_documentation_text"];
+
+  const allWidgetCodes = new FreeschemaQuery();
+  allWidgetCodes.conceptIds = [widgetId];
+  allWidgetCodes.freeschemaQueries = [documentationQuery];
+  allWidgetCodes.inpage = 100;
+  allWidgetCodes.outputFormat = DATAID;
+
+  await SchemaQueryListener(allWidgetCodes, "").subscribe(async (data: any) => {
+    console.log("widget documentation preview data ->", data);
+
+    const widgetDocumentData =
+      data?.[0]?.data?.the_widget?.the_widget_documentation?.data
+        ?.the_documentation?.the_documentation_text?.data?.the_text || "";
+
+    await openModal("widget-documentation-preview-modal");
+    showWidgetDocumentation(widgetDocumentData);
+  });
+  
+}
+
+export function showWidgetDocumentation(widgetDocumentData: string) {
+  const previewContainer = <HTMLDivElement>(
+    document.getElementById("documentation-preview")
+  );
+
+  previewContainer.innerHTML = ''
+  previewContainer.innerHTML = widgetDocumentData
+
+}
+
+/**
+ * Opens modal
+ * @param modalId 
+ */
+export async function openModal(modalId: string) {
+  const modal: any = document.getElementById(modalId);
+  modal.showModal();
+}
+
+/**
+ * Closes modal
+ * @param modalId 
+ */
+export async function closeModal(modalId: string) {
+  const modal: any = document.getElementById(modalId);
+  const modalForm = modal?.querySelector("form");
+  modalForm?.reset();
+  modal?.close();
+}

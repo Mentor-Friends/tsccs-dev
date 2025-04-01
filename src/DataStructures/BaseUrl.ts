@@ -4,6 +4,8 @@ import { CompositionBinaryTree } from './Composition/CompositionBinaryTree';
 export class BaseUrl{
     static BASE_URL: string  = "https://localhost:7053/";
 
+    static NODE_CACHE_URL: string = "";
+
     static AI_URL: string ="https://ai.freeschema.com";
 
     static MQTT_URL: string = '192.168.1.249';
@@ -37,19 +39,35 @@ export class BaseUrl{
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';
 
     static GetConceptUrl(){
-        return this.BASE_URL + '/api/getConcept';
+        if (this.NODE_CACHE_URL.trim() === "") {
+            return this.BASE_URL + '/api/getConcept';
+        } else {
+            return this.NODE_CACHE_URL + '/api/getConcept';
+        }
     }
 
     static GetConnectionUrl(){
-        return this.BASE_URL + '/api/get-connection-by-id';
+        if (this.NODE_CACHE_URL.trim() === "") {
+            return this.BASE_URL + '/api/get-connection-by-id';
+        } else {
+            return this.NODE_CACHE_URL + '/api/get-connection-by-id';
+        }
     }
 
     static GetConceptBulkUrl(){
-        return this.BASE_URL + '/api/get_concept_bulk';
+        if (this.NODE_CACHE_URL.trim() === "") {
+            return this.BASE_URL + '/api/get_concept_bulk';
+        } else {
+            return this.NODE_CACHE_URL + '/api/get_concept_bulk';
+        }
     }
 
     static GetConnectionBulkUrl(){
-        return this.BASE_URL + '/api/get_connection_bulk';
+        if (this.NODE_CACHE_URL.trim() === "") {
+            return this.BASE_URL + '/api/get_connection_bulk';
+        } else {
+            return this.NODE_CACHE_URL + '/api/get_connection_bulk';
+        }
     }
 
     static  GetAllConceptsOfUserUrl(){
@@ -100,6 +118,10 @@ export class BaseUrl{
     static GetAllAiData(){
         return this.BASE_URL + '/api/get-preloaded-concepts';
        // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
+    }
+
+    static getMyCacheServer() {
+        return this.NODE_URL + "/api/v1/cache-server"
     }
 
     static PostPrefetchConceptConnections(){
