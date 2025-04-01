@@ -56,12 +56,13 @@ export  async function CreateData(json: any, ofConcept:Concept | null=null , typ
             }
         }
         else{
+
             let typeConnectionString = createTypeString(typeConcept, key);
             let TypeConcept = await MakeTheTypeConceptLocal(typeConnectionString, localSessionId, localUserId, localUserId, actions);
 
             let conceptString = await MakeTheInstanceConceptLocal(key, json[key].toString(), false, localUserId, localAccessId, localSessionId, undefined, actions);
             let concept = conceptString as Concept;
-
+            console.log("this is the type concept in down", TypeConcept,concept);
             if(ofConcept != null){
                 await CreateTheConnectionLocal(ofConcept.id, concept.id, TypeConcept.id, orderId, typeConnectionString, localUserId, actions);
             }
@@ -87,8 +88,12 @@ export function removeArrayPrefix(key:string){
     return key.replace(/_s$/, '');
 }
 
+const isNumeric = (string:any) => /^[+-]?\d+(\.\d+)?$/.test(string)
 
 
-export function createTypeString(typeConceptString:string, key:string){
+export function createTypeString(typeConceptString:string, key:any){
+    if(isNumeric(key)){
+        return typeConceptString + "_";
+    }
     return typeConceptString + "_" +  removePrefix(key);
 }
