@@ -864,7 +864,8 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
 }
 
 async function initializeCacheServer() {
-  const myCacheServer = sessionStorage.getItem("myCacheServer")
+  let myCacheServer = sessionStorage.getItem("cacheServers") as string;
+  myCacheServer = JSON.parse(myCacheServer)
 
   async function getCacheServer(data?: any) {
     try {
@@ -885,8 +886,9 @@ async function initializeCacheServer() {
         const cacheRes = await response.json();
   
         if (cacheRes.success) {
-          sessionStorage.setItem("myCacheServer", cacheRes.nearestServer);
-          BaseUrl.NODE_CACHE_URL = cacheRes.nearestServer;
+          sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
+          console.log("these are the cache servers", cacheRes.servers)
+          BaseUrl.NODE_CACHE_URL = cacheRes.servers[0];
         }
   
     } catch (error: any) {
@@ -906,6 +908,6 @@ async function initializeCacheServer() {
       }
     );
   } else {
-    BaseUrl.NODE_CACHE_URL = myCacheServer;
+    BaseUrl.NODE_CACHE_URL = myCacheServer[0];
   } 
 }
