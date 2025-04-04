@@ -331,4 +331,8 @@ export class BaseUrl{
     static getConnectionsByTypes(){
         return this.BASE_URL + '/api/get-connection-by-types';
     }
+
+    static CreatePrototypeUrl(){
+        return this.BASE_URL + '/api/create-prototype';
+    }
 }

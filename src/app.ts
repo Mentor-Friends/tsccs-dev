@@ -145,6 +145,9 @@ export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 export {CreateData} from './Services/automated/automated-concept-connection';
+
+export {Prototype} from './DataStructures/Prototype/Prototype';
+export {createPrototypeLocal} from './prototype/prototype.service';
 type listeners = {
   listenerId: string | number
   callback: any,

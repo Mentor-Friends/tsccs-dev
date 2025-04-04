@@ -68,7 +68,8 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
         const bulkWidget = await BuildWidgetFromId(widgetId);
-        await materializeWidget(widgetId, bulkWidget, attachNode, props);
+        let widgetObject = await materializeWidget(widgetId, bulkWidget, attachNode, props);
+        return widgetObject;
       } catch (error) {
         console.error(`Error Caught Rendering Widget: ${error}`);
       }
@@ -175,6 +176,9 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         .forEach((element) => {
           element.removeAttribute("onclick");
         }); // remove the onclick event from the widget container
+
+      return newWidget;
+
     }
 
       export async function getWidgetFromId(widgetId: number,
