@@ -1,6 +1,6 @@
 //import { BuilderStatefulWidget } from "../default/StatefulWidget"
 
-import { TMainLibrary } from "../DataStructures/TypeLibrary";
+import { TAssistant, TMainLibrary } from "../DataStructures/TypeLibrary";
 import { BuilderStatefulWidget } from "./BuilderStatefulWidget";
 
 
@@ -11,6 +11,7 @@ export class WidgetTree{
     css: string = "";
     js: string = "";
     library: TMainLibrary = { css:[], js: [] };
+    assistant: TAssistant = {id: "", input: "", type: ""};
     timestamp:string ="";
     widgetId: number = 0;
     type: string = "";
