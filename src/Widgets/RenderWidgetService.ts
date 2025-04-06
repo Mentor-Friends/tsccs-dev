@@ -90,30 +90,43 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         props
       );
       console.log("this is the tree newWidget", widgetTree);
+      const generateRandomString = () => 
+  Array.from({ length: 32 }, () => 'abcdef'[Math.floor(Math.random() * 6)]).join('')
+      const randomStr = generateRandomString()
+      attachNode.classList.add(`${randomStr}`);
+      attachNode.style.position = "relative";
       // add newWidget css to the page
       const style = document.createElement("style");
-      style.innerHTML = widgetTree.css + newWidget.css + ckeditorCSS + `/* DOCUMENTATION */
-        #widget-details {
-          position: absolute;
-          right: 0px;
-          top: 0px;
-        }
-        #widget-details button {
-          background: #fff;
-          border: 1px solid #ccc;
-          border-radius: 0 0 0 0.25rem;
-          height: auto;
-          width: auto;
-        }
-        #widget-details button:hover, 
-        #widget-details button:focus {
-          opacity: 0.75;
-        }
-        #widget-details button span {
-          pointer-events: none;
-          font-size: 1rem;
-        }
-      `;
+      style.innerHTML = `
+  .${randomStr} {
+    ${widgetTree.css + newWidget.css + ckeditorCSS} 
+    /* DOCUMENTATION */
+  }
+  
+  #widget-details {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+
+  #widget-details button {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0 0 0 0.25rem;
+    height: auto;
+    width: auto;
+  }
+
+  #widget-details button:hover, 
+  #widget-details button:focus {
+    opacity: 0.75;
+  }
+
+  #widget-details button span {
+    pointer-events: none;
+    font-size: 1rem;
+  }
+`;
       appElement.appendChild(style);
       // add newWidget js to the page
       const script = document.createElement("script");

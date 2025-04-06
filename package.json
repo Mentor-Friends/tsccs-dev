@@ -1,7 +1,11 @@
 {
   "name": "mftsccs-browser",
+<<<<<<< HEAD
 
   "version": "2.1.91-beta",
+=======
+  "version": "2.1.92-beta",
+>>>>>>> b5e2ad9c1a124c00014d5128f975a5a5db61af98
   "environment": "production",
   "description": "Full Pack of concept and connection system",
   "main": "dist/main.bundle.js",
