@@ -58,7 +58,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         const bulkWidget = await BuildWidgetFromIdForLatest(widgetId);
         let latestWidgetId = bulkWidget.mainId;
         let bulkWidgetData = bulkWidget.data;
-        await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
+        return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
       } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);
         attachNode.textContent = `Error: ${error.message}`
