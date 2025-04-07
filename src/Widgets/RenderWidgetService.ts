@@ -347,11 +347,11 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         widgetNode.library = {css: widgetLibraryCSS || [], js: widgetLibraryJS || []}
 
         // asssistant
-        const assistantData = widgetInfo?.the_widget_assistant?.[0]?.data?.the_assistant
+        const assistantData = widgetInfo?.the_widget_assistant?.data?.the_assistant
         widgetNode.assistant = {
-          id: assistantData?.the_assistant_id?.[0]?.data?.the_id,
-          input: assistantData?.the_assistant_input?.[0]?.data?.the_input,
-          type: assistantData?.the_assistant_type?.[0]?.data?.the_type,
+          id: assistantData?.the_assistant_id?.data?.the_id,
+          input: assistantData?.the_assistant_input?.data?.the_input,
+          type: assistantData?.the_assistant_type?.data?.the_type,
         }
 
         // if there are children present in the widget then convert the children to widget and put it inside of the tree.
