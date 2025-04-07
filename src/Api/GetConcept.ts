@@ -42,6 +42,7 @@ export async function GetConcept(id: number){
             formdata.append("id", id.toString());
             const response = await fetch(BaseUrl.GetConceptUrl(),{
                 method: 'POST',
+                headers: header,
                 body: formdata
             });
             if(response.ok){
