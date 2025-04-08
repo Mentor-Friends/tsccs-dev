@@ -4,7 +4,7 @@ import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
-export async function GetConceptBulk(conceptIds: number[]){
+export async function GetConceptBulk(conceptIds: number[]) {
     let result:Concept[] = [];
     try{
         var bulkConceptFetch = [];
@@ -59,9 +59,7 @@ export async function GetConceptBulk(conceptIds: number[]){
 export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
     const conceptList: Concept[] = []
     if (bulkConceptFetch.length > 0) {
-      const myHeaders = {
-        'Content-Type': 'application/json',
-      }
+      const myHeaders = GetRequestHeader()
       try {
         const response = await fetch(BaseUrl.GetConceptBulkUrl(), {
           method: 'POST',

@@ -95,12 +95,12 @@ function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
 
-function init(url:string = "", aiurl:string="", accessToken:string = "", jwtToken:string = ""){
+function init(url:string = "", aiurl:string="", accessToken:string = "", jwtSecret:string = ""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    console.log("This ist he base url", BaseUrl.BASE_URL);
    TokenStorage.BearerAccessToken = accessToken;
-   TokenStorage.JwtToken = jwtToken;
+   TokenStorage.JwtSecret = jwtSecret;
    InitializeSystem().then(()=>{
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{
