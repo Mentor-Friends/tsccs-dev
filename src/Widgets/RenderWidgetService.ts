@@ -89,7 +89,6 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         undefined,
         props
       );
-      console.log("this is the tree newWidget", widgetTree);
       const generateRandomString = () => 
   Array.from({ length: 32 }, () => 'abcdef'[Math.floor(Math.random() * 6)]).join('')
       const randomStr = generateRandomString()
@@ -97,12 +96,13 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       attachNode.style.position = "relative";
       // add newWidget css to the page
       const style = document.createElement("style");
+      style.id = "mystyleid";
       style.innerHTML = `
   .${randomStr} {
     ${widgetTree.css + newWidget.css + ckeditorCSS} 
     /* DOCUMENTATION */
   }
-  
+
   #widget-details {
     position: absolute;
     right: 0px;
@@ -127,7 +127,8 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
     font-size: 1rem;
   }
 `;
-      appElement.appendChild(style);
+      //attachNode.appendChild(style);
+      document.head.appendChild(style);
       // add newWidget js to the page
       const script = document.createElement("script");
       script.innerHTML = widgetTree.js;
@@ -415,6 +416,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       newWidget.addEventFunction = tree.after_render;
       newWidget.mountChildWidgetsFunction = tree.mount_child;
       newWidget.widgetState = {...state};
+      //newWidget.css = `#${tree.id} { ${tree.css} }`;
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
       parentElement.innerHTML = "";
