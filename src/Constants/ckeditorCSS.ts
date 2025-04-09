@@ -168,4 +168,80 @@ export const ckeditorCSS = `
   }
 }
 */
+
+/* CUSTOM DOCUMENTATION CSS */
+
+#documentation-preview {
+  border: 1px solid #ccc;
+  padding: 1rem;
+}
+
+#documentation-preview h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.pre-wrapper {
+  background: #f2f5f9;
+  border: 1px solid #cecece;
+  display: block;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pre-wrapper pre {
+  margin: 0;
+  color: #e87aa2;
+}
+
+.widget-doc-section pre {
+  background-color: transparent;
+}
+
+.widget-doc-section p {
+  margin: 0;
+}
+
+.widget-doc-section code {
+  color: #e87aa2;
+  font-size: 0.875rem;
+}
+
+.mv-3 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pv-3 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.documentation-creator {
+  text-align: right;
+  color: #666;
+  margin-top: 0.5rem;
+  padding-bottom: 1rem;
+}
+
+.documentation-creator span {
+  font-style: italic;
+}
+
+.documentation-attachments {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.documentation-attachments img {
+  width: 25%;
+  height: auto;
+  border: 1px solid #ccc;
+  padding: 0.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 `;
