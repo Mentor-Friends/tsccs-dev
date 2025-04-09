@@ -667,23 +667,176 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
  * @param widgetId 
  */
 export async function openDocumentationPreviewModal(widgetId: number) {
+  const documentationQueryText = new FreeschemaQuery();
+  documentationQueryText.typeConnection = "the_widget_documentation";
+  documentationQueryText.name = "documentationText";
+  documentationQueryText.selectors = ["the_documentation_text"];
+
   const documentationQuery = new FreeschemaQuery();
-  documentationQuery.typeConnection = "the_widget_documentation";
-  documentationQuery.name = "documentation";
-  documentationQuery.selectors = ["the_documentation_text"];
+  documentationQuery.typeConnection = "the_widget_s_documentation";
+  documentationQuery.name = "documentationBlank";
+  documentationQuery.selectors = [
+    "the_documentation_text",
+    "the_documentation_content",
+    "the_documentation_language",
+    "the_documentation_doc_title",
+    "the_documentation_folder",
+    "the_documentation_creator_email",
+    "the_documentation_created_by",
+    "the_documentation_content",
+    "the_documentation_type",
+
+    "the_documentation_s_doc_url",
+    "the_documentation_s_image_url",
+
+    "the_documentation_auth_type",
+    "the_documentation_bearer_token",
+    "the_documentation_method",
+    "the_documentation_method_url",
+    "the_documentation_username",
+    "the_documentation_password",
+    "the_documentation_s_json_list",
+
+    "the_documentation_code_editor",
+    "the_documentation_return",
+  ];
+
+  const documentationJSONList = new FreeschemaQuery();
+  documentationJSONList.typeConnection = "the_documentation_s_json_list";
+  documentationJSONList.name = "documentationJSON";
+  documentationJSONList.selectors = [
+    "the_json_list_key",
+    "the_json_list_value",
+  ];
+
+  documentationQuery.freeschemaQueries = [documentationJSONList];
 
   const allWidgetCodes = new FreeschemaQuery();
   allWidgetCodes.conceptIds = [widgetId];
-  allWidgetCodes.freeschemaQueries = [documentationQuery];
+  allWidgetCodes.freeschemaQueries = [
+    documentationQueryText,
+    documentationQuery,
+  ];
   allWidgetCodes.inpage = 100;
   allWidgetCodes.outputFormat = DATAID;
 
   await SchemaQueryListener(allWidgetCodes, "").subscribe(async (data: any) => {
     console.log("widget documentation preview data ->", data);
 
-    const widgetDocumentData =
+    let widgetDocumentData: any;
+
+    const textDocumentationData =
       data?.[0]?.data?.the_widget?.the_widget_documentation?.data
         ?.the_documentation?.the_documentation_text?.data?.the_text || "";
+    if (textDocumentationData) {
+      widgetDocumentData = textDocumentationData;
+    }
+
+    const widgetDoucumentationContentData =
+      data?.[0]?.data?.the_widget?.the_widget_s_documentation;
+
+    if (widgetDoucumentationContentData?.length) {
+      const documentationDataList = widgetDoucumentationContentData?.map(
+        (docItem: any) => {
+          const docData = docItem?.data?.the_documentation;
+          const docType = docData?.the_documentation_type?.data?.the_type;
+          const docContent =
+            docData?.the_documentation_content?.data?.the_content;
+          const docCreatorEmail =
+            docData?.the_documentation_creator_email?.data?.the_creator_email;
+          const docTitle =
+            docData?.the_documentation_doc_title?.data?.the_doc_title;
+
+          // api type
+          const docMethod = docData?.the_documentation_method?.data?.the_method;
+          const docMethodURL =
+            docData?.the_documentation_method_url?.data?.the_method_url;
+          const docBearerToken =
+            docData?.the_documentation_bearer_token?.data?.the_bearer_token;
+          const docUsername =
+            docData?.the_documentation_username?.data?.the_username;
+          const docPassword =
+            docData?.the_documentation_password?.data?.the_password;
+          const docAuthType =
+            docData?.the_documentation_auth_type?.data?.the_auth_type;
+          const docJsonList = docData?.the_documentation_s_json_list;
+
+          // function type
+          const docLanguage =
+            docData?.the_documentation_language?.data?.the_language;
+          const docReturn = docData?.the_documentation_return?.data?.the_return;
+          const docCodeEditor =
+            docData?.the_documentation_code_editor?.data?.the_code_editor;
+
+          // image and links type
+          const docLinkURL = docData?.the_documentation_s_doc_url;
+          const docImageURL = docData?.the_documentation_s_image_url;
+
+          let finalDocumentationData: any = {
+            type: docType,
+            content: docContent,
+            creatorEmail: docCreatorEmail,
+            title: docTitle,
+          };
+
+          if (docType === "blank") {
+            finalDocumentationData = {
+              ...finalDocumentationData,
+            };
+          } else if (docType === "api") {
+            const jsonList: any = [];
+            if (docJsonList?.length) {
+              docJsonList?.forEach((jsonItem: any) => {
+                jsonList.push({
+                  key: jsonItem?.data?.the_json_list?.the_json_list_key?.data
+                    ?.the_key,
+                  value:
+                    jsonItem?.data?.the_json_list?.the_json_list_value?.data
+                      ?.the_value,
+                });
+              });
+            }
+            finalDocumentationData = {
+              ...finalDocumentationData,
+              method: docMethod,
+              methodURL: docMethodURL,
+              authType: docAuthType,
+              username: docUsername,
+              password: docPassword,
+              bearerToken: docBearerToken,
+              json: jsonList,
+            };
+          } else if (docType === "function") {
+            finalDocumentationData = {
+              ...finalDocumentationData,
+              language: docLanguage,
+              return: docReturn,
+              codeEditor: docCodeEditor,
+            };
+          } else if (docType === "imgAndLink") {
+            const imageURLs: string[] = [];
+            const linkURLs: string[] = [];
+            if (docImageURL?.length) {
+              docImageURL?.forEach((imgItem: any) => {
+                imageURLs.push(imgItem?.data?.the_image_url);
+              });
+            }
+            if (docLinkURL?.length) {
+              docLinkURL?.forEach((linkItem: any) => {
+                linkURLs.push(linkItem.data?.the_doc_url);
+              });
+            }
+            finalDocumentationData = {
+              ...finalDocumentationData,
+              imageList: imageURLs,
+              linkList: linkURLs,
+            };
+          }
+          return finalDocumentationData;
+        }
+      );
+      widgetDocumentData = documentationDataList;
+    }
 
     await openModal("widget-documentation-preview-modal");
     showWidgetDocumentation(widgetDocumentData);
@@ -691,13 +844,146 @@ export async function openDocumentationPreviewModal(widgetId: number) {
   
 }
 
-export function showWidgetDocumentation(widgetDocumentData: string) {
+export function showWidgetDocumentation(widgetDocumentData: any) {
   const previewContainer = <HTMLDivElement>(
     document.getElementById("documentation-preview")
   );
 
   previewContainer.innerHTML = ''
-  previewContainer.innerHTML = widgetDocumentData
+
+  if (widgetDocumentData.length && typeof widgetDocumentData !== "string") {
+
+    widgetDocumentData?.forEach((widgetDoc: any) => {
+      const contentTitleEl = <HTMLHeadingElement>document.createElement("h3");
+      let widgetDocType = "";
+      switch (widgetDoc?.type) {
+        case "api":
+          widgetDocType = "API";
+          break;
+        case "function":
+          widgetDocType = "Functions and Classes";
+          break;
+        case "imgAndLink":
+          widgetDocType = "Images and Links";
+          break;
+        default:
+          widgetDocType = "";
+      }
+
+      contentTitleEl.innerHTML = `
+        ${widgetDoc?.title} ${widgetDocType ? "(" + widgetDocType + ")" : ""}
+      `;
+      previewContainer?.appendChild(contentTitleEl);
+
+      const contentEl = <HTMLDivElement>document.createElement("div");
+      contentEl.classList.add("widget-doc-content");
+      if (widgetDoc?.content) {
+        contentEl.innerHTML = widgetDoc.content
+        previewContainer?.appendChild(contentEl);
+      }
+
+      const extraDocElement = document.createElement("div");
+      extraDocElement.classList.add("widget-doc-section");
+      if (widgetDoc.type === "blank") {
+        extraDocElement.innerHTML = `
+          <p class="documentation-creator">- added by: <span>${widgetDoc?.creatorEmail}</span></p>
+        `;
+      } else if (widgetDoc.type === "api") {
+        let authTypeData = "";
+        if (widgetDoc.authType === "basicAuth") {
+          authTypeData = `
+            <p>username: <code>${widgetDoc?.username}</code></p>
+            <p>password: <code>${widgetDoc?.password}</code></p>
+          `;
+        } else if (widgetDoc.authType === "bearerToken") {
+          authTypeData = `
+          <h6>Token: <code>${widgetDoc?.bearerToken}</code></h6>
+          `;
+        }
+        const docJSONList = widgetDoc.json
+          .map((jsonItem: any) => {
+            return `${jsonItem?.key}: ${jsonItem?.value}`;
+          })
+          .join(", ");
+
+        extraDocElement.innerHTML = `
+          <div class="pv-3">
+            <h6>Method Type: <code>${widgetDoc?.method.toUpperCase()}</code></h6>
+            <h6>Endpoint: <code>${widgetDoc?.methodURL}</code></h6>
+          </div>
+          <div class="pv-3">
+            <h6>Auth Type: <code>${widgetDoc?.authType.toUpperCase()}</code></h6>
+            ${authTypeData}
+          </div>
+          <div class="pv-3">
+            <h6>JSON</h6>
+            <code class="pre-wrapper">
+<pre>{
+  ${docJSONList}
+}
+</pre>
+            </code>
+          </div>
+          <p class="documentation-creator">- added by: <span>${widgetDoc?.creatorEmail}</span></p>
+        `;
+      } else if (widgetDoc.type === "function") {
+        extraDocElement.innerHTML = `
+          <div class="mv-3">
+            <h6>Parameter</h6>
+            <p>Language: ${widgetDoc?.language}</p>
+            <code class="pre-wrapper"><pre>${widgetDoc?.codeEditor}</pre></code>
+            <h6>Returns</h6>
+            <code class="pre-wrapper"><pre>${widgetDoc?.return}</pre></code>
+          </div>
+          <p class="documentation-creator">- added by: <span>${widgetDoc?.creatorEmail}</span></p>
+        `;
+      } else if (widgetDoc.type === "imgAndLink") {
+        const webURLs = widgetDoc?.linkList
+          ?.map((linkItem: string) => {
+            return `
+              <p>${linkItem}</p>
+            `;
+          })
+          .join("");
+        const imageURLs = widgetDoc?.imageList
+          ?.map((imgItem: string) => {
+            return `
+            <img src="${imgItem}">
+          `;
+          })
+          .join("");
+
+        const webURLsEl = webURLs?.length
+          ? `
+            <div class="mv-3">
+            <h6>Web links</h6>
+            ${webURLs}
+            </div>
+          `
+          : "";
+        const imageURLsEl = imageURLs?.length
+          ? `
+            <h6>Attachments</h6>
+            <div class="documentation-attachments">
+              ${imageURLs}
+            </div>
+          `
+          : "";
+        extraDocElement.innerHTML = `
+          <div class="mv-3">
+            ${webURLsEl}
+            ${imageURLsEl}
+          </div>
+          <p class="documentation-creator">- added by: <span>${widgetDoc?.creatorEmail}</span></p>
+        `;
+      }
+      previewContainer?.appendChild(extraDocElement);
+    });
+
+
+  } else {
+    previewContainer.innerHTML = widgetDocumentData
+  }
 
 }
 
