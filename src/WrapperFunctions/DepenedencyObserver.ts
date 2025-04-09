@@ -68,6 +68,7 @@ export class DependencyObserver{
                          }
                     }
                     that.isUpdating = false;
+                    console.log("this is the type event", id);
                     await that.bind();
                     that.notify();
 
@@ -75,7 +76,7 @@ export class DependencyObserver{
                 }, 200);
             }
             else{
-                console.log("rejected this");
+                console.log("rejected this", id);
             }
 
         });
@@ -123,13 +124,14 @@ export class DependencyObserver{
                     }
                     that.isUpdating = false;
                     await that.bind();
+                    console.log("this is the id event", id);
                     that.notify();
 
 
                 }, 200);
             }
             else{
-                console.log("rejected this");
+                console.log("rejected this", id);
             }
 
         });

@@ -436,6 +436,7 @@ const broadcastActions: any = {
   },
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
+      console.log("this is dispatching the event for test", payload);
       let event = new CustomEvent(payload.id || '', payload.data);
       dispatchEvent(event);
     }
@@ -633,6 +634,7 @@ async function initConceptConnection() {
 export function dispatchIdEvent(id: number|string, data:any = {}) {
   if (serviceWorker || typeof window  != "undefined") {
     // let event = new Event(`${id}`);
+    console.log("this is the dispatch event in the undefined", id, data);
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
   } 

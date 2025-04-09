@@ -20,11 +20,6 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         if(!this.isDataLoaded){
              this.isDataLoaded = true;
             this.query.outputFormat = ALLID;
-            if(this.query.type != ""){
-                let concept = await MakeTheTypeConceptApi(this.query.type, 999);
-                this.listenToEventType(concept.id);
-
-            }
             let result:any = await FreeschemaQueryApi(this.query, "");
             this.conceptIds = result.conceptIds;
             this.internalConnections = result.internalConnections ?? [];
