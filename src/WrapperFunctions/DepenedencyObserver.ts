@@ -14,6 +14,7 @@ export class DependencyObserver{
     internalConnections: number[] = [];
     reverse: number[] = [];
     linkers: number[] = [];
+    newIds:number[] = [];
     dependency: number[] = [];
     isDataLoaded: boolean = false; // checks to see if the data has been loaded to the widget/ function
     isUpdating: boolean = false; // this flag helps us check if the state is being updated while the connection updates.
@@ -27,7 +28,9 @@ export class DependencyObserver{
      * @param id this is the type id which needs to be tracked
      */
     listenToEventType(id: number): void {
+        console.log("listening to the id event type", id);
         window.addEventListener(`${id}`, (event) => {
+            console.log("this is the event for type", id, event);
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
@@ -68,7 +71,7 @@ export class DependencyObserver{
                          }
                     }
                     that.isUpdating = false;
-                    console.log("this is the type event", id);
+                    console.log("this is the type event", id, event);
                     await that.bind();
                     that.notify();
 
@@ -116,7 +119,11 @@ export class DependencyObserver{
                                     }
                                     if(!that.compositionIds.includes(conn.ofTheConceptId)){
                                         that.compositionIds.push(conn.ofTheConceptId);
+                                        if(!that.newIds.includes(conn.ofTheConceptId)){
+                                            that.newIds.push(conn.ofTheConceptId);
+                                        }
                                     }
+
 
                                 });
                             
@@ -124,7 +131,6 @@ export class DependencyObserver{
                     }
                     that.isUpdating = false;
                     await that.bind();
-                    console.log("this is the id event", id);
                     that.notify();
 
 

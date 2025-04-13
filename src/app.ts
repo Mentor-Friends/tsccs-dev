@@ -123,6 +123,7 @@ import { AccessTracker } from "./app";
 import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
 import { getCookie, LogData } from "./Middleware/logger.service";
+import { randomInt } from "crypto";
 export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -436,7 +437,6 @@ const broadcastActions: any = {
   },
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
-      console.log("this is dispatching the event for test", payload);
       let event = new CustomEvent(payload.id || '', payload.data);
       dispatchEvent(event);
     }
@@ -634,7 +634,6 @@ async function initConceptConnection() {
 export function dispatchIdEvent(id: number|string, data:any = {}) {
   if (serviceWorker || typeof window  != "undefined") {
     // let event = new Event(`${id}`);
-    console.log("this is the dispatch event in the undefined", id, data);
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
   } 

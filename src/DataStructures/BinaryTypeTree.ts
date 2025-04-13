@@ -32,16 +32,14 @@ export class BinaryTypeTree{
             let event = new CustomEvent(`${node.key}`, {detail: node.value[0]});
             // console.log("this is the fired event", event);
             //  dispatchEvent(event);
-            console.log("this is type dispatch in null", node.key);
             dispatchIdEvent(node.key, {detail: node.value[0]})
             return this.root;
         }
         else{
-            let event = new CustomEvent(`${node.key}`, {detail: node.value[0]});
+            //let event = new CustomEvent(`${node.key}`, {detail: node.value[0]});
             // console.log("this is the fired event", event);
             //  dispatchEvent(event);
-            console.log("this is type dispatch", node.key);
-            dispatchIdEvent(node.key, {detail: node.value[0]})
+
             // console.log("this is the fired event", event);
             this.root = this.root.addType(this.root, node.key, node.value[0]);
         }

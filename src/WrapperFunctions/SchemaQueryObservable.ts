@@ -28,6 +28,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.compositionIds = result.mainCompositionIds;
             this.totalCount = result.mainCount;
             this.countInfoStrings = result.countinfo;
+
         }
         else{
 
@@ -36,15 +37,21 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             }
         }
         let output = await this.build();
-        for(let i=0 ;i<this.compositionIds.length; i++){
-            this.listenToEvent(this.compositionIds[i]);
+        if(!this.isDataLoaded){
+            for(let i=0 ;i<this.compositionIds.length; i++){
+                this.listenToEvent(this.compositionIds[i]);
+            }
+            if(this.query.type != ""){
+                let concept = await MakeTheTypeConceptApi(this.query.type, 999);
+                this.listenToEventType(concept.id);
+    
+            }
         }
-        if(this.query.type != ""){
-            let concept = await MakeTheTypeConceptApi(this.query.type, 999);
-            console.log("this is the listening to the type", concept);
-            this.listenToEventType(concept.id);
+        for(let i=0 ;i<this.newIds.length; i++){
+            this.listenToEvent(this.newIds[i]);
+        }
+        this.newIds = [];
 
-        }
         return output;
     }
     
