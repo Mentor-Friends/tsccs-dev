@@ -174,17 +174,18 @@ export class BuilderStatefulWidget extends StatefulWidget {
 
 
       this.parentElement = parent.id;
-      if (this.componentMounted == false || this.widgetMounted == false) {
-        // Simulate componentDidMount by calling it after the component is inserted into the DOM
-        this.before_render();
-        this.mount_child();
-        this.widgetMounted = true;
-        this.componentMounted = true;
-      }
-      else{
-        this.render();
-
-      }
+      if(!this.inDevelopment){
+        if (this.componentMounted == false || this.widgetMounted == false) {
+          // Simulate componentDidMount by calling it after the component is inserted into the DOM
+          this.before_render();
+          this.mount_child();
+          this.widgetMounted = true;
+          this.componentMounted = true;
+        }
+        else{
+          this.render();
+        }
+    }
       this.childWidgetElement = this.getElementByClassName("added-widget-container")
 
 
