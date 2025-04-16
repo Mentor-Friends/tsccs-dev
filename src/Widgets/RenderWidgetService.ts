@@ -416,7 +416,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       newWidget.addEventFunction = tree.after_render;
       newWidget.mountChildWidgetsFunction = tree.mount_child;
       newWidget.widgetState = {...state};
-      //newWidget.css = `#${tree.id} { ${tree.css} }`;
+      newWidget.css = `#${tree.id} { ${tree.css} }`;
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
       parentElement.innerHTML = "";
