@@ -327,4 +327,12 @@ export class BaseUrl{
     static getLatestWidgetData(){
         return this.BASE_URL + '/api/get-latest-widget';
     }
+
+    static getConnectionsByTypes(){
+        return this.BASE_URL + '/api/get-connection-by-types';
+    }
+
+    static CreatePrototypeUrl(){
+        return this.BASE_URL + '/api/create-prototype';
+    }
 }

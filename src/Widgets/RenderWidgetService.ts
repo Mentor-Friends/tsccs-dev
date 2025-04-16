@@ -58,7 +58,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         const bulkWidget = await BuildWidgetFromIdForLatest(widgetId);
         let latestWidgetId = bulkWidget.mainId;
         let bulkWidgetData = bulkWidget.data;
-        await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
+        return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
       } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);
         attachNode.textContent = `Error: ${error.message}`
@@ -68,7 +68,8 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
       try {
         const bulkWidget = await BuildWidgetFromId(widgetId);
-        await materializeWidget(widgetId, bulkWidget, attachNode, props);
+        let widgetObject = await materializeWidget(widgetId, bulkWidget, attachNode, props);
+        return widgetObject;
       } catch (error) {
         console.error(`Error Caught Rendering Widget: ${error}`);
       }
@@ -88,7 +89,6 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         undefined,
         props
       );
-      console.log("this is the tree newWidget", widgetTree);
       const generateRandomString = () => 
   Array.from({ length: 32 }, () => 'abcdef'[Math.floor(Math.random() * 6)]).join('')
       const randomStr = generateRandomString()
@@ -96,12 +96,14 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       attachNode.style.position = "relative";
       // add newWidget css to the page
       const style = document.createElement("style");
+      style.id = "mystyleid";
       style.innerHTML = `
   .${randomStr} {
     ${widgetTree.css + newWidget.css + ckeditorCSS} 
   }
 `;
-      appElement.appendChild(style);
+      //attachNode.appendChild(style);
+      document.head.appendChild(style);
       // add newWidget js to the page
       const script = document.createElement("script");
       script.innerHTML = widgetTree.js;
@@ -167,6 +169,9 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         .forEach((element) => {
           element.removeAttribute("onclick");
         }); // remove the onclick event from the widget container
+
+      return newWidget;
+
     }
 
       export async function getWidgetFromId(widgetId: number,
@@ -390,6 +395,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       newWidget.addEventFunction = tree.after_render;
       newWidget.mountChildWidgetsFunction = tree.mount_child;
       newWidget.widgetState = {...state};
+      newWidget.css = `#${tree.id} { ${tree.css} }`;
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
       parentElement.innerHTML = "";

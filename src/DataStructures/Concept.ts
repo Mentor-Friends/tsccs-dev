@@ -14,6 +14,7 @@ export  class Concept{
     entryTimeStamp: Date;
     referentId: number;
     updatedTimeStamp:Date;
+    referent: Concept | null | void = null;
     type:  null | void | Concept;
     isNew: boolean;
     isComposition: boolean = false;

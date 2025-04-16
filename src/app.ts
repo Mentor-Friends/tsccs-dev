@@ -123,6 +123,7 @@ import { AccessTracker } from "./app";
 import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
 import { getCookie, LogData } from "./Middleware/logger.service";
+import { randomInt } from "crypto";
 export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -145,6 +146,9 @@ export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 export {CreateData} from './Services/automated/automated-concept-connection';
+
+export {Prototype} from './DataStructures/Prototype/Prototype';
+export {createPrototypeLocal} from './prototype/prototype.service';
 type listeners = {
   listenerId: string | number
   callback: any,
