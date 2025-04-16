@@ -219,29 +219,127 @@ export const ckeditorCSS = `
   padding-bottom: 1rem;
 }
 
-.documentation-creator {
-  text-align: right;
-  color: #666;
-  margin-top: 0.5rem;
-  padding-bottom: 1rem;
-}
+  .widget-documentation-heading {
+    background-color: #6e757d;
+    color: #eee;
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-.documentation-creator span {
-  font-style: italic;
-}
+  .widget-documentation-heading h4 {
+    margin-bottom: 0;
+  }
 
-.documentation-attachments {
-  display: flex;
-  flex-wrap: wrap;
-}
+  .close-documentation-button {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+  }
 
-.documentation-attachments img {
-  width: 25%;
-  height: auto;
-  border: 1px solid #ccc;
-  padding: 0.25rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
+  .close-documentation-button:hover,
+  .close-documentation-button:focus  {
+    background-color: transparent;
+  }
+
+  .documentation-creator {
+    text-align: right;
+    color: #666;
+    margin: 0;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .documentation-creator span {
+    font-style: italic;
+  }
+
+  .documentation-attachments {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .documentation-attachments img {
+    width: 25%;
+    height: auto;
+    border: 1px solid #ccc;
+    padding: 0.25rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .documentation-attachments iframe {
+    width: 50%;
+    border: 1px solid #ccc;
+    padding: 0.25rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .widget-documentation-footer {
+    text-align: right;
+    margin-top: 1rem;
+  }
+
+  .widget-documentation-footer button {
+    border-radius: 0;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    text-align: center;
+    background: #6e757d;
+    color: #eee;
+  }
+
+  #widget-details {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+
+  #widget-details button {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0 0 0 0.25rem;
+    height: auto;
+    width: auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  #widget-details button:hover, 
+  #widget-details button:focus {
+    opacity: 0.75;
+  }
+
+  #widget-details button span {
+    pointer-events: none;
+    font-size: 1rem;
+  }
+
+  #widget-details button svg {
+    pointer-events: none;
+    width: 16px;
+    height: 16px;
+    fill: #999;
+  }
+
+  #widget-documentation-preview-modal {
+    border: none;
+  }
+
+  @media (min-width: 768px) {
+    #widget-documentation-preview-modal {
+      flex: 0 0 auto;
+      width: 66.66666667%;
+    }
+  }
 
 `;
