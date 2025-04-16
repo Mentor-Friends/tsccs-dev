@@ -174,7 +174,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
 
 
       this.parentElement = parent.id;
-      if(!this.inDevelopment){
         if (this.componentMounted == false || this.widgetMounted == false) {
           // Simulate componentDidMount by calling it after the component is inserted into the DOM
           this.before_render();
@@ -185,7 +184,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
         else{
           this.render();
         }
-    }
       this.childWidgetElement = this.getElementByClassName("added-widget-container")
 
 
