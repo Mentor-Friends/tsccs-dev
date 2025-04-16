@@ -18,7 +18,6 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
 
     async bind() {
         if(!this.isDataLoaded){
-             this.isDataLoaded = true;
             this.query.outputFormat = ALLID;
             let result:any = await FreeschemaQueryApi(this.query, "");
             this.conceptIds = result.conceptIds;
@@ -38,6 +37,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         }
         let output = await this.build();
         if(!this.isDataLoaded){
+            this.isDataLoaded = true;
             for(let i=0 ;i<this.compositionIds.length; i++){
                 this.listenToEvent(this.compositionIds[i]);
             }
