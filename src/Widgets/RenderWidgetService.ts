@@ -481,6 +481,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   newWidget.componentDidMountFunction = tree.before_render;
   newWidget.addEventFunction = tree.after_render;
   newWidget.mountChildWidgetsFunction = tree.mount_child;
+  newWidget.customFunctions = tree.custom_functions;
   newWidget.inDevelopment = isInDevelopment === false ? false : true;
   // newWidget.css = newWidget.css ? newWidget.css : "";
   parentElement.innerHTML = "";

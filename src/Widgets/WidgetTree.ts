@@ -18,6 +18,7 @@ export class WidgetTree{
     clean: string = "";
     after_render: string = "";
     before_render: string = "";
+    custom_functions?: any = [];
     update: string = "";
     origin: number = 0;
     version: number = 0;
