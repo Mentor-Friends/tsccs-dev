@@ -28,9 +28,7 @@ export class DependencyObserver{
      * @param id this is the type id which needs to be tracked
      */
     listenToEventType(id: number): void {
-        console.log("listening to the id event type", id);
         window.addEventListener(`${id}`, (event) => {
-            console.log("this is the event for type", id, event);
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
@@ -71,7 +69,6 @@ export class DependencyObserver{
                          }
                     }
                     that.isUpdating = false;
-                    console.log("this is the type event", id, event);
                     await that.bind();
                     that.notify();
 
