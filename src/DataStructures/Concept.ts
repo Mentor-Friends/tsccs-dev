@@ -12,7 +12,7 @@ export  class Concept{
     characterValue: string;
     typeCharacter: string = "";
     entryTimeStamp: Date;
-    referentId: number;
+    referentId: number|null;
     updatedTimeStamp:Date;
     referent: Concept | null | void = null;
     type:  null | void | Concept;
@@ -27,7 +27,7 @@ export  class Concept{
 
 
     constructor(id: number, userId: number, typeId:number,  categoryId:number,
-             referentId:number,  characterValue:string,
+             referentId:number|null,  characterValue:string,
             accessId:number, isNew:boolean=false, entryTimeStamp: Date, updatedTimeStamp:Date, typeCharacter:string){
         this.id = id;
         this.userId = userId;

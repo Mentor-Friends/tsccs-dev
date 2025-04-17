@@ -3,6 +3,8 @@ import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
 
+
+// this is just concept for local type concept.
 export default async function MakeTheConceptLocal(referent:string, typeCharacter:string, userId:number, categoryId:number,
 typeId:number, actions: InnerActions = {concepts: [], connections: []}){
     if (serviceWorker) {
@@ -27,7 +29,7 @@ typeId:number, actions: InnerActions = {concepts: [], connections: []}){
     }
     if(concept.id == 0){
 
-       conceptString = await  CreateTheConceptLocal(referent,typeCharacter,userId,categoryId,typeId,accessId, undefined, undefined, actions );
+       conceptString = await  CreateTheConceptLocal(referent,typeCharacter,userId,categoryId,typeId,accessId, undefined, null, actions );
         concept = conceptString as Concept;
     }
 

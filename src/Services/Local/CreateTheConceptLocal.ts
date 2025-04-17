@@ -25,7 +25,7 @@ import { Logger } from "../../Middleware/logger.service";
  * @returns 
  */
 export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, typeId:number, 
-accessId:number, isComposition: boolean = false, referentId:number = 0, actions: InnerActions = {concepts: [], connections: []}){
+accessId:number, isComposition: boolean = false, referentId:number|null = 0, actions: InnerActions = {concepts: [], connections: []}){
     let startTime = performance.now()
     try{
         if (serviceWorker) {
