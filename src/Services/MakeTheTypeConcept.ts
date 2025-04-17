@@ -24,7 +24,7 @@ export  async  function MakeTheTypeConcept(typeString: string, sessionId: number
         }
     }
 
-    let referentId: number = 999;
+    let referentId: number|null = null;
     let securityId: number = 999;
     let accessId: number = 999;
     let accessUserId: number = userId;
