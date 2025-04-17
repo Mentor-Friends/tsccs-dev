@@ -1,5 +1,5 @@
 import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
-import { GetConceptByCharacterAndType, Logger, MakeTheTypeConcept, MakeTheTypeConceptApi } from "../app";
+import { GetConceptByCharacterAndType, Logger, MakeTheTypeConceptApi } from "../app";
 import { DATA_TYPES_RULES } from "./constant";
 import { FormErrors, FormFieldData } from "./interface";
 
