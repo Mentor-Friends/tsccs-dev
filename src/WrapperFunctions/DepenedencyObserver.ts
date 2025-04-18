@@ -47,6 +47,7 @@ export class DependencyObserver{
 
                         let newId = myEvent?.detail;
                         let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(newId, newId);
+                        console.log("this is the new connection", newConnection);
                         for(let i=0 ;i< newConnection.length; i++){
                         
                             await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
@@ -108,6 +109,7 @@ export class DependencyObserver{
 
                 setTimeout( async function(){
                     let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+                    console.log("this is the new connection", newConnection);
                     for(let i=0 ;i< newConnection.length; i++){
                         
                                await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{

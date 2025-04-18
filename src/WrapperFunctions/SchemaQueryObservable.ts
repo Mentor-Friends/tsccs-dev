@@ -86,7 +86,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
 
             //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
         }
-
+       console.log("this is the updated data", this.data);
         return this.data
     }
 
