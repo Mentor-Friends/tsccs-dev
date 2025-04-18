@@ -95,10 +95,11 @@ export class StatefulWidget extends BaseWidget{
         }
     }
 
-    setProperty(newProperty:Object){
+    setStateProperty(newProperty:Object){
       this.previousState = {...this};
       Object.assign(this, newProperty);
       this.state = {...this};
+      console.log("this has state changed", this.hasStateChanged());
       if(this.hasStateChanged()){
         this.notify();
         this.render();

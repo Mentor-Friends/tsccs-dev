@@ -1,3 +1,4 @@
+import { Console } from "console";
 import { FreeschemaQuery, FreeschemaQueryApi, Logger, MakeTheTypeConceptApi } from "../app";
 import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
@@ -17,8 +18,18 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     }
 
     async bind() {
+        // console.log("this is the loaded data", this.compositionIds);
+        // if(this.compositionIds.length > 0){
+        //     console.log("this is the loaded data after", this.compositionIds);
+        //     for(let i=0; i<this.compositionIds.length; i++){
+        //         console.log("removed data after", this.compositionIds[i]);
+        //         this.removeListenToEvent(this.compositionIds[i]);
+        //     }
+        // }
+
         if(!this.isDataLoaded){
             this.query.outputFormat = ALLID;
+            // this.compositionIds = [];
             let result:any = await FreeschemaQueryApi(this.query, "");
             this.conceptIds = result.conceptIds;
             this.internalConnections = result.internalConnections ?? [];
@@ -43,10 +54,14 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             }
             if(this.query.type != ""){
                 let concept = await MakeTheTypeConceptApi(this.query.type, 999);
-                this.listenToEventType(concept.id);
+                //this.removeListenToEvent(concept.id);
+                if(concept.id > 0){
+                    this.listenToEventType(concept.id);
+                }
     
             }
         }
+        console.log("this is the new id", this.newIds);
         for(let i=0 ;i<this.newIds.length; i++){
             this.listenToEvent(this.newIds[i]);
         }
