@@ -1,4 +1,3 @@
-import { Console } from "console";
 import { CompositionNode, ConnectionData } from "../app";
 import { NORMAL } from "../Constants/FormatConstants";
 
@@ -30,7 +29,6 @@ export class DependencyObserver{
      * @param id this is the type id which needs to be tracked
      */
     listenToEventType(id: number): void {
-        console.log("This is the event id add type test", this.eventHandlers[id]);
         if (this.eventHandlers[id]) return; // already added
 
 
@@ -47,7 +45,6 @@ export class DependencyObserver{
 
                         let newId = myEvent?.detail;
                         let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(newId, newId);
-                        console.log("this is the new connection", newConnection);
                         for(let i=0 ;i< newConnection.length; i++){
                         
                             await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
@@ -76,7 +73,6 @@ export class DependencyObserver{
                          }
                     }
                     that.isUpdating = false;
-                    console.log("this is the type event fired",id);
                     await that.bind();
                     that.notify();
 
@@ -231,7 +227,6 @@ export class DependencyObserver{
     async update(){
         this.isDataLoaded = false;
         await this.bind();
-        console.log("this is the notify thing");
         this.notify();
     }
 

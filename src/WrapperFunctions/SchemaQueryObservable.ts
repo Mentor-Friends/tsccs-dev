@@ -1,4 +1,3 @@
-import { Console } from "console";
 import { FreeschemaQuery, FreeschemaQueryApi, Logger, MakeTheTypeConceptApi } from "../app";
 import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
