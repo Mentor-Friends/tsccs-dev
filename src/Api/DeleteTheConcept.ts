@@ -1,9 +1,10 @@
-import { Logger } from "../app";
+import { ConceptsData, Logger } from "../app";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Concept } from "../DataStructures/Concept";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { GetOnlyTokenHeader, GetRequestHeader, GetRequestHeaderWithAuthorization } from "../Services/Security/GetRequestHeader";
 export default async function DeleteTheConcept(id:number){
+  let isDeleted = false;
   const logData:any =  Logger.logfunction("DeleteTheConcept", arguments);
     try{
            
@@ -20,6 +21,13 @@ export default async function DeleteTheConcept(id:number){
                console.log("Delete concept error", response.status);
                 HandleHttpError(response);
             }
+            else{
+              const result = await response.json()
+              isDeleted = result.success;
+            }
+            if(isDeleted){
+              ConceptsData.AddNpc(id);
+            }
 
             Logger.logUpdate(logData)
         
@@ -33,4 +41,5 @@ export default async function DeleteTheConcept(id:number){
         HandleInternalError(error, BaseUrl.DeleteConceptUrl());
         UpdatePackageLogWithError(logData, 'DeleteTheConcept', error)  // handle function package error
       }
+      return isDeleted;
 }

@@ -61,7 +61,6 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     
             }
         }
-        console.log("this is the new id", this.newIds);
         for(let i=0 ;i<this.newIds.length; i++){
             this.listenToEvent(this.newIds[i]);
         }

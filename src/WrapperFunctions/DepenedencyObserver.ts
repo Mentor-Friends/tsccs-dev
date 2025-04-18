@@ -99,7 +99,6 @@ export class DependencyObserver{
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id: number) {
-        console.log("This is the event id add test", this.eventHandlers[id]);
         if (this.eventHandlers[id]) return; // already added
 
         const handler = async(event: Event) => {
@@ -109,7 +108,6 @@ export class DependencyObserver{
 
                 setTimeout( async function(){
                     let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
-                    console.log("this is the new connection", newConnection);
                     for(let i=0 ;i< newConnection.length; i++){
                         
                                await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
@@ -141,7 +139,6 @@ export class DependencyObserver{
 
                     }
                     that.isUpdating = false;
-                    console.log("this is the id event fired",id);
                     await that.bind();
                     that.notify();
 
@@ -153,14 +150,12 @@ export class DependencyObserver{
             }
         };
         this.eventHandlers[id] = handler;
-        console.log("added listener", id);
         window.addEventListener(`${id}`,handler);
     }
 
     removeListenToEvent(id: number) {
         const handler = this.eventHandlers[id];
         if (handler) {
-            console.log("this is the handler", id);
             window.removeEventListener(`${id}`, handler);
             delete this.eventHandlers[id];
         }
