@@ -905,7 +905,8 @@ async function initializeCacheServer() {
       },
       async (error) => {
         if (error.code === error.PERMISSION_DENIED) {
-          await getCacheServer();
+          // await getCacheServer();
+          BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
         }
       }
     );
