@@ -17,8 +17,15 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     }
 
     async bind() {
+        if(this.compositionIds.length > 0){
+            for(let i=0; i<this.compositionIds.length; i++){
+                this.removeListenToEvent(this.compositionIds[i]);
+            }
+        }
+
         if(!this.isDataLoaded){
             this.query.outputFormat = ALLID;
+            this.compositionIds = [];
             let result:any = await FreeschemaQueryApi(this.query, "");
             this.conceptIds = result.conceptIds;
             this.internalConnections = result.internalConnections ?? [];
@@ -43,7 +50,9 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             }
             if(this.query.type != ""){
                 let concept = await MakeTheTypeConceptApi(this.query.type, 999);
-                this.listenToEventType(concept.id);
+                if(concept.id > 0){
+                    this.listenToEventType(concept.id);
+                }
     
             }
         }
@@ -71,7 +80,6 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
 
             //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
         }
-
         return this.data
     }
 

@@ -21,6 +21,7 @@ export class DependencyObserver{
     data: any;  // this is the actual data that needs to be returned.
     fetched: boolean = false;
     format: number = NORMAL;
+    eventHandlers: { [key: number]: (event: Event) => void } = {};
 
     /**
      * This function will be called when there is a need to listen to a certain type of concept that will update
@@ -28,7 +29,10 @@ export class DependencyObserver{
      * @param id this is the type id which needs to be tracked
      */
     listenToEventType(id: number): void {
-        window.addEventListener(`${id}`, (event) => {
+        if (this.eventHandlers[id]) return; // already added
+
+
+        const typeHandler = async(event:Event) => {
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
@@ -78,8 +82,10 @@ export class DependencyObserver{
             else{
                 console.log("rejected this", id);
             }
-
-        });
+        }
+        this.eventHandlers[id] = typeHandler;
+        console.log("added listener", id);
+        window.addEventListener(`${id}`, typeHandler);
     }
 
     /**
@@ -89,7 +95,9 @@ export class DependencyObserver{
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id: number) {
-        window.addEventListener(`${id}`, (event) => {
+        if (this.eventHandlers[id]) return; // already added
+
+        const handler = async(event: Event) => {
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
@@ -136,9 +144,19 @@ export class DependencyObserver{
             else{
                 console.log("rejected this", id);
             }
-
-        });
+        };
+        this.eventHandlers[id] = handler;
+        window.addEventListener(`${id}`,handler);
     }
+
+    removeListenToEvent(id: number) {
+        const handler = this.eventHandlers[id];
+        if (handler) {
+            window.removeEventListener(`${id}`, handler);
+            delete this.eventHandlers[id];
+        }
+    }
+
 
 
         /**

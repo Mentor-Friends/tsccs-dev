@@ -95,7 +95,7 @@ export class StatefulWidget extends BaseWidget{
         }
     }
 
-    setProperty(newProperty:Object){
+    setStateProperty(newProperty:Object){
       this.previousState = {...this};
       Object.assign(this, newProperty);
       this.state = {...this};
