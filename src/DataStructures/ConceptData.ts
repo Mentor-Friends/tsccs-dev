@@ -97,6 +97,7 @@ export class ConceptsData{
             this.conceptsArray.splice(i, 1);
         }
        }
+       BinaryTree.removeNodeFromTree(concept.id);
 
        removeFromDatabase("concept",concept.id);
     }
