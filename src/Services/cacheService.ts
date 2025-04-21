@@ -1,5 +1,4 @@
 import { BaseUrl } from "../app";
-import { GetRequestHeader } from "./Security/GetRequestHeader";
 
 function updateToNextNearestServer() {
   const currentCacheServer = BaseUrl.NODE_CACHE_URL;
@@ -18,22 +17,16 @@ function updateToNextNearestServer() {
 }
 
 export async function requestNextCacheServer(
-  data: any,
-  logData: any,
+  requestData: any,
   url: string
 ) {
   try {
     updateToNextNearestServer();
-    var header = GetRequestHeader();
     try {
-        const response = await fetch(`${BaseUrl.NODE_CACHE_URL}${url}`, {
-          method: "POST",
-          body: data,
-          headers: header,
-        });
+        const response = await fetch(`${BaseUrl.NODE_CACHE_URL}${url}`, requestData);
         return response
     } catch (error) {
-        return await requestNextCacheServer(data, logData, url)
+        return await requestNextCacheServer(requestData, url)
     }
   } catch (error) {
     throw error

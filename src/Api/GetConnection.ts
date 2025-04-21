@@ -5,6 +5,19 @@ import { Connection } from "../DataStructures/Connection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
+import { requestNextCacheServer } from "../Services/cacheService";
+
+async function processConnectionData(response: Response, result: Connection) {
+    if(response.ok){
+        result = await response.json() as Connection;
+        ConnectionData.AddConnection(result);
+    }
+    else{
+        HandleHttpError(response);
+        console.log("Get Connection Error", response.status);
+    }
+}
+
 export async function GetConnection(id: number){
     const logData : any = Logger.logfunction("GetConnection", arguments);
     let result :Connection= await ConnectionData.GetConnection(id);
@@ -18,19 +31,18 @@ export async function GetConnection(id: number){
             let header = GetRequestHeader('application/x-www-form-urlencoded')
             const formdata = new FormData();
             formdata.append("id", id.toString());
-            const response = await fetch(BaseUrl.GetConnectionUrl(),{
+            const reqData = {
                 method: 'POST',
                 headers: header,
                 body: formdata
-            });
-            if(response.ok){
-                result = await response.json() as Connection;
-                ConnectionData.AddConnection(result);
             }
-            else{
-                HandleHttpError(response);
-                console.log("Get Connection Error", response.status);
+            let response;
+            try {
+                response = await fetch(BaseUrl.GetConnectionUrl(), reqData);
+            } catch (error) {
+                response = await requestNextCacheServer(reqData, "/api/get-connection-by-id")
             }
+            await processConnectionData(response, result)
             Logger.logUpdate(logData);
             return result;
             

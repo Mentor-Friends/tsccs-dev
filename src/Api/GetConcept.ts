@@ -59,18 +59,20 @@ export async function GetConcept(id: number){
             return conceptUse;
         }
         else{
-            try {     
-                var header = GetRequestHeader();
-                console.log("this is the url", BaseUrl.GetConceptUrl());
-                const response = await fetch(BaseUrl.GetConceptUrl(),{
-                    method: 'POST',
-                    body: formdata
-                });
-               return await processGetConceptData(response, result, logData, id);
-            } catch (error) {
-                return await requestNextCacheServer(formdata, logData, "/api/getConcept")
+            let response; 
+            var header = GetRequestHeader();
+            const requestData = {
+                method: 'POST',
+                body: formdata,
+                headers: header
             }
-
+            try {    
+                console.log("this is the url", BaseUrl.GetConceptUrl());
+                 response = await fetch(BaseUrl.GetConceptUrl(), requestData);
+            } catch (error) {
+                response = await requestNextCacheServer(requestData, "/api/getConcept");
+            }
+            return await processGetConceptData(response, result, logData, id);
         }
     }
     catch (error) {
