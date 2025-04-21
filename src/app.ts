@@ -893,6 +893,13 @@ async function initializeCacheServer() {
   
     } catch (error: any) {
       console.error("error getting cache server", error.message);
+    } finally {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        sendMessage("SESSION_DATA", {
+          type: 'SESSION_DATA',
+          data: BaseUrl.NODE_CACHE_URL
+        })
+      }
     }
   }
   
@@ -903,11 +910,18 @@ async function initializeCacheServer() {
       },
       async (error) => {
         if (error.code === error.PERMISSION_DENIED) {
-          await getCacheServer();
+          // await getCacheServer();
+          BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
         }
       }
     );
   } else {
     BaseUrl.NODE_CACHE_URL = myCacheServer[0];
-  } 
+  }
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    sendMessage("SESSION_DATA", {
+      type: 'SESSION_DATA',
+      data: BaseUrl.NODE_CACHE_URL
+    })
+  }
 }
