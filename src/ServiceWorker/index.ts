@@ -32,6 +32,7 @@ export async function handleMessageEvent(event: any) {
 
     // console.log('received type', type, payload?.messageId)
 
+
     if (type != 'init' && !checkSWInitialization()) {
       console.warn('Message received before sw initialization', type, payload.messageId)
 
@@ -162,6 +163,10 @@ const actions: Actions = {
         await updateAccessToken(payload.accessToken, payload.session)
         return {success: true, name: 'updateAccessToken'}
     },
+    SESSION_DATA: async (payload) => {
+      BaseUrl.NODE_CACHE_URL = payload.data;
+      return {success: true, name: 'SESSION_DATA'}
+    } ,
     // imported actions
     ...getActions,
     ...searchActions,
