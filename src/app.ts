@@ -921,11 +921,11 @@ async function initializeCacheServer() {
     } else {
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
     }
-  }
-  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-    sendMessage("SESSION_DATA", {
-      type: 'SESSION_DATA',
-      data: BaseUrl.NODE_CACHE_URL
-    })
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      sendMessage("SESSION_DATA", {
+        type: 'SESSION_DATA',
+        data: BaseUrl.NODE_CACHE_URL
+      })
+    }
   }
 }
