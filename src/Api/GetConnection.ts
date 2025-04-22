@@ -6,6 +6,7 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 import { requestNextCacheServer } from "../Services/cacheService";
+import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 async function processConnectionData(response: Response, result: Connection) {
     if(response.ok){
@@ -28,14 +29,15 @@ export async function GetConnection(id: number){
             return result;
         }
         else{
-            let header = GetRequestHeader('application/x-www-form-urlencoded')
             const formdata = new FormData();
             formdata.append("id", id.toString());
             const reqData = {
-                method: 'POST',
-                headers: header,
-                body: formdata
-            }
+              method: "POST",
+              headers: {
+                Authorization: "Bearer " + TokenStorage.BearerAccessToken,
+              },
+              body: formdata,
+            };
             let response;
             try {
                 response = await fetch(BaseUrl.GetConnectionUrl(), reqData);

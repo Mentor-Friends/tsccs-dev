@@ -1,4 +1,4 @@
-import { BaseUrl } from "../app";
+import { BaseUrl, sendMessage } from "../app";
 
 function updateToNextNearestServer() {
   const currentCacheServer = BaseUrl.NODE_CACHE_URL;
@@ -8,27 +8,41 @@ function updateToNextNearestServer() {
   let myCacheServer = sessionStorage.getItem("cacheServers") as any;
   myCacheServer = JSON.parse(myCacheServer) as string[];
   const indexOfCurrentCacheServer = myCacheServer.indexOf(currentCacheServer);
-  if (indexOfCurrentCacheServer < myCacheServer.length - 1) {
-    const nextNearestCacheServer = myCacheServer[indexOfCurrentCacheServer + 1];
+  if (myCacheServer.includes(currentCacheServer)) {
+    if (indexOfCurrentCacheServer !== -1) {
+      myCacheServer.splice(indexOfCurrentCacheServer, 1);
+    }
+  }
+  sessionStorage.setItem("cacheServers", JSON.stringify(myCacheServer));
+  // console.log("remaining cache servers", myCacheServer, BaseUrl.BASE_URL);
+  if (myCacheServer.length) {
+    const nextNearestCacheServer = myCacheServer[0];
     BaseUrl.NODE_CACHE_URL = nextNearestCacheServer;
   } else {
-    throw new Error("All Servers are Down.");
+    // console.log("this is the application base url", BaseUrl.BASE_URL)
+    BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
+  }
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    sendMessage("SESSION_DATA", {
+      type: "SESSION_DATA",
+      data: BaseUrl.NODE_CACHE_URL,
+    });
   }
 }
 
-export async function requestNextCacheServer(
-  requestData: any,
-  url: string
-) {
+export async function requestNextCacheServer(requestData: any, url: string) {
   try {
     updateToNextNearestServer();
     try {
-        const response = await fetch(`${BaseUrl.NODE_CACHE_URL}${url}`, requestData);
-        return response
+      const response = await fetch(
+        `${BaseUrl.NODE_CACHE_URL}${url}`,
+        requestData
+      );
+      return response;
     } catch (error) {
-        return await requestNextCacheServer(requestData, url)
+      return await requestNextCacheServer(requestData, url);
     }
   } catch (error) {
-    throw error
+    throw error;
   }
 }

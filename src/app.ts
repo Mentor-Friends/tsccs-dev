@@ -916,7 +916,11 @@ async function initializeCacheServer() {
       }
     );
   } else {
-    BaseUrl.NODE_CACHE_URL = myCacheServer[0];
+    if (Array.isArray(myCacheServer) && myCacheServer.length) {
+      BaseUrl.NODE_CACHE_URL = myCacheServer[0];
+    } else {
+      BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
+    }
   }
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     sendMessage("SESSION_DATA", {
