@@ -31,6 +31,13 @@ function updateToNextNearestServer() {
 }
 
 export async function requestNextCacheServer(requestData: any, url: string) {
+  const isServiceWorker =
+  typeof self !== "undefined" &&
+  typeof ServiceWorkerGlobalScope !== "undefined" &&
+  self instanceof ServiceWorkerGlobalScope;
+  if (isServiceWorker) {
+    throw new Error("Cannot switch server from service worker");
+  }
   try {
     updateToNextNearestServer();
     try {
