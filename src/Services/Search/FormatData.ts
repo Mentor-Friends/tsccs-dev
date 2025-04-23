@@ -1,4 +1,4 @@
-import { Connection, GetTheConcept, Logger } from "../../app";
+import { ConceptsData, Connection, GetTheConcept, Logger } from "../../app";
 import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
 import { orderTheConnections } from "./orderingConnections";
@@ -76,93 +76,90 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
 
         }
       }
-      else
-      {
-        if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-          if(ofTheConcept.id in compositionData){
-            let newData: any;
-  
-            let key = ofTheConcept.type?.characterValue ?? "self";
-            if(connections[i].ofTheConceptId in compositionData){
-              newData = compositionData[connections[i].ofTheConceptId];
-              let newType = typeof newData[key];
-              if(newType == "string"){
-                newData[key] = {};
-              }
-            }
-            else{
-              newData = {};
+      if(ofTheConcept.id != 0 && toTheConcept.id != 0){
+        if(ofTheConcept.id in compositionData){
+          let newData: any;
+
+          let key = ofTheConcept.type?.characterValue ?? "self";
+          if(connections[i].ofTheConceptId in compositionData){
+            newData = compositionData[connections[i].ofTheConceptId];
+            let newType = typeof newData[key];
+            if(newType == "string"){
               newData[key] = {};
-              compositionData[connections[i].ofTheConceptId] = newData;
-            }
-            let linkerConcept = await GetTheConcept(connections[i].typeId);
-            let isComp = false;
-            let linkerConceptValue = linkerConcept.characterValue;
-            if(linkerConceptValue == ""){
-              linkerConceptValue = toTheConcept.characterValue;
-              isComp = true;
-            }
-            if(linkerConceptValue == ""){
-              linkerConceptValue = toTheConcept?.type?.characterValue ?? "";
-            }
-
-            try{
-                let data = compositionData[connections[i].toTheConceptId]
-                if(data){
-                  if(Array.isArray(newData[key])){
-                    if(isComp){
-                      newData[key].push(data[linkerConceptValue]);
-  
-                    }
-                    else{
-                      newData[key].push(data);
-  
-                    }
-  
-                  }
-                  else{
-                      if(Array.isArray(newData[key][linkerConceptValue])){
-                        newData[key][linkerConceptValue].push(data);
-                    }
-                    else{
-    
-                      if(linkerConceptValue.includes("_s_")){
-                        newData[key][linkerConceptValue] = [];
-                        if(isComp){
-                          newData[key][linkerConceptValue].push(data[linkerConceptValue]);
-                        }
-                        else{
-                          newData[key][linkerConceptValue].push(data);
-    
-                        }
-                      }
-                      else{
-                        if(isComp){
-                          newData[key][linkerConceptValue] = data[linkerConceptValue];
-    
-                        }
-                        else{
-                          newData[key][linkerConceptValue] = data;
-    
-                        }
-      
-                      }
-        
-                    }
-                  }
-                }
-
-
-
-      
-            }
-            catch(ex){
-              console.log("this is error", ex);
             }
           }
+          else{
+            newData = {};
+            newData[key] = {};
+            compositionData[connections[i].ofTheConceptId] = newData;
+          }
+          let linkerConcept = await GetTheConcept(connections[i].typeId);
+          let isComp = false;
+          let linkerConceptValue = linkerConcept.characterValue;
+          if(linkerConceptValue == ""){
+            linkerConceptValue = toTheConcept.characterValue;
+            isComp = true;
+          }
+          if(linkerConceptValue == ""){
+            linkerConceptValue = toTheConcept?.type?.characterValue ?? "";
+          }
+
+          try{
+              let data = compositionData[connections[i].toTheConceptId]
+              if(data){
+                if(Array.isArray(newData[key])){
+                  if(isComp){
+                    newData[key].push(data[linkerConceptValue]);
+
+                  }
+                  else{
+                    newData[key].push(data);
+
+                  }
+
+                }
+                else{
+                    if(Array.isArray(newData[key][linkerConceptValue])){
+                      newData[key][linkerConceptValue].push(data);
+                  }
+                  else{
+  
+                    if(linkerConceptValue.includes("_s_")){
+                      newData[key][linkerConceptValue] = [];
+                      if(isComp){
+                        newData[key][linkerConceptValue].push(data[linkerConceptValue]);
+                      }
+                      else{
+                        newData[key][linkerConceptValue].push(data);
+  
+                      }
+                    }
+                    else{
+                      if(isComp){
+                        newData[key][linkerConceptValue] = data[linkerConceptValue];
+  
+                      }
+                      else{
+                        newData[key][linkerConceptValue] = data;
+  
+                      }
+    
+                    }
+      
+                  }
+                }
+              }
+
+
 
     
+          }
+          catch(ex){
+            console.log("this is error", ex);
+          }
         }
+
+  
       }
   
     }
@@ -171,6 +168,15 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
       if(mymainData){
         mymainData["id"] = mainComposition[i];
         mainData.push(mymainData);
+      }
+      else{
+        let checkConcept = await ConceptsData.GetConcept(mainComposition[i]);
+        if(checkConcept.id != 0){
+          mymainData = {};
+          mymainData["id"] = mainComposition[i];
+          mainData.push(mymainData);
+        }
+
       }
 
       
@@ -240,42 +246,39 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
           }
         }
       }
-      else
-      {
-        if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-          let newData: any;
-  
-          let key = ofTheConcept.type?.characterValue ?? "self";
-  
-          if(connections[i].ofTheConceptId in compositionData){
-            newData = compositionData[connections[i].ofTheConceptId]
-          }
-          else{
-            newData = {};
-            newData[key] = {};
-            compositionData[connections[i].ofTheConceptId] = newData;
-          }
-          
-          let linkerConcept = await GetTheConcept(connections[i].typeId);
-          try{
-            let mytype = toTheConcept?.type?.characterValue ?? "none";
-            let value = toTheConcept.characterValue;
+      if(ofTheConcept.id != 0 && toTheConcept.id != 0){
+        let newData: any;
 
-                if(linkerConcept.characterValue.includes("_s_")){
-                  if(!(toTheConcept.id in compositionData)){
-                    compositionData[toTheConcept.id] = {};
-                  }
-                  compositionData[toTheConcept.id][mytype] = value;
-                }
-                compositionData[ofTheConcept.id] = {};
-  
-    
-          }
-          catch(ex){
-            console.log("this is error", ex);
-          }
-    
+        let key = ofTheConcept.type?.characterValue ?? "self";
+
+        if(connections[i].ofTheConceptId in compositionData){
+          newData = compositionData[connections[i].ofTheConceptId]
         }
+        else{
+          newData = {};
+          newData[key] = {};
+          compositionData[connections[i].ofTheConceptId] = newData;
+        }
+        
+        let linkerConcept = await GetTheConcept(connections[i].typeId);
+        try{
+          let mytype = toTheConcept?.type?.characterValue ?? "none";
+          let value = toTheConcept.characterValue;
+
+              if(linkerConcept.characterValue.includes("_s_")){
+                if(!(toTheConcept.id in compositionData)){
+                  compositionData[toTheConcept.id] = {};
+                }
+                compositionData[toTheConcept.id][mytype] = value;
+              }
+              compositionData[ofTheConcept.id] = {};
+
+  
+        }
+        catch(ex){
+          console.log("this is error", ex);
+        }
+  
       }
   
     }
@@ -357,71 +360,75 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
             }
           }
         }
-        else
-        {
-          if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-            let newData: any;
-    
-            let key = ofTheConcept.type?.characterValue ?? "self";
-    
-            if(connections[i].ofTheConceptId in compositionData){
-              newData = compositionData[connections[i].ofTheConceptId]
-              if(!(key in newData)){
-                newData[key] = {};
+
+        if(ofTheConcept.id != 0 && toTheConcept.id != 0){
+          let newData: any;
+  
+          let key = ofTheConcept.type?.characterValue ?? "self";
+  
+          if(connections[i].ofTheConceptId in compositionData){
+            newData = compositionData[connections[i].ofTheConceptId]
+            if(!(key in newData)){
+              newData[key] = {};
+            }
+          }
+          else{
+            newData = {};
+            newData[key] = {};
+            compositionData[connections[i].ofTheConceptId] = newData;
+          }
+          let linkerConcept = await GetTheConcept(connections[i].typeId);
+          try{
+            let mytype = toTheConcept?.type?.characterValue ?? "none";
+            let value = toTheConcept.characterValue;
+            let dataCharacter = linkerConcept.characterValue;
+            let originalDataCharacter = linkerConcept.characterValue;
+            let isComp = false;
+            if (dataCharacter == "")
+            {
+                dataCharacter = mytype;
+                dataCharacter = removeThePrefix(dataCharacter);
+                isComp = true;
+            }
+            let data = {
+                  [mytype] : value
+                }
+
+            if(isNaN(Number(dataCharacter))){
+              if(linkerConcept.characterValue.includes("_s_")){
+                // do nothing
+              }
+              else{
+                if(typeof newData[key] == "string"){
+                  newData[key] = {};
+                }
+                if(isComp){
+                  newData[key][dataCharacter] = value;
+
+                }
+                else{
+                  newData[key][dataCharacter] = data;
+
+                }
               }
             }
             else{
-              newData = {};
-              newData[key] = {};
-              compositionData[connections[i].ofTheConceptId] = newData;
-            }
-            let linkerConcept = await GetTheConcept(connections[i].typeId);
-            try{
-              let mytype = toTheConcept?.type?.characterValue ?? "none";
-              let value = toTheConcept.characterValue;
-              let dataCharacter = linkerConcept.characterValue;
-              let originalDataCharacter = linkerConcept.characterValue;
-              let isComp = false;
-              if (dataCharacter == "")
-              {
-                  dataCharacter = mytype;
-                  dataCharacter = removeThePrefix(dataCharacter);
-                  isComp = true;
-              }
-              let data = {
-                    [mytype] : value
-                  }
+              if(Array.isArray(newData[key])){
+                newData[key].push(value);
 
-              if(isNaN(Number(dataCharacter))){
-                if(linkerConcept.characterValue.includes("_s_")){
-                  // do nothing
-                }
-                else{
-                  if(typeof newData[key] == "string"){
-                    newData[key] = {};
-                  }
-                  if(isComp){
-                    newData[key][dataCharacter] = value;
-
-                  }
-                  else{
-                    newData[key][dataCharacter] = data;
-
-                  }
-                }
-              }
-              else{
+              }else{
                 newData[key] = [];
+                newData[key].push(value);
               }
+            }
 
+  
     
-      
-            }
-            catch(ex){
-              console.log("this is error", ex);
-            }
-      
           }
+          catch(ex){
+            console.log("this is error", ex);
+          }
+    
         }
     
       }
@@ -492,36 +499,33 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
           }
         }
       }
-      else
-      {
-        if(ofTheConcept.id != 0 && toTheConcept.id != 0){
-          let newData: any;
-          let linkerConcept = await GetTheConcept(connections[i].typeId);
-          let key = ofTheConcept.type?.characterValue ?? "self";
-          if(connections[i].ofTheConceptId in compositionData){
-            newData = compositionData[connections[i].ofTheConceptId]
-          }
-          else{
-            newData = {};
-            newData[key] = {};
-            compositionData[connections[i].ofTheConceptId] = newData;
-          }
-          try{
-            let mytype = toTheConcept?.type?.characterValue ?? "none";
-            let value = toTheConcept.characterValue;
-                if(linkerConcept.characterValue.includes("_s_")){
-                  if(!(toTheConcept.id in compositionData)){
-                    compositionData[toTheConcept.id] = {};
-                  }
-                  compositionData[toTheConcept.id][mytype] = value;
-                }
-
-          }
-          catch(ex){
-            console.log("this is error", ex);
-          }
-    
+      if(ofTheConcept.id != 0 && toTheConcept.id != 0){
+        let newData: any;
+        let linkerConcept = await GetTheConcept(connections[i].typeId);
+        let key = ofTheConcept.type?.characterValue ?? "self";
+        if(connections[i].ofTheConceptId in compositionData){
+          newData = compositionData[connections[i].ofTheConceptId]
         }
+        else{
+          newData = {};
+          newData[key] = {};
+          compositionData[connections[i].ofTheConceptId] = newData;
+        }
+        try{
+          let mytype = toTheConcept?.type?.characterValue ?? "none";
+          let value = toTheConcept.characterValue;
+              if(linkerConcept.characterValue.includes("_s_")){
+                if(!(toTheConcept.id in compositionData)){
+                  compositionData[toTheConcept.id] = {};
+                }
+                compositionData[toTheConcept.id][mytype] = value;
+              }
+
+        }
+        catch(ex){
+          console.log("this is error", ex);
+        }
+  
       }
   
     }

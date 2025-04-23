@@ -22,7 +22,7 @@ export { default as GetConceptByCharacter } from './Services/GetConceptByCharact
 export { GetLink,GetLinkRaw } from './Services/GetLink';
 export {CreateDefaultConcept} from './Services/CreateDefaultConcept';
 export { MakeTheTypeConceptLocal} from './Services/Local/MakeTheTypeLocal';
-export {MakeTheTypeConcept} from './Services/MakeTheTypeConcept';
+//export {MakeTheTypeConcept} from './Services/MakeTheTypeConcept';
 export {MakeTheTypeConceptApi} from './Api/MakeTheTypeConceptApi';
 export { GetLinkerConnectionFromConcepts, GetLinkerConnectionToConcepts} from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
@@ -123,6 +123,7 @@ import { AccessTracker } from "./app";
 import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
 import { getCookie, LogData } from "./Middleware/logger.service";
+import { randomInt } from "crypto";
 export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -144,6 +145,10 @@ export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 
 export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
+export {CreateData} from './Services/automated/automated-concept-connection';
+
+export {Prototype} from './DataStructures/Prototype/Prototype';
+export {createPrototypeLocal} from './prototype/prototype.service';
 type listeners = {
   listenerId: string | number
   callback: any,
@@ -241,7 +246,7 @@ async function init(
       return
     }
 
-
+    await initializeCacheServer()
     listenPostMessagaes()
     listenBroadCastMessages()
 
@@ -337,7 +342,8 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
           messagedProcessed = true
-          if (type != 'checkProcess') console.log('received from sw', type, messageId)
+         // if (type != 'checkProcess') 
+            //console.log('received from sw', type, messageId)
           clearInterval(checkProcessInterval)
           if (!event.data.success) {
             if (event?.data?.status == 401) {
@@ -364,7 +370,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
         if (type != 'checkProcess') console.log('sent to sw', type, messageId)
         navigator.serviceWorker.controller.postMessage({ type, payload: newPayload })
       } else if (serviceWorker) {
-        console.log('sent to sw', type, messageId)
+        // console.log('sent to sw', type, messageId)
         console.warn(`controller not found but serviceWorker is available. messageId: ${messageId}, type: ${type}`)
         // if (serviceWorkerReady) console.warn('service worker was registered already but navigator is empty!!!', serviceWorker)
         try {
@@ -431,7 +437,7 @@ const broadcastActions: any = {
   },
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
-      let event = new Event(payload.id || '');
+      let event = new CustomEvent(payload.id || '', payload.data);
       dispatchEvent(event);
     }
     // self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
@@ -626,14 +632,13 @@ async function initConceptConnection() {
  * @param data any
  */
 export function dispatchIdEvent(id: number|string, data:any = {}) {
-  // console.log('id event dispatched', id)
-  if (serviceWorker || typeof window != undefined) {
+  if (serviceWorker || typeof window  != "undefined") {
     // let event = new Event(`${id}`);
     let event = new CustomEvent(`${id}`, data)
     dispatchEvent(event);
   } 
   else {
-    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id}})
+    broadcastChannel.postMessage({type: 'dispatchEvent', payload: {id, data}})
 
   }
 }
@@ -740,7 +745,7 @@ async function handleRegisterServiceWorker(enableSW: any) {
         );
         // process queue if exist
         setInterval(() => {
-          console.log('message process interrval calling', messageQueue)
+          //console.log('message process interrval calling', messageQueue)
           if (messageQueue.length)
             processMessageQueue()
         }, 2000)
@@ -859,5 +864,66 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
   } catch (error) {
     console.error('error on checing executing process', type, messageId, error)
     return false
+  }
+}
+
+async function initializeCacheServer() {
+  const myCacheServer = sessionStorage.getItem("myCacheServer")
+
+  async function getCacheServer(data?: any) {
+    try {
+        const response = await fetch(BaseUrl.getMyCacheServer(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            "my-coords": data ? data.coords : "location denied",
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to sync data to the server.");
+        }
+  
+        const cacheRes = await response.json();
+  
+        if (cacheRes.success) {
+          sessionStorage.setItem("myCacheServer", cacheRes.nearestServer);
+          BaseUrl.NODE_CACHE_URL = cacheRes.nearestServer;
+        }
+  
+    } catch (error: any) {
+      console.error("error getting cache server", error.message);
+    } finally {
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        sendMessage("SESSION_DATA", {
+          type: 'SESSION_DATA',
+          data: BaseUrl.NODE_CACHE_URL
+        })
+      }
+    }
+  }
+  
+  if (!myCacheServer) {
+    navigator.geolocation.getCurrentPosition(
+      async (data) => {
+        await getCacheServer(data);
+      },
+      async (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          // await getCacheServer();
+          BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
+        }
+      }
+    );
+  } else {
+    BaseUrl.NODE_CACHE_URL = myCacheServer;
+  }
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    sendMessage("SESSION_DATA", {
+      type: 'SESSION_DATA',
+      data: BaseUrl.NODE_CACHE_URL
+    })
   }
 }

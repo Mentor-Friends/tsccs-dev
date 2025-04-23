@@ -23,7 +23,7 @@ import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number, actions: InnerActions = {concepts: [], connections: []}
     ): Promise<Concept>
 {
-    const logData : any = Logger.logfunction("MakeTheTypeConceptLocal", arguments);
+    const logData : any = Logger.logfunction("MakeTheTypeConceptLocal", arguments) || {};
     if (serviceWorker) {
         logData.serviceWorker = true;
         try {
@@ -58,7 +58,7 @@ export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: n
                 // if(typeConcept){
                     let categoryConcept = await MakeTheTypeConceptLocal(splittedStringArray[0], sessionId, sessionUserId, userId, actions);
                     let typeConcept = await MakeTheTypeConceptLocal(splittedStringArray[1], sessionId, sessionUserId, userId, actions);
-                    let concept = await CreateTheConceptLocal(typeString,splittedStringArray[1],  userId, categoryConcept.id, typeConcept.id, accessId, undefined, undefined, actions );
+                    let concept = await CreateTheConceptLocal(typeString,splittedStringArray[1],  userId, categoryConcept.id, typeConcept.id, accessId, undefined, null, actions );
                     existingConcept = concept as Concept;
 
              //   }

@@ -39,7 +39,7 @@ export  async function CreateTheConceptTemporary(referent:string, userId:number,
 }
 
 export  async function CreateTheConceptImmediate(referent:string, userId:number, categoryId:number,
-    typeId:number,referentId:number,
+    typeId:number,referentId:number|null,
     accessId:number, typeCharacter:string){
     
     let id = await ReservedIds.getId();

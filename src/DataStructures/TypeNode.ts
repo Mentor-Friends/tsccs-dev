@@ -1,3 +1,4 @@
+import { dispatchIdEvent } from "../app";
 import { Concept } from "./Concept";
 
 export class TypeNode{
@@ -18,6 +19,7 @@ export class TypeNode{
 
     public addType(node: TypeNode | null, key: number, value: number){
         if(node == null){
+            dispatchIdEvent(key, {detail: value})
             return new TypeNode(key, value);
         }        
         
@@ -27,7 +29,11 @@ export class TypeNode{
             node.rightNode = this.addType(node.rightNode, key, value);
         } else {
             // If key already exists, insert unique value into the set
-            node.value.push(value);
+            if(!node.value.includes(value)){
+                dispatchIdEvent(key, {detail: value})
+                node.value.push(value);
+
+            }
             return node;
         }
 

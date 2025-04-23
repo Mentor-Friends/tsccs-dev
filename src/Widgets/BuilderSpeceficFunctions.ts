@@ -5,7 +5,6 @@ export function TypeEditor( event:any, that:BuilderStatefulWidget){
         const inputVal = document.querySelector(
           "#widget-properties #widget-type"
         );
-        console.log("This is the input val container", inputVal, that, event);
         const existedInputEl: any = inputVal?.querySelectorAll("input");
         existedInputEl?.forEach((inputItem: any) => {
           inputItem?.remove();
@@ -13,7 +12,6 @@ export function TypeEditor( event:any, that:BuilderStatefulWidget){
 
         
         // this is used to add the type value to the dom so that we can then fix the type in the child widget.
-        console.log("event.target", event.target);
         const elementParent = event.target.closest(".added-widget-container");
         const elementDivParent = event.target.closest("div");
         let typeValue: string = "";

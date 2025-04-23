@@ -12,6 +12,9 @@ export class StatefulWidget extends BaseWidget{
     js: string = "";
 
 
+    state: { [key: string]: any } = {};
+    previousState: { [key: string]: any } = {};
+
     /**
      * These are the child widgets that need to be added to  this widget
      */
@@ -30,11 +33,16 @@ export class StatefulWidget extends BaseWidget{
     parentElement: string = "";
 
 
-    /**
-     * This is the element that is a copy of the element that is mounted.
-     */
-    element: HTMLElement | null = null;
 
+
+    // Helper methods to query elements within the widget's element
+    querySelector(selector: string): Element | null {
+      return this.element ? this.element.querySelector(selector) : null;
+    }
+    
+    querySelectorAll(selector: string): NodeListOf<Element> | null{
+      return this.element ? this.element.querySelectorAll(selector) : null;
+    }
 
     getElement(){
       return this.element;
@@ -78,22 +86,72 @@ export class StatefulWidget extends BaseWidget{
      * @param newState 
      */
     setState(newState: any) {
-      console.log("this is setting the state", this);
+      this.previousState = {...this};
         this.data = newState;
-        this.notify();
-        this.render();
+        this.state = {...this};
+        if(this.hasStateChanged()){
+          this.notify();
+          this.render();
+        }
     }
 
+    setStateProperty(newProperty:Object){
+      this.previousState = {...this};
+      Object.assign(this, newProperty);
+      this.state = {...this};
+      if(this.hasStateChanged()){
+        this.notify();
+        this.render();
+      }
+
+    }
+
+    // this will check to give true if the property has changed
+    // false if the property has not changed.
+    hasStateChanged(): boolean {
+      let state =  !this.isPropertyEqual(this.state, this.previousState);
+      return state;
+    }
+
+    // Compare the state of the widget with current state and previous stage.
+    // This is useful because it is not actual deepEqual but just the single property of the class.
+    private isPropertyEqual(obj1: any, obj2: any): boolean {
+      if (obj1 === obj2) return true; // Same reference or primitive values
+      if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+          return false;
+      }
+
+      const keys1 = Object.keys(obj1);
+      const keys2 = Object.keys(obj2);
+
+      if (keys1.length !== keys2.length) return false;
+
+      for (let key of keys1) {
+          if (!keys2.includes(key)) return false;
+          for(let key2 of keys2){
+            if(key == key2 && key != "state" && key != "previousState"){
+              let obj1Val = obj1[key];
+              let obj2Val = obj2[key];
+              if(obj1Val != obj2Val){
+                return false;
+              } 
+            }
+
+          }
+
+          //if (!this.deepEqual(obj1[key], obj2[key])) return false;
+      }
+
+      return true;
+    }
 
     /**
      * If any child widgets are registered in the widget. Then without any other changes to the contents and state
      * this loadChildWidgets will be called which will help the child widgets be rendered to their respective positions.
      */
     loadChildWidgets(){
-      console.log("this is the child Widgets", this.childWidgets);
           this.childWidgets.map((child: any) => {
           let widget = this.getElementById(child.parentElement);
-          console.log("this is the widget for the child", widget);
 
           if(widget){
             widget.innerHTML = "";
@@ -114,12 +172,12 @@ export class StatefulWidget extends BaseWidget{
       //console.log("added-widget-container",this.childWidgetElement);
       // addEvents is called after the element has been mounted.
       //console.log("this is the rendering", this);
+      this.loadChildWidgets();
       this.after_render();
-
       // then after the child widgets are again loaded.
-      if(this.widgetMounted){
-        this.loadChildWidgets();
-      }
+      // if(this.widgetMounted){
+      // }
+
     }
 
     getElementByClassName(identifier: string){

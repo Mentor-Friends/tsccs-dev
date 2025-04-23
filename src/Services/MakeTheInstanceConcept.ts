@@ -31,7 +31,7 @@ export default async function MakeTheInstanceConcept(
   passedSessionId: number = 999,
   referentId: number = 0
 ) {
-  const logData : any = Logger.logfunction("MakeTheInstanceConcept", arguments);
+  const logData : any = Logger.logfunction("MakeTheInstanceConcept", arguments) || {};
   if (serviceWorker) {
     logData.serviceWorker = true;
     try {

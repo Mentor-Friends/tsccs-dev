@@ -4,7 +4,7 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 export async function FindConnectionsOfCompositionsBulkInMemory(composition_ids:number[] = []){
-  const logData : any = Logger.logfunction("FindConnectionsOfCompositionsBulkInMemory", [composition_ids.length]);
+  const logData : any = Logger.logfunction("FindConnectionsOfCompositionsBulkInMemory", [composition_ids.length]) || {};
   let FinalConnectionList:Connection[] = [];
   try {
     if (serviceWorker) {

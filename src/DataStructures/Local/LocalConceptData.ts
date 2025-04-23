@@ -9,6 +9,8 @@ import { ConvertFromLConceptToConcept } from "../../Services/Local/ConvertFromLC
 import { LocalGhostIdTree } from "./LocalGhostIdTree";
 import { LocalConnectionData } from "./LocalConnectionData";
 import { LocalSyncData } from "./LocalSyncData";
+import { AddGhostConcept } from "../../app";
+import { TokenStorage } from "../Security/TokenStorage";
 export class LocalConceptsData{
 
     name: string;
@@ -38,6 +40,7 @@ export class LocalConceptsData{
             LocalGhostIdTree.addConceptToTree(concept);
             //let removeData = removeFromDatabase("localconcept", concept.ghostId);
             ConceptsData.AddConcept(concept);
+            AddGhostConcept(concept, concept.userId, TokenStorage.sessionId);
         }
     }
 

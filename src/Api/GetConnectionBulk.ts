@@ -12,7 +12,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
  * @returns the list of  connections that have been fetched
  */
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
-    const logData : any = Logger.logfunction("GetConnectionBulk", connectionIds.length);
+    const logData : any = Logger.logfunction("GetConnectionBulk", connectionIds.length) || {};
 
     let connectionList:Connection[] = [];
     try{
@@ -33,13 +33,16 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
            // if the connections are already present in the local memory then take it from there 
             //else put it in a list called bulkConnectionFetch which will be used to call and api.
             for(let i=0; i<connectionIds.length; i++){
-                let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
-                if(conceptUse.id == 0){
-                    bulkConnectionFetch.push(connectionIds[i]);
+                if(!ConnectionData.GetNpConn(connectionIds[i])){
+                    let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
+                    if(conceptUse.id == 0){
+                        bulkConnectionFetch.push(connectionIds[i]);
+                    }
+                    else{
+                        connectionList.push(conceptUse);
+                    }
                 }
-                else{
-                    connectionList.push(conceptUse);
-                }
+
             }
     
             // let remainingIds:any = {};

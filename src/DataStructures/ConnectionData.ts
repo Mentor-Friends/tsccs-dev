@@ -13,6 +13,8 @@ export class ConnectionData {
   constructor() {
     this.name = "Connection Array";
   }
+
+  static deletedConnections : number[] = [];
   static connectionArray: Connection[] = [];
 
   static connectionDictionary: Connection[] = [];
@@ -30,6 +32,19 @@ export class ConnectionData {
   static AddConnectionToStorage(connection: Connection) {
     UpdateToDatabase("connection", connection);
   }
+
+  static AddNpConn(id: number){
+    if(!this.deletedConnections.includes(id)){
+        this.deletedConnections.push(id);
+    }
+  }
+
+  static GetNpConn(id: number){
+    if(this.deletedConnections.includes(id)){
+        return true;
+    }
+    return false;
+}
 
   static AddConnection(connection: Connection) {
     //    var contains = this.CheckContains(connection);
@@ -207,7 +222,7 @@ export class ConnectionData {
 
   // commented
   static async GetConnectionsOfCompositionLocal(id: number) {
-    const logData : any = Logger.logfunction("ConnectionData.GetConnectionsOfCompositionLocal", arguments);
+    const logData : any = Logger.logfunction("ConnectionData.GetConnectionsOfCompositionLocal", arguments) || {};
     let connections: Connection[] = [];
 
     try{    

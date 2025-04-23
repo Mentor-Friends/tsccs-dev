@@ -16,7 +16,7 @@ import { BinaryTree, sendMessage, serviceWorker } from "../app";
  */
 export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[]>{
 
-  const logData : any = Logger.logfunction("GetConceptBulk", [passedConcepts.length]);
+  const logData : any = Logger.logfunction("GetConceptBulk", [passedConcepts.length]) || {};
     let result:Concept[] = [];
     let setTime = new Date().getTime();
     let startTime = performance.now()
@@ -42,10 +42,15 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
       if(conceptIds.length > 0){
         let bulkConceptFetch: number[] = [];
         for(let i=0; i<conceptIds.length; i++){
+          if(!ConceptsData.GetNpc(conceptIds[i])){
             let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
+
             if(conceptUse.id == 0){
-                bulkConceptFetch.push(conceptIds[i]);
+              bulkConceptFetch.push(conceptIds[i]);
             }
+          }
+
+
         }
        // let newAlgoTime = new Date().getTime();
         //let remainingIds:any = {};

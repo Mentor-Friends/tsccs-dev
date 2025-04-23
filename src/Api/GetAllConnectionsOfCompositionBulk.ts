@@ -10,7 +10,7 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 
 
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
-  const logData : any = Logger.logfunction("GetAllConnectionsOfCompositionBulk", arguments);
+  const logData : any = Logger.logfunction("GetAllConnectionsOfCompositionBulk", arguments) || {};
   if (serviceWorker) {
     logData.serviceWorker = true;
     try {

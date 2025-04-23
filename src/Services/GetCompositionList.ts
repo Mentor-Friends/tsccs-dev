@@ -11,7 +11,7 @@ import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
 // get the list of compositions from the type 
 // for eg get list of boomgpt
 export  async function GetCompositionList(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
-   const logData : any = Logger.logfunction("GetCompositionList", arguments);
+   const logData : any = Logger.logfunction("GetCompositionList", arguments) || {};
    if (serviceWorker) {
       logData.serviceWorker = true;
       try {

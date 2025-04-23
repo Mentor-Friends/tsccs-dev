@@ -28,6 +28,7 @@ export class ConnectionOfNode extends NodePrimitive{
             //node= passedNode;
             // let event = new Event(`${passedNode.key}`);
             // dispatchEvent(event);
+           // dispatchIdEvent(passedNode.key);
             return passedNode;
         }
 
