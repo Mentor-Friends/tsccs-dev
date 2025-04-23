@@ -1,5 +1,6 @@
 import { BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
 import { ckeditorCSS } from "../Constants/ckeditorCSS";
+import { initializeLibraries } from "./RenderWidgetLibrary.service";
 import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
@@ -102,6 +103,19 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
     ${widgetTree.css + newWidget.css + ckeditorCSS} 
   }
 `;
+
+  // library
+  initializeLibraries(widgetTree);
+
+  if (widgetTree.children.length) {
+    widgetTree?.children.forEach((childWidget: WidgetTree) => {
+      const childWidgetLibrary = childWidget?.library
+      if (childWidgetLibrary?.css?.length || childWidgetLibrary?.js.length) {
+        initializeLibraries(childWidget)
+      }
+    })
+  }
+
       //attachNode.appendChild(style);
       document.head.appendChild(style);
       // add newWidget js to the page
