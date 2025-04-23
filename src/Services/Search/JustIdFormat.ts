@@ -1,4 +1,4 @@
-import { Connection } from "../../app";
+import { ConceptsData, Connection } from "../../app";
 import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
 import GetTheConcept from "../GetTheConcept";
@@ -361,6 +361,14 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
               if(mymainData){
                 mymainData["id"] = mainComposition[i];
           
+              }
+              else{
+                        let checkConcept = await ConceptsData.GetConcept(mainComposition[i]);
+                        if(checkConcept.id != 0){
+                          mymainData = {};
+                          mymainData["id"] = mainComposition[i];
+                        }
+
               }
               mainData.push(mymainData);
               
