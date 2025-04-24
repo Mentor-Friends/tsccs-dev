@@ -895,7 +895,6 @@ async function initializeCacheServer() {
   
         if (cacheRes.success) {
           sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
-          console.log("these are the cache servers", cacheRes.servers)
           if (!cacheRes.servers) {
             BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
           } else {
@@ -916,7 +915,6 @@ async function initializeCacheServer() {
   }
   
   if (!myCacheServer) {
-    console.log("myCacheserver", myCacheServer, "not found?")
     navigator.geolocation.getCurrentPosition(
       async (data) => {
         await getCacheServer(data);
@@ -930,10 +928,8 @@ async function initializeCacheServer() {
     );
   } else {
     if (Array.isArray(myCacheServer) && myCacheServer.length) {
-      console.log("mycache server if", myCacheServer);
       BaseUrl.NODE_CACHE_URL = myCacheServer[0];
     } else {
-      console.log("mycache server else ", myCacheServer);
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
   }
