@@ -11,9 +11,8 @@ export class Prototype {
     childPrototypes:Prototype[] = [];
 
     isCompositional:boolean = false;
-
-
-
+    options:string[] = [];
+    selector:string = "";
 
 
     concepts:Concept[] = [];
