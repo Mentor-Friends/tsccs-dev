@@ -240,13 +240,13 @@ async function init(
     initializeFlags(BaseUrl.FLAGS)
     // console.log("BaseUrl.FLAGS before sending to service worker : ",  BaseUrl.FLAGS)
 
-    await initializeCacheServer()
     if (!("serviceWorker" in navigator)) {
       await initConceptConnection();
       console.warn("Service Worker not supported in this browser.");
       return
     }
-
+    
+    await initializeCacheServer()
     listenPostMessagaes()
     listenBroadCastMessages()
 
