@@ -245,7 +245,7 @@ async function init(
       console.warn("Service Worker not supported in this browser.");
       return
     }
-
+    
     await initializeCacheServer()
     listenPostMessagaes()
     listenBroadCastMessages()
@@ -868,7 +868,12 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
 }
 
 async function initializeCacheServer() {
-  const myCacheServer = sessionStorage.getItem("myCacheServer")
+  let myCacheServer = sessionStorage.getItem("cacheServers");
+  if (myCacheServer === undefined || myCacheServer === "undefined") {
+    BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
+    return;
+  }
+  myCacheServer = JSON.parse(myCacheServer as string)
 
   async function getCacheServer(data?: any) {
     try {
@@ -889,8 +894,12 @@ async function initializeCacheServer() {
         const cacheRes = await response.json();
   
         if (cacheRes.success) {
-          sessionStorage.setItem("myCacheServer", cacheRes.nearestServer);
-          BaseUrl.NODE_CACHE_URL = cacheRes.nearestServer;
+          sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
+          if (!cacheRes.servers) {
+            BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
+          } else {
+            BaseUrl.NODE_CACHE_URL = cacheRes.servers[0];
+          }
         }
   
     } catch (error: any) {
@@ -918,7 +927,11 @@ async function initializeCacheServer() {
       }
     );
   } else {
-    BaseUrl.NODE_CACHE_URL = myCacheServer;
+    if (Array.isArray(myCacheServer) && myCacheServer.length) {
+      BaseUrl.NODE_CACHE_URL = myCacheServer[0];
+    } else {
+      BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
+    }
   }
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     sendMessage("SESSION_DATA", {
