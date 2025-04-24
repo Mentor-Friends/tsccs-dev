@@ -39,7 +39,7 @@ export class BaseUrl{
    // static GetConceptUrl:string = this.BASE_URL + '/api/getConcept';
 
     static GetConceptUrl(){
-        if (this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
+        if (!this.NODE_CACHE_URL || this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
             return this.BASE_URL + '/api/getConcept';
         } else {
             return this.NODE_CACHE_URL + '/api/getConcept';
@@ -47,7 +47,7 @@ export class BaseUrl{
     }
 
     static GetConnectionUrl(){
-        if (this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
+        if (!this.NODE_CACHE_URL || this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
             return this.BASE_URL + '/api/get-connection-by-id';
         } else {
             return this.NODE_CACHE_URL + '/api/get-connection-by-id';
@@ -55,7 +55,7 @@ export class BaseUrl{
     }
 
     static GetConceptBulkUrl(){
-        if (this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
+        if (!this.NODE_CACHE_URL ||  this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
             return this.BASE_URL + '/api/get_concept_bulk';
         } else {
             return this.NODE_CACHE_URL + '/api/get_concept_bulk';
@@ -63,7 +63,7 @@ export class BaseUrl{
     }
 
     static GetConnectionBulkUrl(){
-        if (this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
+        if (!this.NODE_CACHE_URL || this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
             return this.BASE_URL + '/api/get_connection_bulk';
         } else {
             return this.NODE_CACHE_URL + '/api/get_connection_bulk';
