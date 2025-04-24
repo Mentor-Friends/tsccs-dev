@@ -1,6 +1,8 @@
 import { GetAllLinkerConnectionsFromTheConcept } from "../Api/GetAllLinkerConnectionsFromTheConcept";
 import { GetAllLinkerConnectionsToTheConcept } from "../Api/GetAllLinkerConnectionsToTheConcept";
+import { GetConnectionsByApiTypes } from "../Api/GetConnections/GetConnectionsByTypeApi";
 import { Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter, handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { GetConnectionsByTypes } from "../DataStructures/ConnectionByType/GetConnectionByType";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 /**
@@ -86,4 +88,34 @@ export async function GetAllTheConnectionsByTypeAndOfTheConcept(id: number, link
     }
 
     return toDelete;
+}
+
+
+/**
+ * 
+ * @param id 
+ * @param linker 
+ * @returns 
+ */
+export async function DeleteConnectionsByTypeLocal(id: number, linkerStrings: string[]){
+    const logData : any = Logger.logfunction("DeleteConnectionByTypeLocal", arguments) || {}
+    if (serviceWorker) {
+        logData.serviceWorker = true;
+        try {
+            const res: any = await sendMessage('DeleteConnectionByTypeLocal', { id, linkerStrings })
+            Logger.logUpdate(logData); 
+            return res.data
+        } catch (error) {
+            console.error('DeleteConnectionByTypeLocal sw error: ', error)
+            UpdatePackageLogWithError(logData, 'DeleteConnectionByTypeLocal', error);
+            handleServiceWorkerException(error)
+        }
+    }
+    let getConnectionsByTypes: GetConnectionsByTypes = new GetConnectionsByTypes();
+    getConnectionsByTypes.ofTheConceptId = id;
+    getConnectionsByTypes.connectionTypes = linkerStrings;
+
+    let connections = await GetConnectionsByApiTypes(getConnectionsByTypes);
+
+    Logger.logUpdate(logData);
 }

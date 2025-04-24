@@ -6,6 +6,41 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger } from "../app";
 import { BinaryTree, sendMessage, serviceWorker } from "../app";
+import { requestNextCacheServer } from "../Services/cacheService";
+
+async function processBulkConceptData(response: Response, passedConcepts: number[], result:Concept[], logData:any, startTime:number) {
+  if (response.ok) {
+    result = await response.json();
+
+    if (result.length > 0) {
+      for (let i = 0; i < result.length; i++) {
+        let concept = result[i] as Concept;
+        ConceptsData.AddConcept(concept);
+      }
+    }
+    console.log("added the concepts");
+    Logger.logUpdate(logData);
+    // Add Log
+    // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, result, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
+  } else {
+    console.log("Get Concept Bulk error", response.status);
+    // Add Log
+    Logger.logError(
+      startTime,
+      "unknown",
+      "read",
+      "unknown",
+      undefined,
+      response.status,
+      response,
+      "GetConceptBulk",
+      [passedConcepts],
+      "unknown",
+      undefined
+    );
+    HandleHttpError(response);
+  }
+}
 
 /**
  * This function takes in a list of ids and returns a list of concepts . This uses local memory to find concepts
@@ -42,10 +77,15 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
       if(conceptIds.length > 0){
         let bulkConceptFetch: number[] = [];
         for(let i=0; i<conceptIds.length; i++){
+          if(!ConceptsData.GetNpc(conceptIds[i])){
             let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
+
             if(conceptUse.id == 0){
-                bulkConceptFetch.push(conceptIds[i]);
+              bulkConceptFetch.push(conceptIds[i]);
             }
+          }
+
+
         }
        // let newAlgoTime = new Date().getTime();
         //let remainingIds:any = {};
@@ -61,39 +101,33 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
         //bulkConceptFetch = conceptIds;
     
 
-        if(bulkConceptFetch.length == 0){
-            Logger.logfunction(logData)
-            return result;
-        }
-        else{
-            let header = GetRequestHeader();
-            const response = await fetch(BaseUrl.GetConceptBulkUrl(),{
-                method: 'POST',
-                headers: header,
-                body: JSON.stringify(bulkConceptFetch)
-            });
-            if(response.ok){
-                result = await response.json();
+        if (bulkConceptFetch.length == 0) {
+          Logger.logfunction(logData);
+          return result;
+        } else {
+          let header = GetRequestHeader();
+          let response;
+          const requestData = {
+            method: "POST",
+            headers: header,
+            body: JSON.stringify(bulkConceptFetch),
+          };
+          try {
+            response = await fetch(BaseUrl.GetConceptBulkUrl(), requestData);
+          } catch (error) {
+            response = await requestNextCacheServer(
+              requestData,
+              "/api/get_concept_bulk"
+            );
+          }
 
-                if(result.length > 0){
-                    for(let i=0 ; i<result.length; i++){
-                        let concept = result[i] as Concept;
-                        ConceptsData.AddConcept(concept);
-                    }
-                }
-                console.log("added the concepts");
-                Logger.logUpdate(logData)
-                // Add Log
-                // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, result, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)
-            }
-            else{
-                console.log("Get Concept Bulk error", response.status);
-                // Add Log
-                Logger.logError(startTime, "unknown", "read", "unknown", undefined, response.status, response, "GetConceptBulk", [passedConcepts], "unknown", undefined)
-                HandleHttpError(response);
-            }
-
-
+          await processBulkConceptData(
+            response,
+            passedConcepts,
+            result,
+            logData,
+            startTime
+          );
         }
 
       }

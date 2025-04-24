@@ -17,10 +17,14 @@ export class BaseObserver{
     /**
     * This is called by any data change. So that any data change will notify all the callback functions to execute.
     */
-    notify(){
-        console.log("this is the subscribers", this.subscribers);
+    notify(passedData:any=null){
         this.subscribers.map((subscriber: any) => {
-            subscriber(this.data)
+            if(passedData){
+                subscriber(passedData);
+            }
+            else{
+                subscriber(this.data);
+            }
         });
     }
 
@@ -33,6 +37,6 @@ export class BaseObserver{
      */
     dataChange(callback: any){
         this.subscribers.push(callback);
-        return callback(this.data);
+       // return callback(this.data);
       }
 }
