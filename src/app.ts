@@ -240,13 +240,13 @@ async function init(
     initializeFlags(BaseUrl.FLAGS)
     // console.log("BaseUrl.FLAGS before sending to service worker : ",  BaseUrl.FLAGS)
 
+    await initializeCacheServer()
     if (!("serviceWorker" in navigator)) {
       await initConceptConnection();
       console.warn("Service Worker not supported in this browser.");
       return
     }
 
-    await initializeCacheServer()
     listenPostMessagaes()
     listenBroadCastMessages()
 
@@ -868,8 +868,13 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
 }
 
 async function initializeCacheServer() {
-  let myCacheServer = sessionStorage.getItem("cacheServers") as string;
-  myCacheServer = JSON.parse(myCacheServer)
+  let myCacheServer = sessionStorage.getItem("cacheServers");
+  if (myCacheServer === undefined || myCacheServer === "undefined") {
+    BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
+    return;
+  }
+  myCacheServer = JSON.parse(myCacheServer as string)
+  console.trace("these are my cache servers", myCacheServer, undefined, myCacheServer == "undefined")
 
   async function getCacheServer(data?: any) {
     try {
@@ -892,7 +897,11 @@ async function initializeCacheServer() {
         if (cacheRes.success) {
           sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
           console.log("these are the cache servers", cacheRes.servers)
-          BaseUrl.NODE_CACHE_URL = cacheRes.servers[0];
+          if (!cacheRes.servers) {
+            BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
+          } else {
+            BaseUrl.NODE_CACHE_URL = cacheRes.servers[0];
+          }
         }
   
     } catch (error: any) {
@@ -908,6 +917,7 @@ async function initializeCacheServer() {
   }
   
   if (!myCacheServer) {
+    console.log("myCacheserver", myCacheServer, "not found?")
     navigator.geolocation.getCurrentPosition(
       async (data) => {
         await getCacheServer(data);
@@ -921,9 +931,11 @@ async function initializeCacheServer() {
     );
   } else {
     if (Array.isArray(myCacheServer) && myCacheServer.length) {
+      console.log("mycache server if", myCacheServer);
       BaseUrl.NODE_CACHE_URL = myCacheServer[0];
     } else {
-      BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
+      console.log("mycache server else ", myCacheServer);
+      BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
   }
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
