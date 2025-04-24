@@ -874,7 +874,6 @@ async function initializeCacheServer() {
     return;
   }
   myCacheServer = JSON.parse(myCacheServer as string)
-  console.trace("these are my cache servers", myCacheServer, undefined, myCacheServer == "undefined")
 
   async function getCacheServer(data?: any) {
     try {
