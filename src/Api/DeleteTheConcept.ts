@@ -14,7 +14,7 @@ export default async function DeleteTheConcept(id:number, token:string =""){
            formdata.append("id", id.toString());
             const response = await fetch(BaseUrl.DeleteConceptUrl(),{
                 method: 'POST',
-                headers: myHeaders,
+               // headers: myHeaders,
                 body: formdata
             });
             if(!response.ok){

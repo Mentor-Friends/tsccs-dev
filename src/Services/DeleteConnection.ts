@@ -5,9 +5,11 @@ import { removeFromDatabase } from "../Database/NoIndexDb";
 import {GetConnectionById} from "./GetConnections";
 
 export  async function DeleteConnectionById(id:number, token:string=""){
+    let isDeleted:boolean = false;
     var connection = await GetConnectionById(id);
-    DeleteTheConnection(id, token);
+    isDeleted = await DeleteTheConnection(id, token);
    removeFromDatabase("connection",id);
    ConnectionBinaryTree.removeNodeFromTree(id);
    ConnectionTypeTree.removeTypeConcept(connection.typeId,id);
+   return isDeleted;
 }

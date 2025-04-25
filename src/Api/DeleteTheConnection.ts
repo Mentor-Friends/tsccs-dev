@@ -8,13 +8,12 @@ export default async function DeleteTheConnection(id:number, token:string = ""){
            let myHeaders = GetRequestHeader('application/x-www-form-urlencoded');
            if(token != ""){
               myHeaders = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded',token)
- 
            }
            formdata.append("id", id.toString());
-           formdata.append("apiKey", "nodeserver");
+           //formdata.append("apiKey", "nodeserver");
             const response = await fetch(BaseUrl.DeleteTheConnectionUrl(),{
                 method: 'POST',
-                headers: myHeaders,
+               // headers: myHeaders,
                 body: formdata,  
                 redirect: "follow"
             });
@@ -24,6 +23,7 @@ export default async function DeleteTheConnection(id:number, token:string = ""){
             }
             else{
               const result = await response.json()
+              console.log("This is the result", result);
               isDeleted = result.success;
             }
 
