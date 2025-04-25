@@ -5,7 +5,7 @@ import { BinaryTypeTree } from "../DataStructures/BinaryTypeTree";
 import { removeFromDatabase } from "../Database/NoIndexDb";
 import GetTheConcept from "./GetTheConcept";
 
-export  async function DeleteConceptById(id:number){
+export  async function DeleteConceptById(id:number, token:string = ""){
     var concept = await GetTheConcept(id);
     await BinaryTree.removeNodeFromTree(id);
     var typeId = concept.typeId;
@@ -13,5 +13,5 @@ export  async function DeleteConceptById(id:number){
     await BinaryTypeTree.removeTypeConcept(typeId,id);
     await BinaryCharacterTree.removeNodeByCharacter(character,id);
     removeFromDatabase("concept",id);
-    DeleteTheConcept(id);
+    DeleteTheConcept(id, token);
 }

@@ -1,13 +1,20 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-export default async function DeleteTheConnection(id:number){
-    try{
+import { GetRequestHeader, GetRequestHeaderWithAuthorization } from "../Services/Security/GetRequestHeader";
+export default async function DeleteTheConnection(id:number, token:string = ""){
+  let isDeleted = false;  
+  try{
            const formdata = new FormData();
+           let myHeaders = GetRequestHeader('application/x-www-form-urlencoded');
+           if(token != ""){
+              myHeaders = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded',token)
+ 
+           }
            formdata.append("id", id.toString());
            formdata.append("apiKey", "nodeserver");
             const response = await fetch(BaseUrl.DeleteTheConnectionUrl(),{
                 method: 'POST',
+                headers: myHeaders,
                 body: formdata,  
                 redirect: "follow"
             });
@@ -15,6 +22,11 @@ export default async function DeleteTheConnection(id:number){
               console.log('Delete connection error status: ', response.status);
               HandleHttpError(response);
             }
+            else{
+              const result = await response.json()
+              isDeleted = result.success;
+            }
+
 
 
         
@@ -27,4 +39,6 @@ export default async function DeleteTheConnection(id:number){
         }
         throw error;
       }
+
+      return isDeleted;
 }

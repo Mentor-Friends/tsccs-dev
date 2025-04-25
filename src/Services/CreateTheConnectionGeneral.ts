@@ -3,16 +3,20 @@ import { ReservedConnectionIds } from "../DataStructures/ReservedIds";
 import { SyncData } from "../DataStructures/SyncData";
 
 export async  function CreateTheConnectionGeneral(ofTheConceptId:number, ofTheConceptUserId:number, toTheConceptId:number, toTheConceptUserId:number,
-     typeId: number, sessionInformationId: number, sessionInformationUserId: number, orderId: number = 1, accessId = 4
+     typeId: number,  sessionInformationId: number, sessionInformationUserId: number, orderId: number = 1, accessId = 4, passedUserId:number = 999,
     ){  
-        var orderUserId: number = ofTheConceptUserId;
-        var typeUserId: number = ofTheConceptUserId;
-        var userId : number = ofTheConceptUserId;
-        var securityId: number = 0;
-        var securityUserId: number = ofTheConceptUserId;
-        var accessUserId: number = ofTheConceptUserId;
-        var id = await ReservedConnectionIds.getId();
-        var connection = new Connection(id,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
+        let orderUserId: number = ofTheConceptUserId;
+        let typeUserId: number = ofTheConceptUserId;
+        let userId : number = ofTheConceptUserId;
+
+        if(passedUserId != 999){
+            userId = passedUserId;
+        }
+        let securityId: number = 0;
+        let securityUserId: number = ofTheConceptUserId;
+        let accessUserId: number = ofTheConceptUserId;
+        let id = await ReservedConnectionIds.getId();
+        let connection = new Connection(id,ofTheConceptId,toTheConceptId, ofTheConceptUserId,toTheConceptUserId,userId,typeId,
             typeUserId, orderId, orderUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId);
         if(ofTheConceptId == toTheConceptId){
             connection.ofTheConceptId = 0;
