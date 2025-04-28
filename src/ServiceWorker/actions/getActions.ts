@@ -17,6 +17,7 @@ import {
 } from "../../Services/GetComposition";
 import { GetCompositionFromConnectionsWithDataId, GetCompositionFromConnectionsWithDataIdFromConnections, GetCompositionFromConnectionsWithDataIdIndex, GetCompositionFromConnectionsWithIndex, GetCompositionFromConnectionsWithIndexFromConnections, GetConnectionDataPrefetch } from "../../Services/GetCompositionBulk";
 import { GetConceptByCharacterUpdated } from "../../Services/GetConceptByCharacter";
+import { AddTypeConcept } from "../../Services/GetTheConcept";
 import { GetTheConceptLocal } from "../../Services/Local/GetTheConceptLocal";
 import { GetLinkListener } from "../../WrapperFunctions/GetLinkObservable";
 
@@ -27,6 +28,10 @@ export const getActions: Actions = {
   },
   GetTheConcept: async (payload) => {
     const data = await GetTheConcept(payload.id, payload.userId)
+    return { success: true, data }
+  },
+  AddTypeConcept: async (payload) => {
+    const data = await AddTypeConcept(payload.concept)
     return { success: true, data }
   },
   GetConceptBulk: async (payload) => {
