@@ -325,7 +325,11 @@ export class BaseUrl{
     }
 
     static getLatestWidgetData(){
-        return this.BASE_URL + '/api/get-latest-widget';
+        if (!this.NODE_CACHE_URL || this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") {
+            return this.BASE_URL + '/api/get-latest-widget';
+        } else {
+            return this.NODE_CACHE_URL + '/api/get-latest-widget';
+        }
     }
 
     static getConnectionsByTypes(){
