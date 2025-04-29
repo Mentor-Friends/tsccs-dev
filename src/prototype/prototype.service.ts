@@ -1,6 +1,8 @@
 import { Concept, Connection, CreateDefaultConcept, CreateTheConnectionLocal, InnerActions, LocalTransaction, MakeTheInstanceConceptLocal, MakeTheTypeConceptLocal } from "../app";
 import { ConceptsToDraw } from "../DataStructures/ConceptsToDraw";
 import { Prototype } from "../DataStructures/Prototype/Prototype";
+import { PrototypeOption } from "../DataStructures/Prototype/PrototypeOption";
+import { MergeTwoArrays } from "../Services/Common/MergeArrays";
 import CreateTheConceptLocal from "../Services/Local/CreateTheConceptLocal";
 
 export async function createPrototypeLocal(prototype:Prototype){
@@ -12,6 +14,12 @@ export async function createPrototypeLocal(prototype:Prototype){
   let optionalConnections:Connection[] = [];
   if(prototype.isCompositional){
     mainPrototype = await addCompositionPrototype(prototype.prototype, allConcepts,allConnections);
+    let conceptsConnections = await addOptions(prototype.options, mainPrototype);
+    let optionConcepts = conceptsConnections["concepts"];
+    let optionConnections = conceptsConnections["connections"];
+
+    MergeTwoArrays(requiredConnections, optionConnections);
+    MergeTwoArrays(allConcepts, optionConcepts);
 
   }
   else{
@@ -33,27 +41,52 @@ export async function createPrototypeLocal(prototype:Prototype){
     for(let i=0; i< prototype.childPrototypes.length; i++){
         let ChildPrototypeWrapper = await createPrototypeLocal(prototype.childPrototypes[i]);
         let childPrototype:Concept = ChildPrototypeWrapper["mainConcept"];
+        let childConnections:Connection[] = ChildPrototypeWrapper["connections"];
+        let childConcepts:Concept[] = ChildPrototypeWrapper["concepts"];
         let childConnection = await CreateTheConnectionLocal(mainPrototype.id, childPrototype.id, connectionType.id, 1000, connectionTypeString,999);
         requiredConnections.push(childConnection);
+        MergeTwoArrays(requiredConnections, childConnections);
+        MergeTwoArrays(allConcepts, childConcepts);
         allConcepts.push(childPrototype);
     }
   }
   
-  requiredConnections = [...requiredConnections, ...optionalConnections];
-  for(let i=0; i<allConnections.length; i++){
-    requiredConnections.push(allConnections[i]);
-  }
-
-  prototype.concepts = [...allConcepts, ...prototype.addedConcepts];
-  prototype.connections = [...requiredConnections, ...prototype.addedConnections];
-  console.log("this is the prototype before", requiredConnections);
-  console.log("this is the prototype after", prototype);
+  MergeTwoArrays(requiredConnections, optionalConnections);
+  MergeTwoArrays(requiredConnections, allConnections);
+  MergeTwoArrays(allConcepts, prototype.addedConcepts);
+  MergeTwoArrays(requiredConnections, prototype.addedConnections);
+  prototype.concepts = allConcepts;
+  prototype.connections = requiredConnections;
+  console.log("this is the connections", requiredConnections);
   return{
     "concepts": allConcepts,
     "connections": requiredConnections,
     "mainConcept": mainPrototype
   }
 
+}
+
+
+export async function addOptions(options:PrototypeOption[], mainPrototype:Concept){
+  
+  let OptionConcepts:Concept[] = [];
+  let OptionConnections:Connection[] = [];
+  let connectionType = compositionalTypeSemantic(mainPrototype, true);
+  let optionConnectionType:Concept = await MakeTheTypeConceptLocal(connectionType, 999, 999, 999);
+  for (let i=0; i<options.length; i++) {
+      let key = options[i].type;
+      let value = options[i].value;
+      let concept = await MakeTheInstanceConceptLocal(key, value, false, 999, 999, 999);
+      OptionConcepts.push(concept);
+      let connection = await CreateTheConnectionLocal(mainPrototype.id, concept.id, optionConnectionType.id, 1000, connectionType,999);
+      OptionConnections.push(connection);
+  }
+
+
+  return {
+    "concepts": OptionConcepts,
+    "connections": OptionConnections
+  }
 }
 
 
@@ -88,7 +121,7 @@ export async function CreatePrototypeConcept(prototypeConcept:Concept, typeConce
 }
 
 export function typeSemantic(mainPrototype:Concept, required:boolean = true, isComposition:boolean = false){
-    let connectionType = mainPrototype.type?.characterValue + "_prototype";
+    let connectionType = "the_prototype_of_" + mainPrototype.type?.characterValue ;
     if(required){
         connectionType = connectionType + "_requires";
 
@@ -100,6 +133,12 @@ export function typeSemantic(mainPrototype:Concept, required:boolean = true, isC
         connectionType = connectionType + "_the_composition";
     }
     return connectionType;
+
+}
+
+export function compositionalTypeSemantic(mainPrototype:Concept, isOption:boolean = false){
+  let connectionType = "the_composition_s_option";
+  return connectionType;
 
 }
 
