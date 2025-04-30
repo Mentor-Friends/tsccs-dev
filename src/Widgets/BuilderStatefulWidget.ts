@@ -162,8 +162,13 @@ export class BuilderStatefulWidget extends StatefulWidget {
          // event.stopPropagation();
           that.createTypeEditor(event);
         };
-      this.element.className = "mftsccs-marking-element";
+
+        this.element.className = "mftsccs-marking-element";
         
+      }
+      else{
+        // this class is added so that in the condition that the rendered widget is added to the html it can be removed from the builer.
+        this.element.classList.add('mftsccs-marking-rendered');
       }
 
       this.element.innerHTML = this.getHtml();
