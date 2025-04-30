@@ -13,3 +13,10 @@ export type TAssistant = {
   input: string;
   type: string;
 };
+
+export type TCustomFunction = {
+  id?: number;
+  code: string;
+  name: string;
+  slug: string;
+};

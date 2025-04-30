@@ -289,6 +289,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       try {
         const widgetNode = new WidgetTree();
         const output = GetWidgetForTree(bulkWidget, widgetId);
+        console.log("getWidgetBulkFromId output ->", output)
         //const output: any = await getWidgetCodeFromId(widgetId, token);
         visitedWidgets.push(widgetId);
   
@@ -351,6 +352,19 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
           input: assistantData?.the_assistant_input?.data?.the_input,
           type: assistantData?.the_assistant_type?.data?.the_type,
         }
+
+        // custom function
+        const customFunctionList = widgetInfo?.the_widget_s_custom_function?.map((customFunction: any) => {
+          const customFunctionData = customFunction?.data?.the_custom_function
+          return {
+            id: customFunction?.id,
+            name: customFunctionData?.the_custom_function_name?.data?.the_name,
+            slug: customFunctionData?.the_custom_function_slug?.data?.the_slug,
+            code: customFunctionData?.the_custom_function_code?.data?.the_code,
+          }
+        })
+        console.log('customFunctionList -> ', customFunctionList)
+        widgetNode.custom_functions = customFunctionList
 
         // if there are children present in the widget then convert the children to widget and put it inside of the tree.
         if (childWidgets?.length) {
@@ -480,6 +494,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   newWidget.componentDidMountFunction = tree.before_render;
   newWidget.addEventFunction = tree.after_render;
   newWidget.mountChildWidgetsFunction = tree.mount_child;
+  newWidget.customFunctions = tree.custom_functions;
   newWidget.inDevelopment = isInDevelopment === false ? false : true;
   // newWidget.css = newWidget.css ? newWidget.css : "";
   parentElement.innerHTML = "";
