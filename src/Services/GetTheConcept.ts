@@ -83,3 +83,27 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     conceptCache.set(id, getConcept)
     return getConcept
 }
+
+export  async function AddTypeConcept(concept:Concept){
+    if (serviceWorker) {
+        try {
+            const res: any = await sendMessage('AddTypeConcept', {concept})
+            return res.data as Concept
+        } catch (error) {
+            console.error('AddTypeConcept sw error: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
+    if(concept.type == null){
+        let conceptType = await ConceptsData.GetConcept(concept.typeId);
+        if(conceptType.id == 0 && concept.typeId != 0 && concept.typeId != 999){
+            let typeConceptString = await GetConcept(concept.typeId);
+            let typeConcept = typeConceptString as Concept;
+            concept.type = typeConcept;
+        }
+        else{
+            concept.type = conceptType;
+        }
+
+    }
+}

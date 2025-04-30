@@ -875,16 +875,10 @@ async function initializeCacheServer() {
   }
   myCacheServer = JSON.parse(myCacheServer as string)
 
-  async function getCacheServer(data?: any) {
+  async function getCacheServer() {
     try {
         const response = await fetch(BaseUrl.getMyCacheServer(), {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            "my-coords": data ? data.coords : "location denied",
-          }),
         });
   
         if (!response.ok) {
@@ -904,28 +898,21 @@ async function initializeCacheServer() {
   
     } catch (error: any) {
       console.error("error getting cache server", error.message);
-    } finally {
-      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-        sendMessage("SESSION_DATA", {
-          type: 'SESSION_DATA',
-          data: BaseUrl.NODE_CACHE_URL
-        })
-      }
     }
   }
   
   if (!myCacheServer) {
-    navigator.geolocation.getCurrentPosition(
-      async (data) => {
-        await getCacheServer(data);
-      },
-      async (error) => {
-        if (error.code === error.PERMISSION_DENIED) {
-          // await getCacheServer();
-          BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
-        }
-      }
-    );
+    // navigator.geolocation.getCurrentPosition(
+    //   async (data) => {
+        await getCacheServer();
+      // },
+      // async (error) => {
+      //   if (error.code === error.PERMISSION_DENIED) {
+      //     // await getCacheServer();
+      //     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
+      //   }
+      // }
+    // );
   } else {
     if (Array.isArray(myCacheServer) && myCacheServer.length) {
       BaseUrl.NODE_CACHE_URL = myCacheServer[0];
@@ -933,10 +920,8 @@ async function initializeCacheServer() {
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
   }
-  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     sendMessage("SESSION_DATA", {
       type: 'SESSION_DATA',
       data: BaseUrl.NODE_CACHE_URL
     })
-  }
 }
