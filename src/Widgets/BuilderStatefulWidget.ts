@@ -4,7 +4,7 @@ import { Concept, CreateTheConnectionLocal, DATAID, FilterSearch, FreeschemaQuer
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import * as tsccs from "../app";
 import { TypeEditor } from "./BuilderSpeceficFunctions";
-
+import { TCustomFunction } from "../DataStructures/TypeLibrary";
 
 export class BuilderStatefulWidget extends StatefulWidget {
   childComponents: any = [];
@@ -22,7 +22,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   typeValueList: any = [];
   public widgetType: string = "the_element_name";
   parentConceptList: any = [];
-  customFunctions: any;  
+  customFunctions: TCustomFunction[] = [];
 
   async getUserId() {
     const profileData: any = await new Promise((resolve: any) => {
@@ -171,8 +171,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
       
       parent.appendChild(this.element);
 
-
-
       this.parentElement = parent.id;
       if (this.componentMounted == false || this.widgetMounted == false) {
         // Simulate componentDidMount by calling it after the component is inserted into the DOM
@@ -184,29 +182,27 @@ export class BuilderStatefulWidget extends StatefulWidget {
       }
       else{
         this.render();
-
       }
       this.childWidgetElement = this.getElementByClassName("added-widget-container")
-
-
-
     }
   }
 
   render_custom_functions() {
-    console.log('this.customFunctions ->', this.customFunctions)
-    const allCustomFunctions = this.customFunctions?.map((customFunction: any) => customFunction?.code).join('')
-    console.log("allCustomFunctions", allCustomFunctions)
-    try{
-      const dynamicAsyncFunction = new Function("tsccs",`
-        return (async function() {
-          ${allCustomFunctions}
-        }).call(this);
-      `).bind(this);
+    const allCustomFunctions = this.customFunctions
+      ?.map((customFunction: TCustomFunction) => customFunction?.code)
+      .join("");
+    try {
+      const dynamicAsyncFunction = new Function(
+        "tsccs",
+        `
+          return (async function() {
+            ${allCustomFunctions}
+          }).call(this);
+        `
+      ).bind(this);
       dynamicAsyncFunction(tsccs);
-    }
-    catch(error){
-      console.log("This is the error in the before render", error);
+    } catch (error) {
+      console.error("This is the error in the render_custom_functions", error);
       throw error;
     }
   }

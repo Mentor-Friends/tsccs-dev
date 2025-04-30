@@ -1,6 +1,6 @@
 //import { BuilderStatefulWidget } from "../default/StatefulWidget"
 
-import { TAssistant, TMainLibrary } from "../DataStructures/TypeLibrary";
+import { TAssistant, TCustomFunction, TMainLibrary } from "../DataStructures/TypeLibrary";
 import { BuilderStatefulWidget } from "./BuilderStatefulWidget";
 
 
@@ -18,7 +18,7 @@ export class WidgetTree{
     clean: string = "";
     after_render: string = "";
     before_render: string = "";
-    custom_functions?: any = [];
+    custom_functions: TCustomFunction[] = [];
     update: string = "";
     origin: number = 0;
     version: number = 0;
