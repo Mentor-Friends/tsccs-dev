@@ -931,6 +931,8 @@ export function showWidgetDocumentation(widgetDocumentData: any) {
           authTypeData = `
           <h6>Token: <code>${widgetDoc?.bearerToken}</code></h6>
           `;
+        } else {
+          authTypeData = "None";
         }
         const docJSONList = widgetDoc.json
           .map((jsonItem: any) => {
@@ -938,35 +940,63 @@ export function showWidgetDocumentation(widgetDocumentData: any) {
           })
           .join(", ");
 
+        const docJSONListPreEl = document.createElement("pre");
+        docJSONListPreEl.textContent = docJSONList;
+
         extraDocElement.innerHTML = `
           <div class="pv-3">
             <h6>Method Type: <code>${widgetDoc?.method.toUpperCase()}</code></h6>
             <h6>Endpoint: <code>${widgetDoc?.methodURL}</code></h6>
           </div>
           <div class="pv-3">
-            <h6>Auth Type: <code>${widgetDoc?.authType.toUpperCase()}</code></h6>
+            <h6>Auth Type: <code>${widgetDoc?.authType?.toUpperCase() || ""}</code></h6>
             ${authTypeData}
           </div>
           <div class="pv-3">
             <h6>JSON</h6>
-            <code class="pre-wrapper">
-<pre>{
-  ${docJSONList}
-}
-</pre>
-            </code>
+            <code class="pre-wrapper" id="json-list-pre"></code>
+          </div>
+          <div class="pv-3">
+            <h6>Body</h6>
+            ${widgetDoc.body}
+          </div>
+          <div class="pv-3">
+            <h6>Scripts</h6>
+            ${widgetDoc.script}
           </div>
         `;
+        const jsonlistCodeWrapper = <HTMLElement>extraDocElement.querySelector('#json-list-pre');
+        if (jsonlistCodeWrapper) {
+          jsonlistCodeWrapper.appendChild(docJSONListPreEl);
+          jsonlistCodeWrapper.removeAttribute("id");
+        }
       } else if (widgetDoc.type === "function") {
+        const codeEditorPreEl = document.createElement("pre");
+        codeEditorPreEl.textContent = widgetDoc?.codeEditor;
+
+        const returnPreEl = document.createElement("pre");
+        returnPreEl.textContent = widgetDoc?.return;
+        
         extraDocElement.innerHTML = `
           <div class="mv-3">
             <h6>Parameter</h6>
             <p>Language: ${widgetDoc?.language}</p>
-            <code class="pre-wrapper"><pre>${widgetDoc?.codeEditor}</pre></code>
+            <code class="pre-wrapper" id="editor-pre"></pre></code>
             <h6>Returns</h6>
-            <code class="pre-wrapper"><pre>${widgetDoc?.return}</pre></code>
+            <code class="pre-wrapper" id="return-pre"></code>
           </div>
         `;
+
+        const codeWrapperFirst = <HTMLElement>extraDocElement.querySelector('#editor-pre');
+        if (codeWrapperFirst) {
+          codeWrapperFirst.appendChild(codeEditorPreEl);
+          codeWrapperFirst.removeAttribute("id");
+        }
+        const codeWrapperSecond = <HTMLElement>extraDocElement.querySelector('#return-pre');
+        if (codeWrapperSecond) {
+          codeWrapperSecond.appendChild(returnPreEl);
+          codeWrapperSecond.removeAttribute("id");
+        }
       }
       // } else if (widgetDoc.type === "imgAndLink") {
       const imgAndLinkEl = document.createElement("div");
@@ -1018,7 +1048,7 @@ export function showWidgetDocumentation(widgetDocumentData: any) {
             `
         : "";
       
-      extraDocElement.innerHTML = `
+        imgAndLinkEl.innerHTML = `
         <div class="mv-3">
           ${webURLsEl}
           ${imageURLsEl}
