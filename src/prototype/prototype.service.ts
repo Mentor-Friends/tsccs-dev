@@ -23,7 +23,11 @@ export async function createPrototypeLocal(prototype:Prototype, passedTransactio
       mainPrototype = await addCompositionPrototype(prototype.prototype, allConcepts,allConnections, passedTransaction);
   
       if(prototype.isQueryType){
-  
+        let QueryconceptsConnections = await addPrototypeSelector(prototype.querySelector, mainPrototype, passedTransaction);
+        let queryConcepts = QueryconceptsConnections["concepts"];
+        let queryConnections = QueryconceptsConnections["connections"];
+        MergeTwoArrays(requiredConnections, queryConnections);
+        MergeTwoArrays(allConcepts, queryConcepts);
       }
       if(prototype.options.length > 0)
       {
@@ -117,7 +121,7 @@ export async function addPrototypeSelector(selector:QuerySelector|null, mainProt
   let OptionConcepts:Concept[] = [];
   let OptionConnections:Connection[] = [];
   let filterConnectionTypeString = filterTypeSemantic(mainPrototype, true);
-  let selectorConnectionTypeString = filterTypeSemantic(mainPrototype, true);
+  let selectorConnectionTypeString = selectorTypeSemantic(mainPrototype, true);
   let filterConnectionType:Concept = await passedTransaction.MakeTheTypeConceptLocal(filterConnectionTypeString, 999, 999, 999);
   let selectorConnectionType:Concept = await passedTransaction.MakeTheTypeConceptLocal(selectorConnectionTypeString, 999, 999, 999);
 
@@ -127,8 +131,11 @@ export async function addPrototypeSelector(selector:QuerySelector|null, mainProt
     OptionConcepts.push(selectorType);
     let filterType = await passedTransaction.MakeTheTypeConceptLocal(selector.filterType, 999, 999,999);
     OptionConcepts.push(selectorType);
-    let connection = await passedTransaction.CreateTheConnectionLocal(mainPrototype.id, selectorType.id, selectorConnectionType.id, 1000, selectorConnectionTypeString,999);
-    OptionConnections.push(connection);
+    OptionConcepts.push(filterType);
+    let selectorConnection = await passedTransaction.CreateTheConnectionLocal(mainPrototype.id, selectorType.id, selectorConnectionType.id, 1000, selectorConnectionTypeString,999);
+    OptionConnections.push(selectorConnection);
+    let filterConnection = await passedTransaction.CreateTheConnectionLocal(mainPrototype.id, selectorType.id, filterConnectionType.id, 1000, filterConnectionTypeString,999);
+    OptionConnections.push(filterConnection);
 
 
   }
