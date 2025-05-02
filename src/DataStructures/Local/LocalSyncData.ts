@@ -83,6 +83,10 @@ export class LocalSyncData{
 
      static async SyncDataOnline(transactionId?: string, actions?: InnerActions){
         let startTime = performance.now()
+        console.log('syncing...', transactionId, actions, 'aa: ', this.conceptsSyncArray, this.connectionSyncArray, !!serviceWorker)
+        setTimeout(() => {
+            console.log('syncing...', transactionId, actions, 'aa: ', this.conceptsSyncArray, this.connectionSyncArray, !!serviceWorker)
+        }, 5000)
         try{
             if (serviceWorker) {
                 try {
@@ -109,15 +113,26 @@ export class LocalSyncData{
             } else if (Array.isArray(actions?.concepts) && Array.isArray(actions?.connections)) {
                 // filter concepts from conceptsSyncArray and connectionSyncArray and sync only belonging to this tab
                 console.log("this is the concepts and connections array", actions?.concepts, actions?.connections);
-                conceptsArray = actions.concepts.filter(concept => this.conceptsSyncArray.some(con => concept.id == con.id || concept.ghostId == con.ghostId)).slice()
-                connectionsArray = actions.connections.filter(connection => this.connectionSyncArray.some(conn => connection.id == conn.id || connection.ghostId == conn.ghostId)).slice()
+                // conceptsArray = actions.concepts.filter(concept => this.conceptsSyncArray.some(con => concept.id == con.id || concept.ghostId == con.ghostId)).slice()
+                // connectionsArray = actions.connections.filter(connection => this.connectionSyncArray.some(conn => connection.id == conn.id || connection.ghostId == conn.ghostId)).slice()
+                conceptsArray = actions.concepts.slice()
+                connectionsArray = actions.connections.slice()
 
                 console.log("this is the concepts and connections array", conceptsArray, connectionsArray);
-                // remove the concepts and connections from the array that belongs to the actions/tab
-                this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => !actions.concepts.some(con => concept.id == con.id || concept.ghostId == con.ghostId))
-                this.connectionSyncArray = this.connectionSyncArray.filter(connection => !actions.connections.some(conn => connection.id == conn.id || connection.ghostId == conn.ghostId))
+                // Remove the concepts and connections from the array that belongs to the actions/tab
+                // Remove concepts not in sync array and warn
+                this.conceptsSyncArray = this.conceptsSyncArray.filter(concept => {
+                    const found = actions.concepts.some(con => concept.id == con.id || concept.ghostId == con.ghostId);
+                    if (!found) console.warn(`Concept not found in sync array: ${concept.id || concept.ghostId}`);
+                    return found;
+                });
 
-
+                // Remove connections not in sync array and warn
+                this.connectionSyncArray = this.connectionSyncArray.filter(connection => {
+                    const found = actions.connections.some(conn => connection.id == conn.id || connection.ghostId == conn.ghostId);
+                    if (!found) console.warn(`Connection not found in sync array: ${connection.id || connection.ghostId}`);
+                    return found;
+                });
             } else {
                 console.warn('Syncing this way has been Depreceted in service worker.')
 
@@ -125,10 +140,10 @@ export class LocalSyncData{
                 conceptsArray = this.conceptsSyncArray.slice() || [];
                 connectionsArray = this.connectionSyncArray.slice() || [];
                 // return []
+                this.connectionSyncArray = [];
+                this.conceptsSyncArray = [];
             }
     
-            this.connectionSyncArray = [];
-            this.conceptsSyncArray = [];
             let toSyncConcepts = [];
             for(let i= 0; i< conceptsArray.length; i++){
     
