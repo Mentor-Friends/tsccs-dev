@@ -2,44 +2,80 @@ import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import {
+  HandleHttpError,
+  HandleInternalError,
+  UpdatePackageLogWithError,
+} from "../Services/Common/ErrorPosting";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
-export async function GetCompositionConnectionsBetweenTwoConcepts(ofConceptId:number, toConcept:number, mainKey:number){
+export async function GetCompositionConnectionsBetweenTwoConcepts(
+  ofConceptId: number,
+  toConcept: number,
+  mainKey: number
+) {
+  const logData : any = Logger.logfunction("GetCompositionConnectionsBetweenTwoConcepts", arguments) || {};
   var connectionList: Connection[] = [];
-    
-    try{
-
-        var formdata = new FormData();
-        formdata.append("ofConceptId", ofConceptId.toString());
-        formdata.append("mainKey", mainKey.toString());
-        formdata.append("toConceptId", toConcept.toString());
-        const response = await fetch(BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl(),{
-          method: 'POST',
-          body: formdata,
-          redirect: "follow"
-        });
-        if(response.ok){
-          const result = await response.json();
-          for(var i=0; i< result.length; i++){
-              ConnectionData.AddConnection(result[i]);
-              connectionList.push(result[i]);
-          }
-        }
-        else{
-          console.log("Get composition connection between two concepts", response.status);
-          HandleHttpError(response);
-        }
-
-  
+  try {
+    if (serviceWorker) {
+      logData.serviceWorker = true;
+      try {
+        const res: any = await sendMessage(
+          "GetCompositionConnectionsBetweenTwoConcepts",
+          { ofConceptId, toConcept, mainKey }
+        );
+        Logger.logUpdate(logData);  
+        return res.data;
+      } catch (error) {
+        console.error("GetCompositionConnectionsBetweenTwoConcepts sw error: ", error);
+        UpdatePackageLogWithError(logData, 'GetCompositionConnectionsBetweenTwoConcepts', error);
+        handleServiceWorkerException(error);
       }
-      catch (error) {
-        if (error instanceof Error) {
-          console.log('Get composition connection between two concepts error message: ', error.message);
-        } else {
-          console.log('Get composition connection between two concepts unexpected error: ', error);
-        }
-        HandleInternalError(error, BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl());
-      }
-      return connectionList;
+    }
 
+    var formdata = new FormData();
+    formdata.append("ofConceptId", ofConceptId.toString());
+    formdata.append("mainKey", mainKey.toString());
+    formdata.append("toConceptId", toConcept.toString());
+    const response = await fetch(
+      BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl(),
+      {
+        method: "POST",
+        body: formdata,
+        redirect: "follow",
+      }
+    );
+    if (response.ok) {
+      const result = await response.json();
+      for (var i = 0; i < result.length; i++) {
+        ConnectionData.AddConnection(result[i]);
+        connectionList.push(result[i]);
+      }
+      Logger.logUpdate(logData)
+    } else {
+      console.log(
+        "Get composition connection between two concepts",
+        response.status
+      );
+      HandleHttpError(response);
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log(
+        "Get composition connection between two concepts error message: ",
+        error.message
+      );
+    } else {
+      console.log(
+        "Get composition connection between two concepts unexpected error: ",
+        error
+      );
+    }
+    HandleInternalError(
+      error,
+      BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl()
+    );
+    UpdatePackageLogWithError(logData, 'GetCompositionConnectionsBetweenTwoConcepts', error);
   }
+  return connectionList;
+}

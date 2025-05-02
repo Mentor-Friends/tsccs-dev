@@ -1,12 +1,13 @@
 import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
-import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
-import { ConnectionData } from '../app';
+import { ConnectionData, Logger } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAllPrefetchConnections(userId:number, inpage:number){
+  const logData : any = Logger.logfunction("GetAllPrefetchConnections", arguments);
     try{
       const start = new Date().getTime();
       var urlencoded = new URLSearchParams();
@@ -25,6 +26,7 @@ export async function GetAllPrefetchConnections(userId:number, inpage:number){
         for(var i=0; i< result.length; i++){
             ConnectionData.AddConnectionToStorage(result[i]);
         }
+        Logger.logUpdate(logData)
 
 
 }
@@ -35,5 +37,6 @@ catch (error) {
       console.log('Get all prefetch connections unexpected error: ', error);
     }
     HandleInternalError(error, BaseUrl.GetAllPrefetchConnectionsUrl());
+    UpdatePackageLogWithError(logData, 'GetAllPrefetchConnections', error);
   }
 }

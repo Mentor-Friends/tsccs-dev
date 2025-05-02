@@ -5,6 +5,7 @@ import { BinaryCharacterTree } from "./BinaryCharacterTree";
 import { BinaryTypeTree } from "./BinaryTypeTree";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { IndexDbUpdate } from "../Database/IndexUpdate";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 export class ConceptsData{
 
     name: string;
@@ -55,6 +56,15 @@ export class ConceptsData{
     }
 
     static AddConcept(concept: Concept){
+        if (serviceWorker) {
+            try {
+                const res: any = sendMessage('ConceptsData__AddConcept', {concept}) // is async function
+                // return res.data // remove comment when this function is async
+            } catch (error) {
+                console.error('Concept Data, Add Concpet sw error: ', error);
+                handleServiceWorkerException(error);
+            }
+        }
 
         if(concept.id > 0){
            // console.log("added the concept to the tree", concept);
@@ -109,7 +119,19 @@ export class ConceptsData{
     }
 
     static async GetConcept(id: number){
-       var  myConcept: Concept = CreateDefaultConcept();
+        if (serviceWorker) {
+            try {
+                const res: any = await sendMessage('ConceptsData__GetConcept', {id})
+                return res.data
+            } catch (error) {
+                console.error('Concept Data, Get Concpet sw error: ', error);
+                handleServiceWorkerException(error);
+            }
+        }
+        if(id==0 || id==undefined || id == null) {
+            return CreateDefaultConcept();
+        }
+        var  myConcept: Concept = CreateDefaultConcept();
         var node = await BinaryTree.getNodeFromTree(id);
         if(node?.value){
             var returnedConcept = node.value;
@@ -188,7 +210,17 @@ export class ConceptsData{
          return ConceptList;
      }
 
-     static async   GetConceptsByTypeIdAndUser(typeId: number, userId: number){
+     static async GetConceptsByTypeIdAndUser(typeId: number, userId: number){
+        Logger.logfunction("ConceptsData.GetConceptsByTypeIdAndUser", arguments);
+        if (serviceWorker) {
+            try {
+                const res: any = await sendMessage('ConceptsData__GetConceptsByTypeIdAndUser', {typeId, userId})
+                return res.data
+            } catch (error) {
+                console.error('Concept Data, Get Concpet sw error:', error);
+                handleServiceWorkerException(error);
+            }
+        }
         let ConceptList: Concept[] = [];
         ConceptList = await BinaryTypeTree.getTypeVariantsFromTreeWithUserIdNew(typeId, userId);
          return ConceptList;

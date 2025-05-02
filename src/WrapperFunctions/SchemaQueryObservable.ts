@@ -1,38 +1,82 @@
-import { FreeschemaQuery, FreeschemaQueryApi } from "../app";
-import { ALLID, DATAID, NORMAL } from "../Constants/FormatConstants";
-import { FormatFromConnectionsAlteredArrayExternal } from "../Services/Search/FormatData";
-import { formatConnections, formatConnectionsDataId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
+import { FreeschemaQuery, FreeschemaQueryApi, Logger, MakeTheTypeConceptApi } from "../app";
+import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
+import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
+import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
 import { DependencyObserver } from "./DepenedencyObserver";
 
 export class SearchLinkMultipleAllObservable extends DependencyObserver{
-    mainCompositionIds: number [] =[];
     query: FreeschemaQuery = new FreeschemaQuery();
+    countInfoStrings: string [] = [];
+    order: string = "DESC";
+    totalCount:number = 0;
     constructor(query: FreeschemaQuery, token: string){
         super();
         this.query = query;
         this.format = query.outputFormat;
+        this.order = query.order;
     }
 
     async bind() {
+        if(this.compositionIds.length > 0){
+            for(let i=0; i<this.compositionIds.length; i++){
+                this.removeListenToEvent(this.compositionIds[i]);
+            }
+        }
+
         if(!this.isDataLoaded){
-            this.isDataLoaded = true;
             this.query.outputFormat = ALLID;
+            this.compositionIds = [];
             let result:any = await FreeschemaQueryApi(this.query, "");
             this.conceptIds = result.conceptIds;
-            this.internalConnections = result.internalConnections;
-            this.linkers = result.linkers;
+            this.internalConnections = result.internalConnections ?? [];
+            this.linkers = result.linkers ?? [];
             this.reverse = result.reverse;
-            this.mainCompositionIds = result.mainCompositionIds;
+            this.compositionIds = result.mainCompositionIds;
+            this.totalCount = result.mainCount;
+            this.countInfoStrings = result.countinfo;
+
         }
-        return await this.build();
+        else{
+
+            for(let i=0 ;i<this.compositionIds.length; i++){
+                this.listenToEvent(this.compositionIds[i]);
+            }
+        }
+        let output = await this.build();
+        if(!this.isDataLoaded){
+            this.isDataLoaded = true;
+            for(let i=0 ;i<this.compositionIds.length; i++){
+                this.listenToEvent(this.compositionIds[i]);
+            }
+            if(this.query.type != ""){
+                let concept = await MakeTheTypeConceptApi(this.query.type, 999);
+                if(concept.id > 0){
+                    this.listenToEventType(concept.id);
+                }
+    
+            }
+        }
+        for(let i=0 ;i<this.newIds.length; i++){
+            this.listenToEvent(this.newIds[i]);
+        }
+        this.newIds = [];
+
+        return output;
     }
     
     async build(){
+        Logger.logfunction("build", ["schemaquery", this.compositionIds]);
+        let countInfos = DecodeCountInfo(this.countInfoStrings);
+
         if(this.format == DATAID){
-            this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+            this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.compositionIds, this.reverse,countInfos, this.order);
+        }
+        else if(this.format == JUSTDATA){
+            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
         }
         else{
-            this.data = await formatConnections(this.linkers, this.conceptIds, this.mainCompositionIds, this.reverse);
+
+            this.data = await formatConnections(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos);
 
             //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
         }

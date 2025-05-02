@@ -1,4 +1,5 @@
 import { GetConnectionOfTheConcept } from "../Api/GetConnectionOfTheConcept";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { Connection } from "../DataStructures/Connection";
 import { SyncData } from "../DataStructures/SyncData";
@@ -8,34 +9,83 @@ import { DeleteConnectionById } from "./DeleteConnection";
 import GetTheConcept from "./GetTheConcept";
 import MakeTheInstanceConcept from "./MakeTheInstanceConcept";
 
-export async function CreateConnectionBetweenTwoConcepts(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, count:boolean = false){
+export async function CreateConnectionBetweenTwoConcepts(
+  ofTheConcept: Concept,
+  toTheConcept: Concept,
+  linker: string,
+  both: boolean = false,
+  count: boolean = false
+) {
+  if (serviceWorker) {
+    try {
+      const res: any = await sendMessage('CreateConnectionBetweenTwoConcepts', { ofTheConcept, toTheConcept, linker, both, count })
+      return res.data
+    } catch (error) {
+      console.error('CreateConnectionBetweenTwoConcepts sw error: ', error);
+      handleServiceWorkerException(error);
+    }
+  }
+    
+  let userId: number = ofTheConcept.userId;
+  let accessId: number = 4;
+  if (both) {
+    let prefix1: string = toTheConcept.type?.characterValue + "_s";
+    let linkerAdd1 = linker + "_by";
+    let backwardLinker = prefix1 + "_" + linkerAdd1;
+    if (count) {
+      await CountRelationship(linkerAdd1, toTheConcept, userId);
+    }
+    let connectionConceptReverse = await MakeTheInstanceConcept(
+      "connection",
+      backwardLinker,
+      false,
+      999,
+      999,
+      999
+    );
+    let newConnection = new Connection(
+      0,
+      toTheConcept.id,
+      ofTheConcept.id,
+      userId,
+      connectionConceptReverse.id,
+      1000,
+      accessId
+    );
+    SyncData.AddConnection(newConnection);
+  }
+  let prefix: string = ofTheConcept.type?.characterValue + "_s";
+  let linkerAdd = linker + "_s";
+  let forwardLinker = prefix + "_" + linkerAdd;
+  if (count) {
+    await CountRelationship(linkerAdd, ofTheConcept, userId);
+  }
+  let connectionConcept = await MakeTheInstanceConcept(
+    "connection",
+    forwardLinker,
+    false,
+    999,
+    999,
+    999
+  );
+  let newConnection = new Connection(
+    0,
+    ofTheConcept.id,
+    toTheConcept.id,
+    userId,
+    connectionConcept.id,
+    1000,
+    accessId
+  );
+  SyncData.AddConnection(newConnection);
+  // Add Log
+  // Logger.logInfo(startTime, "unknown", "create", "unknown", undefined, 500, newConnection, "CreateConnectionBetweenTwoConcepts", 
+  //   [ofTheConcept, toTheConcept, linker, both, count], 
+  //   "unknown", undefined 
+  // )
 
-        let userId:number = ofTheConcept.userId;
-        let accessId: number = 4;
-        if(both){
-            let prefix1: string = toTheConcept.type?.characterValue + "_s";
-            let linkerAdd1 = linker + "_by";
-            let backwardLinker = prefix1 + "_" + linkerAdd1;  
-            if(count){
-               await CountRelationship(linkerAdd1, toTheConcept, userId);
-              }
-            let connectionConceptReverse = await MakeTheInstanceConcept("connection",backwardLinker,false,999,999,999);
-            let newConnection = new Connection(0,toTheConcept.id, ofTheConcept.id, userId,
-               connectionConceptReverse.id, 1000, accessId );
-            SyncData.AddConnection(newConnection);
-        }
-        let prefix: string = ofTheConcept.type?.characterValue + "_s";
-        let linkerAdd = linker + "_s";
-        let forwardLinker = prefix + "_" + linkerAdd;
-        if(count){
-         await CountRelationship(linkerAdd, ofTheConcept, userId);
-        }
-        let connectionConcept = await MakeTheInstanceConcept("connection",forwardLinker,false,999,999,999);
-        let newConnection = new Connection(0,ofTheConcept.id, toTheConcept.id,userId,
-           connectionConcept.id, 1000,  accessId );
-        SyncData.AddConnection(newConnection);
-        return newConnection;
-        }
+  return newConnection;
+}
 
 
 export async function CountRelationship(linker: string, concept:Concept, passedUserId: number | null = null){

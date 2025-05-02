@@ -3,8 +3,24 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { Connection } from "../DataStructures/Connection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
+import { Logger } from "../app";
+import { requestNextCacheServer } from "../Services/cacheService";
+import { TokenStorage } from "../DataStructures/Security/TokenStorage";
+
+async function processConnectionData(response: Response, result: Connection) {
+    if(response.ok){
+        result = await response.json() as Connection;
+        ConnectionData.AddConnection(result);
+    }
+    else{
+        HandleHttpError(response);
+        console.log("Get Connection Error", response.status);
+    }
+}
+
 export async function GetConnection(id: number){
+    const logData : any = Logger.logfunction("GetConnection", arguments);
     let result :Connection= await ConnectionData.GetConnection(id);
 
     try{
@@ -13,22 +29,23 @@ export async function GetConnection(id: number){
             return result;
         }
         else{
-            let header = GetRequestHeader('application/x-www-form-urlencoded')
             const formdata = new FormData();
             formdata.append("id", id.toString());
-            const response = await fetch(BaseUrl.GetConnectionUrl(),{
-                method: 'POST',
-                headers: header,
-                body: formdata
-            });
-            if(response.ok){
-                result = await response.json() as Connection;
-                ConnectionData.AddConnection(result);
+            const reqData = {
+              method: "POST",
+              headers: {
+                Authorization: "Bearer " + TokenStorage.BearerAccessToken,
+              },
+              body: formdata,
+            };
+            let response;
+            try {
+                response = await fetch(BaseUrl.GetConnectionUrl(), reqData);
+            } catch (error) {
+                response = await requestNextCacheServer(reqData, "/api/get-connection-by-id")
             }
-            else{
-                HandleHttpError(response);
-                console.log("Get Connection Error", response.status);
-            }
+            await processConnectionData(response, result)
+            Logger.logUpdate(logData);
             return result;
             
 
@@ -41,5 +58,6 @@ export async function GetConnection(id: number){
           console.log('Get Connection unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConnectionUrl());
+        UpdatePackageLogWithError(logData, 'GetConnection', error);
       }
 }

@@ -9,6 +9,8 @@ import { ConvertFromLConceptToConcept } from "../../Services/Local/ConvertFromLC
 import { LocalGhostIdTree } from "./LocalGhostIdTree";
 import { LocalConnectionData } from "./LocalConnectionData";
 import { LocalSyncData } from "./LocalSyncData";
+import { AddGhostConcept } from "../../app";
+import { TokenStorage } from "../Security/TokenStorage";
 export class LocalConceptsData{
 
     name: string;
@@ -21,7 +23,7 @@ export class LocalConceptsData{
 
     static AddConcept(concept: Concept){
         if(concept.id != 0){
-            UpdateToDatabase("localconcept",concept);
+           // UpdateToDatabase("localconcept",concept);
             LocalBinaryTree.addConceptToTree(concept);
             LocalBinaryCharacterTree.addConceptToTree(concept);
             LocalBinaryTypeTree.addConceptToTree(concept);
@@ -36,8 +38,9 @@ export class LocalConceptsData{
             LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
             LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
             LocalGhostIdTree.addConceptToTree(concept);
-            let removeData = removeFromDatabase("localconcept", concept.ghostId);
+            //let removeData = removeFromDatabase("localconcept", concept.ghostId);
             ConceptsData.AddConcept(concept);
+            AddGhostConcept(concept, concept.userId, TokenStorage.sessionId);
         }
     }
 
@@ -47,7 +50,7 @@ export class LocalConceptsData{
                 LocalBinaryTree.removeNodeFromTree(concept.ghostId);
                 LocalBinaryCharacterTree.removeConceptType(concept.characterValue, concept.ghostId);
                 LocalBinaryTypeTree.removeConceptType(concept.typeId, concept.ghostId);
-                await removeFromDatabase("localconcept", concept.ghostId);
+                //await removeFromDatabase("localconcept", concept.ghostId);
                 }
         }
         catch(error){

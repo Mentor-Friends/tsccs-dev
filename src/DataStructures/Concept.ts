@@ -1,4 +1,4 @@
-import { BaseUrl } from "../app";
+import { BaseUrl, Logger } from "../app";
 import { ConceptsData } from "./ConceptData";
 
 export  class Concept{
@@ -12,20 +12,22 @@ export  class Concept{
     characterValue: string;
     typeCharacter: string = "";
     entryTimeStamp: Date;
-    referentId: number;
+    referentId: number|null;
     updatedTimeStamp:Date;
+    referent: Concept | null | void = null;
     type:  null | void | Concept;
     isNew: boolean;
     isComposition: boolean = false;
     isTemp: boolean = false;
     isSynced : boolean = false;
-    applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    // applicationId: number = BaseUrl.BASE_RANDOMIZER;
+    applicationId: number = BaseUrl.getRandomizer();
     x:number = 0;
     y: number = 0;
 
 
     constructor(id: number, userId: number, typeId:number,  categoryId:number,
-             referentId:number,  characterValue:string,
+             referentId:number|null,  characterValue:string,
             accessId:number, isNew:boolean=false, entryTimeStamp: Date, updatedTimeStamp:Date, typeCharacter:string){
         this.id = id;
         this.userId = userId;
@@ -41,6 +43,7 @@ export  class Concept{
         this.entryTimeStamp = entryTimeStamp;
         this.updatedTimeStamp = updatedTimeStamp;
        // ConceptsData.AddConcept(this);
+   
     }
 
     getType(){

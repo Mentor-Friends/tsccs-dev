@@ -2,7 +2,9 @@ import { Concept } from "../../DataStructures/Concept";
 import CreateTheConceptLocal from "./CreateTheConceptLocal";
 import {MakeTheTypeConceptLocal} from "./MakeTheTypeLocal";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
-import { LocalSyncData } from "../../app";
+import { InnerActions } from "../../Constants/general.const";
+import { Connection, handleServiceWorkerException, LocalSyncData, Logger, sendMessage, serviceWorker } from "../../app";
+import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 
 /**
@@ -18,10 +20,27 @@ import { LocalSyncData } from "../../app";
  * @param accessId this is the accessId of the creator. By default should be 4.
  * @param sessionInformationId this is the session that is created by the system.
  * @param referentId In case we need this concept to refer to any other concept.
+ * @param actions InnerActions Array for capturing concepts and connection
  * @returns a concept which is either newly created or an older concept that already exists.
  */
 export async function MakeTheInstanceConceptLocal(type:string, referent:string, composition:boolean=false, userId: number, 
-    accessId:number, sessionInformationId: number=999, referentId: number = 0){
+    accessId:number, sessionInformationId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
+        const logData : any = Logger.logfunction("MakeTheInstanceConceptLocal", arguments) || {};
+        if (serviceWorker) {
+            logData.serviceWorker = true;
+            try {
+                const res: any = await sendMessage('MakeTheInstanceConceptLocal', {type, referent, composition, userId, accessId, sessionInformationId, referentId, actions})
+                if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                Logger.logUpdate(logData);
+                return res.data
+            } catch (error) {
+                console.error('MakeTheInstanceConceptLocal error sw: ', error);
+                UpdatePackageLogWithError(logData, 'MakeTheInstanceConceptLocal', error);
+                handleServiceWorkerException(error);
+            }
+        }
+
         try{
             let sessionInformationId: number = 999;
             let categoryId: number = 4;
@@ -43,18 +62,18 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
                 stringToCheck = "the_" + type;
             }
             if(composition){
-                let   typeConceptString = await MakeTheTypeConceptLocal(type, sessionInformationId, userId, userId );
+                let   typeConceptString = await MakeTheTypeConceptLocal(type, sessionInformationId, userId, userId, actions );
                typeConcept = typeConceptString as Concept;
                 
-               let conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId,true, referentId );
+               let conceptString = await CreateTheConceptLocal(referent,type,userId, categoryId, typeConcept.id,accessId,true, referentId, actions );
     
                 concept = conceptString as Concept;
             }
             else if(stringLength > 255){
     
-                let typeConceptString = await MakeTheTypeConceptLocal(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
+                let typeConceptString = await MakeTheTypeConceptLocal(stringToCheck, sessionInformationId, sessionInformationUserId, userId, actions);
                 typeConcept = typeConceptString  as Concept;
-                let conceptString = await CreateTheConceptLocal(referent,stringToCheck,userId, categoryId, typeConcept.id,accessId );
+                let conceptString = await CreateTheConceptLocal(referent,stringToCheck,userId, categoryId, typeConcept.id,accessId, undefined, undefined, actions );
     
                 concept = conceptString as Concept;
     
@@ -62,22 +81,31 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     
             }
             else{
-                let typeConceptString = await MakeTheTypeConceptLocal(stringToCheck, sessionInformationId, sessionInformationUserId, userId);
+                let typeConceptString = await MakeTheTypeConceptLocal(stringToCheck, sessionInformationId, sessionInformationUserId, userId, actions);
                 typeConcept = typeConceptString  as Concept;
                 let conceptByCharTypeString = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(referent,typeConcept.id);
                 let conceptTypeCharacter = conceptByCharTypeString as Concept;
                 concept = conceptTypeCharacter;
                 if(conceptTypeCharacter.id == 0 && conceptTypeCharacter.userId == 0){
-                    let conceptString = await CreateTheConceptLocal(referent, stringToCheck, userId, categoryId, typeConcept.id,accessId );
+                    let conceptString = await CreateTheConceptLocal(referent, stringToCheck, userId, categoryId, typeConcept.id,accessId, undefined, undefined, actions );
                     concept = conceptString as Concept;
                 }
             }
     
             concept.type = typeConcept;
             LocalSyncData.AddConcept(concept);
+             
+            actions.concepts.push(concept)
+            Logger.logUpdate(logData);
             return concept;
         }
         catch(error){
+            // Logger.logError(startTime, userId, "create", "Unknown", "Unknown", 500, undefined, "MakeTheInstanceConceptLocal",
+            //     [type, referent, composition, userId, accessId, sessionInformationId, referentId],
+            //     "UnknownUserAgent",
+            //     []
+            // );
+            UpdatePackageLogWithError(logData, 'MakeTheInstanceConceptLocal', error);
             throw error;
         }
 

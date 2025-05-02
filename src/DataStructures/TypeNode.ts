@@ -1,3 +1,4 @@
+import { dispatchIdEvent } from "../app";
 import { Concept } from "./Concept";
 
 export class TypeNode{
@@ -18,6 +19,7 @@ export class TypeNode{
 
     public addType(node: TypeNode | null, key: number, value: number){
         if(node == null){
+            dispatchIdEvent(key, {detail: value})
             return new TypeNode(key, value);
         }        
         
@@ -27,7 +29,11 @@ export class TypeNode{
             node.rightNode = this.addType(node.rightNode, key, value);
         } else {
             // If key already exists, insert unique value into the set
-            node.value.push(value);
+            if(!node.value.includes(value)){
+                dispatchIdEvent(key, {detail: value})
+                node.value.push(value);
+
+            }
             return node;
         }
 
@@ -99,8 +105,8 @@ export class TypeNode{
                 let T2 = y.leftNode;
                 y.leftNode = x;
                 x.rightNode = T2;
-                x.height = Math.max(this.getHeight(x.leftNode),this.getHeight(x.rightNode) + 1);
-                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode) + 1);
+                x.height = Math.max(this.getHeight(x.leftNode),this.getHeight(x.rightNode)) + 1;
+                y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(x.rightNode)) + 1;
                 return y;
             }
             //return y;

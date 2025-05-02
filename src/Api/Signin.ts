@@ -1,6 +1,6 @@
 import { FreeschemaResponse } from "../DataStructures/Responses/StandardResponses"
 import { SigninModel } from "../DataStructures/SigninModel"
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting"
+import { HandleHttpError, HandleHttpErrorObject, HandleInternalError } from "../Services/Common/ErrorPosting"
 import { BaseUrl } from "../app"
 
 
@@ -35,7 +35,7 @@ export default async function Signin(signinInfo: SigninModel) {
         data: dataObject,
       }
     } else {
-      HandleHttpError(response);
+      HandleHttpErrorObject(response, output);
     }
     return freeschemaRes
   } catch (error) {

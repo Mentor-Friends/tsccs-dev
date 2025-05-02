@@ -1,6 +1,8 @@
+import { handleServiceWorkerException, InnerActions, sendMessage, serviceWorker } from "../../app";
 import { Concept } from "../../DataStructures/Concept";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
+import { Logger } from "../../Middleware/logger.service";
 
 /**
  * This function creates the concept in the local system (Local memory and IndexDb) but not in the backend database
@@ -22,13 +24,25 @@ import { LocalId } from "../../DataStructures/Local/LocalId";
  * @param referentId if this concept refers to any other concept then this needs to be passed.
  * @returns 
  */
-export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, 
-typeId:number, 
-accessId:number, isComposition: boolean = false, referentId:number = 0){
+export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, typeId:number, 
+accessId:number, isComposition: boolean = false, referentId:number|null = 0, actions: InnerActions = {concepts: [], connections: []}){
+    let startTime = performance.now()
     try{
+        if (serviceWorker) {
+            try {
+                const res: any = await sendMessage('CreateTheConceptLocal', { referent, typecharacter, userId, categoryId, typeId, accessId, isComposition, referentId })
+                if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+                if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+                return res.data
+            } catch (error) {
+                console.error('CreateTheConceptLocal error sw: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
+
         //let id = -Math.floor(Math.random() * 100000000);
         let id = await LocalId.getConceptId();
-        console.log("this is the getting id type connection", id);
+        // console.log("this is the getting id type connection", id);
 
         let isNew: boolean = true;
         let created_on:Date = new Date();
@@ -42,10 +56,17 @@ accessId:number, isComposition: boolean = false, referentId:number = 0){
         concept.isTemp = true;
         concept.isComposition = isComposition;
         LocalConceptsData.AddConcept(concept);
+        actions.concepts.push(concept)
         //storeToDatabase("localconcept",concept);
+
+        // Add Log
+        // Logger.logInfo(startTime, userId, "create", "unknown", "unknown", 200, concept, "createTheConceptLocal", ['referent', 'typecharacter', 'composition', 'userId', 'categoryId', 'typeId', 'accessId', 'sessionInformationId', 'isComposition', 'referentId'], undefined)
+
         return concept;
     }
     catch(error){
+        Logger.logError(startTime, userId, "create", "unknown", "unknown", 500, undefined, "createTheConceptLocal", [referent, typecharacter, userId, categoryId, typeId, accessId, isComposition], undefined)
+
         throw error;
     }
 

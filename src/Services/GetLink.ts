@@ -5,8 +5,25 @@ import { Concept } from "./../DataStructures/Concept";
 import { GetCompositionWithIdAndDateFromMemory, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 
 export async function GetLink(id:number, linker:string, inpage:number=10, page:number=1){
+  const logData : any = Logger.logfunction("GetLink", arguments) || {};
+
+  if (serviceWorker) {
+    logData.serviceWorker = true;
+    try {
+      const res: any = await sendMessage('GetLink', {id, linker, inpage, page})
+      Logger.logUpdate(logData);
+      return res.data
+    } catch (error) {
+      console.error('GetLink sw error: ', error)
+      UpdatePackageLogWithError(logData, 'GetLink', error);
+      handleServiceWorkerException(error)
+    }
+  }
+
     let output: any[] = [];
     let  concept:Concept = await GetTheConcept(id);
     let linkString: string = concept.type?.characterValue + "_s" + "_" + linker;
@@ -27,11 +44,16 @@ export async function GetLink(id:number, linker:string, inpage:number=10, page:n
         output.push(newComposition);
       }
     }
+    
+    Logger.logUpdate(logData);
+    // Add Log
+    // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, output, "GetLink", ['id', 'linker', 'inpage', 'page'], "unknown", undefined )
     return  output;
 }
 
 
 export async function GetLinkRaw(id:number, linker:string, inpage:number=10, page:number=1){
+  const logData : any = Logger.logfunction("GetLinkRaw", arguments);
   let output: Concept[] = [];
   let  concept:Concept = await GetTheConcept(id);
   let linkString: string = concept.type?.characterValue + "_s" + "_" + linker;
@@ -50,5 +72,6 @@ export async function GetLinkRaw(id:number, linker:string, inpage:number=10, pag
       output.push(toConcept);
     }
   }
+  Logger.logUpdate(logData);
   return  output;
 }

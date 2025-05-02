@@ -1,12 +1,24 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
-import { GetConceptByCharacterAndTypeUrl } from './../Constants/ApiConstants';
 import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { AddTypeConcept } from "../Services/GetTheConcept";
+
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
-  let concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
-    try{
+  const logData : any = Logger.logfunction("GetConceptByCharacterAndType", arguments);
+  try{
+    if (serviceWorker) {
+      try {
+        const res: any = await sendMessage('GetConceptByCharacterAndType', {characterValue, typeId})
+        return res.data
+      } catch (error) {
+        console.error('GetConceptByCharacterAndType sw error: ', error);
+        handleServiceWorkerException(error);
+      }
+    }
+      let concept:Concept = await ConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,typeId);
       if(concept == null || concept.id == 0){
         var json = {
           'character_value': `${characterValue}`,
@@ -22,7 +34,9 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           if(response.ok){
             let conceptString = await response.json() ;
             concept = conceptString as Concept;
-            ConceptsData.AddConcept(concept);
+            AddTypeConcept(concept).then((output)=>{
+                ConceptsData.AddConcept(concept);
+            })
           }
           else{
           //  throw new Error(`Error! status: ${response.status}`);
@@ -32,6 +46,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           }
 
       }
+      Logger.logUpdate(logData)
       return concept;
 
     }
@@ -42,5 +57,6 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           console.log(' This is the concept by type and character unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptByCharacterAndTypeUrl());
+        UpdatePackageLogWithError(logData, 'GetConceptByCharacterAndType', error);
       }
 }

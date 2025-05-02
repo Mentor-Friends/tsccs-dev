@@ -3,10 +3,11 @@ import { ConceptsData } from '../DataStructures/ConceptData';
 import { HandleHttpError, HandleInternalError } from '../Services/Common/ErrorPosting';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
 import { GetRequestHeader, GetRequestHeaderWithAuthorization } from '../Services/Security/GetRequestHeader';
-import { BinaryTree } from '../app';
+import { BinaryTree, Logger } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
 export async function GetAiData(){
+  const logData:any = Logger.logfunction("GetAiData");
     try{
       const start = new Date().getTime();
         var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
@@ -25,6 +26,8 @@ export async function GetAiData(){
         PurgatoryDatabaseUpdated();
         let elapsed = new Date().getTime() - start;
         console.log("The time taken is ", elapsed);
+
+        Logger.logUpdate(logData)
 
 
 }

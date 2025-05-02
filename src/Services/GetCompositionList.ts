@@ -2,7 +2,8 @@ import { GetAllConceptsByType } from "../Api/GetAllConceptsByType";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { LocalConceptsData } from "../DataStructures/Local/LocalConceptData";
-import { Concept, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionLocalWithId } from "../app";
+import { Concept, GetCompositionListLocal, GetCompositionListLocalWithId, GetCompositionLocalWithId, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { GetComposition, GetCompositionFromMemory, GetCompositionWithId, GetCompositionWithIdFromMemory } from "./GetComposition";
 import GetConceptByCharacter, { GetConceptByCharacterUpdated } from "./GetConceptByCharacter";
 import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
@@ -10,7 +11,20 @@ import GetConceptByCharacterLocal from "./Local/GetConceptByCharacterLocal";
 // get the list of compositions from the type 
 // for eg get list of boomgpt
 export  async function GetCompositionList(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
-   
+   const logData : any = Logger.logfunction("GetCompositionList", arguments) || {};
+   if (serviceWorker) {
+      logData.serviceWorker = true;
+      try {
+         const res: any = await sendMessage('GetCompositionList', { compositionName, userId, inpage, page })
+         Logger.logUpdate(logData); 
+         return res.data
+      } catch (error) {
+         console.error('GetCompositionList sw error: ', error)
+         UpdatePackageLogWithError(logData, 'GetCompositionList', error);
+         handleServiceWorkerException(error)
+      }
+    }
+
    let concept = await GetConceptByCharacter(compositionName);
    let CompositionList :any = [];
 
@@ -36,6 +50,7 @@ export  async function GetCompositionList(compositionName: string,userId:number,
       }
     }
    }
+   Logger.logUpdate(logData);
     return CompositionList;
 }
 
@@ -86,6 +101,15 @@ export async function GetCompositionListAll(compositionName: string,userId:numbe
 
 
 export async function GetCompositionListAllWithId(compositionName: string,userId:number,  inpage:number = 10, page:number =1){
+   if (serviceWorker) {
+      try {
+         const res: any = await sendMessage('GetCompositionListAllWithId', {compositionName, userId, inpage, page})
+         return res.data
+      } catch (error) {
+         console.error('GetCompositionListAllWithId sw error: ', error)
+         handleServiceWorkerException(error)
+      }
+    }
    let conceptLocal = await GetConceptByCharacterLocal(compositionName);
    let conceptOnline = await GetConceptByCharacter(compositionName);
    let CompositionList :any = [];
@@ -124,6 +148,15 @@ export async function GetCompositionListAllWithId(compositionName: string,userId
 }
 
 export  async function GetCompositionListWithId(compositionName: string, userId: number,  inpage:number = 10, page:number =1){
+   if (serviceWorker) {
+      try {
+         const res: any = await sendMessage('GetCompositionListWithId', { compositionName, userId, inpage, page })
+         return res.data
+      } catch (error) {
+         console.error('GetCompositionListWithId sw error: ', error)
+         handleServiceWorkerException(error)
+      }
+   }
    let concept = await GetConceptByCharacter(compositionName);
    let CompositionList :any = [];
    if(concept){

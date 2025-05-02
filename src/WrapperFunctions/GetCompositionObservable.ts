@@ -36,7 +36,6 @@ export class GetCompositionObservable extends DependencyObserver{
          latestConnectionList.push(await ConnectionData.GetConnection(latestConnectionIds[i]));
         }
         if(this.format == JUSTDATA){
-            console.log("this is the data for the build layer", latestConnectionList, this.mainConcept, this.internalConnections, this.compositionIds);
             this.data = await RecursiveFetchBuildLayer(this.mainConcept, latestConnectionList, this.compositionIds);
         }
         else if(this.format == DATAID){

@@ -14,12 +14,14 @@ export class DependencyObserver{
     internalConnections: number[] = [];
     reverse: number[] = [];
     linkers: number[] = [];
+    newIds:number[] = [];
     dependency: number[] = [];
     isDataLoaded: boolean = false; // checks to see if the data has been loaded to the widget/ function
     isUpdating: boolean = false; // this flag helps us check if the state is being updated while the connection updates.
     data: any;  // this is the actual data that needs to be returned.
     fetched: boolean = false;
     format: number = NORMAL;
+    eventHandlers: { [key: number]: (event: Event) => void } = {};
 
     /**
      * This function will be called when there is a need to listen to a certain type of concept that will update
@@ -27,15 +29,48 @@ export class DependencyObserver{
      * @param id this is the type id which needs to be tracked
      */
     listenToEventType(id: number): void {
-        window.addEventListener(`${id}`, (event) => {
+        if (this.eventHandlers[id]) return; // already added
+
+
+        const typeHandler = async(event:Event) => {
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
+                
                 setTimeout( async function(){
                     let myEvent = event as CustomEvent;
                     if(!that.compositionIds.includes(myEvent?.detail)){
                         that.compositionIds.unshift(myEvent?.detail);
                         that.listenToEvent(myEvent?.detail);
+
+                        let newId = myEvent?.detail;
+                        let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(newId, newId);
+                        for(let i=0 ;i< newConnection.length; i++){
+                        
+                            await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
+                                 if(conn.typeId == that.mainConcept){
+                                     if(!that.internalConnections.includes(conn.id)){
+                                         that.internalConnections.push(conn.id);
+                                     }
+                                 }
+                                 else{
+                                     if(!that.linkers.includes(conn.id)){
+                                         that.linkers.push(conn.id);
+                                     }
+                                     
+
+                                 }
+                                 if(!that.conceptIds.includes(conn.toTheConceptId)){
+                                     that.conceptIds.push(conn.toTheConceptId);
+                                 }
+                                 if(!that.compositionIds.includes(conn.ofTheConceptId)){
+                                     that.compositionIds.push(conn.ofTheConceptId);
+                                 }
+
+                             });
+                         
+
+                         }
                     }
                     that.isUpdating = false;
                     await that.bind();
@@ -45,10 +80,12 @@ export class DependencyObserver{
                 }, 200);
             }
             else{
-                console.log("rejected this");
+                console.log("rejected this", id);
             }
-
-        });
+        }
+        this.eventHandlers[id] = typeHandler;
+        console.log("added listener", id);
+        window.addEventListener(`${id}`, typeHandler);
     }
 
     /**
@@ -58,7 +95,9 @@ export class DependencyObserver{
      * @param id Of the concept id that needs to be listened.
      */
     listenToEvent(id: number) {
-        window.addEventListener(`${id}`, (event) => {
+        if (this.eventHandlers[id]) return; // already added
+
+        const handler = async(event: Event) => {
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
@@ -68,6 +107,7 @@ export class DependencyObserver{
                     for(let i=0 ;i< newConnection.length; i++){
                         
                                await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
+
                                     if(conn.typeId == that.mainConcept){
                                         if(!that.internalConnections.includes(conn.id)){
                                             that.internalConnections.push(conn.id);
@@ -77,7 +117,6 @@ export class DependencyObserver{
                                         if(!that.linkers.includes(conn.id)){
                                             that.linkers.push(conn.id);
                                         }
-                                        
 
                                     }
                                     if(!that.conceptIds.includes(conn.toTheConceptId)){
@@ -85,7 +124,11 @@ export class DependencyObserver{
                                     }
                                     if(!that.compositionIds.includes(conn.ofTheConceptId)){
                                         that.compositionIds.push(conn.ofTheConceptId);
+                                        if(!that.newIds.includes(conn.ofTheConceptId)){
+                                            that.newIds.push(conn.ofTheConceptId);
+                                        }
                                     }
+
 
                                 });
                             
@@ -99,11 +142,21 @@ export class DependencyObserver{
                 }, 200);
             }
             else{
-                console.log("rejected this");
+                console.log("rejected this", id);
             }
-
-        });
+        };
+        this.eventHandlers[id] = handler;
+        window.addEventListener(`${id}`,handler);
     }
+
+    removeListenToEvent(id: number) {
+        const handler = this.eventHandlers[id];
+        if (handler) {
+            window.removeEventListener(`${id}`, handler);
+            delete this.eventHandlers[id];
+        }
+    }
+
 
 
         /**
@@ -171,6 +224,12 @@ export class DependencyObserver{
         console.log("this is the old execute data");
     }
 
+    async update(){
+        this.isDataLoaded = false;
+        await this.bind();
+        this.notify();
+    }
+
     /**
      * 
      * @param callback the function that needs to be called with the data.
@@ -180,7 +239,7 @@ export class DependencyObserver{
         this.subscribers.push(callback);
             console.log('again executing data');
           await this.bind();
-          return callback(this.data);
+          return callback(this.data,this);
       }
 
 
@@ -203,7 +262,7 @@ export class DependencyObserver{
         this.subscribers.map(subscriber => {
             console.log('notify')
 
-            subscriber(this.data)
+            subscriber(this.data,this)
         });
 
       }

@@ -33,7 +33,7 @@ export class LocalConnectionData{
         }
         if(connection.id != 0){
 
-            UpdateToDatabase("localconnection",connection);
+            //UpdateToDatabase("localconnection",connection);
         }
         this.connectionArray.push(connection);
     }
@@ -75,7 +75,7 @@ export class LocalConnectionData{
     static AddPermanentConnection(connection: Connection){
         if(connection.id > 0){
 
-            removeFromDatabase("localconnection", connection.ghostId);
+            //removeFromDatabase("localconnection", connection.ghostId);
             ConnectionData.AddConnection(ConvertFromLConnectionToConnection(connection));
         }
     }
@@ -115,7 +115,7 @@ export class LocalConnectionData{
         var connectionList:Connection[] = [];
 
         try{
-            var data = await this.waitForDataToLoad();
+            //var data = await this.waitForDataToLoad();
 
         for(var i=0; i<this.connectionArray.length; i++){
             if(this.connectionArray[i].typeId == id){
@@ -133,8 +133,7 @@ export class LocalConnectionData{
         var connectionList:Connection[] = [];
 
         try{
-            var data = await this.waitForDataToLoad();
-            console.log("this is the connections", this.connectionArray, typeId, ofTheConceptId);
+            //var data = await this.waitForDataToLoad();
         for(var i=0; i<this.connectionArray.length; i++){
             if(this.connectionArray[i].typeId == typeId && this.connectionArray[i].ofTheConceptId == ofTheConceptId){
                 connectionList.push(this.connectionArray[i]);

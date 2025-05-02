@@ -6,13 +6,20 @@ export class ConnectionBinaryTree{
     static connectionroot: ConnectionNode | null = null;
 
     static addNodeToTree(node:ConnectionNode){
-        if(this.connectionroot == null){
-            this.connectionroot = node;
-            return this.connectionroot;
+        try{
+            if(this.connectionroot == null){
+                this.connectionroot = node;
+                return this.connectionroot;
+            }
+            else{
+                this.connectionroot = this.connectionroot.addNode(node,this.connectionroot,this.connectionroot.height);
+            }
         }
-        else{
-            this.connectionroot = this.connectionroot.addNode(node,this.connectionroot,this.connectionroot.height);
+        catch(error){
+            console.log("This is the error in making the tree", error);
+            throw error;
         }
+
     }
 
     static addConnectionToTree(connection:Connection){
@@ -54,11 +61,19 @@ export class ConnectionBinaryTree{
 
 
     static async getNodeFromTree(id:number){
-        if(this.connectionroot){
-            let Node = this.connectionroot.getFromNode(id, this.connectionroot);
-            return Node;
+        try{
+            if(this.connectionroot){
+            
+                let Node = this.connectionroot.getFromNode(id, this.connectionroot);
+                return Node;
+            }
+            return this.connectionroot;
         }
-        return this.connectionroot;
+        catch(ex){
+            console.log("this is the getNodeFromTree", id, this.connectionroot);
+
+        }
+
     }
 
     static async getConnectionListFromIds(ids: number[], connectionArray: Connection [], remainingIds: any){

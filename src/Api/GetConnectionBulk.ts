@@ -1,11 +1,29 @@
-import { Concept } from "./../DataStructures/Concept";
 import { ConnectionData } from "./../DataStructures/ConnectionData";
-import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { requestNextCacheServer } from "../Services/cacheService";
+
+async function processBulkConnectionData(response: Response, connectionList:Connection[],logData: any) {
+    if(response.ok){
+        const result = await response.json();
+        if(result.length > 0){
+            for(let i=0 ; i<result.length; i++){
+                let connection = result[i] as Connection;
+                connectionList.push(connection);
+                ConnectionData.AddConnection(connection);
+            }
+        }
+    }
+    else{
+        UpdatePackageLogWithError(logData, 'GetConnectionBulk', response.status);
+        HandleHttpError(response);
+        console.log("Get Connection Bulk error", response.status);
+    }
+}
 
 /**
  * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched
@@ -13,21 +31,37 @@ import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPo
  * @returns the list of  connections that have been fetched
  */
 export async function GetConnectionBulk(connectionIds: number[] = []): Promise<Connection[]>{
-    let connectionList:Connection[] = [];
+    const logData : any = Logger.logfunction("GetConnectionBulk", connectionIds.length) || {};
 
+    let connectionList:Connection[] = [];
     try{
+        if (serviceWorker) {
+            logData.serviceWorker = true;
+            try {
+                const res: any = await sendMessage('GetConnectionBulk', {connectionIds})
+                Logger.logUpdate(logData);  
+                return res.data
+            } catch (error) {
+                console.error('GetConnectionBulk sw error: ', error);
+                UpdatePackageLogWithError(logData, 'GetConnectionBulk', error);
+                handleServiceWorkerException(error);
+            }
+        }
         if(connectionIds.length > 0){
             let bulkConnectionFetch:number[] = [];
            // if the connections are already present in the local memory then take it from there 
             //else put it in a list called bulkConnectionFetch which will be used to call and api.
             for(let i=0; i<connectionIds.length; i++){
-                let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
-                if(conceptUse.id == 0){
-                    bulkConnectionFetch.push(connectionIds[i]);
+                if(!ConnectionData.GetNpConn(connectionIds[i])){
+                    let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
+                    if(conceptUse.id == 0){
+                        bulkConnectionFetch.push(connectionIds[i]);
+                    }
+                    else{
+                        connectionList.push(conceptUse);
+                    }
                 }
-                else{
-                    connectionList.push(conceptUse);
-                }
+
             }
     
             // let remainingIds:any = {};
@@ -36,35 +70,29 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
             //bulkConnectionFetch = connectionIds;
             // if the case that bulkConnectionFetch does not have any elements then we just return everything we have
             if(bulkConnectionFetch.length == 0){
+                Logger.logUpdate(logData);  
                 return connectionList;
             }
             else{
     
                 // if the connection could not be found in the local memory then fetch from the api.
                 let header = GetRequestHeader();
-                const response = await fetch(BaseUrl.GetConnectionBulkUrl(),{
+                let response;
+                const reqData = {
                     method: 'POST',
                     headers: header,
                     body: JSON.stringify(bulkConnectionFetch)
-                });
-                if(response.ok){
-                    const result = await response.json();
-                    if(result.length > 0){
-                        for(let i=0 ; i<result.length; i++){
-                            let connection = result[i] as Connection;
-                            connectionList.push(connection);
-                            ConnectionData.AddConnection(connection);
-                        }
-                    }
                 }
-                else{
-                    HandleHttpError(response);
-                    console.log("Get Connection Bulk error", response.status);
+                try {
+                    response = await fetch(BaseUrl.GetConnectionBulkUrl(), reqData);
+                } catch (error) {
+                    response = await requestNextCacheServer(reqData, "/api/get_connection_bulk");
                 }
+           
+                await processBulkConnectionData(response, connectionList, logData)
     
     
-    
-    
+            Logger.logUpdate(logData);
             }
         }
 
@@ -75,6 +103,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
         } else {
           console.log('Get Connection Bulk unexpected error: ', error);
         }
+        UpdatePackageLogWithError(logData, 'GetConnectionBulk', error);
         HandleInternalError(error, BaseUrl.GetConnectionBulkUrl());
       }
       await FindConceptsFromConnections(connectionList);

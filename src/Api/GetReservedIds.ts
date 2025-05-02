@@ -4,8 +4,10 @@ import { Concept } from "../DataStructures/Concept";
 import { ReservedIds } from "../DataStructures/ReservedIds";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
+import { Logger } from "../app";
 export async function GetReservedIds(){
+  const logData : any = Logger.logfunction("GetReservedIds", arguments);
     try{
             let header = GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetReservedIdUrl(),{
@@ -20,6 +22,7 @@ export async function GetReservedIds(){
              for(let i=0; i< result.length; i++){
                 ReservedIds.AddId(result[i]);
              }
+             Logger.logUpdate(logData);
     }
     catch (error) {
         if (error instanceof Error) {
@@ -28,5 +31,6 @@ export async function GetReservedIds(){
           console.log('get reserved ids  unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetReservedIdUrl());
+        UpdatePackageLogWithError(logData, 'GetReservedIds', error);
       }
 }

@@ -1,16 +1,30 @@
 import { CreateTextData } from "../Api/Create/CreateTheTextData";
 import { GetCharacterByCharacter } from "../Api/GetCharacterDataByCharacter";
+import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
+import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
 import GetConceptByCharacter from "./GetConceptByCharacter";
 import MakeTheCharacter from "./MakeTheCharacter";
 import { SplitStrings } from "./SplitStrings";
 
-export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number,
-    )
-{
-    let referentId: number = 999;
+export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number) {
+    const logData : any = Logger.logfunction("MakeTheTypeConcept", arguments) || {};
+    if (serviceWorker) {
+        logData.serviceWorker = true;
+        try {
+            const res: any = await sendMessage('MakeTheTypeConcept', { typeString, sessionId, sessionUserId, userId })
+            Logger.logUpdate(logData); 
+            return res.data
+        } catch (error) {
+            console.error('MakeTheTypeConcept sw error: ', error)
+            UpdatePackageLogWithError(logData, 'MakeTheTypeConcept', error);
+            handleServiceWorkerException(error)
+        }
+    }
+
+    let referentId: number|null = null;
     let securityId: number = 999;
     let accessId: number = 999;
     let accessUserId: number = userId;
@@ -45,6 +59,8 @@ export  async  function MakeTheTypeConcept(typeString: string, sessionId: number
         }
 
     }
+
+    Logger.logUpdate(logData);
     return existingConcept;
 
 

@@ -15,7 +15,12 @@ export class FreeschemaQuery{
     filters: FilterSearch[] = [];
     filterLogic: string = "";
     typeConnection: string = "";
+    order: string = "DESC";
     outputFormat: number = NORMAL;
     name: string = "";
     reverse: boolean = false;
+    limit: boolean = false;
+    isSecure:boolean = false;
+    includeInFilter: boolean = false;
+    isOldConnectionType: boolean = false;
 }

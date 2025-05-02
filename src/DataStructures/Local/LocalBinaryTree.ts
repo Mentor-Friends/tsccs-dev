@@ -43,12 +43,12 @@ export class LocalBinaryTree{
     static async getNodeFromTree(id:number){
 
         
-        try{
-            var data = await this.waitForDataToLoad();
-        }
-        catch(exception){
-            return null;
-        }
+        // try{
+        //     var data = await this.waitForDataToLoad();
+        // }
+        // catch(exception){
+        //     return null;
+        // }
         if(this.root){
             var Node = this.root.getFromNode(id, this.root);
             return Node;

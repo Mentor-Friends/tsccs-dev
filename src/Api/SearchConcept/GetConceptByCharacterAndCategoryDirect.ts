@@ -3,9 +3,11 @@ import { GetConceptByCharacterAndTypeUrl } from './../../Constants/ApiConstants'
 import { Concept } from "./../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept } from "../../app";
-import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
+import { CreateDefaultConcept, Logger } from "../../app";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
+import { AddTypeConcept } from "../../Services/GetTheConcept";
 export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: string, category_id: number): Promise<Concept>{
+  const logData : any = Logger.logfunction("GetConceptByCharacterAndCategoryDirectApi", arguments);
   let concept:Concept = CreateDefaultConcept();
 
     try{
@@ -19,13 +21,17 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
           if(response.ok){
             let conceptString = await response.json() ;
             concept = conceptString as Concept;
-            ConceptsData.AddConcept(concept);
+              AddTypeConcept(concept).then(()=>{
+                  ConceptsData.AddConcept(concept);
+              });
           }
           else{
           //  throw new Error(`Error! status: ${response.status}`);
             console.log("This is the concept by category and character error", response.status);
             HandleHttpError(response);
             }
+            
+            Logger.logUpdate(logData);
 
     }
     catch (error) {
@@ -35,6 +41,7 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
           console.log(' This is the concept by category and character unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptByCharacterAndCategoryDirectUrl());
+        UpdatePackageLogWithError(logData, 'GetConceptByCharacterAndCategoryDirectApi', error);
     }
     return concept;
 

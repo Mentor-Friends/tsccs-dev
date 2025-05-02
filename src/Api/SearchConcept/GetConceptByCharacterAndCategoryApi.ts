@@ -3,9 +3,11 @@ import { GetConceptByCharacterAndTypeUrl } from '../../Constants/ApiConstants';
 import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
-import { CreateDefaultConcept } from "../../app";
-import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
+import { CreateDefaultConcept, Logger } from "../../app";
+import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
+import { AddTypeConcept } from "../../Services/GetTheConcept";
 export async function GetConceptByCharacterAndCategoryApi(characterValue: string){
+  const logData : any = Logger.logfunction("GetConceptByCharacterAndCategoryApi", arguments);
     let concept = CreateDefaultConcept();
 
     try{
@@ -18,7 +20,9 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
           if(response.ok){
             let conceptString = await response.json() ;
             concept = conceptString as Concept;
-            ConceptsData.AddConcept(concept);
+              AddTypeConcept(concept).then(()=>{
+                  ConceptsData.AddConcept(concept);
+              });
           }
           else{
           //  throw new Error(`Error! status: ${response.status}`);
@@ -26,6 +30,7 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
             console.log("This is the concept by category and character error", response.status);
             HandleHttpError(response);
             }
+      Logger.logUpdate(logData);
       return concept;
 
     }
@@ -36,5 +41,6 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
           console.log(' This is the concept by category and character unexpected error: ', error);
         }
         HandleInternalError(error, BaseUrl.GetConceptByCharacterAndCategoryUrl());
+        UpdatePackageLogWithError(logData, 'GetConceptByCharacterAndCategoryApi', error);
       }
 }

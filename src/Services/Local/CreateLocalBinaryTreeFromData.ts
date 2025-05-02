@@ -2,16 +2,18 @@ import { IdentifierFlags } from "../../DataStructures/IdentifierFlags";
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 import { GetLockStatus, getObjectsFromLocalIndexDb, LockTheDatabase, UnlockDatabase, UpdateToDatabase } from "../../Database/indexdblocal";
-import { BaseUrl, DelayFunctionExecution } from "../../app";
+import { BaseUrl, Concept, DelayFunctionExecution, Logger } from "../../app";
+import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 
 /**
  * This will create a binary tree of local concepts that is saved from the indexdb.
  */
 export default  async function CreateLocalBinaryTreeFromIndexDb(){
-    console.log("this is trying to create local binary tree");
+    const logData : any = Logger.logfunction("CreateLocalBinaryTreeFromIndexDb");
     try{
-        let conceptList = await getObjectsFromLocalIndexDb("localconcept");
+        //let conceptList = await getObjectsFromLocalIndexDb("localconcept");
+        let conceptList:Concept[] = [];
         if(Array.isArray(conceptList)){
             for(let i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
@@ -22,6 +24,8 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
         IdentifierFlags.isLocalDataLoaded = true;
         IdentifierFlags.isLocalTypeLoaded = true;
         IdentifierFlags.isLocalCharacterLoaded = true;
+
+        Logger.logUpdate(logData);
     }
     catch(error){
         await DelayFunctionExecution(2000, CreateLocalBinaryTreeFromIndexDb());
@@ -31,6 +35,7 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
             "ok": false,
             "status": 400
         };
+        UpdatePackageLogWithError(logData, 'CreateLocalBinaryTreeFromIndexDb', error);
         throw errorObject;
     }
 
@@ -50,10 +55,10 @@ export default  async function CreateLocalBinaryTreeFromIndexDb(){
  * 
  */
 export async function PopulateTheLocalConceptsToMemory(){
+    const logData : any = Logger.logfunction("PopulateTheLocalConceptsToMemory");
     try{
         // put a lock on the indexdb for the domain so that no two things do this same process.
-        await navigator.locks.request("dblock", async (lock) => {
-
+        await navigator.locks?.request("dblock", async (lock) => {
             // get the last local concept id(-ve) from the indexdb
             let idList = await getObjectsFromLocalIndexDb("localid");
             // if the list is valid then.
@@ -71,7 +76,7 @@ export async function PopulateTheLocalConceptsToMemory(){
 
                         // update the indexdb with the new concept value that other programs can use and
                         // reserve the 10 ids for this program.
-                     //   await UpdateToDatabase("localid", {"id": 0, "value": localConceptIdValue - 10});
+                        await UpdateToDatabase("localid", {"id": 0, "value": localConceptIdValue - 10});
                     }
                     else{
                         // incase there is invalid id then choose a random id .
@@ -85,10 +90,13 @@ export async function PopulateTheLocalConceptsToMemory(){
         
                 }
                 if(idList[2]){
-                    BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                    // BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                  //  BaseUrl.setRandomizer(idList[2].value)
                 }
             }
         });
+
+        Logger.logUpdate(logData);
 
     }
     catch(error){
@@ -98,6 +106,7 @@ export async function PopulateTheLocalConceptsToMemory(){
             "ok": false,
             "status": 400
         };
+        UpdatePackageLogWithError(logData, 'PopulateTheLocalConceptsToMemory', error);
         throw errorObject;
     }
 
@@ -117,10 +126,10 @@ export async function PopulateTheLocalConceptsToMemory(){
  * 
  */
  export async function PopulateTheLocalConnectionToMemory(){
+    const logData : any = Logger.logfunction("PopulateTheLocalConnectionToMemory");
     try{
                 // put a lock on the indexdb for the domain so that no two things do this same process.
-        await navigator.locks.request("dblock", async (lock) => {
-
+        await navigator.locks?.request("dblock", async (lock) => {
             let idList = await getObjectsFromLocalIndexDb("localid");
             if(Array.isArray(idList)){
                 
@@ -141,11 +150,15 @@ export async function PopulateTheLocalConceptsToMemory(){
 
                 }
                 if(idList[2]){
-                    BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                    // BaseUrl.BASE_RANDOMIZER = idList[2].value;
+                    
+                   // BaseUrl.setRandomizer(idList[2].value)
     
                 }
             }
         });
+
+        Logger.logUpdate(logData)
 
     }
     catch(error){
@@ -155,6 +168,7 @@ export async function PopulateTheLocalConceptsToMemory(){
             "ok": false,
             "status": 400
         };
+        UpdatePackageLogWithError(logData, "PopulateTheLocalConnectionToMemory", error);
         throw errorObject;
     }
 
