@@ -167,7 +167,6 @@ export class BuilderStatefulWidget extends StatefulWidget {
         
       }
       else{
-        // this class is added so that in the condition that the rendered widget is added to the html it can be removed from the builer.
         this.element.classList.add('mftsccs-marking-rendered');
       }
 

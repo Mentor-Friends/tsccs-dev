@@ -213,9 +213,9 @@ export class StatefulWidget extends BaseWidget{
         // then assign the html to the element.
         this.element.innerHTML = this.getHtml();
 
-
         // this class is added so that in the condition that the rendered widget is added to the html it can be removed from the builer.
         this.element.classList.add('mftsccs-marking-rendered');
+
         // mount the div with unique identifier to the parent element.
         parent.appendChild(this.element);
 
