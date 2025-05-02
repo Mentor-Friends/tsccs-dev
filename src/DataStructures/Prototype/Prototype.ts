@@ -1,6 +1,7 @@
 import { Concept } from "../Concept";
 import { Connection } from "../Connection";
 import { PrototypeOption } from "./PrototypeOption";
+import { QuerySelector } from "./QuerySelector";
 
 export class Prototype {
     // main string for the prototype
@@ -16,8 +17,13 @@ export class Prototype {
 
     isCompositional:boolean = false;
     options:PrototypeOption[] = [];
-    selector:string = "";
 
+    // for selecting from another type
+    isQueryType:boolean = false;
+    querySelector:QuerySelector|null = null;
+
+
+    
 
     concepts:Concept[] = [];
     connections:Connection[] = [];

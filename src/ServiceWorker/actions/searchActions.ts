@@ -19,7 +19,8 @@ export const searchActions: Actions = {
         const data = await RecursiveSearchApi(
             payload.composition,
             payload.listLinkers,
-            payload.textSearch
+            payload.textSearch,
+            payload.fullLinkers
         )
         return { success: true, data }
     },
@@ -36,7 +37,8 @@ export const searchActions: Actions = {
         const data = await RecursiveSearchApiRaw(
             payload.composition,
             payload.listLinkers,
-            payload.textSearch
+            payload.textSearch,
+            payload.fullLinkers
         )
         return { success: true, data }
     },
