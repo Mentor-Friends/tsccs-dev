@@ -165,6 +165,9 @@ export class BuilderStatefulWidget extends StatefulWidget {
       this.element.className = "mftsccs-marking-element";
         
       }
+      else{
+        this.element.classList.add('mftsccs-marking-rendered');
+      }
 
       this.element.innerHTML = this.getHtml();
       parent?.setAttribute("data-type-value", that.widgetType);
