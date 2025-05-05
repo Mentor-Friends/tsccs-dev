@@ -134,7 +134,7 @@ export async function addPrototypeSelector(selector:QuerySelector|null, mainProt
     OptionConcepts.push(filterType);
     let selectorConnection = await passedTransaction.CreateTheConnectionLocal(mainPrototype.id, selectorType.id, selectorConnectionType.id, 1000, selectorConnectionTypeString,999);
     OptionConnections.push(selectorConnection);
-    let filterConnection = await passedTransaction.CreateTheConnectionLocal(mainPrototype.id, selectorType.id, filterConnectionType.id, 1000, filterConnectionTypeString,999);
+    let filterConnection = await passedTransaction.CreateTheConnectionLocal(mainPrototype.id, filterType.id, filterConnectionType.id, 1000, filterConnectionTypeString,999);
     OptionConnections.push(filterConnection);
 
 
