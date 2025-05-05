@@ -91,6 +91,10 @@ export {BaseUrl} from './DataStructures/BaseUrl';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {DATAID, NORMAL, JUSTDATA,ALLID,DATAIDDATE,RAW,LISTNORMAL} from './Constants/FormatConstants';
+export { CheckAccessOfConcept, CheckAccessOfConceptList, FilterConceptListByAccess } from './Services/AccessControl/AccessControlService';
+export { PermissionSet } from './Services/AccessControl/PermissionSet';
+
+
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
