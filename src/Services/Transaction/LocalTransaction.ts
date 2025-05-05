@@ -1,4 +1,5 @@
 import { Concept, CreateConnectionBetweenTwoConceptsLocal, CreateTheCompositionLocal, CreateTheConnectionLocal, InnerActions, LocalSyncData, MakeTheInstanceConceptLocal, MakeTheTypeConceptLocal } from "../../app";
+import CreateTheConceptLocal from "../Local/CreateTheConceptLocal";
 
 export class LocalTransaction {
   protected transactionId!: string;
@@ -95,6 +96,22 @@ export class LocalTransaction {
           await this.markAction();
       
           return concept    
+    } catch (err) {
+        console.log(err)
+        this.success = false
+        throw err
+    }
+  }
+
+  async CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, typeId:number, 
+    accessId:number, isComposition: boolean = false, referentId:number|null = 0, actions: InnerActions = {concepts: [], connections: []}) {
+    try {
+        if (!this.success) throw Error('Query Transaction Expired');
+
+        const concept = await CreateTheConceptLocal(referent, typecharacter, userId, categoryId, typeId, accessId,isComposition,referentId, this.actions);
+        await this.markAction();
+    
+        return concept
     } catch (err) {
         console.log(err)
         this.success = false

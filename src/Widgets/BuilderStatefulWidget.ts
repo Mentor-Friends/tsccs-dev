@@ -162,7 +162,8 @@ export class BuilderStatefulWidget extends StatefulWidget {
          // event.stopPropagation();
           that.createTypeEditor(event);
         };
-      this.element.className = "mftsccs-marking-element";
+
+        this.element.className = "mftsccs-marking-element";
         
       }
       else{

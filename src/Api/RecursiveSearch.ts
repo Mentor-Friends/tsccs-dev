@@ -17,7 +17,8 @@ import { log } from "console";
 export async function RecursiveSearchApi(
   composition: number = 0,
   listLinkers: string[] = [],
-  textSearch: string = ""
+  textSearch: string = "",
+  fullLinkers: string[] = []
 ) {
   const logData : any = Logger.logfunction("RecursiveSearchApi", arguments) || {};
   let concepts: any[] = [];
@@ -30,6 +31,7 @@ export async function RecursiveSearchApi(
           composition,
           listLinkers,
           textSearch,
+          fullLinkers
         });
         Logger.logUpdate(logData);
         return res.data;
@@ -43,6 +45,7 @@ export async function RecursiveSearchApi(
     let searchQuery = new SearchQuery();
     searchQuery.composition = composition;
     searchQuery.listLinkers = listLinkers;
+    searchQuery.fullLinkers = fullLinkers;
     searchQuery.textSearch = textSearch;
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
@@ -150,7 +153,8 @@ export async function RecursiveSearchApiWithInternalConnections(
 export async function RecursiveSearchApiRaw(
   composition: number = 0,
   listLinkers: string[] = [],
-  textSearch: string = ""
+  textSearch: string = "",
+  fullLinkers: string[] = []
 ) {
   const logData : any = Logger.logfunction("RecursiveSearchApiRaw", arguments) || {};
   let concepts: any[] = [];
@@ -163,6 +167,7 @@ export async function RecursiveSearchApiRaw(
           composition,
           listLinkers,
           textSearch,
+          fullLinkers
         });
         Logger.logUpdate(logData);  
         return res.data;
@@ -176,6 +181,7 @@ export async function RecursiveSearchApiRaw(
     searchQuery.composition = composition;
     searchQuery.listLinkers = listLinkers;
     searchQuery.textSearch = textSearch;
+    searchQuery.fullLinkers = fullLinkers;
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
     let myHeaders = GetRequestHeader();
