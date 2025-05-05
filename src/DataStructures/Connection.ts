@@ -8,8 +8,8 @@ export class Connection{
     ghostId: number;
     ofTheConceptId: number;
     toTheConceptId: number;
-    OfTheConceptUserId: number;
-    ToTheConceptUserId: number;
+    ofTheConceptUserId: number;
+    toTheConceptUserId: number;
     entryTimeStamp: Date;
     terminationDateTime: Date;
     typeId: number;
@@ -33,8 +33,8 @@ export class Connection{
             this.id = id;
             this.ofTheConceptId = ofTheConceptId;
             this.toTheConceptId = toTheConceptId;
-            this.OfTheConceptUserId = ofTheConceptUserId;
-            this.ToTheConceptUserId = toTheConceptUserId;
+            this.ofTheConceptUserId = ofTheConceptUserId;
+            this.toTheConceptUserId = toTheConceptUserId;
             this.userId = userId;
             this.typeId = typeId;
             this.ghostId = id;
