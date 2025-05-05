@@ -1,6 +1,6 @@
 import { AccessTracker } from "../AccessTracker/accessTracker";
 import { GetConcept } from "../Api/GetConcept";
-import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, LocalConceptsData, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
@@ -45,9 +45,8 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     const getConcept = (async () => {
         try{
             if(id < 0){
-            let lconcept:Concept =  await GetUserGhostId(userId, id, TokenStorage.sessionId);
-            concept = convertFromLConceptToConcept(lconcept)
-            return concept;
+            let lconcept:Concept = await LocalConceptsData.GetConceptByGhostId(id);
+            return lconcept;
             }
             concept = await ConceptsData.GetConcept(id);
             if((concept == null || concept.id == 0) && id != null && id != undefined){
@@ -83,4 +82,28 @@ export default async function GetTheConcept(id: number, userId: number = 999){
 
     conceptCache.set(id, getConcept)
     return getConcept
+}
+
+export  async function AddTypeConcept(concept:Concept){
+    if (serviceWorker) {
+        try {
+            const res: any = await sendMessage('AddTypeConcept', {concept})
+            return res.data as Concept
+        } catch (error) {
+            console.error('AddTypeConcept sw error: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
+    if(concept.type == null){
+        let conceptType = await ConceptsData.GetConcept(concept.typeId);
+        if(conceptType.id == 0 && concept.typeId != 0 && concept.typeId != 999){
+            let typeConceptString = await GetConcept(concept.typeId);
+            let typeConcept = typeConceptString as Concept;
+            concept.type = typeConcept;
+        }
+        else{
+            concept.type = conceptType;
+        }
+
+    }
 }

@@ -1,4 +1,5 @@
 import { BaseUrl, DATAID, handleServiceWorkerException, JUSTDATA, Logger, SearchLinkMultipleApi, sendMessage, serviceWorker } from "../app";
+import { requestNextCacheServer } from "../Services/cacheService";
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
@@ -102,11 +103,19 @@ export async function BuildWidgetFromIdForLatest(id:number){
           let result: any = {};
       let header = GetRequestHeader("application/json");
     
-        let queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
-          const response = await fetch(queryUrl,{
+      let response;
+      try {   
+            let queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
+            response = await fetch(queryUrl,{
+                method: 'GET',
+                headers: header
+            });
+          } catch (error) {
+            response = await requestNextCacheServer({
               method: 'GET',
               headers: header
-          });
+          }, "?id=" + id)
+          }
           if(response.ok){
               result = await response.json();
               // Add Log

@@ -1,4 +1,4 @@
-import { Connection, GetTheConcept, Logger } from "../../app";
+import { ConceptsData, Connection, GetTheConcept, Logger } from "../../app";
 import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
 import { orderTheConnections } from "./orderingConnections";
@@ -168,6 +168,15 @@ export async function FormatConceptsAndConnectionsNormalList(connections: Connec
       if(mymainData){
         mymainData["id"] = mainComposition[i];
         mainData.push(mymainData);
+      }
+      else{
+        let checkConcept = await ConceptsData.GetConcept(mainComposition[i]);
+        if(checkConcept.id != 0){
+          mymainData = {};
+          mymainData["id"] = mainComposition[i];
+          mainData.push(mymainData);
+        }
+
       }
 
       

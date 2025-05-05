@@ -5,6 +5,25 @@ import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnec
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { requestNextCacheServer } from "../Services/cacheService";
+
+async function processBulkConnectionData(response: Response, connectionList:Connection[],logData: any) {
+    if(response.ok){
+        const result = await response.json();
+        if(result.length > 0){
+            for(let i=0 ; i<result.length; i++){
+                let connection = result[i] as Connection;
+                connectionList.push(connection);
+                ConnectionData.AddConnection(connection);
+            }
+        }
+    }
+    else{
+        UpdatePackageLogWithError(logData, 'GetConnectionBulk', response.status);
+        HandleHttpError(response);
+        console.log("Get Connection Bulk error", response.status);
+    }
+}
 
 /**
  * After fetching these connections it is saved in the local static ConnectionBinaryTree so it can be reused without being fetched
@@ -33,13 +52,16 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
            // if the connections are already present in the local memory then take it from there 
             //else put it in a list called bulkConnectionFetch which will be used to call and api.
             for(let i=0; i<connectionIds.length; i++){
-                let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
-                if(conceptUse.id == 0){
-                    bulkConnectionFetch.push(connectionIds[i]);
+                if(!ConnectionData.GetNpConn(connectionIds[i])){
+                    let conceptUse :Connection= await ConnectionData.GetConnection(connectionIds[i]);
+                    if(conceptUse.id == 0){
+                        bulkConnectionFetch.push(connectionIds[i]);
+                    }
+                    else{
+                        connectionList.push(conceptUse);
+                    }
                 }
-                else{
-                    connectionList.push(conceptUse);
-                }
+
             }
     
             // let remainingIds:any = {};
@@ -54,28 +76,20 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
             else{
     
                 // if the connection could not be found in the local memory then fetch from the api.
-                let header = GetRequestHeader("application/json");
-                const response = await fetch(BaseUrl.GetConnectionBulkUrl(),{
+                let header = GetRequestHeader();
+                let response;
+                const reqData = {
                     method: 'POST',
                     headers: header,
                     body: JSON.stringify(bulkConnectionFetch)
-                });
-                if(response.ok){
-                    const result = await response.json();
-                    if(result.length > 0){
-                        for(let i=0 ; i<result.length; i++){
-                            let connection = result[i] as Connection;
-                            connectionList.push(connection);
-                            ConnectionData.AddConnection(connection);
-                        }
-                    }
                 }
-                else{
-                    UpdatePackageLogWithError(logData, 'GetConnectionBulk', response.status);
-                    HandleHttpError(response);
-                    console.log("Get Connection Bulk error", response.status);
+                try {
+                    response = await fetch(BaseUrl.GetConnectionBulkUrl(), reqData);
+                } catch (error) {
+                    response = await requestNextCacheServer(reqData, "/api/get_connection_bulk");
                 }
-    
+           
+                await processBulkConnectionData(response, connectionList, logData)
     
     
             Logger.logUpdate(logData);

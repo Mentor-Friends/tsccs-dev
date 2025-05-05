@@ -1,4 +1,3 @@
-import { Console } from "console";
 import { Concept, Connection, GetTheConcept, Logger } from "../../app";
 import { removeThePrefix } from "../Common/RegexFunction";
 import { AddCount } from "./JustIdFormat";

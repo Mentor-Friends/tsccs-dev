@@ -22,7 +22,7 @@ export { default as GetConceptByCharacter } from './Services/GetConceptByCharact
 export { GetLink,GetLinkRaw } from './Services/GetLink';
 export {CreateDefaultConcept} from './Services/CreateDefaultConcept';
 export { MakeTheTypeConceptLocal} from './Services/Local/MakeTheTypeLocal';
-export {MakeTheTypeConcept} from './Services/MakeTheTypeConcept';
+//export {MakeTheTypeConcept} from './Services/MakeTheTypeConcept';
 export {MakeTheTypeConceptApi} from './Api/MakeTheTypeConceptApi';
 export { GetLinkerConnectionFromConcepts, GetLinkerConnectionToConcepts} from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
@@ -123,6 +123,7 @@ import { AccessTracker } from "./app";
 import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
 import { getCookie, LogData } from "./Middleware/logger.service";
+import { randomInt } from "crypto";
 export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -145,6 +146,9 @@ export { AccessControlService } from './Services/AccessControl/AccessControl';
 export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 export {CreateData} from './Services/automated/automated-concept-connection';
+
+export {Prototype} from './DataStructures/Prototype/Prototype';
+export {createPrototypeLocal} from './prototype/prototype.service';
 type listeners = {
   listenerId: string | number
   callback: any,
@@ -241,7 +245,7 @@ async function init(
       console.warn("Service Worker not supported in this browser.");
       return
     }
-
+    
     await initializeCacheServer()
     listenPostMessagaes()
     listenBroadCastMessages()
@@ -864,18 +868,17 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
 }
 
 async function initializeCacheServer() {
-  const myCacheServer = sessionStorage.getItem("myCacheServer")
+  let myCacheServer = sessionStorage.getItem("cacheServers");
+  if (myCacheServer === undefined || myCacheServer === "undefined") {
+    BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
+    return;
+  }
+  myCacheServer = JSON.parse(myCacheServer as string)
 
-  async function getCacheServer(data?: any) {
+  async function getCacheServer() {
     try {
         const response = await fetch(BaseUrl.getMyCacheServer(), {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            "my-coords": data ? data.coords : "location denied",
-          }),
         });
   
         if (!response.ok) {
@@ -885,8 +888,12 @@ async function initializeCacheServer() {
         const cacheRes = await response.json();
   
         if (cacheRes.success) {
-          sessionStorage.setItem("myCacheServer", cacheRes.nearestServer);
-          BaseUrl.NODE_CACHE_URL = cacheRes.nearestServer;
+          sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
+          if (!cacheRes.servers) {
+            BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
+          } else {
+            BaseUrl.NODE_CACHE_URL = cacheRes.servers[0];
+          }
         }
   
     } catch (error: any) {
@@ -895,17 +902,26 @@ async function initializeCacheServer() {
   }
   
   if (!myCacheServer) {
-    navigator.geolocation.getCurrentPosition(
-      async (data) => {
-        await getCacheServer(data);
-      },
-      async (error) => {
-        if (error.code === error.PERMISSION_DENIED) {
-          await getCacheServer();
-        }
-      }
-    );
+    // navigator.geolocation.getCurrentPosition(
+    //   async (data) => {
+        await getCacheServer();
+      // },
+      // async (error) => {
+      //   if (error.code === error.PERMISSION_DENIED) {
+      //     // await getCacheServer();
+      //     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
+      //   }
+      // }
+    // );
   } else {
-    BaseUrl.NODE_CACHE_URL = myCacheServer;
-  } 
+    if (Array.isArray(myCacheServer) && myCacheServer.length) {
+      BaseUrl.NODE_CACHE_URL = myCacheServer[0];
+    } else {
+      BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
+    }
+  }
+    sendMessage("SESSION_DATA", {
+      type: 'SESSION_DATA',
+      data: BaseUrl.NODE_CACHE_URL
+    })
 }

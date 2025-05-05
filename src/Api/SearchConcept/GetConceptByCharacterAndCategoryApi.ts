@@ -5,6 +5,7 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
+import { AddTypeConcept } from "../../Services/GetTheConcept";
 export async function GetConceptByCharacterAndCategoryApi(characterValue: string){
   const logData : any = Logger.logfunction("GetConceptByCharacterAndCategoryApi", arguments);
     let concept = CreateDefaultConcept();
@@ -19,7 +20,9 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
           if(response.ok){
             let conceptString = await response.json() ;
             concept = conceptString as Concept;
-            ConceptsData.AddConcept(concept);
+              AddTypeConcept(concept).then(()=>{
+                  ConceptsData.AddConcept(concept);
+              });
           }
           else{
           //  throw new Error(`Error! status: ${response.status}`);

@@ -63,6 +63,7 @@ export class ConnectionNode{
      public addNode(passedNode:ConnectionNode, node:ConnectionNode|null, height:number){
         // try{
             if(node  == null){
+                dispatchIdEvent(passedNode.value.ofTheConceptId);
                 //node = passedNode;
                 //ConnectionBinaryTree.connectionAll.push(node.value);
                 return passedNode;
