@@ -198,7 +198,9 @@ async function init(
     BaseUrl.AI_URL = aiurl;
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
-    TokenStorage.BearerAccessToken = accessToken;
+    if (accessToken) {
+      TokenStorage.BearerAccessToken = accessToken;
+    }
     let randomizer = Math.floor(Math.random() * 100000000);
     // BaseUrl.BASE_RANDOMIZER = randomizer;
     console.log("Flags came in init of service worker is ", flags)

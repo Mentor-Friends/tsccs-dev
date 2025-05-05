@@ -54,7 +54,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
             else{
     
                 // if the connection could not be found in the local memory then fetch from the api.
-                let header = GetRequestHeader();
+                let header = GetRequestHeader("application/json");
                 const response = await fetch(BaseUrl.GetConnectionBulkUrl(),{
                     method: 'POST',
                     headers: header,

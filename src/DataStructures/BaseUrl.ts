@@ -18,6 +18,8 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
+    static ACCESS_CONTROL_BASE_URL = "http://localhost:7001";
+
     static FLAGS : any= {
         logApplication: false,
         logPackage: false,

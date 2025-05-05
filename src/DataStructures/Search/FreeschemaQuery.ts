@@ -20,7 +20,7 @@ export class FreeschemaQuery{
     name: string = "";
     reverse: boolean = false;
     limit: boolean = false;
-    isSecure:boolean = false;
+    isSecure:boolean = true;
     includeInFilter: boolean = false;
     isOldConnectionType: boolean = false;
 }
