@@ -1,4 +1,4 @@
-import { Concept, Connection, CreateDefaultConcept, CreateTheConnectionLocal, InnerActions, LocalTransaction, MakeTheInstanceConceptLocal, MakeTheTypeConceptLocal } from "../app";
+import { Concept, Connection, CreateDefaultConcept, CreateTheConnectionLocal, GetTheConcept, InnerActions, LocalTransaction, MakeTheInstanceConceptLocal, MakeTheTypeConceptLocal } from "../app";
 import { ConceptsToDraw } from "../DataStructures/ConceptsToDraw";
 import { Prototype } from "../DataStructures/Prototype/Prototype";
 import { PrototypeOption } from "../DataStructures/Prototype/PrototypeOption";
@@ -149,7 +149,8 @@ export async function addPrototypeSelector(selector:QuerySelector|null, mainProt
 
 
 export async function addPrototype(type:string, passedTransaction:LocalTransaction){
-        let prototypeOf = await passedTransaction.MakeTheTypeConceptLocal("the_prototype_of", 999, 999, 999);
+  // this is the concept the_prototype_of that is passed to this.
+        let prototypeOf = await GetTheConcept(5124);
         let prototypeOfConcept = await passedTransaction.MakeTheTypeConceptLocal(type, 999,999,999);
         let concept  = await CreatePrototypeConcept(prototypeOf, prototypeOfConcept, 999, passedTransaction);
         return concept;
@@ -169,7 +170,7 @@ export async function addCompositionPrototype(type:string, concepts:Concept[] , 
 }
 
 export async function CreatePrototypeConcept(prototypeConcept:Concept, typeConcept:Concept, userId:number, passedTransaction:LocalTransaction){
-    let concept =  await passedTransaction.CreateTheConceptLocal("","",999, prototypeConcept.id, typeConcept.id, 4, false);
+    let concept =  await passedTransaction.CreateTheConceptLocal("",typeConcept.characterValue,999, prototypeConcept.id, typeConcept.id, 4, false);
     concept.characterValue = typeConcept.characterValue;
     concept.typeCharacter = typeConcept.characterValue;
     concept.isComposition = true;
