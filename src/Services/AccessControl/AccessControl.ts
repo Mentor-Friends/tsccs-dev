@@ -2,16 +2,15 @@
 
 import { BaseUrl } from "../../app";
 
-const accessControlUrl =  BaseUrl.ACCESS_CONTROL_BASE_URL; // Your Access Control API Base URL
 
-export class AccessControlService {
+export class AccessControlService { 
   static async assignAccessToEntity(request: {
     conceptId: number;
     access: string;
     entityId: number;
     makePublic: boolean;
   }): Promise<any> {
-    const url = `${accessControlUrl}/api/access-control/assign-access`;
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/assign-access`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -31,7 +30,7 @@ export class AccessControlService {
     accessList: string[];
     nestedAccessLevel?: number;
   }): Promise<any> {
-    const url = `${accessControlUrl}/api/access-control/assign-public-access`;
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/assign-public-access`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -50,7 +49,7 @@ export class AccessControlService {
     conceptIdList: number[];
     accessList: string[];
   }): Promise<any> {
-    const url = `${accessControlUrl}/api/access-control/assign-public-access-bulk-concept`;
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/assign-public-access-bulk-concept`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -70,7 +69,7 @@ export class AccessControlService {
     entityIdList: number[];
     accessList: string[];
   }): Promise<any> {
-    const url = `${accessControlUrl}/api/access-control/assign-access-bulk`;
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/assign-access-bulk`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -91,7 +90,7 @@ export class AccessControlService {
     userId: number;
     makePublic: boolean;
   }): Promise<any> {
-    const url = `${accessControlUrl}/api/access-control/assign-access-by-user`;
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/assign-access-by-user`;
 
     const response = await fetch(url, {
       method: 'POST',
@@ -112,7 +111,7 @@ export class AccessControlService {
     entityId: number;
   }): Promise<any> {
     const { conceptId, access, entityId } = params;
-    const url = `${accessControlUrl}/api/access-control/revoke-access?conceptId=${conceptId}&access=${encodeURIComponent(access)}&entityId=${entityId}`;
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/revoke-access?conceptId=${conceptId}&access=${encodeURIComponent(access)}&entityId=${entityId}`;
 
     const response = await fetch(url, {
       method: 'DELETE',
@@ -130,7 +129,7 @@ export class AccessControlService {
     entityIdList: number[];
     accessList: string[];
   }): Promise<any> {
-    const url = `${accessControlUrl}/api/access-control/revoke-access-bulk`;
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/revoke-access-bulk`;
 
     const response = await fetch(url, {
       method: 'DELETE',

@@ -154,7 +154,8 @@ const actions: Actions = {
             payload?.nodeUrl,
             payload?.enableAi,
             payload?.applicationName,
-            payload?.flags
+            payload?.flags,
+            payload?.accessControlUrl
         );
         console.log('init has completed')
         return {success: true, data: undefined, name: 'init'}
@@ -196,7 +197,8 @@ async function init(
     nodeUrl: string = "",
     enableAi: boolean = true,
     applicationName: string = "",
-    flags?: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean }
+    flags?: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean },
+    accessControlUrl?: string
   
   ) {
     BaseUrl.BASE_URL = url;
@@ -224,6 +226,9 @@ async function init(
       IdentifierFlags.isLocalConnectionLoaded = true;
       return true;
     }
+
+    BaseUrl.ACCESS_CONTROL_BASE_URL = accessControlUrl ?? "";
+
     console.log("This is the base url", BaseUrl.BASE_URL, randomizer);
     console.log("service worker BaseUrl.FLAGS is ", BaseUrl.FLAGS)
   
