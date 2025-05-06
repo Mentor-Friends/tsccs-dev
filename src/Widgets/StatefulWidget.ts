@@ -57,7 +57,7 @@ export class StatefulWidget extends BaseWidget{
      * 
      * @returns the html string that needs to be mounted to the DOM.
      */
-     getHtml(): string {    
+     getHtml(): string {  
       return this.html;
     }
 

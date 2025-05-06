@@ -142,6 +142,8 @@ export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
+
+export {Selector} from './Api/Prototype/Selector';
 export { AccessControlService } from './Services/AccessControl/AccessControl';
 export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
