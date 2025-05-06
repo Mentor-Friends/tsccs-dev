@@ -300,6 +300,7 @@ export const ckeditorCSS = `
     position: absolute;
     right: 0px;
     top: 0px;
+    z-index: 9999;
   }
 
   #widget-details button {
