@@ -194,6 +194,7 @@ function updateAccessToken(accessToken: string = "", session?: any) {
  *
  * @param url This is the url for the backend c# system or our main data fabric server
  * @param aiurl This is the AI url that pulls in the data using our AI system . If you do not enter this then also disable the enableAi flag.
+ * @param accessControlUrl This is the url for the access control system. This is another server in the data fabric that is used as server for business logic and security features.
  * @param accessToken This is the JWT token that needs to be passed (But since you have just initilized the system). There is no way we can get access token
  * So this access token can be empty string. You can set it afterwards with another function UpdateAccessToken();
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
@@ -206,6 +207,7 @@ async function init(
   aiurl: string = "",
   accessToken: string = "",
   nodeUrl: string = "",
+  accessControlUrl: string = "",
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
@@ -216,6 +218,7 @@ async function init(
     BaseUrl.BASE_URL = url;
     BaseUrl.AI_URL = aiurl;
     BaseUrl.NODE_URL = nodeUrl;
+    BaseUrl.ACCESS_CONTROL_BASE_URL = accessControlUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
     BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
     console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
