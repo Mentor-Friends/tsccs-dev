@@ -137,7 +137,7 @@ export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
-export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
+export {SchemaQueryListener, SchemaQuery} from './WrapperFunctions/SchemaQueryObservable';
 export {WidgetTree} from './Widgets/WidgetTree';
 export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'

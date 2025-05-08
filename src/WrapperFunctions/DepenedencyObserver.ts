@@ -224,6 +224,10 @@ export class DependencyObserver{
         console.log("this is the old execute data");
     }
 
+    async run(){
+        console.log("this is non subscriber data");
+    }
+
     async update(){
         this.isDataLoaded = false;
         await this.bind();
@@ -241,6 +245,16 @@ export class DependencyObserver{
           await this.bind();
           return callback(this.data,this);
       }
+
+          /**
+     * 
+     * 
+     * @returns data
+     */
+    async execute() {
+          return await this.run();
+    }
+
 
 
       /**

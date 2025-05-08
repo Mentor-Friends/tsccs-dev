@@ -423,6 +423,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       newWidget.addEventFunction = tree.after_render;
       newWidget.mountChildWidgetsFunction = tree.mount_child;
       newWidget.widgetState = {...state};
+      newWidget.customFunctions = tree.custom_functions;
       newWidget.css = `#${tree.id} { ${tree.css} }`;
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
@@ -882,8 +883,7 @@ export function showWidgetDocumentation(widgetDocumentData: any) {
 
   previewContainer.innerHTML = ''
 
-  if (widgetDocumentData.length && typeof widgetDocumentData !== "string") {
-
+  if (widgetDocumentData && widgetDocumentData?.length && typeof widgetDocumentData !== "string") {
     widgetDocumentData?.forEach((widgetDoc: any) => {
       const contentTitleEl = <HTMLHeadingElement>document.createElement("h3");
       let widgetDocType = "";
@@ -1062,7 +1062,9 @@ export function showWidgetDocumentation(widgetDocumentData: any) {
     });
 
   } else {
-    previewContainer.innerHTML = widgetDocumentData
+    if (widgetDocumentData !== undefined) {
+      previewContainer.innerHTML = widgetDocumentData
+    }
   }
 
 }
