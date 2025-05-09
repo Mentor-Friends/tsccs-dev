@@ -1,13 +1,23 @@
-import { Concept, CreateConnectionBetweenTwoConceptsLocal, CreateTheCompositionLocal, CreateTheConnectionLocal, InnerActions, LocalSyncData, MakeTheInstanceConceptLocal, MakeTheTypeConceptLocal } from "../../app";
+import {
+  Concept,
+  CreateConnectionBetweenEntityLocal,
+  CreateConnectionBetweenTwoConceptsLocal,
+  CreateTheCompositionLocal,
+  CreateTheConnectionLocal,
+  InnerActions,
+  LocalSyncData,
+  MakeTheInstanceConceptLocal,
+  MakeTheTypeConceptLocal,
+} from "../../app";
 import CreateTheConceptLocal from "../Local/CreateTheConceptLocal";
 
 export class LocalTransaction {
   protected transactionId!: string;
   actions: InnerActions = {
     concepts: [],
-    connections: []
-  }
-  protected success = true
+    connections: [],
+  };
+  protected success = true;
 
   constructor() {
     this.transactionId = Math.random().toString().substring(5);
@@ -17,19 +27,19 @@ export class LocalTransaction {
    * Method to initialize the transactions for specified transaction
    */
   async initialize() {
-    await LocalSyncData.initializeTransaction(this.transactionId)
+    await LocalSyncData.initializeTransaction(this.transactionId);
   }
 
   /**
    * Method to commi the created Transactions
    */
-  async commitTransaction () {
+  async commitTransaction() {
     // Save the data
-    if (!this.success) throw Error('Query Transaction Expired');
+    if (!this.success) throw Error("Query Transaction Expired");
 
-    await LocalSyncData.SyncDataOnline(this.transactionId) 
-    this.actions = {concepts: [], connections: []}
-    this.success = false
+    await LocalSyncData.SyncDataOnline(this.transactionId);
+    this.actions = { concepts: [], connections: [] };
+    this.success = false;
   }
 
   /**
@@ -38,9 +48,9 @@ export class LocalTransaction {
   async rollbackTransaction() {
     // rollback all the changes
 
-    this.success = false
-    this.actions = {concepts: [], connections: []}
-    await LocalSyncData.rollbackTransaction(this.transactionId, this.actions)
+    this.success = false;
+    this.actions = { concepts: [], connections: [] };
+    await LocalSyncData.rollbackTransaction(this.transactionId, this.actions);
   }
 
   /**
@@ -48,9 +58,11 @@ export class LocalTransaction {
    * @param concept Concept
    */
   protected async markAction() {
-    await LocalSyncData.markTransactionActions(this.transactionId, this.actions)
+    await LocalSyncData.markTransactionActions(
+      this.transactionId,
+      this.actions
+    );
   }
-
 
   /**
    * Concepts
@@ -66,9 +78,9 @@ export class LocalTransaction {
     referentId: number = 0
   ) {
     try {
-        if (!this.success) throw Error('Query Transaction Expired');
+      if (!this.success) throw Error("Query Transaction Expired");
 
-        const concept = await MakeTheInstanceConceptLocal(
+      const concept = await MakeTheInstanceConceptLocal(
         type,
         referent,
         composition,
@@ -77,100 +89,197 @@ export class LocalTransaction {
         sessionInformationId,
         referentId,
         this.actions
-        );
-        await this.markAction();
+      );
+      await this.markAction();
 
-        return concept;
+      return concept;
     } catch (err) {
-        console.log(err)
-        this.success = false
-        throw err
-    }
-  }
-  
-  async MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number) {
-      try {
-        if (!this.success) throw Error('Query Transaction Expired');
-
-          const concept = await MakeTheTypeConceptLocal(typeString, sessionId, sessionUserId, userId, this.actions)
-          await this.markAction();
-      
-          return concept    
-    } catch (err) {
-        console.log(err)
-        this.success = false
-        throw err
+      console.log(err);
+      this.success = false;
+      throw err;
     }
   }
 
-  async CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, typeId:number, 
-    accessId:number, isComposition: boolean = false, referentId:number|null = 0, actions: InnerActions = {concepts: [], connections: []}) {
+  async MakeTheTypeConceptLocal(
+    typeString: string,
+    sessionId: number,
+    sessionUserId: number,
+    userId: number
+  ) {
     try {
-        if (!this.success) throw Error('Query Transaction Expired');
+      if (!this.success) throw Error("Query Transaction Expired");
 
-        const concept = await CreateTheConceptLocal(referent, typecharacter, userId, categoryId, typeId, accessId,isComposition,referentId, this.actions);
-        await this.markAction();
-    
-        return concept
+      const concept = await MakeTheTypeConceptLocal(
+        typeString,
+        sessionId,
+        sessionUserId,
+        userId,
+        this.actions
+      );
+      await this.markAction();
+
+      return concept;
     } catch (err) {
-        console.log(err)
-        this.success = false
-        throw err
+      console.log(err);
+      this.success = false;
+      throw err;
     }
   }
 
+  async CreateTheConceptLocal(
+    referent: string,
+    typecharacter: string,
+    userId: number,
+    categoryId: number,
+    typeId: number,
+    accessId: number,
+    isComposition: boolean = false,
+    referentId: number | null = 0,
+    actions: InnerActions = { concepts: [], connections: [] }
+  ) {
+    try {
+      if (!this.success) throw Error("Query Transaction Expired");
+
+      const concept = await CreateTheConceptLocal(
+        referent,
+        typecharacter,
+        userId,
+        categoryId,
+        typeId,
+        accessId,
+        isComposition,
+        referentId,
+        this.actions
+      );
+      await this.markAction();
+
+      return concept;
+    } catch (err) {
+      console.log(err);
+      this.success = false;
+      throw err;
+    }
+  }
 
   /**
    * Connections
    */
 
-  async CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false) {
-      try {
-        if (!this.success) throw Error('Query Transaction Expired');
-
-        const connection = await CreateConnectionBetweenTwoConceptsLocal(ofTheConcept, toTheConcept, linker, both, this.actions)
-        await this.markAction();
-    
-        return connection
-    } catch (err) {
-        console.log(err)
-        this.success = false
-        throw err
-    }
-  }
-
-  async CreateTheConnectionLocal(ofTheConceptId:number, toTheConceptId:number, typeId: number,orderId:number = 1, typeString: string = "", userId: number = 999) {
+  async CreateConnectionBetweenTwoConceptsLocal(
+    ofTheConcept: Concept,
+    toTheConcept: Concept,
+    linker: string,
+    both: boolean = false
+  ) {
     try {
-        if (!this.success) throw Error('Query Transaction Expired');
+      if (!this.success) throw Error("Query Transaction Expired");
 
-        const connection = await CreateTheConnectionLocal(ofTheConceptId, toTheConceptId, typeId, orderId, typeString, userId, this.actions)
-        await this.markAction();
-    
-        return connection
+      const connection = await CreateConnectionBetweenTwoConceptsLocal(
+        ofTheConcept,
+        toTheConcept,
+        linker,
+        both,
+        this.actions
+      );
+      await this.markAction();
+
+      return connection;
     } catch (err) {
-        console.log(err)
-        this.success = false
-        throw err
+      console.log(err);
+      this.success = false;
+      throw err;
     }
   }
 
+  async CreateTheConnectionLocal(
+    ofTheConceptId: number,
+    toTheConceptId: number,
+    typeId: number,
+    orderId: number = 1,
+    typeString: string = "",
+    userId: number = 999
+  ) {
+    try {
+      if (!this.success) throw Error("Query Transaction Expired");
+
+      const connection = await CreateTheConnectionLocal(
+        ofTheConceptId,
+        toTheConceptId,
+        typeId,
+        orderId,
+        typeString,
+        userId,
+        this.actions
+      );
+      await this.markAction();
+
+      return connection;
+    } catch (err) {
+      console.log(err);
+      this.success = false;
+      throw err;
+    }
+  }
+
+  async CreateConnectionBetweenEntityLocal(
+    concept1Data: Concept,
+    concept2Data: Concept,
+    linker: string
+  ) {
+    try {
+      if (!this.success) throw Error("Query Transaction Expired");
+
+      const connection = await CreateConnectionBetweenEntityLocal(
+        concept1Data,
+        concept2Data,
+        linker,
+        this.actions
+      );
+      await this.markAction();
+
+      return connection;
+    } catch (err) {
+      console.log(err);
+      this.success = false;
+      throw err;
+    }
+  }
 
   /**
    * Compositions
    */
 
-  async CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null, automaticSync: boolean  = false) {
-      try {
-        if (!this.success) throw Error('Query Transaction Expired');
+  async CreateTheCompositionLocal(
+    json: any,
+    ofTheConceptId: number | null = null,
+    ofTheConceptUserId: number | null = null,
+    mainKey: number | null = null,
+    userId: number | null = null,
+    accessId: number | null = null,
+    sessionInformationId: number | null = null,
+    automaticSync: boolean = false
+  ) {
+    try {
+      if (!this.success) throw Error("Query Transaction Expired");
 
-        const concept = await CreateTheCompositionLocal(json, ofTheConceptId, ofTheConceptUserId, mainKey, userId, accessId, sessionInformationId, automaticSync, this.actions)
-        await this.markAction();
-    
-        return concept
+      const concept = await CreateTheCompositionLocal(
+        json,
+        ofTheConceptId,
+        ofTheConceptUserId,
+        mainKey,
+        userId,
+        accessId,
+        sessionInformationId,
+        automaticSync,
+        this.actions
+      );
+      await this.markAction();
+
+      return concept;
     } catch (err) {
-        console.log(err)
-        this.success = false
-        throw err
+      console.log(err);
+      this.success = false;
+      throw err;
     }
   }
 }

@@ -1,5 +1,5 @@
 import { Actions } from ".";
-import { CreateConnectionBetweenTwoConcepts, CreateTheConnectionLocal, GetAllConnectionsOfCompositionBulk, GetConnectionBetweenTwoConceptsLinker, GetConnectionBulk, GetConnectionById, GetConnectionOfTheConcept } from "../../app";
+import { CreateConnectionBetweenEntityLocal, CreateConnectionBetweenTwoConcepts, CreateTheConnectionLocal, GetAllConnectionsOfCompositionBulk, GetConnectionBetweenTwoConceptsLinker, GetConnectionBulk, GetConnectionById, GetConnectionOfTheConcept } from "../../app";
 import { CreateConnectionBetweenTwoConceptsLocal } from "../../Services/Local/CreateConnectionBetweenTwoConceptsLocal";
 
 export const connectionActions: Actions = {
@@ -20,32 +20,35 @@ export const connectionActions: Actions = {
     const data = await GetAllConnectionsOfCompositionBulk(payload.composition_ids)
     return { success: true, data }
   },
-    GetConnectionBetweenTwoConceptsLinker: async (payload) => {
-        const data = await GetConnectionBetweenTwoConceptsLinker(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.fullLinker, payload.forward)
-        return { success: true, data }
-    },
-    // create
-    CreateConnectionBetweenTwoConcepts: async (payload) => {
-        const data = await CreateConnectionBetweenTwoConcepts(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both)
-        return { success: true, data }
-    },
-    
-    // local
-    CreateConnectionBetweenTwoConceptsLocal: async (payload) => {
-        const data = await CreateConnectionBetweenTwoConceptsLocal(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both, payload.actions)
-        return {success: true, data, actions: payload.actions}
-    },
-    CreateTheConnectionLocal: async (payload) => {
-        const data = await CreateTheConnectionLocal(
-            payload.ofTheConceptId, 
-            payload.toTheConceptId, 
-            payload.typeId, 
-            payload.orderId, 
-            payload.typeString, 
-            payload.userId,
-            payload.actions
-        )
-        return {success: true, data, actions: payload.actions}
-    },
-    
+  GetConnectionBetweenTwoConceptsLinker: async (payload) => {
+      const data = await GetConnectionBetweenTwoConceptsLinker(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.fullLinker, payload.forward)
+      return { success: true, data }
+  },
+  // create
+  CreateConnectionBetweenTwoConcepts: async (payload) => {
+      const data = await CreateConnectionBetweenTwoConcepts(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both)
+      return { success: true, data }
+  },
+  
+  // local
+  CreateConnectionBetweenTwoConceptsLocal: async (payload) => {
+      const data = await CreateConnectionBetweenTwoConceptsLocal(payload.ofTheConcept, payload.toTheConcept, payload.linker, payload.both, payload.actions)
+      return {success: true, data, actions: payload.actions}
+  },
+  CreateTheConnectionLocal: async (payload) => {
+      const data = await CreateTheConnectionLocal(
+          payload.ofTheConceptId, 
+          payload.toTheConceptId, 
+          payload.typeId, 
+          payload.orderId, 
+          payload.typeString, 
+          payload.userId,
+          payload.actions
+      )
+      return {success: true, data, actions: payload.actions}
+  },
+  CreateConnectionBetweenEntityLocal: async (payload) => {
+    const data = await CreateConnectionBetweenEntityLocal(payload.concept1Data, payload.concept2Data, payload.linker, payload.actions)
+    return {success: true, data, actions: payload.actions}
+  },
 }
