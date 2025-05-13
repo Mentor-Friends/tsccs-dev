@@ -1,7 +1,7 @@
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 
 export function GetRequestHeader(
-    contentType?: string, 
+    contentType: string = 'application/json', 
     accept: string = 'application/json'
 ) {
     const headers: Record<string, string> = {};
