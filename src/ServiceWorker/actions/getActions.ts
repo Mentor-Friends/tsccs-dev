@@ -52,7 +52,8 @@ export const getActions: Actions = {
       payload.id,
       payload.relation,
       payload.inpage,
-      payload.page
+      payload.page,
+      payload.reverse
     );
     return { success: true, data };
   },
@@ -61,7 +62,8 @@ export const getActions: Actions = {
       payload.id,
       payload.relation,
       payload.inpage,
-      payload.page
+      payload.page,
+      payload.reverse
     );
     return { success: true, data };
   },
