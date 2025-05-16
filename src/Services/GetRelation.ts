@@ -5,7 +5,7 @@ import { GetCompositionWithIdAndDateFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
-import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { GetConceptBulk, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { GetConnectionToTheConcept } from "../Api/GetConnectionToTheConcept";
 
@@ -96,17 +96,12 @@ export async function GetRelationRaw(id:number, relation:string, inpage:number=1
     }
     else{
       let connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
-      let connections = connectionsString as Connection[];
-      let prefetch :number[] = [];
+      connections = connectionsString as Connection[];
       for(let i=0; i<connections.length; i++){
         prefetch.push(connections[i].toTheConceptId);
       }
-      for(let i=0; i<connections.length; i++){
-        let toConceptId = connections[i].toTheConceptId;
-        let toConcept = await GetTheConcept(toConceptId);
-        output.push(toConcept);
-      }
     }
+    output = await GetConceptBulk(prefetch);
 
   }
   Logger.logUpdate(logData);

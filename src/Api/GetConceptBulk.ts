@@ -10,12 +10,13 @@ import { requestNextCacheServer } from "../Services/cacheService";
 
 async function processBulkConceptData(response: Response, passedConcepts: number[], result:Concept[], logData:any, startTime:number) {
   if (response.ok) {
-    result = await response.json();
+    let output = await response.json();
 
-    if (result.length > 0) {
-      for (let i = 0; i < result.length; i++) {
-        let concept = result[i] as Concept;
+    if (output.length > 0) {
+      for (let i = 0; i < output.length; i++) {
+        let concept = output[i] as Concept;
         ConceptsData.AddConcept(concept);
+        result.push(concept);
       }
     }
     console.log("added the concepts");
@@ -82,6 +83,9 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
 
             if(conceptUse.id == 0){
               bulkConceptFetch.push(conceptIds[i]);
+            }
+            else {
+              result.push(conceptUse)
             }
           }
 
