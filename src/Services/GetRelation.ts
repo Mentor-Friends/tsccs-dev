@@ -7,13 +7,14 @@ import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCo
 import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
+import { GetConnectionToTheConcept } from "../Api/GetConnectionToTheConcept";
 
-export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
+export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1, reverse:boolean = false){
   const logData : any = Logger.logfunction("GetRelation",arguments) || {};
   if (serviceWorker) {
     logData.serviceWorker = true;
     try {
-      const res: any = await sendMessage('GetRelation', {id, relation, inpage, page})
+      const res: any = await sendMessage('GetRelation', {id, relation, inpage, page, reverse})
       Logger.logUpdate(logData);
       return res.data
     } catch (error) {
@@ -26,31 +27,51 @@ export async function GetRelation(id:number, relation:string, inpage:number=10, 
     let  concept:Concept = await GetTheConcept(id);
     let relatedConceptString = await GetConceptByCharacterAndCategory(relation);
     let relatedConcept = relatedConceptString as Concept;
+    let connections:Connection[] = [];
     if(relatedConcept.id > 0){
-      let connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
-      let connections = connectionsString as Connection[];
-      let prefetch :number[] = [];
-      for(let i=0; i<connections.length; i++){
-        prefetch.push(connections[i].toTheConceptId);
+
+      if(reverse){
+        let connectionsString = await GetConnectionToTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+        connections = connectionsString as Connection[];
+        let prefetch :number[] = [];
+        for(var i=0; i<connections.length; i++){
+          prefetch.push(connections[i].ofTheConceptId);
+        }
+        await GetAllConnectionsOfCompositionBulk(prefetch);
+        for(let i=0; i<connections.length; i++){
+          let ofTheConceptId = connections[i].ofTheConceptId;
+          let ofConcept = await GetTheConcept(ofTheConceptId);
+          let newComposition = await GetCompositionWithIdAndDateFromMemory(ofConcept.id);
+          output.push(newComposition);
+        }
       }
-      await GetAllConnectionsOfCompositionBulk(prefetch);
-      for(let i=0; i<connections.length; i++){
-        let toConceptId = connections[i].toTheConceptId;
-        let toConcept = await GetTheConcept(toConceptId);
-        let newComposition = await GetCompositionWithIdAndDateFromMemory(toConcept.id);
-        output.push(newComposition);
+      else{
+        let connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+        connections = connectionsString as Connection[];
+        let prefetch :number[] = [];
+        for(let i=0; i<connections.length; i++){
+          prefetch.push(connections[i].toTheConceptId);
+        }
+        await GetAllConnectionsOfCompositionBulk(prefetch);
+        for(let i=0; i<connections.length; i++){
+          let toConceptId = connections[i].toTheConceptId;
+          let toConcept = await GetTheConcept(toConceptId);
+          let newComposition = await GetCompositionWithIdAndDateFromMemory(toConcept.id);
+          output.push(newComposition);
+        }
       }
+
     }
     Logger.logUpdate(logData);
     return  output;
 }
 
-export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1){
+export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1, reverse:boolean = false){
   const logData : any = Logger.logfunction("GetRelationRaw",arguments) || {};
   if (serviceWorker) {
     logData.serviceWorker = true;
     try {
-      const res: any = await sendMessage('GetRelationRaw', {id, relation, inpage, page})
+      const res: any = await sendMessage('GetRelationRaw', {id, relation, inpage, page, reverse})
       Logger.logUpdate(logData); 
       return res.data
     } catch (error) {
@@ -63,18 +84,30 @@ export async function GetRelationRaw(id:number, relation:string, inpage:number=1
   let  concept:Concept = await GetTheConcept(id);
   let relatedConceptString =    await GetConceptByCharacterAndCategory(relation);
   let relatedConcept = relatedConceptString as Concept;
+  let connections:Connection[] = [];
+  let prefetch :number[] = [];
   if(relatedConcept.id > 0){
-    let connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
-    let connections = connectionsString as Connection[];
-    let prefetch :number[] = [];
-    for(let i=0; i<connections.length; i++){
-      prefetch.push(connections[i].toTheConceptId);
+    if(reverse){
+      let connectionsString = await GetConnectionToTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+      connections = connectionsString as Connection[];
+      for(var i=0; i<connections.length; i++){
+        prefetch.push(connections[i].ofTheConceptId);
+      }
     }
-    for(let i=0; i<connections.length; i++){
-      let toConceptId = connections[i].toTheConceptId;
-      let toConcept = await GetTheConcept(toConceptId);
-      output.push(toConcept);
+    else{
+      let connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+      let connections = connectionsString as Connection[];
+      let prefetch :number[] = [];
+      for(let i=0; i<connections.length; i++){
+        prefetch.push(connections[i].toTheConceptId);
+      }
+      for(let i=0; i<connections.length; i++){
+        let toConceptId = connections[i].toTheConceptId;
+        let toConcept = await GetTheConcept(toConceptId);
+        output.push(toConcept);
+      }
     }
+
   }
   Logger.logUpdate(logData);
   return  output;
