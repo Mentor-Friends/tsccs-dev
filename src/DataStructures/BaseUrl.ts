@@ -77,6 +77,11 @@ export class BaseUrl{
     static GetAllConnectionsOfConceptUrl(){
         return this.BASE_URL + '/api/get-link-connections';
     }
+
+    static GetAllConnectionsToConceptUrl(){
+        return this.BASE_URL + '/api/get-link-reverse-connections';
+    }
+    
     
     static GetAllAiData(){
         return this.BASE_URL + '/api/get-preloaded-concepts';
