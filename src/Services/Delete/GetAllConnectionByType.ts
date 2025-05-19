@@ -6,6 +6,7 @@ import { Connection, ConnectionData, GetConceptByCharacter, MakeTheTypeConceptAp
  * This function returns all the connections from the ofTheConceptId and connection type
  * @param id ofTheConceptId
  * @param linker the connection type
+ * @param reverse if you put in reverse true then the reverse connections are returned.
  * @returns Array of connections
  */
 export async function GetAllTheConnectionsByTypeAndOfTheConcept(id: number, linker: string, reverse: boolean = false){
@@ -26,7 +27,7 @@ export async function GetAllTheConnectionsByTypeAndOfTheConcept(id: number, link
         for(let i=0 ; i< externalConnections.length; i++){
             ConnectionData.AddConnection(externalConnections[i]);
         }
-        let concept = await GetConceptByCharacter(linker);
+        let concept = await MakeTheTypeConceptApi(linker,999);
         for(let i=0; i<externalConnections.length; i++){
             if(externalConnections[i].typeId == concept.id){
                 toDelete.push(externalConnections[i]);
@@ -39,7 +40,7 @@ export async function GetAllTheConnectionsByTypeAndOfTheConcept(id: number, link
 
 
 /**
- * This function returns all the connections from the ofTheConceptId and connection type
+ * This function returns all the connections from the ofTheConceptId with toTheConceptId and linkers as given, the reverse is also true.
  * @param id ofTheConceptId
  * @param linker the connection type
  * @returns Array of connections
