@@ -1,6 +1,7 @@
 import { Actions } from ".";
 import { CreateConnectionBetweenEntityLocal, CreateConnectionBetweenTwoConcepts, CreateTheConnectionLocal, GetAllConnectionsOfCompositionBulk, GetConnectionBetweenTwoConceptsLinker, GetConnectionBulk, GetConnectionById, GetConnectionOfTheConcept } from "../../app";
 import { CreateConnectionBetweenTwoConceptsLocal } from "../../Services/Local/CreateConnectionBetweenTwoConceptsLocal";
+import { CreateConnection } from "../../Services/Local/CreateTheConnectionLocal";
 
 export const connectionActions: Actions = {
     // get
@@ -44,6 +45,15 @@ export const connectionActions: Actions = {
           payload.typeString, 
           payload.userId,
           payload.actions
+      )
+      return {success: true, data, actions: payload.actions}
+  },
+    CreateConnection: async (payload) => {
+      const data = await CreateConnection(
+        payload.ofTheConcept,
+        payload.toTheConcept,
+        payload.connectionTypeString,
+        payload.actions
       )
       return {success: true, data, actions: payload.actions}
   },

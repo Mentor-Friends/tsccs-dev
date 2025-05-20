@@ -1,5 +1,6 @@
 import {
   Concept,
+  CreateConnection,
   CreateConnectionBetweenEntityLocal,
   CreateConnectionBetweenTwoConceptsLocal,
   CreateTheCompositionLocal,
@@ -220,6 +221,31 @@ export class LocalTransaction {
       throw err;
     }
   }
+
+  async CreateConnection(
+    ofTheConcept: Concept,
+    toTheConcept: Concept,
+    connectionTypeString: string,
+  ) {
+    try {
+      if (!this.success) throw Error("Query Transaction Expired");
+
+      const connection = await CreateConnection(
+        ofTheConcept,
+        toTheConcept,
+        connectionTypeString,
+        this.actions
+      );
+      await this.markAction();
+
+      return connection;
+    } catch (err) {
+      console.log(err);
+      this.success = false;
+      throw err;
+    }
+  }
+
 
   async CreateConnectionBetweenEntityLocal(
     concept1Data: Concept,
