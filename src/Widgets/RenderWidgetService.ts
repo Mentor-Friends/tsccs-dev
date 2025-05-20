@@ -1,10 +1,37 @@
 import { BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
 import { ckeditorCSS } from "../Constants/ckeditorCSS";
+import { COMPOSITIONS } from "../Constants/page.const";
+import { applyPageProperties } from "./RenderPage.service";
 import { initializeLibraries } from "./RenderWidgetLibrary.service";
 import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
       const widgets = await GetRelation(pageId, "the_page_body");
+      
+      // apply page properties
+      const pageQuery = new SearchQuery();
+      pageQuery.composition = pageId;
+      pageQuery.inpage = 100;
+      pageQuery.fullLinkers = [
+        "the_page_body",
+        "the_page_title",
+        "the_page_slug",
+        "the_page_font_family",
+        "the_page_font_size",
+        "the_page_width",
+        "the_page_type",
+        "the_page_meta_title",
+        "the_page_meta_description",
+        "the_page_meta_keywords",
+      ];
+      const data = await SearchLinkMultipleAll([pageQuery]);
+      console.log("renderPage SearchLinkMultipleAll data -->", data);
+
+      await applyPageProperties(data.data?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}`]);
+
+      const fspagePreview = <HTMLElement>document.getElementById("app");
+      fspagePreview.classList.add("fspage");
+
       if (widgets?.[0]?.id)
         await renderWidget(widgets[0].id, attachNode, props);
       else{
@@ -424,7 +451,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       newWidget.mountChildWidgetsFunction = tree.mount_child;
       newWidget.widgetState = {...state};
       newWidget.customFunctions = tree.custom_functions;
-      newWidget.css = `#${tree.id} { ${tree.css} }`;
+      // newWidget.css = `#${tree.id} { ${tree.css} }`;
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
       parentElement.innerHTML = "";
