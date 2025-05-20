@@ -9,44 +9,42 @@ export async function applyPageProperties(pageData: any) {
     {
       key: "meta_title",
       value:
-        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_meta_title`]?.[0]?.data
+        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_meta_title`]?.data
           ?.the_meta_title,
     },
     {
       key: "meta_description",
       value:
-        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_meta_description`]?.[0]
-          ?.data?.the_meta_description,
+        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_meta_description`]?.data
+          ?.the_meta_description,
     },
     {
       key: "meta_keywords",
       value:
-        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_meta_keywords`]?.[0]
-          ?.data?.the_meta_keywords,
+        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_meta_keywords`]?.data
+          ?.the_meta_keywords,
     },
     {
       key: "width",
       value:
-        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_width`]?.[0]?.data
-          ?.the_width,
+        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_width`]?.data?.the_width,
     },
     {
       key: "font_size",
       value:
-        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_font_size`]?.[0]?.data
+        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_font_size`]?.data
           ?.the_font_size,
     },
     {
       key: "font_family",
       value:
-        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_font_family`]?.[0]?.data
+        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_font_family`]?.data
           ?.the_font_family,
     },
     {
       key: "type",
       value:
-        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_type`]?.[0]?.data
-          ?.the_type,
+        pageData?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}_type`]?.data?.the_type,
     },
   ];
   properties.forEach((prop) => {

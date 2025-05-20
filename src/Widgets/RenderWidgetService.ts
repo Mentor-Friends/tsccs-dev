@@ -9,10 +9,11 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       const widgets = await GetRelation(pageId, "the_page_body");
       
       // apply page properties
-      const pageQuery = new SearchQuery();
-      pageQuery.composition = pageId;
-      pageQuery.inpage = 100;
-      pageQuery.fullLinkers = [
+      const freeschemaQuery = new FreeschemaQuery();
+      freeschemaQuery.conceptIds = [pageId];
+      freeschemaQuery.inpage = 100;
+      freeschemaQuery.outputFormat = DATAID;
+      freeschemaQuery.selectors = [
         "the_page_body",
         "the_page_title",
         "the_page_slug",
@@ -24,10 +25,11 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
         "the_page_meta_description",
         "the_page_meta_keywords",
       ];
-      const data = await SearchLinkMultipleAll([pageQuery]);
-      console.log("renderPage SearchLinkMultipleAll data -->", data);
 
-      await applyPageProperties(data.data?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}`]);
+      SchemaQueryListener(freeschemaQuery, "").subscribe(async (data: any) => {
+        console.log("SchemaQueryListener data -->", data)
+        await applyPageProperties(data?.[0]?.data?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}`]);
+      })
 
       const fspagePreview = <HTMLElement>document.getElementById("app");
       fspagePreview.classList.add("fspage");
