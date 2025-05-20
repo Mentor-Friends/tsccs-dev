@@ -35,7 +35,8 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       fspagePreview.classList.add("fspage");
 
       if (widgets?.[0]?.id)
-        await renderWidget(widgets[0].id, attachNode, props);
+        // await renderWidget(widgets[0].id, attachNode, props);
+        await renderLatestWidget(widgets[0].id, attachNode, props);
       else{
         attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4>'
       }
