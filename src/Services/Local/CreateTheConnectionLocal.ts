@@ -2,7 +2,7 @@ import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 import { Logger } from "../../Middleware/logger.service";
-import { handleServiceWorkerException, InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
+import { Concept, handleServiceWorkerException, InnerActions, LocalSyncData, MakeTheTypeConceptLocal, sendMessage, serviceWorker } from "../../app";
 
 /**
  * This function creates a connection for the concept connection system. This connection will only be created in real sense
@@ -81,4 +81,23 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
 
 
       
+}
+
+
+export async function CreateConnection(ofTheConcept:Concept, toTheConcept:Concept, connectionTypeString: string, actions: InnerActions = {concepts: [], connections: []}){
+    if (serviceWorker) {
+            try {
+            const res: any = await sendMessage('CreateConnection', { ofTheConcept, toTheConcept, connectionTypeString, actions })
+            if (res?.actions?.concepts?.length) actions.concepts = JSON.parse(JSON.stringify(res.actions.concepts));
+            if (res?.actions?.connections?.length) actions.connections = JSON.parse(JSON.stringify(res.actions.connections));
+            return res.data
+        } catch (error) {
+            console.log('CreateConnection error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
+    
+    let typeConcept = await MakeTheTypeConceptLocal(connectionTypeString, 999, 999,999);
+    let userId : number = ofTheConcept.userId;
+    return await CreateTheConnectionLocal(ofTheConcept.id, toTheConcept.id,  typeConcept.id, 1000,connectionTypeString, userId, actions );
 }
