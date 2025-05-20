@@ -2,7 +2,8 @@ import { Connection } from "../../DataStructures/Connection";
 import { LocalConnectionData } from "../../DataStructures/Local/LocalConnectionData";
 import { LocalId } from "../../DataStructures/Local/LocalId";
 import { Logger } from "../../Middleware/logger.service";
-import { handleServiceWorkerException, InnerActions, LocalSyncData, sendMessage, serviceWorker } from "../../app";
+import { Concept, handleServiceWorkerException, InnerActions, LocalSyncData, LocalTransaction, MakeTheTypeConceptLocal, sendMessage, serviceWorker } from "../../app";
+import { MakeTheTypeConcept } from "../MakeTheTypeConcept";
 
 /**
  * This function creates a connection for the concept connection system. This connection will only be created in real sense
@@ -82,3 +83,5 @@ export async  function CreateTheConnectionLocal(ofTheConceptId:number, toTheConc
 
       
 }
+
+

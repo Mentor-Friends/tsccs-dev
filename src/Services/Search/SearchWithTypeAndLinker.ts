@@ -10,6 +10,7 @@ import { FormatFromConnectionsAlteredArrayExternal,FormatFunctionData, FormatFun
 import { CountInfo } from '../../DataStructures/Count/CountInfo';
 import { GetConnectionTypeForCount } from '../Common/DecodeCountInfo';
 import { orderTheConnections } from './orderingConnections';
+import { FormatFromConnectionsAlteredArrayExternalClean, FormatFunctionDataForClean } from './DataFormat';
 
 /**
  * This function will help you search a concept by their type and also to query inside of it.
@@ -168,6 +169,40 @@ export async function formatConnectionsJustId(linkers: number[], conceptIds: num
     let output:any  = await FormatFromConnectionsAlteredArrayExternalJustId(prefetchConnections, compositionData, mainCompositionIds, reverse, CountDictionary);
     return output;
 }
+
+
+/**
+ * ## Format JustId ##
+ * This function fetches all the connections and then converts all the connections to the single level connections 
+ * Then those single level objects are then stiched together to create a complex json/ array.
+ * @param linkers 
+ * @param conceptIds 
+ * @param mainCompositionIds 
+ * @param reverse 
+ * @returns 
+ */
+export async function formatConnectionsClean(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[], order:string = "DESC"){
+    if (serviceWorker) {
+        try {
+            const res: any = await sendMessage('formatConnectionsClean', {linkers,conceptIds,mainCompositionIds,reverse,countInfos,order})
+            return res.data
+        } catch (error) {
+            console.error('formatConnectionsClean error sw: ', error)
+            handleServiceWorkerException(error)
+        }
+    }
+   
+    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
+     prefetchConnections = orderTheConnections(prefetchConnections, order);
+    let compositionData: any [] = [];
+    let newCompositionData: any [] = [];
+    compositionData = await formatFunction(prefetchConnections, compositionData, reverse);
+    compositionData = await FormatFunctionDataForClean(prefetchConnections, compositionData, reverse);
+    let output:any  = await FormatFromConnectionsAlteredArrayExternalClean(prefetchConnections, compositionData, mainCompositionIds, reverse, CountDictionary);
+    return output;
+}
+
 
 
 /**

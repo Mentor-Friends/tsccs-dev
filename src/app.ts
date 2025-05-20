@@ -75,7 +75,7 @@ export {GetCompositionWithIdAndDateFromMemory,GetCompositionFromMemoryWithConnec
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
-export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL} from './Constants/FormatConstants';
+export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL, CLEANDATA} from './Constants/FormatConstants';
 export {PRIVATE , PUBLIC , ADMIN} from './Constants/AccessConstants';
 export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
 export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
