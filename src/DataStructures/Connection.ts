@@ -1,4 +1,4 @@
-import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
+import { CreateDefaultConcept, formatDate } from "../Services/CreateDefaultConcept";
 import { BaseUrl } from "./BaseUrl";
 import { Concept } from "./Concept";
 import { ConnectionData } from "./ConnectionData";
@@ -10,7 +10,7 @@ export class Connection{
     ghostId: number;
     ofTheConceptId: number;
     toTheConceptId: number;
-    entryTimeStamp: Date;
+    entryTimeStamp: Date|string;
     terminationDateTime: Date;
     typeId: number;
     orderId: number;
@@ -36,7 +36,7 @@ export class Connection{
             this.ghostId = id;
             this.orderId = orderId;
             this.accessId = accessId;
-            this.entryTimeStamp = new Date();
+            this.entryTimeStamp = formatDate(new Date());
             this.terminationDateTime  = new Date();
             this.localSyncTime = new Date();
             this.typeCharacter = "";
