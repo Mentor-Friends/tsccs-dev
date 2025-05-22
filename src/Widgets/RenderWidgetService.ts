@@ -1,4 +1,4 @@
-import { BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
+import { BaseUrl, BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
 import { ckeditorCSS } from "../Constants/ckeditorCSS";
 import { COMPOSITIONS } from "../Constants/page.const";
 import { applyPageProperties } from "./RenderPage.service";
@@ -175,7 +175,8 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
           </button>
         </div>
 
-        <div id="documentation-preview" class="ck-content"></div>
+        <!-- <div id="documentation-preview" class="ck-content"></div> -->
+        <div id="documentation-view" class="ck-content"></div>
 
         <div class="widget-documentation-footer">
           <button class="document-preview-close-button">Close</button>
@@ -901,12 +902,18 @@ export async function openDocumentationPreviewModal(widgetId: number) {
     }
 
     await openModal("widget-documentation-preview-modal");
-    showWidgetDocumentation(widgetDocumentData);
+    showWidgetDocumentation(widgetDocumentData, widgetId);
   });
   
 }
 
-export function showWidgetDocumentation(widgetDocumentData: any) {
+export async function showWidgetDocumentation(widgetDocumentData: any, widgetId: number) {
+  const viewEl = <HTMLElement>document.getElementById('documentation-view');
+  if (BaseUrl.DOCUMENTATION_WIDGET != 0 ) {
+    await renderLatestWidget(BaseUrl.DOCUMENTATION_WIDGET, viewEl, {currentWidgetId: widgetId});
+    return
+  }
+
   const previewContainer = <HTMLDivElement>(
     document.getElementById("documentation-preview")
   );

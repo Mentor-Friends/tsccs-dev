@@ -18,6 +18,8 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
+    static DOCUMENTATION_WIDGET = 0;
+
     static FLAGS : any= {
         logApplication: false,
         logPackage: false,
