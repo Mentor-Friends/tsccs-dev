@@ -54,7 +54,7 @@ export { recursiveFetchNew} from './Services/Composition/BuildComposition'
 export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
 export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
 export { CreateTheConnectionGeneral} from './Services/CreateTheConnectionGeneral';
-export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLocal';
+export {CreateTheConnectionLocal, CreateConnection} from './Services/Local/CreateTheConnectionLocal';
 export { GetCompositionListAll, GetCompositionListAllWithId,GetCompositionListWithIdUpdated } from './Services/GetCompositionList';
 export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
 export {SearchLinkMultipleAll,FormatFromConnections} from './Services/Search/SearchLinkMultiple';

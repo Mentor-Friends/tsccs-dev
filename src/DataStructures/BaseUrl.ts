@@ -117,6 +117,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/get-link-connections';
     }
     
+    static GetAllConnectionsToConceptUrl(){
+        return this.BASE_URL + '/api/get-link-reverse-connections';
+    }
+    
     static GetAllAiData(){
         return this.BASE_URL + '/api/get-preloaded-concepts';
        // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';

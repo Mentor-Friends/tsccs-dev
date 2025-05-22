@@ -1,5 +1,4 @@
-import { BaseUrl, Logger } from "../app";
-import { ConceptsData } from "./ConceptData";
+import { BaseUrl } from "../app";
 
 export  class Concept{
     id: number;
@@ -11,9 +10,9 @@ export  class Concept{
     accessId: number;
     characterValue: string;
     typeCharacter: string = "";
-    entryTimeStamp: Date;
+    entryTimeStamp: Date|string;
     referentId: number|null;
-    updatedTimeStamp:Date;
+    updatedTimeStamp:Date|string;
     referent: Concept | null | void = null;
     type:  null | void | Concept;
     isNew: boolean;
@@ -28,7 +27,7 @@ export  class Concept{
 
     constructor(id: number, userId: number, typeId:number,  categoryId:number,
              referentId:number|null,  characterValue:string,
-            accessId:number, isNew:boolean=false, entryTimeStamp: Date, updatedTimeStamp:Date, typeCharacter:string){
+            accessId:number, isNew:boolean=false, entryTimeStamp: Date|string, updatedTimeStamp:Date|string, typeCharacter:string){
         this.id = id;
         this.userId = userId;
         this.typeId  = typeId;

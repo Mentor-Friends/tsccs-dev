@@ -1,4 +1,5 @@
 import { CreateDefaultConcept } from "../../app";
+import { formatDate } from "../../Services/CreateDefaultConcept";
 import { CreateDefaultLConcept } from "../../Services/Local/CreateDefaultLConcept";
 import { BaseUrl } from "../BaseUrl";
 import { Concept } from "../Concept";
@@ -9,7 +10,7 @@ export class LConnection{
     ghostId: number;
     ofTheConceptId: number;
     toTheConceptId: number;
-    entryTimeStamp: Date;
+    entryTimeStamp: Date|string;
     terminationDateTime: Date;
     accessId: number;
     typeId: number;
@@ -33,7 +34,7 @@ export class LConnection{
             this.typeCharacter = "";
             this.accessId = accessId;
             this.typeCharacter  = "";
-            this.entryTimeStamp = new Date();
+            this.entryTimeStamp = formatDate(new Date());
             this.terminationDateTime  = new Date();
             this.localSyncTime = new Date();
         }
