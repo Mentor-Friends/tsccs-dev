@@ -249,7 +249,7 @@ async function init(
       return
     }
     
-    await initializeCacheServer()
+    await initializeAppConfig()
     listenPostMessagaes()
     listenBroadCastMessages()
 
@@ -870,7 +870,7 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
   }
 }
 
-async function initializeCacheServer() {
+async function initializeAppConfig() {
   let myCacheServer = sessionStorage.getItem("cacheServers");
   let appConfig = sessionStorage.getItem("config")
   if (myCacheServer === undefined || myCacheServer === "undefined") {
