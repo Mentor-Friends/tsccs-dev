@@ -302,11 +302,7 @@ export class BaseUrl{
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR FREESCHEMA QUERY //////////////////////
     static FreeschemaQueryUrl(){
-        if (!this.NODE_CACHE_URL || this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") { 
-            return this.BASE_URL + '/api/freeschema-query';
-        } else {
-            return this.NODE_CACHE_URL + '/api/freeschema-query';
-        }
+        return this.BASE_URL + '/api/freeschema-query';
     }
 
     //////////////////////////////////////////////////////////////////////

@@ -891,7 +891,6 @@ async function initializeCacheServer() {
         }
   
         const cacheRes = await response.json();
-        console.log("this is the appconfig response", cacheRes)
         if (cacheRes.success) {
           sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
           sessionStorage.setItem("config", JSON.stringify(cacheRes.config));
