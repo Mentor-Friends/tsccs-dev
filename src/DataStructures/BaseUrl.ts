@@ -18,6 +18,8 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
+    static DOCUMENTATION_WIDGET = 0;
+
     static FLAGS : any= {
         logApplication: false,
         logPackage: false,
@@ -124,8 +126,8 @@ export class BaseUrl{
        // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
 
-    static getMyCacheServer() {
-        return this.NODE_URL + "/api/v1/cache-server"
+    static getAppConfig() {
+        return this.NODE_URL + "/api/v1/config"
     }
 
     static PostPrefetchConceptConnections(){
