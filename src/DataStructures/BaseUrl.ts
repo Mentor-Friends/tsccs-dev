@@ -126,8 +126,8 @@ export class BaseUrl{
        // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
 
-    static getMyCacheServer() {
-        return this.NODE_URL + "/api/v1/cache-server"
+    static getAppConfig() {
+        return this.NODE_URL + "/api/v1/config"
     }
 
     static PostPrefetchConceptConnections(){
@@ -302,7 +302,11 @@ export class BaseUrl{
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR FREESCHEMA QUERY //////////////////////
     static FreeschemaQueryUrl(){
-        return this.BASE_URL + '/api/freeschema-query';
+        if (!this.NODE_CACHE_URL || this.NODE_CACHE_URL && typeof this.NODE_CACHE_URL === "string" && this.NODE_CACHE_URL.trim() === "") { 
+            return this.BASE_URL + '/api/freeschema-query';
+        } else {
+            return this.NODE_CACHE_URL + '/api/freeschema-query';
+        }
     }
 
     //////////////////////////////////////////////////////////////////////

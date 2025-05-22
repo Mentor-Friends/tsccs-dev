@@ -872,15 +872,17 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
 
 async function initializeCacheServer() {
   let myCacheServer = sessionStorage.getItem("cacheServers");
+  let appConfig = sessionStorage.getItem("config")
   if (myCacheServer === undefined || myCacheServer === "undefined") {
     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     return;
   }
-  myCacheServer = JSON.parse(myCacheServer as string)
-
-  async function getCacheServer() {
+  myCacheServer = JSON.parse(myCacheServer as string) 
+  const config: Record<string, number> = JSON.parse(appConfig as string);
+  async function getAppConfigHandler() {
+    let response
     try {
-        const response = await fetch(BaseUrl.getMyCacheServer(), {
+        response = await fetch(BaseUrl.getAppConfig(), {
           method: "POST",
         });
   
@@ -889,25 +891,28 @@ async function initializeCacheServer() {
         }
   
         const cacheRes = await response.json();
-  
+        console.log("this is the appconfig response", cacheRes)
         if (cacheRes.success) {
           sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
+          sessionStorage.setItem("config", JSON.stringify(cacheRes.config));
           if (!cacheRes.servers) {
             BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
           } else {
             BaseUrl.NODE_CACHE_URL = cacheRes.servers[0];
           }
+          if (cacheRes.config) {
+            BaseUrl.DOCUMENTATION_WIDGET = cacheRes.config.documentationWidget
+          }
         }
-  
     } catch (error: any) {
-      console.error("error getting cache server", error.message);
+      console.error("error getting app config from server", error.message);
     }
   }
   
-  if (!myCacheServer) {
+  if (!myCacheServer || !config || !config.documentationWidget) {
     // navigator.geolocation.getCurrentPosition(
     //   async (data) => {
-        await getCacheServer();
+        await getAppConfigHandler();
       // },
       // async (error) => {
       //   if (error.code === error.PERMISSION_DENIED) {
@@ -922,9 +927,12 @@ async function initializeCacheServer() {
     } else {
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
+    BaseUrl.DOCUMENTATION_WIDGET = config.documentationWidget
   }
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     sendMessage("SESSION_DATA", {
-      type: 'SESSION_DATA',
-      data: BaseUrl.NODE_CACHE_URL
-    })
+     type: 'SESSION_DATA',
+     data: BaseUrl.NODE_CACHE_URL
+   })
+  }
 }
