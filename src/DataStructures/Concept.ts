@@ -19,8 +19,8 @@ export  class Concept{
     accessUserId: number;
     sessionInformationId: number;
     sessionInformationUserId: number;
-    entryTimeStamp: Date;
-    updatedTimeStamp:Date;
+    entryTimeStamp: Date|string;
+    updatedTimeStamp:Date|string;
     referent: Concept| null | void = null;
     type: Concept | null | void;
     isNew: boolean;
@@ -31,7 +31,7 @@ export  class Concept{
     constructor(id: number, userId: number, typeId:number, typeUserId:number, categoryId:number, categoryUserId:number,
              referentId:number, referentUserId:number, characterValue:string,
             securityId:number, securityUserId:number, accessId:number, accessUserId:number, sessionId:number,
-             sessionUserId:number, isNew:boolean=false, entryTimeStamp: Date, updatedTimeStamp:Date){
+             sessionUserId:number, isNew:boolean=false, entryTimeStamp: Date|string, updatedTimeStamp:Date|string){
         this.id = id;
         this.userId = userId;
         this.typeId  = typeId;
