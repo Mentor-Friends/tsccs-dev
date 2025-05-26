@@ -38,7 +38,7 @@ export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number
             var ofThe:number = ofTheConceptId ?? 999;
             var ofTheUser:number = ofTheConceptUserId ?? 999;
             var localMainKey = MainKeyLocal;
-            var conceptString = await MakeTheInstanceConceptLocal(key, String(json[key]), false, localUserId, localAccessId, localSessionId);
+            var conceptString = await MakeTheInstanceConceptLocal(key, json[key].toString(), false, localUserId, localAccessId, localSessionId);
             var concept = conceptString as LConcept;
             await CreateTheConnectionLocal(ofThe, concept.id, localMainKey);
 

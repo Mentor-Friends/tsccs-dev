@@ -5,47 +5,96 @@ import { GetCompositionWithIdAndDateFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
+import { GetConnectionToTheConcept } from "../Api/GetConnectionToTheConcept";
+import { GetConceptBulk } from "../app";
 
-export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1){
-    var output: any[] = [];
-    var  concept:Concept = await GetTheConcept(id);
-    var relatedConceptString = await GetConceptByCharacterAndCategory(relation);
-    var relatedConcept = relatedConceptString as Concept;
+export async function GetRelation(id:number, relation:string, inpage:number=10, page:number=1, reverse:boolean = false){
+    let output: any[] = [];
+    let  concept:Concept = await GetTheConcept(id);
+    let relatedConceptString = await GetConceptByCharacterAndCategory(relation);
+    let relatedConcept = relatedConceptString as Concept;
     if(relatedConcept.id > 0){
-      var connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
-      var connections = connectionsString as Connection[];
-      var prefetch :number[] = [];
-      for(var i=0; i<connections.length; i++){
-        prefetch.push(connections[i].toTheConceptId);
+      let prefetch :number[] = [];
+      let connections:Connection[] = [];
+      if(reverse){
+        let connectionsString = await GetConnectionToTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+        connections = connectionsString as Connection[];
+        let prefetch :number[] = [];
+        for(let i=0; i<connections.length; i++){
+          prefetch.push(connections[i].ofTheConceptId);
+        }
+        await GetAllConnectionsOfCompositionBulk(prefetch);
+        for(let i=0; i<connections.length; i++){
+          let ofTheConceptId = connections[i].ofTheConceptId;
+          let ofConcept = await GetTheConcept(ofTheConceptId);
+          let newComposition = await GetCompositionWithIdAndDateFromMemory(ofConcept.id);
+          output.push(newComposition);
+        }
       }
-      await GetAllConnectionsOfCompositionBulk(prefetch);
-      for(var i=0; i<connections.length; i++){
-        let toConceptId = connections[i].toTheConceptId;
-        let toConcept = await GetTheConcept(toConceptId);
-        let newComposition = await GetCompositionWithIdAndDateFromMemory(toConcept.id);
-        output.push(newComposition);
+      else{
+        let connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+        connections = connectionsString as Connection[];
+        for(let i=0; i<connections.length; i++){
+          prefetch.push(connections[i].toTheConceptId);
+        }
+        await GetAllConnectionsOfCompositionBulk(prefetch);
+        for(let i=0; i<connections.length; i++){
+          let toConceptId = connections[i].toTheConceptId;
+          let toConcept = await GetTheConcept(toConceptId);
+          let newComposition = await GetCompositionWithIdAndDateFromMemory(toConcept.id);
+          output.push(newComposition);
+        }
       }
+
+
     }
     return  output;
 }
 
-export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1){
-  var output: Concept[] = [];
-  var  concept:Concept = await GetTheConcept(id);
-  var relatedConceptString =    await GetConceptByCharacterAndCategory(relation);
-  var relatedConcept = relatedConceptString as Concept;
+export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1, reverse:boolean = false){
+  let output: Concept[] = [];
+  let  concept:Concept = await GetTheConcept(id);
+  let relatedConceptString =    await GetConceptByCharacterAndCategory(relation);
+  let relatedConcept = relatedConceptString as Concept;
+  let connections:Connection[] = [];
+  let prefetch :number[] = [];
+
   if(relatedConcept.id > 0){
-    var connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
-    var connections = connectionsString as Connection[];
-    var prefetch :number[] = [];
-    for(var i=0; i<connections.length; i++){
-      prefetch.push(connections[i].toTheConceptId);
+    if(reverse){
+      let connectionsString = await GetConnectionToTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+      connections = connectionsString as Connection[];
+      for(let i=0; i<connections.length; i++){
+        prefetch.push(connections[i].ofTheConceptId);
+      }
     }
-    for(var i=0; i<connections.length; i++){
-      let toConceptId = connections[i].toTheConceptId;
-      let toConcept = await GetTheConcept(toConceptId);
-      output.push(toConcept);
+    else{
+      let connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+      connections = connectionsString as Connection[];
+      for(let i=0; i<connections.length; i++){
+        prefetch.push(connections[i].toTheConceptId);
+      }
     }
+   output = await GetConceptBulk(prefetch);
   }
   return  output;
+}
+
+export async function GetRelationConnections(id:number, relation:string, inpage:number=10, page:number=1, reverse:boolean = false){
+  let output: Concept[] = [];
+  let  concept:Concept = await GetTheConcept(id);
+  let relatedConceptString =    await GetConceptByCharacterAndCategory(relation);
+  let relatedConcept = relatedConceptString as Concept;
+  let connections:Connection[] = [];
+  let prefetch :number[] = [];
+  if(relatedConcept.id > 0){
+    if(reverse){
+      let connectionsString = await GetConnectionToTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+      connections = connectionsString as Connection[];
+    }
+    else{
+      let connectionsString = await GetConnectionOfTheConcept(relatedConcept.id,concept.id, concept.userId,inpage, page);
+      connections = connectionsString as Connection[];
+    }
+  }
+  return connections;
 }

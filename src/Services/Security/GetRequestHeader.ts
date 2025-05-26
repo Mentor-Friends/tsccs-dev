@@ -5,7 +5,6 @@ export function GetRequestHeader(contentType:string ='application/json',
     Accept: string = 'application/json'
 ){
     let token = TokenStorage.BearerAccessToken || getServerJwtToken();
-    console.log("GetRequestHeader token: ", token);
     var headers = {
         'Content-Type':contentType,
         'Authorization': "Bearer " + token,
