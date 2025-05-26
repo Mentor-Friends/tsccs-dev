@@ -49,7 +49,7 @@ export {GetRelation, GetRelationRaw} from './Services/GetRelation';
 export { recursiveFetchNew} from './Services/Composition/BuildComposition'
 export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
 export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
-export { CreateTheConnectionGeneral} from './Services/CreateTheConnectionGeneral';
+export { CreateTheConnectionGeneral,CreateConnection} from './Services/CreateTheConnectionGeneral';
 export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLocal';
 export {GetUserGhostId,AddGhostConcept, GetUserGhostConnectionId,AddGhostConnection} from './Services/User/UserTranslation';
 export {SearchLinkMultipleAll,FormatFromConnections} from './Services/Search/SearchLinkMultiple';

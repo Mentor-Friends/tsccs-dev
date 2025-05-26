@@ -1,3 +1,4 @@
+import { Concept, MakeTheTypeConceptApi } from "../app";
 import { Connection } from "../DataStructures/Connection";
 import { ReservedConnectionIds } from "../DataStructures/ReservedIds";
 import { SyncData } from "../DataStructures/SyncData";
@@ -30,4 +31,11 @@ export async  function CreateTheConnectionGeneral(ofTheConceptId:number, ofTheCo
         return connection;
         
       
+}
+
+
+export async function CreateConnection(ofTheConcept:Concept, toTheConcept:Concept, connectionTypeString: string){
+    let typeConcept = await MakeTheTypeConceptApi(connectionTypeString, 999);
+    let userId : number = ofTheConcept.userId;
+    return await CreateTheConnectionGeneral(ofTheConcept.id, ofTheConcept.userId, toTheConcept.id, toTheConcept.userId, typeConcept.id, 999,999, 1000, 4, userId);
 }

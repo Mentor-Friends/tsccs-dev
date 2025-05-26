@@ -1,3 +1,4 @@
+import { formatDate } from "../../Services/CreateDefaultConcept";
 import { CreateDefaultLConcept } from "../../Services/Local/CreateDefaultLConcept";
 import { Concept } from "../Concept";
 import { LConcept } from "./LConcept";
@@ -7,7 +8,7 @@ export class LConnection{
     ghostId: number;
     ofTheConceptId: number;
     toTheConceptId: number;
-    entryTimeStamp: Date;
+    entryTimeStamp: Date|string;
     terminationDateTime: Date;
     accessId: number;
     typeId: number;
@@ -29,7 +30,7 @@ export class LConnection{
             this.orderId = orderId;
             this.typeCharacter = "";
             this.accessId = accessId;
-            this.entryTimeStamp = new Date();
+            this.entryTimeStamp = formatDate(new Date());
             this.terminationDateTime  = new Date();
             this.localSyncTime = new Date();
             this.applicationId = applicationId;

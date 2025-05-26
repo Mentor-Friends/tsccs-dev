@@ -9,9 +9,9 @@ export  class LConcept{
     accessId: number;
     characterValue: string;
     typeCharacter: string;
-    entryTimeStamp: Date;
+    entryTimeStamp: Date|string;
     referentId: number;
-    updatedTimeStamp:Date;
+    updatedTimeStamp:Date|string;
     type: LConcept | null | void | Concept;
     isNew: boolean;
     isComposition: boolean = false;
@@ -20,7 +20,7 @@ export  class LConcept{
 
 
     constructor(id: number, userId: number, typeId:number, categoryId:number,accessId: number, characterValue:string, typeCharacter:string,
-         isNew:boolean=false, entryTimeStamp: Date, updatedTimeStamp:Date, referentId: number, applicationId: number = 999){
+         isNew:boolean=false, entryTimeStamp: Date|string, updatedTimeStamp:Date|string, referentId: number, applicationId: number = 999){
         this.id = id;
         this.userId = userId;
         this.typeId  = typeId;
