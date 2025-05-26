@@ -18,7 +18,9 @@ export class BaseUrl{
 
     static BASE_APPLICATION = "";
 
-    static ACCESS_CONTROL_BASE_URL = "http://localhost:7001";
+    static DOCUMENTATION_WIDGET = 0;
+
+    static ACCESS_CONTROL_BASE_URL: string = "http://localhost:5001";
 
     static FLAGS : any= {
         logApplication: false,
@@ -126,8 +128,8 @@ export class BaseUrl{
        // return this.AI_URL + '/api/get_ranked_type_id?inpage=300' || process.env.AI_URL ||  'https://ai.freeschema.com/api/get_ranked_type_id?inpage=300';
     }
 
-    static getMyCacheServer() {
-        return this.NODE_URL + "/api/v1/cache-server"
+    static getAppConfig() {
+        return this.NODE_URL + "/api/v1/config"
     }
 
     static PostPrefetchConceptConnections(){
