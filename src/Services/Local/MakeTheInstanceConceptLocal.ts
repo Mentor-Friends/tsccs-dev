@@ -12,6 +12,7 @@ export async function MakeTheInstanceConceptLocal(type:string, referent:string, 
     accessId:number, sessionInformationId: number=999, referentId: number = 0){
         var sessionInformationId: number = 999;
         var categoryId: number = 4;
+        userId = composition ? userId : 999;
         var sessionInformationUserId: number = userId;
         // change this
         var accessId: number = 4;
