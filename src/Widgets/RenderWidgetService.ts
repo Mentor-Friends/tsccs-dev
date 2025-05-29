@@ -3,7 +3,7 @@ import { ckeditorCSS } from "../Constants/ckeditorCSS";
 import { COMPOSITIONS } from "../Constants/page.const";
 import { applyPageProperties } from "./RenderPage.service";
 import { initializeLibraries } from "./RenderWidgetLibrary.service";
-import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
+import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
       const widgets = await GetRelation(pageId, "the_page_body");
@@ -86,9 +86,16 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
     }
   </style>
 `;
-        const bulkWidget = await BuildWidgetFromIdForLatest(widgetId);
-        let latestWidgetId = bulkWidget.mainId;
-        let bulkWidgetData = bulkWidget.data;
+        let cacheWidget = await BuildWidgetFromCache(widgetId);
+        console.log("this is the widget cache", cacheWidget);
+        if(cacheWidget.mainId == 0){
+          console.log("this is going to network", widgetId);
+           cacheWidget = await BuildWidgetFromIdForLatest(widgetId);
+          
+        }
+        console.log("this is the cache change", cacheWidget);
+        let latestWidgetId = cacheWidget.mainId;
+        let bulkWidgetData = cacheWidget.data;
         return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
       } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);

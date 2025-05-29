@@ -6,6 +6,9 @@ import { BinaryTypeTree } from "./BinaryTypeTree";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { IndexDbUpdate } from "../Database/IndexUpdate";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { WidgetCache } from "./WidgetCache/WidgetCache";
+import { WidgetDetails } from "./WidgetCache/WidgetDetails";
+import { WidgetNode } from "./WidgetCache/WidgetNode";
 export class ConceptsData{
 
     name: string;
@@ -53,6 +56,22 @@ export class ConceptsData{
 
     static async GetConceptBulkData(ids: number[], connectionArray: Concept[], remainingIds: any){
         await BinaryTree.getConceptListFromIds(ids, connectionArray, remainingIds);
+    }
+
+    static AddWidget(widgetDetails: WidgetDetails){
+        if(serviceWorker){
+            try {
+                const res: any = sendMessage('ConceptsData__AddWidget', {widgetDetails}) // is async function
+                // return res.data // remove comment when this function is async
+            } catch (error) {
+                console.error('Concept Data, Add Widget sw error: ', error);
+                handleServiceWorkerException(error);
+            }
+        }
+
+        if(widgetDetails.widgetId > 0){
+            WidgetCache.addWidgetToTree(widgetDetails);
+        }
     }
 
     static AddConcept(concept: Concept){
@@ -116,6 +135,39 @@ export class ConceptsData{
        }
 
        removeFromDatabase("concept",concept.id);
+    }
+
+    static async GetWidget(id: number):Promise<WidgetDetails>{
+        let widgetDetails = new WidgetDetails();
+
+        if(serviceWorker){
+            try {
+                const res: any = await sendMessage('ConceptsData__GetWidget', {id})
+                return res.data
+            } catch (error) {
+                console.error('Concept Data, Get Widget sw error: ', error);
+                handleServiceWorkerException(error);
+            }
+        }
+        let widget = await WidgetCache.getNodeFromTree(id);
+
+        if(widget != null){
+            widgetDetails = widget.value;
+        }
+        return widgetDetails;
+    }
+
+    static async RemoveWidget(id: number){
+        if(serviceWorker){
+            try {
+                const res: any = await sendMessage('ConceptsData__RemoveWidget', {id})
+                return res.data
+            } catch (error) {
+                console.error('Concept Data, Remove Widget sw error: ', error);
+                handleServiceWorkerException(error);
+            }
+        }
+        await WidgetCache.removeNodeFromTree(id);
     }
 
     static async GetConcept(id: number){
