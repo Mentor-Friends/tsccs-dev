@@ -86,14 +86,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
     }
   </style>
 `;
-        let cacheWidget = await BuildWidgetFromCache(widgetId);
-        console.log("this is the widget cache", cacheWidget);
-        if(cacheWidget.mainId == 0){
-          console.log("this is going to network", widgetId);
-           cacheWidget = await BuildWidgetFromIdForLatest(widgetId);
-          
-        }
-        console.log("this is the cache change", cacheWidget);
+
+
+        let cacheWidget = await BuildWidgetFromIdForLatest(widgetId);
         let latestWidgetId = cacheWidget.mainId;
         let bulkWidgetData = cacheWidget.data;
         return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);

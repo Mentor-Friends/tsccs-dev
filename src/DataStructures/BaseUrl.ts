@@ -298,6 +298,11 @@ export class BaseUrl{
     }
 
 
+    static DeleteTheConnectionBulkUrl(){
+        return this.BASE_URL + '/api/delete_connection_bulk';
+    }
+
+
 
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR FREESCHEMA QUERY //////////////////////

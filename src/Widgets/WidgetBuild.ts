@@ -170,15 +170,6 @@ export async function BuildWidgetFromIdForLatest(id:number){
           mainCompositionIds = result.mainCompositionIds;
           countInfoStrings = result.countinfo;
           let countInfos = DecodeCountInfo(countInfoStrings);
-          let details: WidgetDetails = new WidgetDetails();
-          details.conceptIds = conceptIds;
-          details.linkers = linkers;
-          details.reverse = reverse;
-          details.mainCompositionIds = mainCompositionIds;
-          details.countinfo = countInfoStrings;
-          details.widgetId = id;
-          details.mainId = result.mainId;
-          ConceptsData.AddWidget(details);
           data = await formatConnectionsDataId(linkers, conceptIds, mainCompositionIds, reverse,countInfos, order);
           let objectData:any = {
             "data": data,
@@ -201,7 +192,6 @@ export async function BuildWidgetFromIdForLatest(id:number){
 }
 export function GetWidgetForTree(data:any, id:number){
 
-  console.log("This is the data ", data, id);
     for(let i=0; i<data.length; i++){
       if(data[i].id == id){
         return data[i];

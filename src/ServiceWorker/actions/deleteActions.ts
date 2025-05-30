@@ -1,5 +1,7 @@
 import { Actions } from ".";
 import { DeleteConceptById, DeleteConceptLocal, DeleteConnectionById, DeleteConnectionByType, DeleteUser } from "../../app";
+import { DeleteConnectionByIdBulk } from "../../Services/DeleteConnection";
+import { DeleteConnectionByTypeBulk } from "../../Services/DeleteConnectionByType";
 
 export const deleteActions: Actions = {
     DeleteConceptById: async (payload: any) => {
@@ -26,6 +28,22 @@ export const deleteActions: Actions = {
         )
         return { success: true, data }
     },
+
+    DeleteConnectionByTypeBulk: async (payload: any) => {
+        const data = await DeleteConnectionByTypeBulk(
+            payload.id,
+            payload.linkers
+        )
+        return { success: true, data }
+    },
+    DeleteConnectionByIdBulk: async (payload: any) => {
+        const data = await DeleteConnectionByIdBulk(
+            payload.ids
+        )
+        return { success: true, data }
+    },
+
+    
 
     // local
     DeleteConceptLocal: async (payload: any) => {
