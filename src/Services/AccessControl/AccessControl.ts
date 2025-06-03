@@ -66,8 +66,10 @@ export class AccessControlService {
 
   static async assignAccessToEntityBulk(request: {
     conceptId: number;
+    conceptIdList: number[];
     entityIdList: number[];
     accessList: string[];
+    nestedAccessLevel?: number; // Optional, defaults to 0 if not provided
   }): Promise<any> {
     const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/assign-access-bulk`;
 
@@ -139,6 +141,55 @@ export class AccessControlService {
 
     if (!response.ok) {
       throw new Error('Failed to revoke access in bulk');
+    }
+
+    return response.json();
+  }
+
+  static async getAccessList(conceptId: number): Promise<any> {
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/get-entities-with-access?conceptId=${conceptId}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get access list');
+    }
+
+    return response.json();
+  }
+
+  static async getPublicAccessList(conceptIdList: number[]): Promise<any> {
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/get-public-access-by-concept-ids`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(conceptIdList),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get public access list');
+    }
+    return response.json();
+  }
+
+  static async revokePublicAccess(request: {
+    conceptId: number;
+    accessList: string[];
+    nestedAccessLevel?: number; // Optional, defaults to 0 if not provided
+  }): Promise<any> {
+    const url = `${BaseUrl.ACCESS_CONTROL_BASE_URL}/api/access-control/revoke-public-access`;
+
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({...request, nestedAccessLevel: request.nestedAccessLevel ?? 0 }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to revoke public access');
     }
 
     return response.json();
