@@ -1,7 +1,7 @@
 import { Actions } from ".";
 import { RecursiveSearchApi, RecursiveSearchApiNewRawFullLinker, RecursiveSearchApiRaw, RecursiveSearchApiRawFullLinker, RecursiveSearchApiWithInternalConnections, SearchLinkMultipleAll } from "../../app";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../../Services/Search/SearchWithTypeAndLinker";
-import { BuildWidgetFromId, BuildWidgetFromIdForLatest } from "../../Widgets/WidgetBuild";
+import { BuildWidgetFromCache, BuildWidgetFromId, BuildWidgetFromIdForLatest } from "../../Widgets/WidgetBuild";
 
 export const searchActions: Actions = {
     SearchLinkMultipleAll: async (payload: any) => {
@@ -85,6 +85,11 @@ export const searchActions: Actions = {
 
     BuildWidgetFromIdForLatest: async (payload: any) => {
         const data = await BuildWidgetFromIdForLatest(payload.id)
+        return { success:true, data};
+    },
+
+    BuildWidgetFromCache: async (payload: any) => {
+        const data = await BuildWidgetFromCache(payload.id)
         return { success:true, data};
     },
     

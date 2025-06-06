@@ -1,10 +1,12 @@
-import { BaseUrl, DATAID, handleServiceWorkerException, JUSTDATA, Logger, SearchLinkMultipleApi, sendMessage, serviceWorker } from "../app";
+import { BaseUrl, ConceptsData, DATAID, handleServiceWorkerException, JUSTDATA, Logger, SearchLinkMultipleApi, sendMessage, serviceWorker } from "../app";
+import { WidgetDetails } from "../DataStructures/WidgetCache/WidgetDetails";
 import { requestNextCacheServer } from "../Services/cacheService";
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../Services/Search/SearchWithTypeAndLinker";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { ConceptCircle } from "../Visualize/ConceptCircle";
 const widgetCache = new Map<number, Promise<any>>();
 const latestWidgetCache = new Map<number, Promise<any>>();
 export async function BuildWidgetFromId(id:number){
@@ -71,6 +73,40 @@ export async function BuildWidgetFromId(id:number){
         })()
         widgetCache.set(id,BuildWidgetFromId );
         return BuildWidgetFromId;
+
+}
+
+export async function BuildWidgetFromCache(id:number){
+    try {
+        if (serviceWorker) {
+          const res: any = await sendMessage('BuildWidgetFromCache', {id})
+          // console.log('data received search from sw', res)
+          return res.data
+        }
+      } catch (error) { 
+        console.error('BuildWidgetFromCache error sw: ', error)
+        handleServiceWorkerException(error)
+      }
+  let objectData:any = {
+      "data": null,
+      "mainId": 0,
+  }
+  let widgetDetails:WidgetDetails = await ConceptsData.GetWidget(id);
+  if(widgetDetails.widgetId > 0){
+          let order = "DESC";
+          let conceptIds = widgetDetails.conceptIds;
+          let linkers = widgetDetails.linkers;
+          let reverse = widgetDetails.reverse;
+          let mainCompositionIds = widgetDetails.mainCompositionIds;
+          let countInfoStrings = widgetDetails.countinfo;
+          let countInfos = DecodeCountInfo(countInfoStrings);
+          let data = await formatConnectionsDataId(linkers, conceptIds, mainCompositionIds, reverse,countInfos, order);
+          objectData= {
+            "data": data,
+            "mainId": widgetDetails.mainId,
+          }
+  }
+  return objectData;
 
 }
 

@@ -26,7 +26,7 @@ export { MakeTheTypeConceptLocal} from './Services/Local/MakeTheTypeLocal';
 export {MakeTheTypeConceptApi} from './Api/MakeTheTypeConceptApi';
 export { GetLinkerConnectionFromConcepts, GetLinkerConnectionToConcepts} from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
-export { DeleteConnectionById } from './Services/DeleteConnection';
+export { DeleteConnectionById,DeleteConnectionByIdBulk } from './Services/DeleteConnection';
 export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend'
 export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
@@ -134,7 +134,7 @@ export { Validator } from './Validator/validator';
 export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
-export {DeleteConnectionByType, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
+export {DeleteConnectionByType, DeleteConnectionByTypeBulk, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener, SchemaQuery} from './WrapperFunctions/SchemaQueryObservable';
@@ -144,6 +144,7 @@ export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
+export {getUserDetails} from './Services/User/UserFromLocalStorage';
 
 export {Selector} from './Api/Prototype/Selector';
 export { AccessControlService } from './Services/AccessControl/AccessControl';

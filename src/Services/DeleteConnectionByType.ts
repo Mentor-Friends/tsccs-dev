@@ -1,9 +1,12 @@
 import { GetAllLinkerConnectionsFromTheConcept } from "../Api/GetAllLinkerConnectionsFromTheConcept";
 import { GetAllLinkerConnectionsToTheConcept } from "../Api/GetAllLinkerConnectionsToTheConcept";
 import { GetConnectionsByApiTypes } from "../Api/GetConnections/GetConnectionsByTypeApi";
-import { Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter, handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
+import { GetConceptByCharacterAndCategoryApi } from "../Api/SearchConcept/GetConceptByCharacterAndCategoryApi";
+import { Concept, Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter, handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 import { GetConnectionsByTypes } from "../DataStructures/ConnectionByType/GetConnectionByType";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
+import { GetConceptByCharacterAndCategory, GetConceptByCharacterAndCategoryFromMemory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
+import { DeleteConnectionByIdBulk } from "./DeleteConnection";
 
 /**
  * 
@@ -37,11 +40,57 @@ export async function DeleteConnectionByType(id: number, linker: string){
             toDelete.push(connections[i]);
         }
     }
+    let isDeleted = false;
     for(let i=0 ;i < toDelete.length; i++){
-        DeleteConnectionById(toDelete[i].id);
+        isDeleted = await DeleteConnectionById(toDelete[i].id);
     }
 
     Logger.logUpdate(logData);
+    return isDeleted;
+}
+
+
+export async function DeleteConnectionByTypeBulk(id: number, linkers: string[]){
+    const logData : any = Logger.logfunction("DeleteConnectionByTypeBulk", arguments) || {}
+    if (serviceWorker) {
+        logData.serviceWorker = true;
+        try {
+            const res: any = await sendMessage('DeleteConnectionByTypeBulk', { id, linkers })
+            Logger.logUpdate(logData); 
+            return res.data
+        } catch (error) {
+            console.error('DeleteConnectionByTypeBulk sw error: ', error)
+            UpdatePackageLogWithError(logData, 'DeleteConnectionByTypeBulk', error);
+            handleServiceWorkerException(error)
+        }
+    }
+    let externalConnections = await GetAllLinkerConnectionsFromTheConcept(id);
+    for(let i=0 ; i< externalConnections.length; i++){
+        ConnectionData.AddConnection(externalConnections[i]);
+    }
+    let connections = await ConnectionData.GetConnectionsOfConcept(id);
+    let categoryConcepts :Concept[] = [];
+    for(let i=0; i<linkers.length; i++){
+        let linker = linkers[i];
+        let categoryConcept  = await GetConceptByCharacterAndCategory(linker);
+        categoryConcepts.push(categoryConcept);
+
+    }
+    let toDelete: number[] = [];
+    console.log("this is all the connections for deleting taken",connections, categoryConcepts, linkers);
+    for(let i=0; i<connections.length; i++){
+        for(let j=0; j<categoryConcepts.length; j++){
+            if(connections[i].typeId == categoryConcepts[j].id){
+                toDelete.push(connections[i].id);
+            }
+        }
+
+    }
+    console.log("these are the to delete", toDelete);
+
+    Logger.logUpdate(logData);
+    return await DeleteConnectionByIdBulk(toDelete);
+
 }
 
 

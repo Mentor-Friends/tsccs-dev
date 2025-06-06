@@ -201,8 +201,22 @@ export const getActions: Actions = {
     const data = await ConceptsData.AddConcept(payload.concept)
     return { success: true, data };
   },
+
+  ConceptsData__AddWidget: async (payload) => {
+    const data = await ConceptsData.AddWidget(payload.widgetDetails)
+    return { success: true, data };
+  },
+
+  ConceptsData__RemoveWidget: async (payload) => {
+    const data = await ConceptsData.RemoveWidget(payload.id)
+    return { success: true, data };
+  },
   ConceptsData__GetConcept: async (payload) => {
     const data = await ConceptsData.GetConcept(payload.id)
+    return { success: true, data };
+  },
+  ConceptsData__GetWidget: async (payload) => {
+    const data = await ConceptsData.GetWidget(payload.id)
     return { success: true, data };
   },
   ConceptsData__GetConceptsByTypeIdAndUser: async (payload) => {
