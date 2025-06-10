@@ -26,7 +26,7 @@ export { MakeTheTypeConceptLocal} from './Services/Local/MakeTheTypeLocal';
 export {MakeTheTypeConceptApi} from './Api/MakeTheTypeConceptApi';
 export { GetLinkerConnectionFromConcepts, GetLinkerConnectionToConcepts} from './Services/GetLinkerConnectionFromConcept';
 export { DeleteConceptById } from './Services/DeleteConcept';
-export { DeleteConnectionById } from './Services/DeleteConnection';
+export { DeleteConnectionById,DeleteConnectionByIdBulk } from './Services/DeleteConnection';
 export { TrashTheConcept } from './Api/Delete/DeleteConceptInBackend'
 export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
@@ -54,7 +54,7 @@ export { recursiveFetchNew} from './Services/Composition/BuildComposition'
 export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
 export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
 export { CreateTheConnectionGeneral} from './Services/CreateTheConnectionGeneral';
-export {CreateTheConnectionLocal} from './Services/Local/CreateTheConnectionLocal';
+export {CreateTheConnectionLocal, CreateConnection} from './Services/Local/CreateTheConnectionLocal';
 export { GetCompositionListAll, GetCompositionListAllWithId,GetCompositionListWithIdUpdated } from './Services/GetCompositionList';
 export {GetUserGhostId,AddGhostConcept} from './Services/User/UserTranslation';
 export {SearchLinkMultipleAll,FormatFromConnections} from './Services/Search/SearchLinkMultiple';
@@ -134,7 +134,7 @@ export { Validator } from './Validator/validator';
 export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
-export {DeleteConnectionByType, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
+export {DeleteConnectionByType, DeleteConnectionByTypeBulk, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener, SchemaQuery} from './WrapperFunctions/SchemaQueryObservable';
@@ -144,6 +144,7 @@ export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
+export {getUserDetails} from './Services/User/UserFromLocalStorage';
 
 export {Selector} from './Api/Prototype/Selector';
 export { AccessControlService } from './Services/AccessControl/AccessControl';
@@ -253,7 +254,7 @@ async function init(
       return
     }
     
-    await initializeCacheServer()
+    await initializeAppConfig()
     listenPostMessagaes()
     listenBroadCastMessages()
 
@@ -875,17 +876,19 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
   }
 }
 
-async function initializeCacheServer() {
+async function initializeAppConfig() {
   let myCacheServer = sessionStorage.getItem("cacheServers");
+  let appConfig = sessionStorage.getItem("config")
   if (myCacheServer === undefined || myCacheServer === "undefined") {
     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     return;
   }
-  myCacheServer = JSON.parse(myCacheServer as string)
-
-  async function getCacheServer() {
+  myCacheServer = JSON.parse(myCacheServer as string) 
+  const config: Record<string, number> = JSON.parse(appConfig as string);
+  async function getAppConfigHandler() {
+    let response
     try {
-        const response = await fetch(BaseUrl.getMyCacheServer(), {
+        response = await fetch(BaseUrl.getAppConfig(), {
           method: "POST",
         });
   
@@ -894,25 +897,27 @@ async function initializeCacheServer() {
         }
   
         const cacheRes = await response.json();
-  
         if (cacheRes.success) {
           sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
+          sessionStorage.setItem("config", JSON.stringify(cacheRes.config));
           if (!cacheRes.servers) {
             BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
           } else {
             BaseUrl.NODE_CACHE_URL = cacheRes.servers[0];
           }
+          if (cacheRes.config) {
+            BaseUrl.DOCUMENTATION_WIDGET = cacheRes.config.documentationWidget
+          }
         }
-  
     } catch (error: any) {
-      console.error("error getting cache server", error.message);
+      console.error("error getting app config from server", error.message);
     }
   }
   
-  if (!myCacheServer) {
+  if (!myCacheServer || !config || !config.documentationWidget) {
     // navigator.geolocation.getCurrentPosition(
     //   async (data) => {
-        await getCacheServer();
+        await getAppConfigHandler();
       // },
       // async (error) => {
       //   if (error.code === error.PERMISSION_DENIED) {
@@ -927,9 +932,12 @@ async function initializeCacheServer() {
     } else {
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
+    BaseUrl.DOCUMENTATION_WIDGET = config.documentationWidget
   }
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     sendMessage("SESSION_DATA", {
-      type: 'SESSION_DATA',
-      data: BaseUrl.NODE_CACHE_URL
-    })
+     type: 'SESSION_DATA',
+     data: BaseUrl.NODE_CACHE_URL
+   })
+  }
 }

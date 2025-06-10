@@ -1,12 +1,42 @@
-import { BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
+import { BaseUrl, BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
 import { ckeditorCSS } from "../Constants/ckeditorCSS";
+import { COMPOSITIONS } from "../Constants/page.const";
+import { applyPageProperties } from "./RenderPage.service";
 import { initializeLibraries } from "./RenderWidgetLibrary.service";
-import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
+import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
       const widgets = await GetRelation(pageId, "the_page_body");
+      
+      // apply page properties
+      const freeschemaQuery = new FreeschemaQuery();
+      freeschemaQuery.conceptIds = [pageId];
+      freeschemaQuery.inpage = 100;
+      freeschemaQuery.outputFormat = DATAID;
+      freeschemaQuery.selectors = [
+        "the_page_body",
+        "the_page_title",
+        "the_page_slug",
+        "the_page_font_family",
+        "the_page_font_size",
+        "the_page_width",
+        "the_page_type",
+        "the_page_meta_title",
+        "the_page_meta_description",
+        "the_page_meta_keywords",
+      ];
+
+      SchemaQueryListener(freeschemaQuery, "").subscribe(async (data: any) => {
+        console.log("SchemaQueryListener data -->", data)
+        await applyPageProperties(data?.[0]?.data?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}`]);
+      })
+
+      const fspagePreview = <HTMLElement>document.getElementById("app");
+      fspagePreview.classList.add("fspage");
+
       if (widgets?.[0]?.id)
-        await renderWidget(widgets[0].id, attachNode, props);
+        // await renderWidget(widgets[0].id, attachNode, props);
+        await renderLatestWidget(widgets[0].id, attachNode, props);
       else{
         attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4>'
       }
@@ -56,9 +86,11 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
     }
   </style>
 `;
-        const bulkWidget = await BuildWidgetFromIdForLatest(widgetId);
-        let latestWidgetId = bulkWidget.mainId;
-        let bulkWidgetData = bulkWidget.data;
+
+
+        let cacheWidget = await BuildWidgetFromIdForLatest(widgetId);
+        let latestWidgetId = cacheWidget.mainId;
+        let bulkWidgetData = cacheWidget.data;
         return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
       } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);
@@ -145,7 +177,8 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
           </button>
         </div>
 
-        <div id="documentation-preview" class="ck-content"></div>
+        <!-- <div id="documentation-preview" class="ck-content"></div> -->
+        <div id="documentation-view" class="ck-content"></div>
 
         <div class="widget-documentation-footer">
           <button class="document-preview-close-button">Close</button>
@@ -424,7 +457,7 @@ import { BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
       newWidget.mountChildWidgetsFunction = tree.mount_child;
       newWidget.widgetState = {...state};
       newWidget.customFunctions = tree.custom_functions;
-      newWidget.css = `#${tree.id} { ${tree.css} }`;
+      // newWidget.css = `#${tree.id} { ${tree.css} }`;
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
       parentElement.innerHTML = "";
@@ -871,12 +904,18 @@ export async function openDocumentationPreviewModal(widgetId: number) {
     }
 
     await openModal("widget-documentation-preview-modal");
-    showWidgetDocumentation(widgetDocumentData);
+    showWidgetDocumentation(widgetDocumentData, widgetId);
   });
   
 }
 
-export function showWidgetDocumentation(widgetDocumentData: any) {
+export async function showWidgetDocumentation(widgetDocumentData: any, widgetId: number) {
+  const viewEl = <HTMLElement>document.getElementById('documentation-view');
+  if (BaseUrl.DOCUMENTATION_WIDGET != 0 ) {
+    await renderLatestWidget(BaseUrl.DOCUMENTATION_WIDGET, viewEl, {currentWidgetId: widgetId});
+    return
+  }
+
   const previewContainer = <HTMLDivElement>(
     document.getElementById("documentation-preview")
   );

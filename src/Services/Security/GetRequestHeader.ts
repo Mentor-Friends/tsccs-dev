@@ -1,7 +1,8 @@
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
+import { getUserDetails } from "../User/UserFromLocalStorage";
 
 export function GetRequestHeader(
-    contentType?: string, 
+    contentType: string = 'application/json', 
     accept: string = 'application/json'
 ) {
     const headers: Record<string, string> = {};
@@ -52,9 +53,16 @@ token: string = "",Accept: string = 'application/json',
     return headers;
 }
 
-export function GetOnlyTokenHeader(){
+export function GetOnlyTokenHeader(): Headers{
     let token = TokenStorage.BearerAccessToken;
-    const myHeaders = new Headers()
+    if(token == ""){
+        let userDetails = getUserDetails();
+        if(userDetails.token != ""){
+            TokenStorage.BearerAccessToken = userDetails.token;
+            token = userDetails.token;
+        }
+    }
+    let myHeaders = new Headers()
     myHeaders.append('Authorization', 'Bearer ' + token)
     return myHeaders;
 }
