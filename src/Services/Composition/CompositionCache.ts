@@ -22,14 +22,12 @@
   const conceptIdList: number[] = []
   let returnOutput: any = {}
   let output: any = {}
-  const x = await CompositionBinaryTree.getNodeFromTree(id)
   const compositionList: number[] = []
   let concept = await ConceptsData.GetConcept(id)
   if (concept.id == 0 && id != null && id != undefined) {
     const conceptString = await GetConcept(id)
     concept = conceptString as Concept
   }
-  if (x == null) {
     let connectionListString: any = []
     if (connectionListPassed.length > 0) {
       connectionListString = getMyConnections(id, connectionListPassed)
@@ -49,20 +47,10 @@
       }
     }
 
-    SaveToCompositionCache(
-      concept,
-      connectionList,
-      conceptIdList,
-      compositionList,
-    )
     let visitedConcepts: number [] = []
     output = await recursiveFetch(id, connectionList, compositionList, visitedConcepts)
     const mainString = concept?.type?.characterValue ?? ''
     returnOutput[mainString] = output
-  } else {
-    output = x.value.GetDataCache()
-    returnOutput = output
-  }
 
   if (concept.id == 0) {
     return ''
@@ -95,7 +83,6 @@
   const conceptIdList: number[] = []
   let output: any
   const returnOutput: any = {}
-  const x = await CompositionBinaryTree.getNodeFromTree(id)
 
   const compositionList: number[] = []
   let concept = await ConceptsData.GetConcept(id)
@@ -104,7 +91,6 @@
     concept = conceptString as Concept
   }
 
-  if (x == null) {
     let connectionListString: any = []
     if (connectionListPassed.length > 0) {
       connectionListString = getMyConnections(id, connectionListPassed)
@@ -124,22 +110,12 @@
       }
     }
 
-    SaveToCompositionCache(
-      concept,
-      connectionList,
-      conceptIdList,
-      compositionList,
-    )
     output = await recursiveFetch(id, connectionList, compositionList)
     const mainString = concept?.type?.characterValue ?? ''
     returnOutput[mainString] = output
     FinalReturn["created_at"] = concept.entryTimeStamp
     FinalReturn['data'] = returnOutput
     FinalReturn['id'] = id
-  } else {
-    output = x.value.GetDataCache()
-    FinalReturn = output
-  }
   if (concept.id == 0) {
     return ''
   }
