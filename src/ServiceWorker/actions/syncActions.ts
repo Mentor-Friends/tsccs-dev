@@ -11,7 +11,8 @@ export const syncActions: Actions = {
 
     // local
     LocalSyncData__SyncDataOnline: async (payload: any) => {
-        const data = await LocalSyncData.SyncDataOnline(payload.transactionId);
+        console.log("This is the transaction inside syncing", payload);
+        const data = await LocalSyncData.SyncDataOnline(payload.transactionId, undefined, payload.withAuth);
         return { success: true, data }
     },
     LocalSyncData__initializeTransaction: async (payload: any) => {

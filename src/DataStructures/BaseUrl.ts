@@ -234,9 +234,17 @@ export class BaseUrl{
 
 
 
-    static CreateGhostConceptApiUrl(){
-        return BaseUrl.NODE_URL + '/api/v1/local-concepts'
+    static CreateGhostConceptApiUrl(withAuth:boolean = true){
+        if(withAuth){
+            return BaseUrl.NODE_URL + '/api/v1/local-concepts'
+
+        }
+        else{
+            return BaseUrl.NODE_URL + '/api/v1/local-concepts-without-auth'
+
+        }
     }
+
 
     static CreateGhostConnectionApiUrl(){
         return BaseUrl.NODE_URL + '/api/v1/local-connections';

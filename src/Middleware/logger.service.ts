@@ -501,7 +501,7 @@ export function getCookie(cname:string) {
         }
         return "";            
     } catch(error){
-        console.error("Error on getcookie");
+        console.error("Error on getcookie", error);
         return ""
     }
 }

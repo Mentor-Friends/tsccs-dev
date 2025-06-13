@@ -43,6 +43,18 @@ export class LocalTransaction {
     this.success = false;
   }
 
+    /**
+   * Method to commi the created Transactions
+   */
+  async commitTransactionWithoutAuth() {
+    // Save the data
+    if (!this.success) throw Error("Query Transaction Expired");
+
+    await LocalSyncData.SyncDataOnlineWithoutAuth(this.transactionId);
+    this.actions = { concepts: [], connections: [] };
+    this.success = false;
+  }
+
   /**
    * Method to rollback all the tranctions occured
    */
