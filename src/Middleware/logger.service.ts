@@ -199,7 +199,7 @@ export class Logger {
         conceptsUsed?: string[]
     ): void {
         try{
-            const sessionId = getCookie("SessionId");
+            const sessionId = TokenStorage.sessionId;
             const responseTime = `${(performance.now() - startTime).toFixed(3)}ms`;
             const responseSize = responseData ? `${JSON.stringify(responseData).length}` : "0";
     
@@ -480,13 +480,18 @@ export interface LogData {
     serviceWorker? : boolean 
 }
 
-/**
+/**getCookie
  * 
  * @param cname The name of the cookie
  * @returns Cookie value
  */
 export function getCookie(cname:string) {
+
     try{
+        if(sessionStorage.getItem('session')){
+        let sessionId = sessionStorage.getItem('session');
+        return sessionId;
+        }
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
         let ca = decodedCookie.split(';');
@@ -499,9 +504,9 @@ export function getCookie(cname:string) {
             return c.substring(name.length, c.length);
           }
         }
-        return "";            
+        return "999";            
     } catch(error){
         console.error("Error on getcookie", error);
-        return ""
+        return "999"
     }
 }

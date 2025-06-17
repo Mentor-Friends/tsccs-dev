@@ -1,4 +1,5 @@
 import { BaseUrl, sendMessage } from "../app";
+import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 function updateToNextNearestServer() {
   const currentCacheServer = BaseUrl.NODE_CACHE_URL;
@@ -22,10 +23,12 @@ function updateToNextNearestServer() {
     // console.log("this is the application base url", BaseUrl.BASE_URL)
     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
   }
+  console.log("before the payload",TokenStorage.sessionId);
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     sendMessage("SESSION_DATA", {
       type: "SESSION_DATA",
       data: BaseUrl.NODE_CACHE_URL,
+      session: TokenStorage.sessionId
     });
   }
 }
