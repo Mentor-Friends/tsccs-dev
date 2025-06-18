@@ -203,55 +203,56 @@ export async function GetCompositionFromConnectionsWithIndexFromConnections(conc
  * @param connectionIds these are the connection ids that are used to fetch all the connections and also their related concepts.
  * @returns all the connections that are passed as ids.
  */
-export async function GetConnectionDataPrefetch(connectionIds:number[]): Promise<Connection[]>{
-    const logData : any = Logger.logfunction("GetConnectionDataPrefetch", arguments) || {};
-    if (serviceWorker) {
-        logData.serviceWorker = true;
-        try {
-            const res: any = await sendMessage('GetConnectionDataPrefetch', {connectionIds})
-            Logger.logUpdate(logData);
-            return res.data
-        } catch (error) {
-            console.error('GetConnectionDataPrefetch error sw: ', error)
-            UpdatePackageLogWithError(logData, 'GetConnectionDataPrefetch', error);
-            handleServiceWorkerException(error)
-        }
+export async function GetConnectionDataPrefetch(connectionIds: number[]): Promise<Connection[]> {
+  const logData: any = Logger.logfunction("GetConnectionDataPrefetch", arguments) || {};
+
+  if (serviceWorker) {
+    logData.serviceWorker = true;
+    try {
+      const res: any = await sendMessage('GetConnectionDataPrefetch', { connectionIds });
+      Logger.logUpdate(logData);
+      return res.data;
+    } catch (error) {
+      console.error('GetConnectionDataPrefetch error sw: ', error);
+      UpdatePackageLogWithError(logData, 'GetConnectionDataPrefetch', error);
+      handleServiceWorkerException(error);
     }
-    let remainingConnections: number[] = [];
-    let connectionsAll:Connection[] = [];
-    let remainingIds: any = {};
-    for(let i=0; i< connectionIds.length; i++){
-        let connection = await ConnectionData.GetConnection(connectionIds[i]);
-       // console.log("this is the connection fetch", connection);
-        if(connection.id == 0){
-            remainingConnections.push(connectionIds[i]);
-        }
-        else{
-            connectionsAll.push(connection);
-        }
+  }
+
+  // Parallel fetch all connections
+  const fetchedConnections = await Promise.all(
+    connectionIds.map(id => ConnectionData.GetConnection(id))
+  );
+
+  const connectionsAll: Connection[] = [];
+  const remainingConnections: number[] = [];
+
+  for (let i = 0; i < fetchedConnections.length; i++) {
+    const connection = fetchedConnections[i];
+    if (connection?.id === 0) {
+      remainingConnections.push(connectionIds[i]);
+    } else {
+      connectionsAll.push(connection);
     }
-    for(let i=0; i< remainingConnections.length; i++){
-        remainingIds[connectionIds[i]] = false;
-    }
-    //await ConnectionData.GetConnectionBulkData(connectionIds, connectionsAll, remainingIds);
-    // for(let key in remainingIds){
-    //     if(remainingIds[key] == false){
-    //         remainingConnections.push(Number(key));
-    //     }
-    // }
-   // remainingConnections = connectionIds;
-    let prefetchConcepts : number [] = [];
-    let connectionsAllLocal = await GetConnectionBulk(remainingConnections);
-    connectionsAll = [...connectionsAll,...connectionsAllLocal];
-    for(let j=0 ; j< connectionsAll.length; j++){
-        prefetchConcepts.push(connectionsAll[j].ofTheConceptId);
-        prefetchConcepts.push(connectionsAll[j].toTheConceptId);
-        prefetchConcepts.push(connectionsAll[j].typeId);
-    }
-    await GetConceptBulk(prefetchConcepts);
-    Logger.logUpdate(logData);
-    return connectionsAll;
+  }
+
+  const connectionsAllLocal = await GetConnectionBulk(remainingConnections);
+  const allConnections = [...connectionsAll, ...connectionsAllLocal];
+
+  // Collect unique concept IDs
+  const prefetchConcepts = new Set<number>();
+  for (const conn of allConnections) {
+    prefetchConcepts.add(conn.ofTheConceptId);
+    prefetchConcepts.add(conn.toTheConceptId);
+    prefetchConcepts.add(conn.typeId);
+  }
+
+  await GetConceptBulk([...prefetchConcepts]);
+
+  Logger.logUpdate(logData);
+  return allConnections;
 }
+
 
 /**
  * ## Format DATAIDDATE ##
