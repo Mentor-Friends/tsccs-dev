@@ -115,6 +115,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         return 
       }
       const appElement = attachNode;
+      await initializeLibraries(widgetTree);
       const newWidget = await convertWidgetTreeToWidget(
       // await convertWidgetTreeToWidget(
         widgetTree,
@@ -137,7 +138,6 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
 `;
 
   // library
-  initializeLibraries(widgetTree);
 
   if (widgetTree.children.length) {
     widgetTree?.children.forEach((childWidget: WidgetTree) => {
