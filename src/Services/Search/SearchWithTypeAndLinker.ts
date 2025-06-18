@@ -190,14 +190,34 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
                 handleServiceWorkerException(error)
             }
         }
+    
+    console.time('GetConnectionDataPrefetch');
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+    console.timeEnd('GetConnectionDataPrefetch');
+
+    console.time('GetConnectionTypeForCount');
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
+    console.timeEnd('GetConnectionTypeForCount');
+
+    console.time('orderTheConnections');
     prefetchConnections = orderTheConnections(prefetchConnections, order);
+    console.timeEnd('orderTheConnections');
+
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
+
+    console.time('FormatFunctionData');
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
+    console.timeEnd('FormatFunctionData');
+
+    console.time('FormatFunctionDataForData');
     compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
-     let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse, CountDictionary );
-     return output;
+    console.timeEnd('FormatFunctionDataForData');
+
+    console.time('FormatFromConnectionsAlteredArrayExternal');
+    let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData, newCompositionData, mainCompositionIds, reverse, CountDictionary );
+    console.timeEnd('FormatFromConnectionsAlteredArrayExternal');
+
+    return output;
 }
 
