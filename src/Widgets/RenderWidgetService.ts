@@ -277,7 +277,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         token: string = ""){
         let bulkWidget = await BuildWidgetFromId(widgetId);
           const trueBulk = await checkUseLatestWidget(bulkWidget, widgetId);
-          console.log("before", bulkWidget, "after", trueBulk)
+          // console.log("before", bulkWidget, "after", trueBulk)
           const widgetTree = await getWidgetBulkFromId(widgetId,[], trueBulk);
           // const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
           return widgetTree;
