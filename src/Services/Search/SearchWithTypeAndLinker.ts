@@ -1,7 +1,4 @@
-import { Console } from 'console';
-import { GetConcept } from '../../Api/GetConcept';
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept, GetAllConnectionsOfCompositionBulk, serviceWorker, sendMessage, handleServiceWorkerException} from '../../app';
-import { recursiveFetchConceptSingleLoop } from '../GetComposition';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
 import { FormatConceptsAndConnectionsNormalList, formatFunction, formatFunctionForData } from './FormatData';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
@@ -191,32 +188,14 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
             }
         }
     
-    console.time('GetConnectionDataPrefetch');
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
-    console.timeEnd('GetConnectionDataPrefetch');
-
-    console.time('GetConnectionTypeForCount');
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
-    console.timeEnd('GetConnectionTypeForCount');
-
-    console.time('orderTheConnections');
     prefetchConnections = orderTheConnections(prefetchConnections, order);
-    console.timeEnd('orderTheConnections');
-
     let compositionData: any [] = [];
     let newCompositionData: any [] = [];
-
-    console.time('FormatFunctionData');
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
-    console.timeEnd('FormatFunctionData');
-
-    console.time('FormatFunctionDataForData');
     compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
-    console.timeEnd('FormatFunctionDataForData');
-
-    console.time('FormatFromConnectionsAlteredArrayExternal');
     let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData, newCompositionData, mainCompositionIds, reverse, CountDictionary );
-    console.timeEnd('FormatFromConnectionsAlteredArrayExternal');
 
     return output;
 }

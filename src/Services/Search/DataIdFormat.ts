@@ -269,13 +269,16 @@ for (const concept of conceptList) {
     }
   }
 
+  // === Final output generation ===
   for (let i = 0; i < mainComposition.length; i++) {
-    const mymainData: any = {};
-    mymainData["id"] = mainComposition[i];
-    const mainConcept: Concept = conceptCache.get(mymainData["id"])!;
-    mymainData["data"] = compositionData[mainComposition[i]];
-    mymainData["created_on"] = mainConcept.entryTimeStamp;
-
+    const id = mainComposition[i];
+    const mainConcept = conceptCache.get(id);
+    const data = compositionData[id] ?? {}; 
+    const mymainData = {
+      id: id,
+      data: data,
+      created_on: mainConcept?.entryTimeStamp,
+    };
     mainData.push(mymainData);
   }
 
