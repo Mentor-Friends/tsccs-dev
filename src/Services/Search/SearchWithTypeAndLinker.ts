@@ -1,7 +1,4 @@
-import { Console } from 'console';
-import { GetConcept } from '../../Api/GetConcept';
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept, GetAllConnectionsOfCompositionBulk, serviceWorker, sendMessage, handleServiceWorkerException} from '../../app';
-import { recursiveFetchConceptSingleLoop } from '../GetComposition';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
 import { FormatConceptsAndConnectionsNormalList, formatFunction, formatFunctionForData } from './FormatData';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
@@ -190,6 +187,7 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
                 handleServiceWorkerException(error)
             }
         }
+    
     let prefetchConnections = await GetConnectionDataPrefetch(linkers);
     let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
     prefetchConnections = orderTheConnections(prefetchConnections, order);
@@ -197,7 +195,8 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
     let newCompositionData: any [] = [];
     compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
     compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
-     let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse, CountDictionary );
-     return output;
+    let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData, newCompositionData, mainCompositionIds, reverse, CountDictionary );
+
+    return output;
 }
 
