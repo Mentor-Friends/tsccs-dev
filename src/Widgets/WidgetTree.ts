@@ -26,6 +26,7 @@ export class WidgetTree{
     children:WidgetTree[] = [];
     wrapper: string = '0';
     widget: BuilderStatefulWidget = new BuilderStatefulWidget();
+    sChildId?: number;
     isPublished?: boolean;
     useLatest?: boolean;
 }

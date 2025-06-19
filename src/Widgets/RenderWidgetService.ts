@@ -247,6 +247,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
             validChildWid.useLatest = true;
             childWidget.data.the_child_widget.the_child_widget_info = validChildWid;
           } 
+          childWidget.data.the_child_widget.the_child_widget_info.sChildId = childWidget.id
           // else {
           //   validChildWid = childWidget.data.the_child_widget.the_child_widget_info.data[0];
           //   alert("not using latest")
@@ -413,6 +414,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         const childWidgets = widgetInfo?.the_widget_s_child;
         if (output.useLatest) {
           widgetNode.useLatest = true;
+        }
+        if (output.sChildId) {
+          widgetNode.sChildId = output.sChildId
         }
         // libraries
         const widgetLibraryCSS = widgetInfo?.the_widget_s_css_library?.map((cssLibary: any) => {
