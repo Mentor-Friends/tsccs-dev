@@ -91,7 +91,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         let cacheWidget = await BuildWidgetFromIdForLatest(widgetId);
         let latestWidgetId = cacheWidget.mainId;
         let bulkWidgetData = cacheWidget.data;
-        return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
+        const trueBulk = await checkUseLatestWidget(bulkWidgetData, latestWidgetId)
+        return await materializeWidget(latestWidgetId, trueBulk, attachNode, props);
+        // return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
       } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);
         attachNode.textContent = `Error: ${error.message}`
@@ -221,12 +223,63 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
 
     }
 
+    async function createBulkWidgetRecursive(mainWidget: any, outputBulk: any[]) {
+      const childWidgets = mainWidget?.data?.the_widget?.the_widget_s_child;
+      outputBulk.push(mainWidget);
+      if (childWidgets && childWidgets.length) {
+        for (let index = 0; index < childWidgets.length; index++) {
+          const childWidget = childWidgets[index];
+          let originIdOfChildWidget =
+            childWidget?.data.the_child_widget?.the_child_widget_info?.data
+              ?.the_widget?.the_widget_origin?.data?.the_origin;
+          const useLatest = childWidget?.data?.the_child_widget
+            ?.the_child_widget_use_latest?.data
+            ? true
+            : false;
+            console.log("originIdOfChildWidget", originIdOfChildWidget, childWidget)
+            originIdOfChildWidget = Number(originIdOfChildWidget) || false
+          // alert(`getting latest of ${originIdOfChildWidget} if this condition ${useLatest} ${typeof originIdOfChildWidget}`);
+          let validChildWid: any|null = null
+          if (useLatest && originIdOfChildWidget) {
+            const validChildWidBulkData = await BuildWidgetFromIdForLatest(originIdOfChildWidget);
+            // console.log("this the latest widget uselatest", validChildWid);
+            validChildWid = validChildWidBulkData?.data?.[0] || [];
+            validChildWid.useLatest = true;
+            childWidget.data.the_child_widget.the_child_widget_info = validChildWid;
+          } 
+          // else {
+          //   validChildWid = childWidget.data.the_child_widget.the_child_widget_info.data[0];
+          //   alert("not using latest")
+          // }
+          await createBulkWidgetRecursive(childWidget.data.the_child_widget.the_child_widget_info, outputBulk)
+        }
+      } 
+    }
+
+    async function checkUseLatestWidget(bulkData: any, mainWidgetId: number) {
+      const outputBulk : any[] = []
+      const bulkDataArray: any[] = [...bulkData];
+      try {      
+        const mainWidget = bulkDataArray.find(
+          (widget) => widget.id === mainWidgetId
+        );
+        await createBulkWidgetRecursive(mainWidget, outputBulk);
+      } catch (error) {
+        console.error("convert to real bulk error", error)
+      }
+      
+      return outputBulk;
+    }
+
       export async function getWidgetFromId(widgetId: number,
         visitedWidgets: number[] = [],
         token: string = ""){
-        const bulkWidget = await BuildWidgetFromId(widgetId);
-        const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
-        return widgetTree;
+        let bulkWidget = await BuildWidgetFromId(widgetId);
+          const trueBulk = await checkUseLatestWidget(bulkWidget, widgetId);
+          console.log("before", bulkWidget, "after", trueBulk)
+          const widgetTree = await getWidgetBulkFromId(widgetId,[], trueBulk);
+          // const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
+          return widgetTree;
       }
   
     /**
@@ -333,14 +386,14 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         widgetNode.css = widgetInfo?.the_widget_css?.data?.the_css;
         widgetNode.js = widgetInfo?.the_widget_js?.data?.the_js;
         widgetNode.origin = Number(
-          widgetInfo?.the_widget_origin?.data?.the_origin
+          widgetInfo?.the_widget_origin?.data?.the_origin || widgetInfo?.the_widget_origin?.data?.the_originid
         );
         widgetNode.version =
           widgetInfo?.the_widget_version?.data?.the_version;
         widgetNode.clean = widgetInfo?.the_widget_clean?.data?.the_clean;
         widgetNode.timestamp =
           widgetInfo?.the_widget_timestamp?.data?.the_timestamp;
-        widgetNode.id = output.id;
+        widgetNode.id = output?.id;
         const widgetTypeValue = widgetInfo?.the_widget_type?.data?.the_type;
         if (widgetTypeValue == "null" || widgetTypeValue == null) {
           widgetNode.type = "the_element_name";
@@ -358,7 +411,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         widgetNode.mount_child =
           widgetInfo?.the_widget_mount_child?.data?.the_mount_child;
         const childWidgets = widgetInfo?.the_widget_s_child;
-
+        if (output.useLatest) {
+          widgetNode.useLatest = true;
+        }
         // libraries
         const widgetLibraryCSS = widgetInfo?.the_widget_s_css_library?.map((cssLibary: any) => {
           const cssLibraryOrder = cssLibary?.data?.the_css_library?.the_css_library_order?.data?.the_order
@@ -430,7 +485,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         }
         return widgetNode;
       } catch (ex) {
-        console.error("error", ex);
+        if (ex instanceof Error) {
+          console.error("error converting bulkwidget to widget tree", ex.message);
+        }
         throw ex;
       }
     }
