@@ -9,7 +9,7 @@ import { Connection, Logger } from "../../app";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 
 
-export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[]){
+export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[], withAuth:boolean = true){
   const logData : any = Logger.logfunction("CreateTheGhostConceptApi",[conceptData.length, connectionData.length] )
   try {
     const CHUNK_SIZE = 1000
@@ -24,7 +24,7 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
 
     // sync all in one request if data is less
     if (conceptData.length + connectionData.length <= (CHUNK_SIZE * 2)) {
-      const response = await syncConceptConnection(stripedConcept, stripedConnection)
+      const response = await syncConceptConnection(stripedConcept, stripedConnection, withAuth)
       
       if (Array.isArray(response?.concepts)) result.concepts = [...result.concepts, ...response.concepts]
       if (Array.isArray(response?.connections)) result.connections = [...result.connections, ...response.connections]
@@ -38,11 +38,11 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
 
     const syncConceptPromises: any[] = []
     const syncConnectionPromises: any[] = []
-
+    console.log("This is the with auth in syncing", withAuth);
     // sync concept
     for (let i = 0; i < splittedConcepts.length; i++) {
       const concepts = splittedConcepts[i] as Concept[];
-      syncConceptPromises.push(syncConceptConnection(concepts, []))
+      syncConceptPromises.push(syncConceptConnection(concepts, [], withAuth))
     }
     const conceptResponses = await Promise.all(syncConceptPromises)
     for (let i = 0; i < conceptResponses.length; i++) {
@@ -54,7 +54,7 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
     // sync connection
     for (let i = 0; i < splittedConnections.length; i++) {
       const connections = splittedConnections[i] as Connection[];
-      syncConnectionPromises.push(syncConceptConnection([], connections))
+      syncConnectionPromises.push(syncConceptConnection([], connections, withAuth))
     }
     const connectionResponses = await Promise.all(syncConnectionPromises)
     for (let i = 0; i < connectionResponses.length; i++) {
@@ -79,7 +79,7 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
  * @param connections Connection[]
  * @returns Promise<{concepts: [], connections: []}>
  */
-const syncConceptConnection = async (concepts: Concept[], connections: Connection[]) => {
+const syncConceptConnection = async (concepts: Concept[], connections: Connection[], withAuth:boolean = true) => {
   let result = {
     "concepts": [],
     "connections": []
@@ -94,9 +94,10 @@ const syncConceptConnection = async (concepts: Concept[], connections: Connectio
      myHeaders.set("Content-Type","application/json" );
      myHeaders.set('Authorization', "Bearer " + TokenStorage.BearerAccessToken)
      myHeaders.set('Accept',  'application/json');
+     myHeaders.set('X-Session-Id', TokenStorage.sessionId.toString())
     //  myHeaders.set('Randomizer', BaseUrl.BASE_RANDOMIZER.toString());
      myHeaders.set('Randomizer', BaseUrl.getRandomizer().toString());
-      const response = await fetch(BaseUrl.CreateGhostConceptApiUrl(),{
+      const response = await fetch(BaseUrl.CreateGhostConceptApiUrl(withAuth),{
           method: 'POST',
           headers: myHeaders,
           body: JSON.stringify(myBody),

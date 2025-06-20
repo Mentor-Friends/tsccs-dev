@@ -180,13 +180,15 @@ function updateAccessToken(accessToken: string = "", session?: any) {
   // because in the service worker document is not defined.
   if(typeof document == undefined){
     // for the service worker
-    TokenStorage.sessionId = session;
+   // TokenStorage.sessionId = session;
   }
   else{
     // for the main thread
-    TokenStorage.sessionId = parseInt(getCookie("SessionId"));
+   // let parsedCookie = getCookie("SessionId") ?? "999";
+    //TokenStorage.sessionId = parseInt(parsedCookie);
   }
-  if (serviceWorker) sendMessage('updateAccessToken', { accessToken, session: parseInt(getCookie("SessionId"))})
+ // let parsedCookie = getCookie("SessionId") ?? "999";
+  if (serviceWorker) sendMessage('updateAccessToken', { accessToken, session: TokenStorage.sessionId})
 }
 
 
@@ -874,10 +876,15 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
 async function initializeAppConfig() {
   let myCacheServer = sessionStorage.getItem("cacheServers");
   let appConfig = sessionStorage.getItem("config")
+
+  let sessionString = sessionStorage.getItem("session") ?? "999";
+  let sessionId = parseInt(sessionString);
+
+
   if (myCacheServer === undefined || myCacheServer === "undefined") {
     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
-    return;
   }
+
   myCacheServer = JSON.parse(myCacheServer as string) 
   const config: Record<string, number> = JSON.parse(appConfig as string);
   async function getAppConfigHandler() {
@@ -895,6 +902,8 @@ async function initializeAppConfig() {
         if (cacheRes.success) {
           sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
           sessionStorage.setItem("config", JSON.stringify(cacheRes.config));
+          sessionStorage.setItem('session',cacheRes.session)
+          TokenStorage.sessionId = cacheRes.session;
           if (!cacheRes.servers) {
             BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
           } else {
@@ -909,7 +918,7 @@ async function initializeAppConfig() {
     }
   }
   
-  if (!myCacheServer || !config || !config.documentationWidget) {
+  if (!myCacheServer || !config || !config.documentationWidget || sessionId == 999) {
     // navigator.geolocation.getCurrentPosition(
     //   async (data) => {
         await getAppConfigHandler();
@@ -927,12 +936,15 @@ async function initializeAppConfig() {
     } else {
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
+    TokenStorage.sessionId = sessionId;
     BaseUrl.DOCUMENTATION_WIDGET = config.documentationWidget
   }
+  console.log("before the payload in app", TokenStorage.sessionId);
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     sendMessage("SESSION_DATA", {
      type: 'SESSION_DATA',
-     data: BaseUrl.NODE_CACHE_URL
+     data: BaseUrl.NODE_CACHE_URL,
+     session: TokenStorage.sessionId
    })
   }
 }
