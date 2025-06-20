@@ -11,6 +11,7 @@ export function GetRequestHeader(contentType:string ='application/json',
             'Content-Type':contentType,
             'Authorization': "Bearer " + TokenStorage.BearerAccessToken,
             'Accept': Accept,
+            'X-Session-id': TokenStorage.sessionId.toString()
         };
     }
     else{
@@ -34,7 +35,8 @@ token: string = "",Accept: string = 'application/json',
         headers = {
             'Content-Type':contentType,
             'Authorization': "Bearer " + token,
-            'Accept': Accept
+            'Accept': Accept,
+            'X-Session-id': TokenStorage.sessionId.toString()
         };
     }
     else{
@@ -59,5 +61,6 @@ export function GetOnlyTokenHeader(): Headers{
     }
     let myHeaders = new Headers()
     myHeaders.append('Authorization', 'Bearer ' + token)
+    myHeaders.append('X-Session-Id', TokenStorage.sessionId.toString())
     return myHeaders;
 }

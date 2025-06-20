@@ -18,6 +18,7 @@ export class FreeschemaQuery{
     order: string = "DESC";
     outputFormat: number = NORMAL;
     name: string = "";
+    filterAncestor:string = "";
     reverse: boolean = false;
     limit: boolean = false;
     isSecure:boolean = false;

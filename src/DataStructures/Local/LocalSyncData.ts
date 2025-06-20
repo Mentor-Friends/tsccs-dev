@@ -81,23 +81,29 @@ export class LocalSyncData{
         }
      }
 
-     static async SyncDataOnline(transactionId?: string, actions?: InnerActions){
+     static async SyncDataOnlineWithoutAuth(transactionId?:string, actions?:InnerActions, withAuth:boolean = false){
+        return LocalSyncData.SyncDataOnline(transactionId, actions, withAuth);
+     }
+
+     static async SyncDataOnline(transactionId?: string, actions?: InnerActions, withAuth: boolean = true){
         let startTime = performance.now()
-        console.log('syncing...', transactionId, actions, 'aa: ', this.conceptsSyncArray, this.connectionSyncArray, !!serviceWorker)
+        console.log('syncing...', transactionId, actions, 'aa: ', this.conceptsSyncArray, this.connectionSyncArray, !!serviceWorker, withAuth)
         setTimeout(() => {
-            console.log('syncing...', transactionId, actions, 'aa: ', this.conceptsSyncArray, this.connectionSyncArray, !!serviceWorker)
+            console.log('syncing...', transactionId, actions, 'aa: ', this.conceptsSyncArray, this.connectionSyncArray, !!serviceWorker, withAuth)
         }, 5000)
         try{
             if (serviceWorker) {
                 try {
-                    const res: any = await sendMessage('LocalSyncData__SyncDataOnline', {transactionId})
+                    console.log("syncing in the service worker", transactionId, withAuth);
+                    debugger;
+                    const res: any = await sendMessage('LocalSyncData__SyncDataOnline', {transactionId, withAuth})
                     return res.data
                 } catch (error) {
                     console.error('LocalSyncData__SyncDataOnline sw error: ', error);
                     handleServiceWorkerException(error);
                 }
             }
-
+            console.log("syncing in the without service worker syncing", transactionId, withAuth);
             let conceptsArray: Concept[] = [];
             let connectionsArray: Connection[] = [];
             if (transactionId && this.transactionCollections.some(tran => tran.id == transactionId)) {
@@ -143,7 +149,7 @@ export class LocalSyncData{
                 this.connectionSyncArray = [];
                 this.conceptsSyncArray = [];
             }
-    
+            console.log("syncing... inside the syncer", withAuth);
             let toSyncConcepts = [];
             for(let i= 0; i< conceptsArray.length; i++){
     
@@ -155,9 +161,12 @@ export class LocalSyncData{
     
     
             }
+            console.log("syncing... inside the syncer 2", withAuth, conceptsArray);
             //if(connectionsArray.length > 0){
                 await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, toSyncConcepts);
-                let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray);
+                let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray, withAuth);
+
+                console.log("syncing... inside the syncer 3", withAuth);
                 let concepts = result.concepts;
                 let connections = result.connections;
                 for(let i =0 ; i< concepts.length; i++){
