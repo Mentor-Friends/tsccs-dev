@@ -1,28 +1,31 @@
-import { PermissionSet, getPermissionSetFromStrings } from './PermissionSet' // adjust import to your actual PermissionSet file
+import { PermissionSet, getPermissionSetFromStrings } from './PermissionSet'
 
 export class AccessControlCacheService {
-  private readonly userAccessCache: Map<number, Map<number, PermissionSet>> =
-    new Map()
+  private readonly userAccessCache: Map<number, Map<number, PermissionSet>> = new Map()
   private readonly publicAccessCache: Map<number, PermissionSet> = new Map()
+  private readonly baseUrl: string
 
   constructor() {
-    const baseUrl = process.env.ACCESS_CONTROL_BASE_URL || 'defaultBaseUrl' // Replace 'defaultBaseUrl' with your fallback URL if needed
-    if (!baseUrl)
-      throw new Error('AccessControlBaseUrl is not defined in config')
+    this.baseUrl = process.env.ACCESS_CONTROL_BASE_URL || 'http://localhost:3000/api/access-control'
+    if (!this.baseUrl) throw new Error('ACCESS_CONTROL_BASE_URL is not defined in environment')
+    console.log('AccessControlCacheService initialized.')
   }
 
   async loadCacheFromApi(entityId?: number): Promise<void> {
-    let url = 'get-access-group-by-entity'
-    if (entityId !== undefined) {
-      url += `?userId=${entityId}`
-    }
+    try {
+      let url = `${this.baseUrl}/access-group/by-entity`
+      if (entityId !== undefined) {
+        url += `?entityId=${entityId}`
+      }
 
-    const response = await fetch(url)
-    if (!response.ok) {
-      throw new Error(`Failed to fetch data: ${response.statusText}`)
+      const response = await fetch(url)
+      if (!response.ok) throw new Error(`Failed to fetch data: ${response.statusText}`)
+
+      const data = await response.json()
+      this.loadCacheFromJson(data)
+    } catch (err) {
+      console.error('[ERROR] loadCacheFromApi failed:', err)
     }
-    const data = await response.json()
-    this.loadCacheFromJson(data)
   }
 
   loadCacheFromJson(jsonData: any): void {
@@ -36,9 +39,7 @@ export class AccessControlCacheService {
         this.userAccessCache.set(entityId, new Map())
       }
 
-      for (const [conceptIdStr, permissionsList] of Object.entries(
-        userPermissionsMap,
-      )) {
+      for (const [conceptIdStr, permissionsList] of Object.entries(userPermissionsMap)) {
         const conceptId = parseInt(conceptIdStr)
         const permissionSet = getPermissionSetFromStrings(permissionsList)
         this.userAccessCache.get(entityId)!.set(conceptId, permissionSet)
@@ -46,15 +47,11 @@ export class AccessControlCacheService {
     }
   }
 
-  hasAccess(
-    entityId: number,
-    conceptId: number,
-    required: PermissionSet,
-  ): boolean {
-    if (this.hasPublicAccess(conceptId, required)) return true
-
+  async hasAccess(entityId: number, conceptId: number, required: PermissionSet): Promise<boolean> {
+    if (await this.hasPublicAccess(conceptId, required)) return true
+    console.log("length of userAccessCache:", this.userAccessCache.size)
     if (!this.userAccessCache.has(entityId)) {
-      this.loadCacheFromApi(entityId)
+      await this.loadCacheFromApi(entityId)
     }
 
     const conceptMap = this.userAccessCache.get(entityId)
@@ -62,54 +59,58 @@ export class AccessControlCacheService {
     return permissions !== undefined && (permissions & required) === required
   }
 
-  getAccessibleConcepts(
+  async getAccessibleConcepts(
     entityId: number,
     conceptIds: number[],
-    required: PermissionSet,
-  ): number[] {
-    const accessible: number[] = []
+    required: PermissionSet
+  ): Promise<number[]> {
+    const result: number[] = []
     const remaining: number[] = []
 
     for (const id of conceptIds) {
-      if (this.hasPublicAccess(id, required)) {
-        accessible.push(id)
+      if (await this.hasPublicAccess(id, required)) {
+        result.push(id)
       } else {
         remaining.push(id)
       }
     }
-
+    console.log("length of userAccessCache:", this.userAccessCache.size)
     if (remaining.length > 0 && !this.userAccessCache.has(entityId)) {
-      this.loadCacheFromApi(entityId)
+      await this.loadCacheFromApi(entityId)
     }
 
     const conceptMap = this.userAccessCache.get(entityId)
     for (const id of remaining) {
-      if (
-        conceptMap?.get(id) &&
-        (conceptMap.get(id)! & required) === required
-      ) {
-        accessible.push(id)
+      const permissions = conceptMap?.get(id)
+      if (permissions !== undefined && (permissions & required) === required) {
+        result.push(id)
       }
     }
 
-    return accessible
+    return result
   }
 
-  getAccessByUser(entityId: number): Map<number, PermissionSet> {
+  async getAccessByUser(entityId: number): Promise<Map<number, PermissionSet>> {
     if (!this.userAccessCache.has(entityId)) {
-      this.loadCacheFromApi(entityId)
+      await this.loadCacheFromApi(entityId)
     }
     return new Map(this.userAccessCache.get(entityId) ?? [])
   }
 
-  getAccessByConcept(conceptId: number): Map<number, PermissionSet> {
+  async getAccessByConcept(conceptId: number): Promise<Map<number, PermissionSet>> {
     const result = new Map<number, PermissionSet>()
+
+    if (this.userAccessCache.size === 0) {
+      await this.loadCacheFromApi()
+    }
+
     for (const [entityId, conceptMap] of this.userAccessCache) {
       const permission = conceptMap.get(conceptId)
       if (permission !== undefined) {
         result.set(entityId, permission)
       }
     }
+
     return result
   }
 
@@ -117,48 +118,57 @@ export class AccessControlCacheService {
     this.userAccessCache.delete(entityId)
   }
 
+  deletePublicAccessRecordById(conceptId: number): void {
+    console.log(`Deleting public access for concept ${conceptId}`)
+    this.publicAccessCache.delete(conceptId)
+  }
+
   clearCache(): void {
+    console.log('Clearing access control cache...')
     this.userAccessCache.clear()
     this.publicAccessCache.clear()
   }
 
-  async getConceptsByPublicAccess(conceptIds: number[]): Promise<void> {
-    const url = 'get-concepts-by-public-access'
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-      'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(conceptIds),
-    })
-    if (!response.ok) {
-      throw new Error(`Failed to fetch data: ${response.statusText}`)
-    }
-    const data = (await response.json())?.data
+  async getConceptsByPublicAccess(): Promise<Record<number, string[]>> {
+    const result: Record<number, string[]> = {}
 
-    if (data) {
-      for (const [conceptIdStr, permissionsList] of Object.entries(data)) {
-        const conceptId = parseInt(conceptIdStr)
-        const permissionSet = getPermissionSetFromStrings(
-          permissionsList as string[],
-        )
-        this.publicAccessCache.set(conceptId, permissionSet)
+    try {
+      const response = await fetch(`${this.baseUrl}/concepts/by-public-access`)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch public access: ${response.statusText}`)
       }
+
+      const apiData = await response.json()
+      const data = apiData?.data
+      if (!data || typeof data !== 'object') return result
+
+      for (const [conceptIdStr, perms] of Object.entries(data)) {
+        const conceptId = parseInt(conceptIdStr)
+        const permissionSet = getPermissionSetFromStrings(perms as string[])
+
+        this.publicAccessCache.set(conceptId, permissionSet)
+        result[conceptId] = perms as string[]
+      }
+    } catch (err) {
+      console.error('[ERROR] Failed to fetch public access data:', err)
     }
+
+    return result
   }
 
-  hasPublicAccess(conceptId: number, required: PermissionSet): boolean {
-    const permissions = this.publicAccessCache.get(conceptId)
-    if (permissions === undefined) {
-      this.getConceptsByPublicAccess([conceptId])
+  async hasPublicAccess(conceptId: number, required: PermissionSet): Promise<boolean> {
+    console.log("length of publicAccessCache:", this.publicAccessCache.size)
+    if (!this.publicAccessCache.has(conceptId)) {
+      await this.getConceptsByPublicAccess()
     }
-    const updated = this.publicAccessCache.get(conceptId)
-    return updated !== undefined && (updated & required) === required
+
+    const permissions = this.publicAccessCache.get(conceptId)
+    return permissions !== undefined && (permissions & required) === required
   }
 
   async getConceptsWithPublicAccess(
     conceptIds: number[],
-    required: PermissionSet,
+    required: PermissionSet
   ): Promise<number[]> {
     const accessible: number[] = []
     const missing: number[] = []
@@ -175,7 +185,7 @@ export class AccessControlCacheService {
     }
 
     if (missing.length > 0) {
-      await this.getConceptsByPublicAccess(missing)
+      await this.getConceptsByPublicAccess()
       for (const id of missing) {
         const updated = this.publicAccessCache.get(id)
         if (updated !== undefined && (updated & required) === required) {

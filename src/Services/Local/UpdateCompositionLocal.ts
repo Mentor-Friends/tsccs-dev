@@ -21,7 +21,6 @@ import MakeTheInstanceConcept from './../MakeTheInstanceConcept';
 import { createTheConnection }  from './../CreateTheConnection';
 import { DeleteConnectionById } from './../DeleteConnection';
 import { SyncData } from '../../DataStructures/SyncData';
-import { CompositionBinaryTree } from '../../DataStructures/Composition/CompositionBinaryTree';
 import { Composition } from '../../DataStructures/Composition/Composition';
 import { CreateTheCompositionLocal } from './CreateTheCompositionLocal';
 import { MakeTheInstanceConceptLocal } from './MakeTheInstanceConceptLocal';
