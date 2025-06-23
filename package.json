@@ -1,6 +1,6 @@
 {
   "name": "mftsccs-node",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "environment": "production",
   "description": "Full Pack of concept and connection system",
   "main": "dist/bundle.js",
