@@ -1,9 +1,7 @@
-node_modules/
-
-dist
-dist/bundle.js
-dist/types
-.vscode
-.env
-.env.development
-.env.production
+/nbproject/
+/.idea/*
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
