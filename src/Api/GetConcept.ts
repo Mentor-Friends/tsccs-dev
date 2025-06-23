@@ -38,7 +38,7 @@ export async function GetConcept(id: number){
                     }
                 }
                 else{
-                    console.log("Get the concept error", response.status);
+                    console.log("Get the concept error", response.status, id);
                     HandleHttpError(response);
                 }
                 return result;
@@ -46,9 +46,9 @@ export async function GetConcept(id: number){
             }
         } catch (error) {
             if (error instanceof Error) {
-              console.log('Get the concept error message: ', error.message);
+              console.log('Get the concept error message: ', error.message, id);
             } else {
-              console.log('Get the concept unexpected error: ', error);
+              console.log('Get the concept unexpected error: ', error, id);
             }
             throw error;
         } finally {
