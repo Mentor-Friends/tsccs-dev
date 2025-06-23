@@ -92,15 +92,20 @@ export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {GiveConnection,GetAllTheConnectionsByTypeAndOfTheConcept} from'./Services/Delete/GetAllConnectionByType';
 export {DATAID, NORMAL, JUSTDATA,ALLID,DATAIDDATE,RAW,LISTNORMAL} from './Constants/FormatConstants';
+export { CheckAccessOfConcept, CheckAccessOfConceptList, FilterConceptListByAccess } from './Services/AccessControl/AccessControlService';
+export { PermissionSet } from './Services/AccessControl/PermissionSet';
+
+
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
 
-function init(url:string = "", aiurl:string="", accessToken:string = ""){
+function init(url:string = "", aiurl:string="", accessToken:string = "", jwtSecret:string = ""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;
    console.log("This ist he base url", BaseUrl.BASE_URL);
    TokenStorage.BearerAccessToken = accessToken;
+   TokenStorage.JwtSecret = jwtSecret;
    InitializeSystem().then(()=>{
       const start = new Date().getTime();
       CreateBinaryTreeFromData().then(()=>{
