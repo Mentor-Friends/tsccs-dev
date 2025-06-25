@@ -5,7 +5,7 @@ import { applyPageProperties } from "./RenderPage.service";
 import { initializeLibraries } from "./RenderWidgetLibrary.service";
 import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
-    export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any) {
+    export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any, showDocumentation?: boolean) {
       const widgets = await GetRelation(pageId, "the_page_body");
       
       // apply page properties
@@ -36,7 +36,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
 
       if (widgets?.[0]?.id)
         // await renderWidget(widgets[0].id, attachNode, props);
-        await renderLatestWidget(widgets[0].id, attachNode, props);
+        await renderLatestWidget(widgets[0].id, attachNode, props, showDocumentation);
       else{
         attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4>'
       }
@@ -45,7 +45,8 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
     export async function renderLatestWidget(
       widgetId: number,
       attachNode: HTMLElement,
-      props?: any
+      props?: any,
+      showDocumentation?: boolean
     ) {
       // try{
       // const widgets = await GetRelation(widgetId, "the_widget_latest");
@@ -92,7 +93,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         let latestWidgetId = cacheWidget.mainId;
         let bulkWidgetData = cacheWidget.data;
         const trueBulk = await checkUseLatestWidget(bulkWidgetData, latestWidgetId)
-        return await materializeWidget(latestWidgetId, trueBulk, attachNode, props);
+        return await materializeWidget(latestWidgetId, trueBulk, attachNode, props, showDocumentation);
         // return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
       } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);
@@ -100,17 +101,17 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       }
     }
   
-    export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any) {
+    export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any, showDocumentation?: boolean) {
       try {
         const bulkWidget = await BuildWidgetFromId(widgetId);
-        let widgetObject = await materializeWidget(widgetId, bulkWidget, attachNode, props);
+        let widgetObject = await materializeWidget(widgetId, bulkWidget, attachNode, props, showDocumentation);
         return widgetObject;
       } catch (error) {
         console.error(`Error Caught Rendering Widget: ${error}`);
       }
     }
 
-    export async function materializeWidget(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props?: any){
+    export async function materializeWidget(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props?: any, showDocumentation: boolean = true){
       const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
       if (!widgetTree.name) {
         attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
@@ -157,6 +158,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       script.innerHTML = widgetTree.js;
       appElement.appendChild(script);
 
+    if (showDocumentation) {
       const widgetDetailOptionsEl = document.createElement("div");
       widgetDetailOptionsEl.id = "widget-details";
       widgetDetailOptionsEl.innerHTML = "";
@@ -207,6 +209,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
           closeModal("widget-documentation-preview-modal");
         });
       });
+    }
 
       // remove class wb-initial-empty from all elements that have it from fspagePreview
       const wbInitialEmpty = appElement.querySelectorAll(".wb-initial-empty");
