@@ -34,6 +34,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       const fspagePreview = <HTMLElement>document.getElementById("app");
       fspagePreview.classList.add("fspage");
 
+      const stylesOnHead = document.head.querySelectorAll("style#mystyleid");
+      Array.from(stylesOnHead).forEach((styleEl) => styleEl.remove());
+
       if (widgets?.[0]?.id)
         // await renderWidget(widgets[0].id, attachNode, props);
         await renderLatestWidget(widgets[0].id, attachNode, props, showDocumentation);
