@@ -21,7 +21,7 @@ export  async function GetCompositionList(compositionName: string,userId:number,
       }
     }
 
-    await GetAllConnectionsOfCompositionBulk(prefetchComposition);
+    let myConnectionList = await GetAllConnectionsOfCompositionBulk(prefetchComposition);
 
     for(var i=startPage; i< startPage + inpage; i++){
       if(conceptList[i]){

@@ -94,7 +94,6 @@ export async function GetCompositionWithIdFromMemory(id:number){
             compositionList.push(connectionList[i].ofTheConceptId);
         }
     }
-
     var concept = await ConceptsData.GetConcept(id);
     if(concept.id == 0 && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
@@ -123,7 +122,6 @@ export async function GetCompositionWithIdAndDateFromMemory(id:number){
             compositionList.push(connectionList[i].ofTheConceptId);
         }
     }
-
     var concept = await ConceptsData.GetConcept(id);
     if(concept.id == 0 && id != null && id != undefined){
      var conceptString = await  GetConcept(id);
@@ -142,7 +140,7 @@ export async function GetCompositionWithIdAndDateFromMemory(id:number){
 }
 
 export async function GetCompositionWithIdFromMemoryFromConnections(id:number, connectionList:Connection[]){
-    var connectionList:Connection[] = [];
+   // var connectionList:Connection[] = [];
     var returnOutput: any = {};
     //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
 
@@ -163,6 +161,7 @@ export async function GetCompositionWithIdFromMemoryFromConnections(id:number, c
     var mainString = concept?.type?.characterValue ?? "";
     returnOutput[mainString] = output;
     var FinalReturn: any = {};
+    FinalReturn['created_at'] = concept.entryTimeStamp;
     FinalReturn['data'] = returnOutput;
     FinalReturn['id'] = id;
 
