@@ -195,6 +195,7 @@ export async function FormatFromConnectionsAlteredArrayExternal(
             newData[key] = {};
             compositionData[connections[i].toTheConceptId] = newData;
           }
+          AddCount(toTheConcept.id, CountDictionary, newData);
           try {
             let isComp = compositionData[connections[i].ofTheConceptId];
             if (isComp) {
