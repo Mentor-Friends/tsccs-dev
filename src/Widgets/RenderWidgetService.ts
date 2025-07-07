@@ -66,31 +66,30 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       // }
 
       try {
-        attachNode.innerHTML = `
-  <div style="display: flex; align-items: center; gap: 10px; width: 100%">
-    <div style="
-      width: 20px;
-      height: 20px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #3498db;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    "></div>
-    <span>Please Wait...</span>
-  </div>
+//         attachNode.innerHTML = `
+//   <div style="display: flex; align-items: center; gap: 10px; width: 100%">
+//     <div style="
+//       width: 20px;
+//       height: 20px;
+//       border: 3px solid #f3f3f3;
+//       border-top: 3px solid #3498db;
+//       border-radius: 50%;
+//       animation: spin 1s linear infinite;
+//     "></div>
+//     <span>Please Wait...</span>
+//   </div>
   
-  <style>
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
-`;
-
+//   <style>
+//     @keyframes spin {
+//       0% {
+//         transform: rotate(0deg);
+//       }
+//       100% {
+//         transform: rotate(360deg);
+//       }
+//     }
+//   </style>
+// `;
 
         let cacheWidget = await BuildWidgetFromIdForLatest(widgetId);
         let latestWidgetId = cacheWidget.mainId;
