@@ -177,7 +177,7 @@ for (const concept of conceptList) {
             newData[key] = {};
             compositionData[connections[i].toTheConceptId] = newData;
           }
-
+          AddCount(toTheConcept.id, CountDictionary, newData);
           try {
             const isComp = compositionData[connections[i].ofTheConceptId];
             if (isComp) {
