@@ -7,6 +7,7 @@ export function GetRequestHeader(
 ) {
     const headers: Record<string, string> = {};
     const token = TokenStorage.BearerAccessToken;
+    const xSessionId = TokenStorage.sessionId.toString();
     
     console.log("this is the token", token)
     // Add Authorization if token is available
@@ -23,7 +24,7 @@ export function GetRequestHeader(
     if (accept) {
         headers['Accept'] = accept;
     }
-
+    headers['X-Session-id'] = xSessionId;
     return headers;
 }
 
@@ -39,7 +40,8 @@ token: string = "",Accept: string = 'application/json',
         headers = {
             'Content-Type':contentType,
             'Authorization': "Bearer " + token,
-            'Accept': Accept
+            'Accept': Accept,
+            'X-Session-id': TokenStorage.sessionId.toString()
         };
     }
     else{
@@ -64,5 +66,6 @@ export function GetOnlyTokenHeader(): Headers{
     }
     let myHeaders = new Headers()
     myHeaders.append('Authorization', 'Bearer ' + token)
+    myHeaders.append('X-Session-Id', TokenStorage.sessionId.toString())
     return myHeaders;
 }

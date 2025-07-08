@@ -79,7 +79,8 @@ export async function handleMessageEvent(event: any) {
     if (type == 'LocalSyncData__SyncDataOnline' && !payload.transactionId && tabData) {
       // add all the transaction to sync for the curernt tab // little chance of error when syncing is before marking of query transaction on single tab 
       // console.log('tab Data in local', tabData)
-      const dataPromise = LocalSyncData.SyncDataOnline(undefined, JSON.parse(JSON.stringify(tabData)));
+      console.log("this is the tab syncing for data", payload);
+      const dataPromise = LocalSyncData.SyncDataOnline(undefined, JSON.parse(JSON.stringify(tabData)),payload.withAuth);
   
       tabActionsMap.delete(tabId)
       tabData = undefined
@@ -165,7 +166,9 @@ const actions: Actions = {
         return {success: true, name: 'updateAccessToken'}
     },
     SESSION_DATA: async (payload) => {
+      console.log("this is the payload", payload);
       BaseUrl.NODE_CACHE_URL = payload.data;
+      TokenStorage.sessionId = payload.session;
       return {success: true, name: 'SESSION_DATA'}
     } ,
     // imported actions
