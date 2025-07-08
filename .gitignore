@@ -5,3 +5,11 @@
 *.stTheme.cache
 *.sublime-workspace
 *.sublime-project
+node_modules/
+dist
+dist/bundle.js
+dist/types
+.vscode
+.env
+.env.development
+.env.production
