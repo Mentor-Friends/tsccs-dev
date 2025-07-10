@@ -86,7 +86,6 @@ export async function GetCompositionWithIdFromMemory(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
     connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
-
     var compositionList:number[] = [];
 
     for(var i=0; i<connectionList.length; i++){

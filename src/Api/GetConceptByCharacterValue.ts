@@ -18,7 +18,6 @@ export async function GetConceptByCharacterValue(characterValue: string){
           if(response.ok){
             result = await response.json() as Concept;
             if(result.id > 0){
-              console.log("This is adding the new concept", result);
               ConceptsData.AddConcept(result);
             }
           }
