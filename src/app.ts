@@ -61,6 +61,8 @@ export {SearchLinkInternal} from './Services/Search/SearchLinkInternal';
 export { HandleHttpError } from './Services/Common/ErrorPosting'; 
 export {GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConceptByCharacterAndCategoryDirectApi} from './Api/SearchConcept/GetConceptByCharacterAndCategoryDirect';
+export {SearchLinkMultipleApi} from './Api/Search/SearchLinkMultipleApi';
+export {GetCompositionWithIdFromMemoryFromConnections, GetCompositionWithIdFromMemory} from './Services/GetComposition';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -92,6 +94,7 @@ export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {GiveConnection,GetAllTheConnectionsByTypeAndOfTheConcept} from'./Services/Delete/GetAllConnectionByType';
 export {DATAID, NORMAL, JUSTDATA,ALLID,DATAIDDATE,RAW,LISTNORMAL} from './Constants/FormatConstants';
+export {Transaction} from './DataStructures/Transaction/Transaction';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }

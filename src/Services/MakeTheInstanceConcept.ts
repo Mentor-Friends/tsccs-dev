@@ -3,6 +3,7 @@ import { GetConceptByCharacterAndType } from "../Api/GetConceptByCharacterAndTyp
 import { MakeTheNameInBackend } from "../Api/MakeTheNameInBackend";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
+import { InnerActions } from "../DataStructures/Transaction/Transaction";
 import { MakeTheTypeConceptApi } from "../app";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import CreateTheConcept, { CreateTheConceptImmediate, CreateTheConceptTemporary } from "./CreateTheConcept";
@@ -11,7 +12,7 @@ import { MakeTheTimestamp } from "./MakeTheTimestamp";
 import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
 
 export default async function MakeTheInstanceConcept(type:string, referent:string, composition:boolean=false, userId: number, 
-        passedAccessId:number, passedSessionId: number=999, referentId: number = 0){
+        passedAccessId:number, passedSessionId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
             let sessionInformationId: number = passedSessionId;
             let categoryId: number = 4;
             let categoryUserId: number = userId; 
@@ -42,7 +43,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                let   typeConceptString = await MakeTheTypeConceptApi(type, userId);
                typeConcept = typeConceptString as Concept;
                let conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+                referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId, actions  );
                 concept = conceptString as Concept;
                 let end = new Date().getTime();
                 let time = end - startTime;
@@ -53,7 +54,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                 let typeConceptString = await MakeTheTypeConceptApi(stringToCheck, userId);
                 typeConcept = typeConceptString  as Concept;
                 let conceptString = await CreateTheConcept(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                    referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+                    referentId, referentUserId, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId, actions  );
     
                 concept = conceptString as Concept;
 
@@ -77,7 +78,7 @@ export default async function MakeTheInstanceConcept(type:string, referent:strin
                     // let makeTheNameConcept = makeTheNameString as Concept;
                     // concept = conceptTypeCharacter;
                     let conceptString = await CreateTheConceptImmediate(referent,userId, categoryId, userId, typeConcept.id, typeConcept.userId,
-                        12, 12, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId  );
+                        12, 12, securityId, securityUserId, accessId, accessUserId, sessionInformationId, sessionInformationUserId, actions  );
                     concept = conceptString as Concept;
                    // MakeTheNameInBackend(concept.id, `${referent}`, typeConcept.id, userId);
 
