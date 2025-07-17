@@ -87,12 +87,14 @@ import CreateLocalBinaryTreeFromData from './Services/Local/CreateLocalBinaryTre
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+import { AccessControlService } from './Services/AccessControl/AccessControlService';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {SchemaQueryListener} from './WrapperFunctions/SchemaQueryObservable';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {GiveConnection,GetAllTheConnectionsByTypeAndOfTheConcept} from'./Services/Delete/GetAllConnectionByType';
 export {DATAID, NORMAL, JUSTDATA,ALLID,DATAIDDATE,RAW,LISTNORMAL} from './Constants/FormatConstants';
-export { CheckAccessOfConcept, CheckAccessOfConceptList, FilterConceptListByAccess } from './Services/AccessControl/AccessControlService';
+// export { CheckAccessOfConcept, CheckAccessOfConceptList, FilterConceptListByAccess } from './Services/AccessControl/AccessControlService';
+export { AccessControlService } from './Services/AccessControl/AccessControlService';
 export { PermissionSet } from './Services/AccessControl/PermissionSet';
 
 
