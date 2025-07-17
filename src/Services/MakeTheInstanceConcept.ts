@@ -13,6 +13,7 @@ import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
 
 export default async function MakeTheInstanceConcept(type:string, referent:string, composition:boolean=false, userId: number, 
         passedAccessId:number, passedSessionId: number=999, referentId: number = 0, actions: InnerActions = {concepts: [], connections: []}){
+            userId = composition ? userId : 999;
             let sessionInformationId: number = passedSessionId;
             let categoryId: number = 4;
             let categoryUserId: number = userId; 
