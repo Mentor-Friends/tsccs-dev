@@ -2,12 +2,13 @@ import { CreateTextData } from "../Api/Create/CreateTheTextData";
 import { GetCharacterByCharacter } from "../Api/GetCharacterDataByCharacter";
 import { Concept } from "../DataStructures/Concept";
 import { TheTexts } from "../DataStructures/TheTexts";
+import { InnerActions } from "../DataStructures/Transaction/Transaction";
 import CreateTheConcept, { CreateTheConceptImmediate } from "./CreateTheConcept";
 import GetConceptByCharacter from "./GetConceptByCharacter";
 import MakeTheCharacter from "./MakeTheCharacter";
 import { SplitStrings } from "./SplitStrings";
 
-export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number,
+export  async  function MakeTheTypeConcept(typeString: string, sessionId: number, sessionUserId: number, userId: number,actions: InnerActions = {concepts: [], connections: []}
     )
 {
     var referentId: number = 999;
@@ -34,12 +35,12 @@ export  async  function MakeTheTypeConcept(typeString: string, sessionId: number
                 }   
                 else{
                     var categoryId:number = 1;
-                    var categoryConcept = await MakeTheTypeConcept(splittedStringArray[0], sessionId, sessionUserId, userId);
-                    var typeConcept = await MakeTheTypeConcept(splittedStringArray[1], sessionId, sessionUserId, userId );
+                    var categoryConcept = await MakeTheTypeConcept(splittedStringArray[0], sessionId, sessionUserId, userId, actions);
+                    var typeConcept = await MakeTheTypeConcept(splittedStringArray[1], sessionId, sessionUserId, userId, actions );
                     if(typeConcept){
                         
                         var concept = await CreateTheConceptImmediate(typeString, userId, categoryConcept.id, userId,typeConcept.id, userId, referentId, userId,
-                            securityId, userId,accessId, userId, sessionId, userId );
+                            securityId, userId,accessId, userId, sessionId, userId, actions );
                         existingConcept = concept as Concept;
                     }
     

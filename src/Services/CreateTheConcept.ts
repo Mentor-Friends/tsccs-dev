@@ -2,11 +2,12 @@ import { CreateTheConceptApi } from "../Api/Create/CreateTheConceptApi";
 import { Concept } from "../DataStructures/Concept";
 import { ReservedIds } from "../DataStructures/ReservedIds";
 import { SyncData } from "../DataStructures/SyncData";
+import { InnerActions } from "../DataStructures/Transaction/Transaction";
 import { ConceptsData } from "../app";
 
 export default async function CreateTheConcept(referent:string, userId:number, categoryId:number, categoryUserId:number,
 typeId:number, typeUserId:number,referentId:number, referentUserId:number,securityId:number, securityUserId:number,
-accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number){
+accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number, actions: InnerActions = {concepts: [], connections: []}){
 
 var id = await ReservedIds.getId();
 var isNew: boolean = true;
@@ -16,6 +17,7 @@ var concept = new Concept(id,userId,typeId,typeUserId,categoryId,categoryUserId,
     securityUserId,accessId, accessUserId,sessionInformationId, sessionInformationUserId,isNew,created_on,updated_on);
 concept.isTemp = false;
 SyncData.AddConcept(concept);
+actions.concepts.push(concept);
 return concept;
 
 }
@@ -37,7 +39,7 @@ export  async function CreateTheConceptTemporary(referent:string, userId:number,
 
 export  async function CreateTheConceptImmediate(referent:string, userId:number, categoryId:number, categoryUserId:number,
     typeId:number, typeUserId:number,referentId:number, referentUserId:number,securityId:number, securityUserId:number,
-    accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number){
+    accessId:number, accessUserId:number, sessionInformationId:number, sessionInformationUserId:number, actions: InnerActions = {concepts: [], connections: []}){
     
     var id = await ReservedIds.getId();
     var isNew: boolean = false;
@@ -49,6 +51,7 @@ let updated_on:Date = new Date();
     concept.updateRecursion = true;
     //CreateTheConceptApi([concept]);
     SyncData.AddConcept(concept);
+    actions.concepts.push(concept);
     return concept;
     
 }

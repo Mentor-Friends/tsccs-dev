@@ -161,7 +161,7 @@ import {CreateTheCompositionWithCache} from './Composition/CreateCompositionCach
 
     }
         // create the connection between the new concept and the old composition
-          const connectionString = createTheConnection(
+          const connectionString = await createTheConnection(
             localConcept.id,
             localConcept.userId,
             insertingConcept.id,
@@ -198,7 +198,7 @@ import {CreateTheCompositionWithCache} from './Composition/CreateCompositionCach
  await compositionCache.updateCache()
   // update it the binary tree
   CompositionBinaryTree.addCompositionToTree(compositionCache)
-  SyncData.SyncDataOnline()
+  await SyncData.SyncDataOnline()
   let x =  compositionCache.GetDataCache()
   return x;
   }

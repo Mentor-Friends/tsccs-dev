@@ -61,6 +61,8 @@ export {SearchLinkInternal} from './Services/Search/SearchLinkInternal';
 export { HandleHttpError } from './Services/Common/ErrorPosting'; 
 export {GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConceptByCharacterAndCategoryDirectApi} from './Api/SearchConcept/GetConceptByCharacterAndCategoryDirect';
+export {SearchLinkMultipleApi} from './Api/Search/SearchLinkMultipleApi';
+export {GetCompositionWithIdFromMemoryFromConnections, GetCompositionWithIdFromMemory} from './Services/GetComposition';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -98,6 +100,7 @@ export { AccessControlService } from './Services/AccessControl/AccessControlServ
 export { PermissionSet } from './Services/AccessControl/PermissionSet';
 
 
+export {Transaction} from './DataStructures/Transaction/Transaction';
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
