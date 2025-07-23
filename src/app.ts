@@ -75,7 +75,7 @@ export {GetCompositionWithIdAndDateFromMemory,GetCompositionFromMemoryWithConnec
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
-export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL} from './Constants/FormatConstants';
+export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL, DATAV2} from './Constants/FormatConstants';
 export {PRIVATE , PUBLIC , ADMIN} from './Constants/AccessConstants';
 export {SearchWithTypeAndLinkerApi} from './Api/Search/SearchWithTypeAndLinker';
 export { DependencyObserver} from './WrapperFunctions/DepenedencyObserver';
@@ -86,6 +86,8 @@ export {SearchWithTypeAndLinker} from './Services/Search/SearchWithTypeAndLinker
 export {GetLinkListener} from './WrapperFunctions/GetLinkObservable';
 export {RecursiveSearchListener} from './WrapperFunctions/RecursiveSearchObservable'
 export {GetLinkListListener} from './WrapperFunctions/GetLinkListObservable';
+export {GetConnectionTypeForCount} from './Services/Common/DecodeCountInfo';
+export {orderTheConnections} from './Services/Search/orderingConnections';
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';
@@ -144,6 +146,7 @@ export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/Cr
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
 export {getUserDetails} from './Services/User/UserFromLocalStorage';
+export {CountInfo} from './DataStructures/Count/CountInfo';
 
 export {Selector} from './Api/Prototype/Selector';
 
@@ -877,6 +880,7 @@ async function initializeAppConfig() {
   let myCacheServer = sessionStorage.getItem("cacheServers");
   let appConfig = sessionStorage.getItem("config")
 
+
   let sessionString = sessionStorage.getItem("session") ?? "999";
   let sessionId = parseInt(sessionString);
 
@@ -889,8 +893,9 @@ async function initializeAppConfig() {
   const config: Record<string, number> = JSON.parse(appConfig as string);
   async function getAppConfigHandler() {
     let response
+    let windowApplication = window.location.hostname;
     try {
-        response = await fetch(BaseUrl.getAppConfig(), {
+        response = await fetch(BaseUrl.getAppConfig() + "?application=" + windowApplication, {
           method: "POST",
         });
   
@@ -903,7 +908,8 @@ async function initializeAppConfig() {
           sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
           sessionStorage.setItem("config", JSON.stringify(cacheRes.config));
           sessionStorage.setItem('session',cacheRes.session)
-          TokenStorage.sessionId = cacheRes.session;
+          TokenStorage.setSession(cacheRes.session);
+          //TokenStorage.sessionId = cacheRes.session;
           if (!cacheRes.servers) {
             BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
           } else {
@@ -936,7 +942,7 @@ async function initializeAppConfig() {
     } else {
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
-    TokenStorage.sessionId = sessionId;
+    TokenStorage.setSession(sessionId);
     BaseUrl.DOCUMENTATION_WIDGET = config.documentationWidget
   }
   console.log("before the payload in app", TokenStorage.sessionId);

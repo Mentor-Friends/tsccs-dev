@@ -167,7 +167,8 @@ const actions: Actions = {
     SESSION_DATA: async (payload) => {
       console.log("this is the payload", payload);
       BaseUrl.NODE_CACHE_URL = payload.data;
-      TokenStorage.sessionId = payload.session;
+      TokenStorage.setSession(payload.session);
+      //TokenStorage.sessionId = payload.session;
       return {success: true, name: 'SESSION_DATA'}
     } ,
     // imported actions
