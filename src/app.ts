@@ -893,8 +893,9 @@ async function initializeAppConfig() {
   const config: Record<string, number> = JSON.parse(appConfig as string);
   async function getAppConfigHandler() {
     let response
-    let windowApplication = window.location.hostname;
     try {
+      let windowApplication = window?.location?.hostname ?? "boomconsole";
+
         response = await fetch(BaseUrl.getAppConfig() + "?application=" + windowApplication, {
           method: "POST",
         });
