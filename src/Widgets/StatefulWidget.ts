@@ -22,6 +22,8 @@ export class StatefulWidget extends BaseWidget{
 
     childWidgetElement: any = [];
 
+    parentWidget:any;
+
     /** 
      * store widget state datas to pass through child widgets
      */

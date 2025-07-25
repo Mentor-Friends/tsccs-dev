@@ -552,6 +552,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
                     newWidget.widgetState
                   );
                   newWidget.childWidgets.push(childWidget);
+                  childWidget.parentWidget = newWidget;
                   // newWidget.css =
                   //   newWidget.css +
                   //   `div[data-widgetid="${child.id}"] { ${child.css} }`;
