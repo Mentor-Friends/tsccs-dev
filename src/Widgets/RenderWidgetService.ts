@@ -1,4 +1,4 @@
-import { BaseUrl, BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, WidgetTree } from "../app";
+import { BaseUrl, BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, StatefulWidget, WidgetTree } from "../app";
 import { ckeditorCSS } from "../Constants/ckeditorCSS";
 import { COMPOSITIONS } from "../Constants/page.const";
 import { applyPageProperties } from "./RenderPage.service";
@@ -513,10 +513,14 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       parentElement: HTMLElement,
       isMain: boolean = true,
       props?: any,
-      state?:any
+      state?:any,
+      parentWidget:StatefulWidget|null = null
     ) {
       const newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
       newWidget.html = tree.html;
+      if(parentWidget){
+        newWidget.parentWidget = parentWidget;
+      }
       newWidget.widgetType = tree.type;
       newWidget.componentDidMountFunction = tree.before_render;
       newWidget.addEventFunction = tree.after_render;
@@ -549,10 +553,10 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
                     widgetElement,
                     isMain,
                     newWidget.data,
-                    newWidget.widgetState
+                    newWidget.widgetState,
+                    newWidget
                   );
                   newWidget.childWidgets.push(childWidget);
-                  childWidget.parentWidget = newWidget;
                   // newWidget.css =
                   //   newWidget.css +
                   //   `div[data-widgetid="${child.id}"] { ${child.css} }`;
@@ -587,9 +591,12 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
  * @returns the widgetree with widgets attached inside of it.
  * Also this will add the tree to the dom.
  */
-export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, parentElement:HTMLElement, isMain:boolean = true, state?:object, isInDevelopment?: boolean){
+export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, parentElement:HTMLElement, isMain:boolean = true, state?:object, isInDevelopment?: boolean, parentWidget:StatefulWidget|null = null){
   let newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
   newWidget.html = tree.html;
+  if(parentWidget){
+    newWidget.parentWidget = parentWidget;
+  }
   newWidget.widgetState = {...state};
   newWidget.widgetType = tree.type;
   newWidget.componentDidMountFunction = tree.before_render;
@@ -614,7 +621,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
                       // if ((child.id === Number(widgetElement.getAttribute("data-widgetid"))) && (child.wrapper === widgetElement.id)) {
                       if ((child.wrapper === widgetElement.id)) {
                           const clearedChildWidget = clearDraggedWidget(child);
-                          const childWidget =  await convertWidgetTreeToWidgetWithWrapper(clearedChildWidget, widgetElement, isMain, newWidget.widgetState, isInDevelopment);
+                          const childWidget =  await convertWidgetTreeToWidgetWithWrapper(clearedChildWidget, widgetElement, isMain, newWidget.widgetState, isInDevelopment,newWidget);
                           newWidget.childWidgets.push(childWidget);
                           // newWidget.css = childWidget.css + `#${child.wrapper} { ${child.css} }`;
                           newWidget.css = newWidget.css + childWidget.css + `#${widgetElement.id} { ${child.css} }`;
