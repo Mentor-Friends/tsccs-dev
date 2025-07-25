@@ -324,6 +324,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/Image/UploadImage';
     }
 
+    static uploadImageUrlWithSmall(){
+        return this.BASE_URL + '/api/Image/UploadImageV2';
+    }
+
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR FILE UPLOAD //////////////////////
     static uploadFileUrl(){
