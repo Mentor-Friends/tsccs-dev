@@ -20,6 +20,8 @@ export class BaseUrl{
 
     static DOCUMENTATION_WIDGET = 0;
 
+    static isNearestCache = true;
+
     static FLAGS : any= {
         logApplication: false,
         logPackage: false,
@@ -361,5 +363,9 @@ export class BaseUrl{
 
     static CreatePrototypeUrl(){
         return this.BASE_URL + '/api/create-prototype';
+    }
+
+    static GetCachedImage(ImageName:string){
+        return 'https://cdn.boomconcole.com/freeschema/'+ ImageName;
     }
 }

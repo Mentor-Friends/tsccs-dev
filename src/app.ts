@@ -156,6 +156,9 @@ export {CreateData} from './Services/automated/automated-concept-connection';
 
 export {Prototype} from './DataStructures/Prototype/Prototype';
 export {createPrototypeLocal} from './prototype/prototype.service';
+export {GetImageApi} from './Api/Images/GetImages';
+
+export {GetFreeschemaImage,GetFreeschemaImageUrl} from './Services/assets/GetImageService';
 type listeners = {
   listenerId: string | number
   callback: any,

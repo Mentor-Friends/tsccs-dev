@@ -9,6 +9,7 @@ function updateToNextNearestServer() {
   let myCacheServer = sessionStorage.getItem("cacheServers") as any;
   myCacheServer = JSON.parse(myCacheServer) as string[];
   const indexOfCurrentCacheServer = myCacheServer.indexOf(currentCacheServer);
+  BaseUrl.isNearestCache = false;
   if (myCacheServer.includes(currentCacheServer)) {
     if (indexOfCurrentCacheServer !== -1) {
       myCacheServer.splice(indexOfCurrentCacheServer, 1);

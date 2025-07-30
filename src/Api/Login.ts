@@ -3,12 +3,13 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { TokenStorage } from '../DataStructures/Security/TokenStorage';
 import { HandleHttpError, HandleHttpErrorObject, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 
-export async function LoginToBackend(email:string, password:string){
+export async function LoginToBackend(email:string, password:string, application:string = "boomconsole.com"){
   const logData : any = Logger.logfunction("LoginToBackend", arguments);
     try{
         let object = {
             'email': email,
-            'password': password
+            'password': password,
+            'application': application
         }
 
         let myHeaders = new Headers();

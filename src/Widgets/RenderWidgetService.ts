@@ -519,7 +519,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       const newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
       newWidget.html = tree.html;
       if(parentWidget){
-        newWidget.parentWidget = parentWidget;
+        newWidget.parentWidget = makeShallow(parentWidget);
       }
       newWidget.widgetType = tree.type;
       newWidget.componentDidMountFunction = tree.before_render;
@@ -584,6 +584,18 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
     }
 
 
+export function makeShallow(input:any){
+  const shallow:any = {};
+
+  for (const [key, value] of Object.entries(input)) {
+    if (typeof value !== "object" || value === null || !Array.isArray(value)) {
+      shallow[key] = value;
+    }
+  }
+  return shallow;
+}
+
+
     /**
  * 
  * @param tree Widget tree from getWidgetFromId(widgetId);
@@ -595,7 +607,7 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   let newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
   newWidget.html = tree.html;
   if(parentWidget){
-    newWidget.parentWidget = parentWidget;
+    newWidget.parentWidget = makeShallow(parentWidget);
   }
   newWidget.widgetState = {...state};
   newWidget.widgetType = tree.type;
