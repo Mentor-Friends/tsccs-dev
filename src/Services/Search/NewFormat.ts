@@ -8,7 +8,7 @@ export async function FormatFunctionDataV2(
   compositionData: Record<number, any> = {},
   reverse: number[] = []
 ) {
-  const logData: any = Logger.logfunction("FormatFunctionDataV2", arguments);
+    const logData: any = Logger.logfunction("FormatFunctionDataV2", arguments);
 
   for (const connection of connections) {
     const reverseFlag = reverse.includes(connection.id);
@@ -25,7 +25,6 @@ export async function FormatFunctionDataV2(
     const valueType = targetConcept.type?.characterValue ?? "none";
     const value = targetConcept.characterValue;
     const isSpecial = linkerConcept.characterValue?.includes("_s_");
-
     // Initialize source if it doesn't exist
     if (!compositionData[sourceConcept.id]) {
       compositionData[sourceConcept.id] = {};
@@ -37,12 +36,10 @@ export async function FormatFunctionDataV2(
     }
 
     // Apply value if special
-    if (isSpecial) {
       if (!compositionData[targetConcept.id]) {
         compositionData[targetConcept.id] = {};
       }
       compositionData[targetConcept.id][valueType] = value;
-    }
   }
 
   Logger.logUpdate(logData);
@@ -55,8 +52,8 @@ export async function FormatFunctionDataForDataV2(
   compositionData: Record<number, any> = {},
   reverse: number[] = []
 ) {
-  const logData = Logger.logfunction("FormatFunctionDataForDataV2", arguments);
-
+    const logData = Logger.logfunction("FormatFunctionDataForDataV2", arguments);
+  
   for (const connection of connections) {
     const reverseFlag = reverse.includes(connection.id);
 
@@ -72,12 +69,10 @@ export async function FormatFunctionDataForDataV2(
     const key = source.type?.characterValue ?? "self";
     const valueType = target.type?.characterValue ?? "none";
     const value = target.characterValue;
-
     const typeCharacterRaw = linkerConcept.characterValue ?? "";
     let dataCharacter = typeCharacterRaw === "" ? removeThePrefix(valueType) : typeCharacterRaw;
     const isSpecial = dataCharacter.includes("_s_");
     const isNumeric = !isNaN(Number(dataCharacter));
-
     // Prepare data object
     const data = {
       id: target.id,
@@ -117,6 +112,7 @@ export async function FormatFunctionDataForDataV2(
 }
 
 
+
 export async function FormatFromConnectionsAlteredArrayExternalV2(
   connections: Connection[],
   compositionData: Record<number, any>,
@@ -126,9 +122,9 @@ export async function FormatFromConnectionsAlteredArrayExternalV2(
 ) {
   const logData = Logger.logfunction("FormatFromConnectionsAlteredArrayExternal", arguments);
   const mainData: any[] = [];
-
   for (const conn of connections) {
     const isReversed = reverse.includes(conn.id);
+
     const ofConcept = await GetTheConcept(conn.ofTheConceptId);
     const toConcept = await GetTheConcept(conn.toTheConceptId);
     const linkerConcept = await GetTheConcept(conn.typeId);
@@ -143,15 +139,7 @@ export async function FormatFromConnectionsAlteredArrayExternalV2(
     const sourceKey = source.type?.characterValue ?? "self";
     const reverseKey = linkerConcept.characterValue + "_reverse";
     const linkerKey = linkerConcept.characterValue || target.characterValue || target.type?.characterValue || "";
-
-    // Initialize or clean source container
-    if (!compositionData[sourceId]) {
-      compositionData[sourceId] = {};
-    }
-    if (!compositionData[sourceId][sourceKey] || typeof compositionData[sourceId][sourceKey] === "string") {
-      compositionData[sourceId][sourceKey] = {};
-    }
-
+    if(compositionData[sourceId]){
     const sourceData = compositionData[sourceId][sourceKey];
     const targetData = compositionData[targetId];
     const dataPackage = {
@@ -161,38 +149,53 @@ export async function FormatFromConnectionsAlteredArrayExternalV2(
     };
 
     AddCount(sourceId, CountDictionary, compositionData[sourceId]);
+    if(!targetData){
 
-    try {
-      // Handle reverse connection
-      if (isReversed) {
-        if (Array.isArray(sourceData[reverseKey])) {
-          sourceData[reverseKey].push(dataPackage);
-        } else {
-          if (reverseKey.includes("_s_")) {
-            sourceData[reverseKey] = [dataPackage];
-          } else {
-            sourceData[reverseKey] = dataPackage;
-          }
-        }
-      } else {
-        // Normal connection
-        if (Array.isArray(sourceData)) {
-          sourceData.push(targetData);
-        } else if (Array.isArray(sourceData[linkerKey])) {
-          sourceData[linkerKey].push(dataPackage);
-        } else {
-          if (linkerKey.includes("_s_")) {
-            sourceData[linkerKey] = [dataPackage];
-          } else {
-            sourceData[linkerKey] = dataPackage;
-          }
-        }
-
-        AddCount(targetId, CountDictionary, dataPackage);
-      }
-    } catch (err) {
-      console.error("Error processing connection:", err);
     }
+      try {
+        // Handle reverse connection
+        if (isReversed) {
+          // in the reverse condition if the array is already defined.
+          if (Array.isArray(sourceData[reverseKey])) {
+            sourceData[reverseKey].push(dataPackage);
+          } else {
+
+            // in the reverse condition the data is always an array.
+              sourceData[reverseKey] = [dataPackage];
+          }
+        }
+        else{
+          // Normal connection
+          if (Array.isArray(sourceData)) {
+            sourceData.push(targetData);
+          } else if (Array.isArray(sourceData[linkerKey])) {
+            // this is the condition in which the data placeholder is already an array
+            sourceData[linkerKey].push(dataPackage);
+          } else {
+            // this is the condition where the data includes _s_ which denotes that this must be an array or multiple values.
+              // this is the condition in which the placeholder for the data is not an array but multiple values are already assigned to value
+              if (linkerKey.includes("_s_")) {
+                sourceData[linkerKey] = [];
+                    sourceData[linkerKey].push(dataPackage);
+              } else {
+                // this is the condition in which the placeholder for the data is undefined till now
+                sourceData[linkerKey] = [dataPackage];
+              }
+          }
+        }
+
+
+          AddCount(targetId, CountDictionary, dataPackage);
+        
+      } catch (err) {
+        console.error("Error processing connection:", err);
+      }
+    }
+    else{
+      console.log("This is the error in the source");
+    }
+
+
   }
 
   // Assemble main data

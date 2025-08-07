@@ -204,6 +204,15 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
 
 
 export async function formatConnectionsV2(linkers: number[], conceptIds:number[], mainCompositionIds: number[], reverse: number[], countInfos:CountInfo[], order:string="DESC"){
+        if (serviceWorker) {
+            try {
+                const res: any = await sendMessage('formatConnectionsV2', {linkers,conceptIds,mainCompositionIds,reverse,countInfos,order})
+                return res.data
+            } catch (error) {
+                console.error('formatConnectionsV2 error sw: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
         let prefetchConnections = await GetConnectionDataPrefetch(linkers);
         let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
         prefetchConnections = orderTheConnections(prefetchConnections, order);

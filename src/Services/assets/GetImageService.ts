@@ -40,24 +40,34 @@ export async function GetFreeschemaImage(url: string, format:string="normal"){
  */
 export function GetFreeschemaImageUrl(url: string, format:string="normal"){
     let updatedUrl:string = url;
-    const parts = url.split('/');
-    let lastPart = parts.pop(); 
-    if(format == "small"){
-        let version_split = lastPart?.split('.');
-        if(version_split){
-            let name = version_split[0];
-            let extension = version_split[1];
-            lastPart = name + "_small." + extension; 
+    try{
 
+        if(url){
+        const parts = url.split('/');
+            let lastPart = parts.pop(); 
+            if(format == "small"){
+                let version_split = lastPart?.split('.');
+                if(version_split){
+                    let name = version_split[0];
+                    let extension = version_split[1];
+                    lastPart = name + "_small." + extension; 
+
+                }
+
+            }
+            console.log("this is the filename", lastPart);
+            if(lastPart){
+                updatedUrl = BaseUrl.GetCachedImage(lastPart)
+
+            }
         }
-
     }
-    console.log("this is the filename", lastPart);
-    if(lastPart){
-        updatedUrl = BaseUrl.GetCachedImage(lastPart)
-
+    catch(ex){
+        console.log("This url has error", url);
     }
     return updatedUrl;
+
+
 
     
 }
