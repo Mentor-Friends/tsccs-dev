@@ -1,6 +1,7 @@
 import { BaseUrl, BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, StatefulWidget, WidgetTree } from "../app";
 import { ckeditorCSS } from "../Constants/ckeditorCSS";
 import { COMPOSITIONS } from "../Constants/page.const";
+import { normalizeCSS } from "./NormalizeStyles.service";
 import { applyPageProperties } from "./RenderPage.service";
 import { initializeLibraries } from "./RenderWidgetLibrary.service";
 import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
@@ -136,11 +137,22 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       // add newWidget css to the page
       const style = document.createElement("style");
       style.id = "mystyleid";
+      const finalCSS = `
+        .${randomStr} {
+          ${widgetTree.css + newWidget.css + ckeditorCSS} 
+        }
+      `
+      console.log("finalCSS -->", finalCSS);
+      const normalizedCSS = await normalizeCSS(finalCSS) || '';
+      console.log("normalizedCSS -->", normalizedCSS);
+      style.innerHTML = normalizedCSS;
+      /*
       style.innerHTML = `
   .${randomStr} {
     ${widgetTree.css + newWidget.css + ckeditorCSS} 
   }
 `;
+*/
 
   // library
 
