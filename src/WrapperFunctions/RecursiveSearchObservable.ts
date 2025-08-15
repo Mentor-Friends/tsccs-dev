@@ -85,7 +85,7 @@ class RecursiveSearchObservable extends DependencyObserver {
           that.notify();
         }, 200);
       } else {
-        console.log("rejected this");
+       // console.log("rejected this");
       }
     });
   }

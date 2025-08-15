@@ -80,11 +80,11 @@ export class DependencyObserver{
                 }, 200);
             }
             else{
-                console.log("rejected this", id);
+                //console.log("rejected this", id);
             }
         }
         this.eventHandlers[id] = typeHandler;
-        console.log("added listener", id);
+       // console.log("added listener", id);
         window.addEventListener(`${id}`, typeHandler);
     }
 
@@ -142,7 +142,7 @@ export class DependencyObserver{
                 }, 200);
             }
             else{
-                console.log("rejected this", id);
+               // console.log("rejected this", id);
             }
         };
         this.eventHandlers[id] = handler;
@@ -210,7 +210,7 @@ export class DependencyObserver{
                     }, 200);
                 }
                 else{
-                    console.log("rejected this");
+                   // console.log("rejected this");
                 }
     
             });
@@ -241,7 +241,7 @@ export class DependencyObserver{
      */
     async subscribe(callback: any) {
         this.subscribers.push(callback);
-            console.log('again executing data');
+          //  console.log('again executing data');
           await this.bind();
           return callback(this.data,this);
       }
@@ -272,9 +272,9 @@ export class DependencyObserver{
        * This function will call all the subscribers that are registered in this wrapper.
        */
     notify() {
-        console.log('notifiers', this.subscribers)
+        //console.log('notifiers', this.subscribers)
         this.subscribers.map(subscriber => {
-            console.log('notify')
+           // console.log('notify')
 
             subscriber(this.data,this)
         });
