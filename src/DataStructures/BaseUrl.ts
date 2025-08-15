@@ -20,6 +20,8 @@ export class BaseUrl{
 
     static DOCUMENTATION_WIDGET = 0;
 
+    static isNearestCache = true;
+
     static ACCESS_CONTROL_BASE_URL: string = "http://localhost:5001";
 
     static FLAGS : any= {
@@ -326,6 +328,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/Image/UploadImage';
     }
 
+    static uploadImageUrlWithSmall(){
+        return this.BASE_URL + '/api/Image/UploadImageV2';
+    }
+
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR FILE UPLOAD //////////////////////
     static uploadFileUrl(){
@@ -359,5 +365,9 @@ export class BaseUrl{
 
     static CreatePrototypeUrl(){
         return this.BASE_URL + '/api/create-prototype';
+    }
+
+    static GetCachedImage(ImageName:string){
+        return 'https://cdn.boomconcole.com/freeschema/'+ ImageName;
     }
 }

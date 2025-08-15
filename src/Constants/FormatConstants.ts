@@ -5,3 +5,4 @@ export const DATAIDDATE = 4;
 export const RAW = 5;
 export const ALLID = 6;
 export const LISTNORMAL = 7;
+export const DATAV2 =8;

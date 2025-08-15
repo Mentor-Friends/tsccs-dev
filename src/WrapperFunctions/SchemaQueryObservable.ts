@@ -1,7 +1,7 @@
 import { FreeschemaQuery, FreeschemaQueryApi, Logger, MakeTheTypeConceptApi } from "../app";
-import { ALLID, DATAID, JUSTDATA, NORMAL } from "../Constants/FormatConstants";
+import { ALLID, DATAID, DATAV2, JUSTDATA, NORMAL, RAW } from "../Constants/FormatConstants";
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
-import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
+import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatConnectionsV2, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
 import { DependencyObserver } from "./DepenedencyObserver";
 
 export class SearchLinkMultipleAllObservable extends DependencyObserver{
@@ -91,6 +91,19 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         }
         else if(this.format == JUSTDATA){
             this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
+        }
+        else if(this.format == DATAV2){
+            this.data = await formatConnectionsV2(this.linkers, this.conceptIds,this.compositionIds, this.reverse, countInfos, this.order );
+        }
+        else if(this.format == RAW){
+            console.log("this is the raw format");
+            this.data = {};
+            this.data.linkers = this.linkers;
+            this.data.conceptIds = this.conceptIds;
+            this.data.compositionIds = this.compositionIds;
+            this.data.reverse = this.reverse;
+            this.data.countInfos = countInfos;
+            this.data.order = this.order;
         }
         else{
 

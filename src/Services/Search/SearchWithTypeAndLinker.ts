@@ -7,6 +7,7 @@ import { FormatFromConnectionsAlteredArrayExternal,FormatFunctionData, FormatFun
 import { CountInfo } from '../../DataStructures/Count/CountInfo';
 import { GetConnectionTypeForCount } from '../Common/DecodeCountInfo';
 import { orderTheConnections } from './orderingConnections';
+import { FormatFromConnectionsAlteredArrayExternalV2, FormatFunctionDataForDataV2, FormatFunctionDataV2 } from './NewFormat';
 
 /**
  * This function will help you search a concept by their type and also to query inside of it.
@@ -198,5 +199,26 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
     let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData, newCompositionData, mainCompositionIds, reverse, CountDictionary );
 
     return output;
+}
+
+
+export async function formatConnectionsV2(linkers: number[], conceptIds:number[], mainCompositionIds: number[], reverse: number[], countInfos:CountInfo[], order:string="DESC"){
+        if (serviceWorker) {
+            try {
+                const res: any = await sendMessage('formatConnectionsV2', {linkers,conceptIds,mainCompositionIds,reverse,countInfos,order})
+                return res.data
+            } catch (error) {
+                console.error('formatConnectionsV2 error sw: ', error)
+                handleServiceWorkerException(error)
+            }
+        }
+        let prefetchConnections = await GetConnectionDataPrefetch(linkers);
+        let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
+        prefetchConnections = orderTheConnections(prefetchConnections, order);
+        let compositionData: Record<number, any> = {};
+        compositionData = await FormatFunctionDataV2(prefetchConnections, compositionData, reverse);
+        compositionData = await FormatFunctionDataForDataV2(prefetchConnections, compositionData, reverse);
+        let output:any  = await FormatFromConnectionsAlteredArrayExternalV2(prefetchConnections, compositionData, mainCompositionIds, reverse, CountDictionary );
+        return output;
 }
 

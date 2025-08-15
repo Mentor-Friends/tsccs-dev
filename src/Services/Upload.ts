@@ -88,6 +88,41 @@ export async function uploadImage(body: FormData, token: string = "") {
 }
 
 /**
+ * Method to upload image to server
+ * @param body FormData
+ * @param token string?
+ * @returns JSON | string | null
+ */
+export async function uploadImageV2(body: FormData, token: string = "") {
+  const logData : any = Logger.logfunction("uploadImageV2");
+  try {
+    const response = await fetch(BaseUrl.uploadImageUrlWithSmall(), {
+      method: "POST",
+      body,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      // Check content type before parsing
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("text/plain")) {
+        console.info(response?.text());
+      }
+      const errorData = await response?.text();
+      console.error(`${response.status} ${errorData}`); // Log error response data
+      Logger.logUpdate(logData);
+      return null;
+    }
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    UpdatePackageLogWithError(logData, 'uploadImageV2', err);
+    return null;
+  }
+}
+
+/**
  * Method to upload file to server
  * @param body FormData
  * @param token string?
