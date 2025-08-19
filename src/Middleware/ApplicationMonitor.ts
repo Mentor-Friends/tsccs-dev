@@ -17,8 +17,8 @@ export class ApplicationMonitor {
       this.logUserInteractions();
       this.logNetworkRequests();
       this.logRouteChanges();
-      this.logPerformanceMetrics();
-      this.logWebSocketEvents();
+     // this.logPerformanceMetrics();
+      //this.logWebSocketEvents();
     } catch (error) {
       console.error("Error during Application Monitoring initialization:", error);
     }
@@ -297,15 +297,17 @@ export class ApplicationMonitor {
   // Log route changes (SPAs)
   static logRouteChanges() {
     const pushState = history.pushState;
+    history.pushState = function (...args) {
     const sessionId = TokenStorage.sessionId || 'unknown';
     console.log("this is the session in the route change", sessionId, TokenStorage);
-    history.pushState = function (...args) {
+
       const urlChange = {
         url: args[2]?.toString(),
         requestFrom: BaseUrl.BASE_APPLICATION,
         sessionId: sessionId
       }
-      Logger.logApplication("INFO", "Route Change", urlChange )
+      Logger.logApplication("ROUTE", "Route Change", urlChange )
+      
       return pushState.apply(this, args);
     };
 
@@ -316,7 +318,7 @@ export class ApplicationMonitor {
         requestFrom:BaseUrl.BASE_APPLICATION,
         sessionId:sessionId
       }
-      Logger.logApplication("INFO", "Route Changed (Back/Forward)", urlChange)
+      Logger.logApplication("ROUTE", "Route Changed (Back/Forward)", urlChange)
     });
   }
 

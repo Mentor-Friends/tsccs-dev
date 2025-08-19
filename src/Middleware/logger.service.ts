@@ -12,7 +12,7 @@ export class Logger {
     private static logLevel: string = "INFO";
     private static packageLogsData: any[] = [];
     private static applicationLogsData: any[] = [];
-    private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
+    private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "ROUTE"];
     private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app";
@@ -242,6 +242,10 @@ export class Logger {
             };
 
             this.applicationLogsData.push(logEntry);
+            if(level == "ROUTE"){
+                this.sendPackageLogsToServer(); 
+                this.sendApplicationLogsToServer();
+            }
             // this.saveLogToLocalStorage(this.appLogs, logEntry)
             // console.log("Application Log Updated : ", this.applicationLogsData);
 
