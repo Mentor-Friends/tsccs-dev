@@ -3,7 +3,6 @@ import { handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessag
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { CreateDefaultConcept } from "./CreateDefaultConcept";
 import MakeTheConcept from "./MakeTheConcept";
-import {MakeTheTypeConcept} from "./MakeTheTypeConcept";
 
 export async function MakeTheTimestamp(type:string, referent:string, userId: number, 
     accessId:number = 4, sessionInformationId: number=999){

@@ -1,4 +1,4 @@
-import { CompositionNode, ConnectionData } from "../app";
+import { ConnectionData } from "../app";
 import { NORMAL } from "../Constants/FormatConstants";
 
 /**

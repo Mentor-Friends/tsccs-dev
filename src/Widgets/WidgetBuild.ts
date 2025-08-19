@@ -6,7 +6,6 @@ import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../Services/Search/SearchWithTypeAndLinker";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { ConceptCircle } from "../Visualize/ConceptCircle";
 const widgetCache = new Map<number, Promise<any>>();
 const latestWidgetCache = new Map<number, Promise<any>>();
 export async function BuildWidgetFromId(id:number){

@@ -1,9 +1,5 @@
-import { CreateTheConceptUrl } from "../../Constants/ApiConstants";
 import { Concept } from "../../DataStructures/Concept";
-import { Returner } from "../../DataStructures/Returner";
-import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { Connection, Logger } from "../../app";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
