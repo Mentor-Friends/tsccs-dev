@@ -30,10 +30,11 @@ export class ApplicationMonitor {
       console.log("this is the window", window);
       // console.log("Into initGlobalErrorHandlers.")
       if(typeof window === undefined) return;      
-      const sessionId = TokenStorage.sessionId || "unknown";
       
       // Track runtime errors
       window.onerror = (message, source, lineno, colno, error) => {
+      const sessionId = TokenStorage.sessionId || "unknown";
+
         const errorDetails = {
           message,
           source,
@@ -50,6 +51,8 @@ export class ApplicationMonitor {
 
       // Track unhandled promise rejections
       window.onunhandledrejection = (event) => {
+      const sessionId = TokenStorage.sessionId || "unknown";
+
         Logger.logApplication("ERROR", "Unhandled Promise Rejection", {
           message: event.reason ? event.reason.message : event.reason,
           stack: event.reason ? event.reason.stack : null,
@@ -73,10 +76,12 @@ export class ApplicationMonitor {
     try {
       const originalConsoleError = console.error;
       console.log("Inside originalConsoleError...");
-      const sessionId = TokenStorage.sessionId || 'unknown';
       
       console.error = function (...args) {
+        if(args?.[0] == "Intercepted Fetch Error:") return;
+        debugger;
         const message = "Console Error";
+        const sessionId = TokenStorage.sessionId || 'unknown';
   
         // Handle circular references in arguments
         const safeArgs = args.map(arg => safeStringify(arg));
@@ -205,7 +210,7 @@ export class ApplicationMonitor {
       const ignoredUrls = [BaseUrl.PostLogger(), BaseUrl.PostPrefetchConceptConnections()];
       
       window.fetch = async (...args) => {
-  
+      const sessionId = TokenStorage.sessionId || 'unknown';
         const [url, options] = args;
         const urlString: string = url instanceof Request ? url.url : (url instanceof URL ? url.toString() : url);
   
@@ -293,6 +298,7 @@ export class ApplicationMonitor {
   static logRouteChanges() {
     const pushState = history.pushState;
     const sessionId = TokenStorage.sessionId || 'unknown';
+    console.log("this is the session in the route change", sessionId, TokenStorage);
     history.pushState = function (...args) {
       const urlChange = {
         url: args[2]?.toString(),
@@ -304,6 +310,7 @@ export class ApplicationMonitor {
     };
 
     window?.addEventListener("popstate", () => {
+      const sessionId = TokenStorage.sessionId || 'unknown';
       const urlChange = {
         url: location.href,
         requestFrom:BaseUrl.BASE_APPLICATION,
@@ -333,6 +340,7 @@ export class ApplicationMonitor {
         Logger.logApplication("INFO", message, data)
 
         this.addEventListener("message", (event) => {
+          const sessionId = TokenStorage.sessionId || 'unknown';
           const message = "WebSocket Message"
           const data = {
             "url" : url,
@@ -345,6 +353,7 @@ export class ApplicationMonitor {
         });
 
         this.addEventListener("error", (error) => {
+          const sessionId = TokenStorage.sessionId || 'unknown';
           const message = "WebSocket Error"
           const data = {
             "url" : url,
@@ -356,6 +365,7 @@ export class ApplicationMonitor {
         });
 
         this.addEventListener("close", () => {
+          const sessionId = TokenStorage.sessionId || 'unknown';
           const message = "WebSocket Closed"
           const data = {
             "url" : url,
