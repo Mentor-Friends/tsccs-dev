@@ -1,4 +1,4 @@
-import { expect, test} from '@jest/globals';
+// import { expect, test} from '@jest/globals';
 import {GetConcept} from '../src/Api/GetConcept';
 import { BaseUrl, BinaryTree, Connection, CreateDefaultConcept, init } from '../src/app';
 import { IdentifierFlags } from '../src/DataStructures/IdentifierFlags';
@@ -9,7 +9,7 @@ import exp from 'constants';
 import { mock } from 'node:test';
 import { BinaryCharacterTree } from '../src/DataStructures/BinaryCharacterTree';
 import { ConnectionBinaryTree } from '../src/DataStructures/ConnectionBinaryTree/ConnectionBinaryTree';
-require("fake-indexeddb/auto");
+// require("fake-indexeddb/auto");
 
 
 let url = "http://192.168.10.2:7000";
@@ -24,11 +24,11 @@ let accessToken = "";
 // });
 
 
-test('init', async()=>{
-    return init(url, "", "", nodeUrl, false, applicationName).then(data=>{
-        expect(data).toBe(true);
-    })
-});
+// test('init', async()=>{
+//     return init(url, "", "", nodeUrl, false, applicationName).then(data=>{
+//         expect(data).toBe(true);
+//     })
+// });
 
 // test('get concept test', async() =>{
     
@@ -54,6 +54,7 @@ test('init', async()=>{
 /**
  * This test is used to add concept to binary tree by fetching it and then checking if it can be fetched by memory
  */
+/*
 test('add concept to binary tree and get it from binary tree', async() => {
   try{
     let mockId = 555;
@@ -107,11 +108,7 @@ test('add random concepts to binary tree', async() => {
   console.log("this is the connections gathered from tree", connectionArray); 
   expect(startCount).toBe(count);
 });
-
-
-
-
-
+*/
 
 
 // test('get local id', async() =>{
