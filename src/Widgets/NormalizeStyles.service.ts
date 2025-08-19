@@ -7,7 +7,6 @@ export async function normalizeCSS(cssString: string) {
     const result = await postcss([nested()]).process(cssString, {
       from: undefined,
     });
-    console.log("result --->", result.css);
     return result.css;
   } catch (error) {
     console.error("Error processing CSS:", error);
