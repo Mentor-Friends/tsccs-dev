@@ -149,6 +149,9 @@ export class BaseUrl{
     static PostLogger(){
         return this.LOG_SERVER + '/api/logger'
     }
+    static LogHealth(){
+        return this.LOG_SERVER + '/api/check'
+    }
 
     static GetAllPrefetchConnectionsUrl(){
         return this.BASE_URL + '/api/get_all_connections_of_user?inpage=500';

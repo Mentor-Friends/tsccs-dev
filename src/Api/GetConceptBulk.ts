@@ -19,7 +19,7 @@ async function processBulkConceptData(response: Response, passedConcepts: number
         result.push(concept);
       }
     }
-    console.log("added the concepts");
+   // console.log("added the concepts");
     Logger.logUpdate(logData);
     // Add Log
     // Logger.logInfo(startTime, "unknown", "read", "unknown", undefined, 200, result, "GetConceptBulk", ['passedConcepts'], "unknown", undefined)

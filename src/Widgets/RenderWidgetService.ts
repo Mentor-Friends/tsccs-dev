@@ -28,7 +28,6 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       ];
 
       SchemaQueryListener(freeschemaQuery, "").subscribe(async (data: any) => {
-        console.log("SchemaQueryListener data -->", data)
         await applyPageProperties(data?.[0]?.data?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}`]);
       })
 
@@ -142,9 +141,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
           ${widgetTree.css + newWidget.css + ckeditorCSS} 
         }
       `
-      // console.log("finalCSS -->", finalCSS);
       const normalizedCSS = await normalizeCSS(finalCSS) || '';
-      // console.log("normalizedCSS -->", normalizedCSS);
       style.innerHTML = normalizedCSS;
       /*
       style.innerHTML = `
@@ -253,7 +250,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
             ?.the_child_widget_use_latest?.data
             ? true
             : false;
-            console.log("originIdOfChildWidget", originIdOfChildWidget, childWidget)
+            //console.log("originIdOfChildWidget", originIdOfChildWidget, childWidget)
             originIdOfChildWidget = Number(originIdOfChildWidget) || false
           // alert(`getting latest of ${originIdOfChildWidget} if this condition ${useLatest} ${typeof originIdOfChildWidget}`);
           let validChildWid: any|null = null
@@ -393,7 +390,6 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       try {
         const widgetNode = new WidgetTree();
         const output = GetWidgetForTree(bulkWidget, widgetId);
-        console.log("getWidgetBulkFromId output ->", output)
         //const output: any = await getWidgetCodeFromId(widgetId, token);
         visitedWidgets.push(widgetId);
   
@@ -472,7 +468,6 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
             code: customFunctionData?.the_custom_function_code?.data?.the_code,
           }
         })
-        console.log('customFunctionList -> ', customFunctionList)
         widgetNode.custom_functions = customFunctionList
 
         // if there are children present in the widget then convert the children to widget and put it inside of the tree.
@@ -813,7 +808,6 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
  * @param widgetId 
  */
 export async function openDocumentationPreviewModal(widgetId: number) {
-  console.log('openDocumentationPreviewModal widgetId', widgetId)
   const documentationQueryText = new FreeschemaQuery();
   documentationQueryText.typeConnection = "the_widget_documentation";
   documentationQueryText.name = "documentationText";
@@ -871,10 +865,7 @@ export async function openDocumentationPreviewModal(widgetId: number) {
   allWidgetCodes.outputFormat = DATAID;
 
   await SchemaQueryListener(allWidgetCodes, "").subscribe(async (data: any) => {
-    console.log("widget documentation preview data ->", data);
-
     let widgetDocumentData: any;
-
     const textDocumentationData =
       data?.[0]?.data?.the_widget?.the_widget_documentation?.data
         ?.the_documentation?.the_documentation_text?.data?.the_text || "";
