@@ -261,6 +261,19 @@ export class AccessControlService {
   }
 
   /**
+   * Sets access inheritance for multiple concepts in bulk.
+   */
+  static async setAccessInheritanceBulk(request: {
+    items: Array<{
+      mainConceptId: number;
+      connectionTypeIds: number[];
+    }>;
+    enable: boolean;
+  }): Promise<any> {
+    return this._post('/api/access-control/access-inheritance/bulk', request, 'Failed to set access inheritance in bulk');
+  }
+
+  /**
    * Gets the status of access inheritance for a concept.
    */
   static async getAccessInheritanceStatus(mainConceptId: number, connectionTypeId: number = 999): Promise<any> {

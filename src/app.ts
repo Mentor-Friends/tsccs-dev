@@ -159,6 +159,8 @@ export {Prototype} from './DataStructures/Prototype/Prototype';
 export {createPrototypeLocal} from './prototype/prototype.service';
 export {GetImageApi} from './Api/Images/GetImages';
 
+export { GetAllLinkerConnectionsFromTheConcept } from "./Api/GetAllLinkerConnectionsFromTheConcept";
+
 export {GetFreeschemaImage,GetFreeschemaImageUrl} from './Services/assets/GetImageService';
 type listeners = {
   listenerId: string | number
