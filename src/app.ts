@@ -325,7 +325,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
   let checkProcessInterval: any
   if (type != 'checkProcess' && retryCount == 0) {
     checkProcessInterval = setInterval(async () => {
-      console.log('process took more than one second', messageId, type, messagedProcessed)
+     // console.log('process took more than one second', messageId, type, messagedProcessed)
       // if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
       //   console.log("Message process missing")
       //   throw Error('Failed to handle type ' + type + ' ' + messageId)
@@ -349,7 +349,7 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
   }
 
   return new Promise((resolve, reject) => {
-    if (!((navigator.serviceWorker.controller || serviceWorker))) console.log('will go to queue', navigator.serviceWorker.controller, serviceWorker, type)
+    if (!((navigator.serviceWorker.controller || serviceWorker))) console.log('', navigator.serviceWorker.controller, serviceWorker, type)
     if ((navigator.serviceWorker.controller || serviceWorker)) {
       const responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
@@ -418,8 +418,8 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
       }, 210000); // 3.5 minutes
     } else {
       messageQueue.push({message: {type, payload: newPayload}})
-      console.log('Message Queued', type, payload)
-      console.log(navigator.serviceWorker.controller, serviceWorker, type)
+      //console.log('Message Queued', type, payload)
+      //console.log(navigator.serviceWorker.controller, serviceWorker, type)
       if (type == 'init') {
         clearInterval(checkProcessInterval)
         resolve(null)
