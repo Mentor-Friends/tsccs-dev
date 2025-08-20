@@ -20,8 +20,8 @@ export class FreeschemaQuery{
     name: string = "";
     filterAncestor:string = "";
     reverse: boolean = false;
-    limit: boolean = false;
-    isSecure:boolean = false;
+    limit: boolean = true;
+    isSecure:boolean = true;
     includeInFilter: boolean = false;
     isOldConnectionType: boolean = false;
 }

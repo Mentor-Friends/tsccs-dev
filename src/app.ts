@@ -126,6 +126,7 @@ import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
 import { getCookie, LogData } from "./Middleware/logger.service";
 import { randomInt } from "crypto";
+import { access } from "fs";
 export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -149,7 +150,7 @@ export {getUserDetails} from './Services/User/UserFromLocalStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
 
 export {Selector} from './Api/Prototype/Selector';
-
+export { AccessControlService } from './Services/AccessControl/AccessControl';
 export {renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 export {CreateData} from './Services/automated/automated-concept-connection';
@@ -157,6 +158,8 @@ export {CreateData} from './Services/automated/automated-concept-connection';
 export {Prototype} from './DataStructures/Prototype/Prototype';
 export {createPrototypeLocal} from './prototype/prototype.service';
 export {GetImageApi} from './Api/Images/GetImages';
+
+export { GetAllLinkerConnectionsFromTheConcept } from "./Api/GetAllLinkerConnectionsFromTheConcept";
 
 export {GetFreeschemaImage,GetFreeschemaImageUrl} from './Services/assets/GetImageService';
 type listeners = {
@@ -204,6 +207,7 @@ function updateAccessToken(accessToken: string = "", session?: any) {
  *
  * @param url This is the url for the backend c# system or our main data fabric server
  * @param aiurl This is the AI url that pulls in the data using our AI system . If you do not enter this then also disable the enableAi flag.
+ * @param accessControlUrl This is the url for the access control system. This is another server in the data fabric that is used as server for business logic and security features.
  * @param accessToken This is the JWT token that needs to be passed (But since you have just initilized the system). There is no way we can get access token
  * So this access token can be empty string. You can set it afterwards with another function UpdateAccessToken();
  * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
@@ -221,6 +225,7 @@ async function init(
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
   flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
   parameters: { logserver?:string} = {},
+  accessControlUrl: string = "",
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -228,8 +233,9 @@ async function init(
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
     BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
+    BaseUrl.ACCESS_CONTROL_BASE_URL = accessControlUrl;
     console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
-    updateAccessToken(accessToken);
+    if (accessToken) updateAccessToken(accessToken);
     //TokenStorage.BearerAccessToken = accessToken;
     let randomizer = Math.floor(Math.random() * 100000000);
     // BaseUrl.BASE_RANDOMIZER = randomizer;
@@ -863,7 +869,8 @@ async function initServiceWorker() {
     nodeUrl: BaseUrl.NODE_URL,
     enableAi: false,
     applicationName: BaseUrl.BASE_APPLICATION,
-    flags: BaseUrl.FLAGS
+    flags: BaseUrl.FLAGS,
+    accessControlUrl: BaseUrl.ACCESS_CONTROL_BASE_URL,
   });
 }
 
