@@ -299,7 +299,6 @@ export class ApplicationMonitor {
     const pushState = history.pushState;
     history.pushState = function (...args) {
     const sessionId = TokenStorage.sessionId || 'unknown';
-    console.log("this is the session in the route change", sessionId, TokenStorage);
 
       const urlChange = {
         url: args[2]?.toString(),
