@@ -29,4 +29,5 @@ export class WidgetTree{
     sChildId?: number;
     isPublished?: boolean;
     useLatest?: boolean;
+    dependency: string = '';
 }
