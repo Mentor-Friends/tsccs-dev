@@ -52,7 +52,7 @@ export class GetLinkListObservable extends DependencyObserver{
                     }, 200);
                 }
                 else{
-                    console.log("rejected this");
+                   // console.log("rejected this");
                 }
     
             });

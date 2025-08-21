@@ -403,7 +403,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
             ?.the_child_widget_use_latest?.data
             ? true
             : false;
-            console.log("originIdOfChildWidget", originIdOfChildWidget, childWidget)
+            //console.log("originIdOfChildWidget", originIdOfChildWidget, childWidget)
             originIdOfChildWidget = Number(originIdOfChildWidget) || false
           // alert(`getting latest of ${originIdOfChildWidget} if this condition ${useLatest} ${typeof originIdOfChildWidget}`);
           let validChildWid: any|null = null

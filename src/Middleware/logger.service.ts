@@ -6,10 +6,13 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 
 export class Logger {
 
+    private static isLoggerActive: boolean = true;
+    private static lastCheck:Date = new Date();
+    private static checkInterval: number = 0;
     private static logLevel: string = "INFO";
     private static packageLogsData: any[] = [];
     private static applicationLogsData: any[] = [];
-    private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"];
+    private static readonly LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "ROUTE"];
     private static readonly SYNC_INTERVAL_MS = 60 * 1000; // 60 Sec
     private static nextSyncTime: number | null = null;
     private static appLogs:string = "app";
@@ -239,12 +242,38 @@ export class Logger {
             };
 
             this.applicationLogsData.push(logEntry);
+            if(level == "ROUTE"){
+                this.sendPackageLogsToServer(); 
+                this.sendApplicationLogsToServer();
+            }
             // this.saveLogToLocalStorage(this.appLogs, logEntry)
             // console.log("Application Log Updated : ", this.applicationLogsData);
 
         } catch (error) {
             console.error("Failed to log application activity:", error);
         }
+    }
+
+    public static async checkLoggerServerStatus(){
+        let cooldownMs = 10000 + Logger.checkInterval;
+        const now = new Date();
+         if (Logger.lastCheck && now.getTime() - Logger.lastCheck.getTime() < cooldownMs) {
+            console.log("still cooling down");
+            return;
+         }
+         try{
+            let url = BaseUrl.LogHealth();
+            Logger.lastCheck = new Date();
+            const res = await fetch(url, { method: "GET" }); 
+            if (res.ok) {
+                Logger.isLoggerActive = true;
+                Logger.checkInterval = 0;
+            }
+         }
+         catch(error){
+            console.warn("This is error in the logger check");
+         }
+        Logger.checkInterval = Logger.checkInterval + 500;
     }
 
     /**
@@ -254,22 +283,27 @@ export class Logger {
         const storedLogs = this.applicationLogsData
 
         try {
-
+            if(!Logger.isLoggerActive){
+                Logger.checkLoggerServerStatus();
+                return;
+            }
            // console.log("Log from sendApplicationLogsToServer : ", this.applicationLogsData);
             
             if(storedLogs.length === 0){
+
                 return
             }
             this.applicationLogsData = []
 
-             const accessToken = TokenStorage.BearerAccessToken;
+            const accessToken = TokenStorage.BearerAccessToken;
 
             // clear application log from memory
             const chunkSize = 50;
             let header = GetRequestHeader();
             let i = 0;
             while(storedLogs.length != 0)
-            {                
+            { 
+                debugger;               
                 // console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
 
                 const chunk = storedLogs.slice(0, chunkSize);
@@ -283,7 +317,10 @@ export class Logger {
                 });
 
                 if (!response.ok) {
-                    const responseBody = await response.text();
+                    
+                        if (response.status === 404) {
+                           Logger.isLoggerActive = false;
+                        }
                 }
                 storedLogs.splice(0, chunkSize);
                 i = i+chunkSize;
@@ -291,6 +328,7 @@ export class Logger {
             }
             
         } catch (error) {
+            Logger.isLoggerActive = false;
             //this.applicationLogsData.push(...storedLogs);
           //  console.error("Network error while sending logs:", error);
         }
@@ -300,9 +338,15 @@ export class Logger {
         const storedLogs = this.packageLogsData;
 
         try {
-
+            if(!Logger.isLoggerActive){
+                Logger.checkLoggerServerStatus();
+                return 
+            }
             //console.log("Log from sendPackageLogsToServer : ", this.packageLogsData);
-            if(storedLogs.length === 0) return
+            if(storedLogs.length === 0) {
+
+                return
+            }
             // if(this.packageLogsData.length === 0) return
             this.packageLogsData = [];
             //console.log("Stored Logs for send : ", storedLogs);
@@ -314,7 +358,6 @@ export class Logger {
                 // console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
                 const chunk = storedLogs.slice(0, chunkSize)
                 // console.log("Chunk : ", chunk);
-                
             //for (let i = 0; i < storedLogs.length; i += chunkSize) {
                 // const chunk = storedLogs.slice(i, i + chunkSize);
                 // console.log("Package Log URL : ", BaseUrl.PostLogger);
@@ -331,7 +374,9 @@ export class Logger {
                 });
 
                 if (!response.ok) {
-                    const responseBody = await response.text();
+                        if (response.status === 404) {
+                           Logger.isLoggerActive = false;
+                        }
                    // this.packageLogsData.push(...storedLogs);
                     //console.error("Failed to send logs:-", response.status, response.statusText, responseBody);
                     return;
@@ -346,6 +391,7 @@ export class Logger {
             //this.packageLogsData = [] 
 
         } catch (error) {
+            Logger.isLoggerActive = false;
             //this.packageLogsData.push(...storedLogs);
            //console.error("Error while sending logs to server:", error);
         }

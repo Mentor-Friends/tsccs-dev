@@ -21,7 +21,6 @@ export async function GetFreeschemaImage(url: string, format:string="normal"){
         }
 
     }
-    console.log("this is the filename", lastPart);
     if(lastPart){
         image = await GetImageApi(lastPart);
 
@@ -55,7 +54,6 @@ export function GetFreeschemaImageUrl(url: string, format:string="normal"){
                 }
 
             }
-            console.log("this is the filename", lastPart);
             if(lastPart){
                 updatedUrl = BaseUrl.GetCachedImage(lastPart)
 
