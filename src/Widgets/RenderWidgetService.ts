@@ -569,9 +569,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         }
         widgetNode.after_render =
           widgetInfo?.the_widget_after_render?.data?.the_after_render;
-  
         widgetNode.before_render =
           widgetInfo?.the_widget_before_render?.data?.the_before_render;
+        widgetNode.dependency = widgetInfo?.the_widget_dependency?.data?.the_dependency;
   
         widgetNode.update = widgetInfo?.the_widget_update?.data?.the_update;
         widgetNode.widgetId = widgetId;
