@@ -95,7 +95,6 @@ export class LocalSyncData{
             if (serviceWorker) {
                 try {
                     console.log("syncing in the service worker", transactionId, withAuth);
-                    debugger;
                     const res: any = await sendMessage('LocalSyncData__SyncDataOnline', {transactionId, withAuth})
                     return res.data
                 } catch (error) {

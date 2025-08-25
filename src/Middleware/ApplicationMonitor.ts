@@ -79,7 +79,6 @@ export class ApplicationMonitor {
       
       console.error = function (...args) {
         if(args?.[0] == "Intercepted Fetch Error:") return;
-        debugger;
         const message = "Console Error";
         const sessionId = TokenStorage.sessionId || 'unknown';
   
@@ -297,12 +296,15 @@ export class ApplicationMonitor {
   // Log route changes (SPAs)
   static logRouteChanges() {
     const pushState = history.pushState;
-    ApplicationMonitor.logOnWindowLoad();
+    setTimeout(()=>{
+      ApplicationMonitor.logOnWindowLoad();
+
+    }, 1500);
     history.pushState = function (...args) {
     const sessionId = TokenStorage.sessionId || 'unknown';
 
       const urlChange = {
-        url: args[2]?.toString(),
+        url: location.href,
         requestFrom: BaseUrl.BASE_APPLICATION,
         sessionId: sessionId
       }
@@ -324,15 +326,13 @@ export class ApplicationMonitor {
 
 
   static logOnWindowLoad(){
-    window.onload = () =>{
       const sessionId = TokenStorage.sessionId || 'unknown';
-      const urlChange = {
-        url: "initialLoad --- " + location.href,
+      const urlChange:any = {
+        url: location.href,
         requestFrom:BaseUrl.BASE_APPLICATION,
         sessionId:sessionId
-      }
-      Logger.logApplication("ROUTE", "Route Change", urlChange )
-    }
+      };
+      Logger.logApplication("ROUTE", "Initial Load", urlChange );
 
   }
 
