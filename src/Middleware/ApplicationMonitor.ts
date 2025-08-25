@@ -297,6 +297,7 @@ export class ApplicationMonitor {
   // Log route changes (SPAs)
   static logRouteChanges() {
     const pushState = history.pushState;
+    ApplicationMonitor.logOnWindowLoad();
     history.pushState = function (...args) {
     const sessionId = TokenStorage.sessionId || 'unknown';
 
@@ -319,6 +320,20 @@ export class ApplicationMonitor {
       }
       Logger.logApplication("ROUTE", "Route Changed (Back/Forward)", urlChange)
     });
+  }
+
+
+  static logOnWindowLoad(){
+    window.onload = () =>{
+      const sessionId = TokenStorage.sessionId || 'unknown';
+      const urlChange = {
+        url: "initialLoad --- " + location.href,
+        requestFrom:BaseUrl.BASE_APPLICATION,
+        sessionId:sessionId
+      }
+      Logger.logApplication("ROUTE", "Route Change", urlChange )
+    }
+
   }
 
   // Log WebSocket events
