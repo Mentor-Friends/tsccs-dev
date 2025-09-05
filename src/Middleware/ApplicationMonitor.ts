@@ -299,12 +299,16 @@ export class ApplicationMonitor {
     setTimeout(()=>{
       ApplicationMonitor.logOnWindowLoad();
 
-    }, 1500);
+    }, 3000);
+    // setInterval(()=>{
+    //   ApplicationMonitor.logSample();
+
+    // }, 10000);
     history.pushState = function (...args) {
     const sessionId = TokenStorage.sessionId || 'unknown';
-
+     const newUrl = args[2] ? new URL(args[2], location.origin).href : location.href;
       const urlChange = {
-        url: location.href,
+        url: newUrl,
         requestFrom: BaseUrl.BASE_APPLICATION,
         sessionId: sessionId
       }
@@ -312,6 +316,16 @@ export class ApplicationMonitor {
       
       return pushState.apply(this, args);
     };
+
+    window?.addEventListener("beforeunload", () => {
+      const sessionId = TokenStorage.sessionId || 'unknown';
+      const urlChange = {
+        url: location.href,
+        requestFrom:BaseUrl.BASE_APPLICATION,
+        sessionId:sessionId
+      }
+      Logger.logApplication("ROUTE", "Unload", urlChange);
+    });
 
     window?.addEventListener("popstate", () => {
       const sessionId = TokenStorage.sessionId || 'unknown';
@@ -333,6 +347,17 @@ export class ApplicationMonitor {
         sessionId:sessionId
       };
       Logger.logApplication("ROUTE", "Initial Load", urlChange );
+
+  }
+
+  static logSample(){
+      const sessionId = TokenStorage.sessionId || 'unknown';
+      const urlChange:any = {
+        url: location.href,
+        requestFrom:BaseUrl.BASE_APPLICATION,
+        sessionId:sessionId
+      };
+      Logger.logApplication("ROUTE", "Sample", urlChange );
 
   }
 
