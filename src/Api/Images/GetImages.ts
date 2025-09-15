@@ -1,7 +1,7 @@
 import { BaseUrl } from "../../app";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
-export async function GetImageApi(imageName: string):Promise<ReadableStream<Uint8Array<ArrayBuffer>> | null | undefined>{
+export async function GetImageApi(imageName: string):Promise<ReadableStream<Uint8Array> | null | undefined>{
     let image;
     try{
 
