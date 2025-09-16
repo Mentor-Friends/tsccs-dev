@@ -4,7 +4,7 @@ import { Connection } from "../DataStructures/Connection";
 import { ConnectionData, GetConceptBulk } from "../app";
 import { CheckForConnectionDeletionWithIds } from "./CheckForConnectionDeletion";
 import { FindConnectionsOfCompositionsBulkInMemory } from "./FindConnectionsOfCompositionBulkInMemory";
-import { GetCompositionFromMemory, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryFromConnections } from "./GetComposition";
+import { GetCompositionFromMemory, GetCompositionWithIdFromMemory, GetCompositionWithIdFromMemoryFromConnections, GetCompositionWithIdFromMemoryFromConnectionsNew } from "./GetComposition";
 
 export async function GetCompositionBulk(ids:number[]=[]){
     await GetAllConnectionsOfCompositionBulk(ids);
@@ -99,11 +99,17 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(ids:number
     for(let i=0; i<allConnectionsRemaining.length; i++){
       allConnections.push(allConnectionsRemaining[i]);
     }
-    var compositions:any = {};
-    for(let i=0; i< ids.length;i++){
+    let compositions:any = {};
+    let compositionList:number[] = [];
+    for(var j=0; j<allConnections.length; j++){
+        if(!compositionList.includes(allConnections[j].ofTheConceptId)){
+            compositionList.push(allConnections[j].ofTheConceptId);
+        }
+    }
+    for(let i=0; i< compositionList.length;i++){
         //console.log("tHIS IS THE START", ids[i])
-        let comp = await GetCompositionWithIdFromMemoryFromConnections(ids[i], allConnections);
-        compositions[ids[i]] = comp;
+        let comp = await GetCompositionWithIdFromMemoryFromConnectionsNew(compositionList[i], allConnections, compositionList);
+        compositions[compositionList[i]] = comp;
     }
     return compositions;
 }

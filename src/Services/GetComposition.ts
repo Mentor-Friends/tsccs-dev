@@ -167,6 +167,28 @@ export async function GetCompositionWithIdFromMemoryFromConnections(id:number, c
     return FinalReturn;
 }
 
+
+export async function GetCompositionWithIdFromMemoryFromConnectionsNew(id:number, connectionList:Connection[], compositionList:number[] = []){
+   // var connectionList:Connection[] = [];
+    var returnOutput: any = {};
+    //connectionList = await ConnectionData.GetConnectionsOfCompositionLocal(id);
+
+    var concept = await ConceptsData.GetConcept(id);
+    if(concept.id == 0 && id != null && id != undefined){
+     var conceptString = await  GetConcept(id);
+     concept = conceptString as Concept;
+    }
+    var output = await recursiveFetch(id, connectionList, compositionList);
+    var mainString = concept?.type?.characterValue ?? "";
+    returnOutput[mainString] = output;
+    var FinalReturn: any = {};
+    FinalReturn['created_at'] = concept.entryTimeStamp;
+    FinalReturn['data'] = returnOutput;
+    FinalReturn['id'] = id;
+
+    return FinalReturn;
+}
+
 export async function GetCompositionWithId(id:number){
     var connectionList:Connection[] = [];
     var returnOutput: any = {};
