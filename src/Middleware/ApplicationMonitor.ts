@@ -79,7 +79,6 @@ export class ApplicationMonitor {
       
       console.error = function (...args) {
         if(args?.[0] == "Intercepted Fetch Error:") return;
-        debugger;
         const message = "Console Error";
         const sessionId = TokenStorage.sessionId || 'unknown';
   
@@ -297,11 +296,19 @@ export class ApplicationMonitor {
   // Log route changes (SPAs)
   static logRouteChanges() {
     const pushState = history.pushState;
+    setTimeout(()=>{
+      ApplicationMonitor.logOnWindowLoad();
+
+    }, 3000);
+    // setInterval(()=>{
+    //   ApplicationMonitor.logSample();
+
+    // }, 10000);
     history.pushState = function (...args) {
     const sessionId = TokenStorage.sessionId || 'unknown';
-
+     const newUrl = args[2] ? new URL(args[2], location.origin).href : location.href;
       const urlChange = {
-        url: args[2]?.toString(),
+        url: newUrl,
         requestFrom: BaseUrl.BASE_APPLICATION,
         sessionId: sessionId
       }
@@ -309,6 +316,16 @@ export class ApplicationMonitor {
       
       return pushState.apply(this, args);
     };
+
+    window?.addEventListener("beforeunload", () => {
+      const sessionId = TokenStorage.sessionId || 'unknown';
+      const urlChange = {
+        url: location.href,
+        requestFrom:BaseUrl.BASE_APPLICATION,
+        sessionId:sessionId
+      }
+      Logger.logApplication("ROUTE", "Unload", urlChange);
+    });
 
     window?.addEventListener("popstate", () => {
       const sessionId = TokenStorage.sessionId || 'unknown';
@@ -319,6 +336,29 @@ export class ApplicationMonitor {
       }
       Logger.logApplication("ROUTE", "Route Changed (Back/Forward)", urlChange)
     });
+  }
+
+
+  static logOnWindowLoad(){
+      const sessionId = TokenStorage.sessionId || 'unknown';
+      const urlChange:any = {
+        url: location.href,
+        requestFrom:BaseUrl.BASE_APPLICATION,
+        sessionId:sessionId
+      };
+      Logger.logApplication("ROUTE", "Initial Load", urlChange );
+
+  }
+
+  static logSample(){
+      const sessionId = TokenStorage.sessionId || 'unknown';
+      const urlChange:any = {
+        url: location.href,
+        requestFrom:BaseUrl.BASE_APPLICATION,
+        sessionId:sessionId
+      };
+      Logger.logApplication("ROUTE", "Sample", urlChange );
+
   }
 
   // Log WebSocket events

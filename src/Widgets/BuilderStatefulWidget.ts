@@ -23,6 +23,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   public widgetType: string = "the_element_name";
   parentConceptList: any = [];
   customFunctions: TCustomFunction[] = [];
+  widgetDependenciesData: string = '';
 
   async getUserId() {
     const profileData: any = await new Promise((resolve: any) => {
@@ -179,6 +180,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
       if (this.componentMounted == false || this.widgetMounted == false) {
         // Simulate componentDidMount by calling it after the component is inserted into the DOM
         this.render_custom_functions()
+        this.render_widgetDependencies()
         this.before_render();
         this.mount_child();
         this.widgetMounted = true;
@@ -188,6 +190,21 @@ export class BuilderStatefulWidget extends StatefulWidget {
         this.render();
       }
       this.childWidgetElement = this.getElementByClassName("added-widget-container")
+    }
+  }
+
+  render_widgetDependencies() {
+    try{
+      const dynamicAsyncFunction = new Function("tsccs",`
+        return (async function() {
+          ${this.widgetDependenciesData}
+        }).call(this);
+      `).bind(this);
+      dynamicAsyncFunction(tsccs);
+    }
+    catch(error){
+      console.log("This is the error in the before render", error);
+      throw error;
     }
   }
 

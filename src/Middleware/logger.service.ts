@@ -303,7 +303,6 @@ export class Logger {
             let i = 0;
             while(storedLogs.length != 0)
             { 
-                debugger;               
                 // console.log(`${i}` , " = Current length of the storedLogs  : ", storedLogs.length);
 
                 const chunk = storedLogs.slice(0, chunkSize);
