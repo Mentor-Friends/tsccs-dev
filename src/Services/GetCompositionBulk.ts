@@ -106,10 +106,10 @@ export async function GetCompositionFromConnectionsWithDataIdInObject(ids:number
             compositionList.push(allConnections[j].ofTheConceptId);
         }
     }
-    for(let i=0; i< compositionList.length;i++){
+    for(let i=0; i< ids.length;i++){
         //console.log("tHIS IS THE START", ids[i])
-        let comp = await GetCompositionWithIdFromMemoryFromConnectionsNew(compositionList[i], allConnections, compositionList);
-        compositions[compositionList[i]] = comp;
+        let comp = await GetCompositionWithIdFromMemoryFromConnectionsNew(ids[i], allConnections, compositionList);
+        compositions[ids[i]] = comp;
     }
     return compositions;
 }
