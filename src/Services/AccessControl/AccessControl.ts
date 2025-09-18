@@ -9,81 +9,77 @@ import { BaseUrl } from "../../app";
 export class AccessControlService {
   /**
    * Assigns access to a specific entity for a concept.
+   * @param request - AddAccessByEntityRequest
    */
   static async assignAccessToEntity(request: {
     conceptId: number;
     access: string;
     entityId: number;
     makePublic: boolean;
+    nestedAccessLevel?: number;
   }): Promise<any> {
     return this._post('/api/access-control/access', request, 'Failed to assign access to entity');
   }
 
   /**
-   * Assigns public access to a concept.
+   * Assigns public access to a concept or list of concepts.
+   * @param request - AddPublicAccessToConcept
    */
   static async assignPublicAccess(request: {
     conceptId: number;
-    accessList: string[];
-    connectionTypeList?: string[];
-    nestedAccessLevel?: number;
     conceptIdList?: number[];
+    accessList: string[];
+    nestedAccessLevel?: number;
   }): Promise<any> {
-    return this._post(
-      '/api/access-control/public-access',
-      {
-        ...request,
-        nestedAccessLevel: request.nestedAccessLevel ?? 0,
-        conceptIdList: request.conceptIdList ?? [],
-      },
-      'Failed to assign public access'
-    );
+    return this._post('/api/access-control/public-access', {
+      ...request,
+      conceptIdList: request.conceptIdList ?? [],
+      accessList: request.accessList ?? [],
+      nestedAccessLevel: request.nestedAccessLevel ?? 0,
+    }, 'Failed to assign public access');
   }
 
   /**
    * Assigns public access to multiple concepts in bulk.
+   * @param request - AddPublicAccessToConcept
    */
   static async assignPublicAccessBlukConcept(request: {
-    conceptIdList: number[];
+    conceptId: number;
+    conceptIdList?: number[];
     accessList: string[];
-    connectionTypeList?: string[];
     nestedAccessLevel?: number;
-    conceptId?: number;
   }): Promise<any> {
-    return this._post(
-      '/api/access-control/public-access',
-      {
-        ...request,
-        nestedAccessLevel: request.nestedAccessLevel ?? 0,
-        conceptId: request.conceptId ?? 0,
-      },
-      'Failed to assign public access'
-    );
+    return this._post('/api/access-control/public-access', {
+      ...request,
+      conceptIdList: request.conceptIdList ?? [],
+      accessList: request.accessList ?? [],
+      nestedAccessLevel: request.nestedAccessLevel ?? 0,
+    }, 'Failed to assign public access');
   }
 
   /**
    * Assigns access to multiple entities and concepts in bulk.
+   * @param request - AddAccessByEntityBulkRequest
    */
   static async assignAccessToEntityBulk(request: {
     conceptId: number;
-    conceptIdList: number[];
-    entityIdList: number[];
-    accessList: string[];
-    connectionTypeList?: string[];
+    conceptIdList?: number[];
+    entityIdList?: number[];
+    accessList?: string[];
     nestedAccessLevel?: number;
   }): Promise<any> {
-    return this._post(
-      '/api/access-control/access/bulk',
-      {
-        ...request,
-        nestedAccessLevel: request.nestedAccessLevel ?? 0,
-      },
-      'Failed to assign access in bulk'
-    );
+    return this._post('/api/access-control/access/bulk', {
+      ...request,
+      conceptIdList: request.conceptIdList ?? [],
+      entityIdList: request.entityIdList ?? [],
+      accessList: request.accessList ?? [],
+      nestedAccessLevel: request.nestedAccessLevel ?? 0,
+    }, 'Failed to assign access in bulk');
   }
 
   /**
    * Assigns access to a user for a concept.
+   * @param request - AddAccessByUserRequest
    */
   static async assignAccessByUser(request: {
     conceptId: number;
@@ -96,6 +92,7 @@ export class AccessControlService {
 
   /**
    * Revokes access for an entity from a concept.
+   * @param params - conceptId, access, entityId
    */
   static async revokeAccess(params: {
     conceptId: number;
@@ -109,13 +106,22 @@ export class AccessControlService {
 
   /**
    * Revokes access for multiple entities in bulk.
+   * @param request - AddAccessByEntityBulkRequest
    */
   static async revokeAccessBulk(request: {
     conceptId: number;
-    entityIdList: number[];
-    accessList: string[];
+    conceptIdList?: number[];
+    entityIdList?: number[];
+    accessList?: string[];
+    nestedAccessLevel?: number;
   }): Promise<any> {
-    return this._delete('/api/access-control/access/bulk', request, 'Failed to revoke access in bulk');
+    return this._delete('/api/access-control/access/bulk', {
+      ...request,
+      conceptIdList: request.conceptIdList ?? [],
+      entityIdList: request.entityIdList ?? [],
+      accessList: request.accessList ?? [],
+      nestedAccessLevel: request.nestedAccessLevel ?? 0,
+    }, 'Failed to revoke access in bulk');
   }
 
   /**
@@ -135,12 +141,20 @@ export class AccessControlService {
 
   /**
    * Revokes public access for a concept.
+   * @param request - AddPublicAccessToConcept
    */
   static async revokePublicAccess(request: {
     conceptId: number;
+    conceptIdList?: number[];
     accessList: string[];
+    nestedAccessLevel?: number;
   }): Promise<any> {
-    return this._delete('/api/access-control/public-access', request, 'Failed to revoke public access');
+    return this._delete('/api/access-control/public-access', {
+      ...request,
+      conceptIdList: request.conceptIdList ?? [],
+      accessList: request.accessList ?? [],
+      nestedAccessLevel: request.nestedAccessLevel ?? 0,
+    }, 'Failed to revoke public access');
   }
 
   /**
@@ -157,34 +171,39 @@ export class AccessControlService {
 
   /**
    * Checks if a user has a specific access for a concept.
+   * @param request - AddAccessByUserRequest
    */
   static async checkAccessByUser(request: {
     conceptId: number;
     access: string;
     userId: number;
+    makePublic?: boolean;
   }): Promise<any> {
     return this._post('/api/access-control/user-access/check', request, 'Failed to check access by user');
   }
 
   /**
    * Filters concepts by access for a user.
+   * @param request - CheckAccessBulk
    */
   static async filterConceptsByAccess(request: {
-    userId: number;
-    access: string;
     conceptIdList?: number[];
     connectionIdList?: number[];
+    access: string;
+    userId: number;
   }): Promise<any> {
     return this._post('/api/access-control/concepts/filter-by-access', request, 'Failed to filter concepts by access');
   }
 
   /**
    * Checks access for a user on multiple concepts in bulk.
+   * @param request - CheckAccessBulk
    */
   static async checkAccessOfConceptBulk(request: {
-    userId: number;
+    conceptIdList?: number[];
+    connectionIdList?: number[];
     access: string;
-    conceptIdList: number[];
+    userId: number;
   }): Promise<any> {
     return this._post('/api/access-control/concepts/check-access-bulk', request, 'Failed to check access of concept bulk');
   }
@@ -251,17 +270,19 @@ export class AccessControlService {
 
   /**
    * Sets access inheritance for a concept.
+   * @param request - AccessInheritanceRequest
    */
   static async setAccessInheritance(request: {
     mainConceptId: number;
+    connectionTypeId: number;
     enable: boolean;
-    connectionTypeId?: number;
   }): Promise<any> {
     return this._post('/api/access-control/access-inheritance', request, 'Failed to set access inheritance');
   }
 
   /**
    * Sets access inheritance for multiple concepts in bulk.
+   * @param request - BulkAccessInheritanceRequest
    */
   static async setAccessInheritanceBulk(request: {
     items: Array<{
@@ -279,6 +300,47 @@ export class AccessControlService {
   static async getAccessInheritanceStatus(mainConceptId: number, connectionTypeId: number = 999): Promise<any> {
     const url = `/api/access-control/access-inheritance/status?mainConceptId=${mainConceptId}&connectionTypeId=${connectionTypeId}`;
     return this._get(url, 'Failed to get access inheritance status');
+  }
+
+  /**
+   * Gets the access matrix for a given access ID.
+   */
+  static async getAccessMatrix(accessId: number): Promise<any> {
+    const url = `/api/access-control/access-matrix?AccessId=${accessId}`;
+    return this._get(url, 'Failed to get access matrix');
+  }
+
+  /**
+   * Assigns super admin access.
+   * @param request - SuperAdminRequest
+   */
+  static async assignSuperAdminAccess(request: {
+    entityConceptId: number;
+  }): Promise<any> {
+    return this._post('/api/access-control/super-admin-access', request, 'Failed to assign super admin access');
+  }
+
+  /**
+   * Revokes super admin access.
+   * @param request - SuperAdminRequest
+   */
+  static async revokeSuperAdminAccess(request: {
+    entityConceptId: number;
+  }): Promise<any> {
+    return this._delete('/api/access-control/super-admin-access', request, 'Failed to revoke super admin access');
+  }
+
+  /**
+   * Gets super admin access info for an entity concept.
+   */
+  static async getSuperAdminAccess(entityConceptId: number): Promise<any> {
+    const url = `/api/access-control/super-admin-access?entityConceptId=${entityConceptId}`;
+    return this._get(url, 'Failed to get super admin access');
+  }
+
+  static async isSuperAdmin(entityConceptId: number): Promise<any> {
+    const superAdminInfo = await this.getSuperAdminAccess(entityConceptId);
+    return superAdminInfo?.data ?? false;
   }
 
   // --- Private helper methods ---
@@ -313,3 +375,5 @@ export class AccessControlService {
     return response.json();
   }
 }
+
+export default AccessControlService;
