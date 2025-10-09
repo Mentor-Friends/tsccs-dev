@@ -9,7 +9,7 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
   const logData : any = Logger.logfunction("GetLocalConceptByCharacterValue", arguments);
   let result = CreateDefaultLConcept();
     try{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            var header = GetRequestHeader('application/json');
 
             const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',
