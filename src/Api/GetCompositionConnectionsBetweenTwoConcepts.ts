@@ -41,6 +41,7 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
       BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl(),
       {
         method: "POST",
+        headers: GetRequestHeader(),
         body: formdata,
         redirect: "follow",
       }

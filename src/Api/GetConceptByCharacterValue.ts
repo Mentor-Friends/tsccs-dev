@@ -14,6 +14,7 @@ export async function GetConceptByCharacterValue(characterValue: string){
             formdata.append("character_value", characterValue);
             const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',
+              headers: GetRequestHeader(),
               body: formdata
           });
           if(response.ok){
