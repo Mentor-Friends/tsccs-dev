@@ -32,10 +32,9 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
   var connectionList: Connection[] = [];
 
   try{
-      const headers = GetRequestHeader('application/json');
-      // const myHeaders = new Headers();
       const formdata = new FormData();
       formdata.append("composition_id", composition_id.toString());
+      const headers = await GetRequestHeader('','application/json');
       const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
         headers: headers,

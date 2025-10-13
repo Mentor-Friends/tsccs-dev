@@ -2,7 +2,7 @@ import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { getUserDetails } from "../User/UserFromLocalStorage";
 
 export function GetRequestHeader(
-    contentType: string = 'application/json', 
+    contentType: string | null = 'application/json', 
     accept: string = 'application/json'
 ) {
     const headers: Record<string, string> = {};
