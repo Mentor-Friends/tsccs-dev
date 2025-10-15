@@ -37,11 +37,12 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
     formdata.append("ofConceptId", ofConceptId.toString());
     formdata.append("mainKey", mainKey.toString());
     formdata.append("toConceptId", toConcept.toString());
+    const headers = await GetRequestHeader("",'application/json');
     const response = await fetch(
       BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl(),
       {
         method: "POST",
-        headers: GetRequestHeader(),
+        headers: headers,
         body: formdata,
         redirect: "follow",
       }

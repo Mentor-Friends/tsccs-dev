@@ -10,11 +10,12 @@ export async function GetConceptByCharacterValue(characterValue: string){
   const logData : any = Logger.logfunction("GetConceptByCharacterValue", arguments);
   let result:Concept = CreateDefaultConcept();
     try{
+            const headers = GetRequestHeader('','application/json');
             const formdata = new FormData();
             formdata.append("character_value", characterValue);
             const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',
-              headers: GetRequestHeader(),
+              headers: headers,
               body: formdata
           });
           if(response.ok){
