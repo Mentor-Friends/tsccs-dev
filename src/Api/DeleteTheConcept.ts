@@ -12,9 +12,10 @@ export default async function DeleteTheConcept(id:number, token:string =""){
           }
            const formdata = new FormData();
            formdata.append("id", id.toString());
+           formdata.append("apiKey", "nodeserver");
             const response = await fetch(BaseUrl.DeleteConceptUrl(),{
                 method: 'POST',
-               // headers: myHeaders,
+                //headers: myHeaders,
                 body: formdata
             });
             if(!response.ok){
@@ -23,6 +24,7 @@ export default async function DeleteTheConcept(id:number, token:string =""){
             }
             else{
               const result = await response.json()
+
               isDeleted = result.success;
             }
 
