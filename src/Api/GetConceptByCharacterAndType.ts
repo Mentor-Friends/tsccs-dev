@@ -4,6 +4,7 @@ import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
+import { GetConceptBulk } from "./GetConceptBulk";
 
 const conceptCache = new Map<string, Promise<Concept>>();
 
@@ -56,4 +57,26 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
   })()
   conceptCache.set(key, GetConceptByCharacterAndType);
   return GetConceptByCharacterAndType;
+}
+
+
+export async function GetConceptByTypeBulk(connectionTypes:string[]): Promise<Concept[]>{
+        let conceptList:Concept[] = [];
+        let types = JSON.stringify(connectionTypes);
+          var header = GetRequestHeader();
+          const response = await fetch(BaseUrl.GetConceptConnectionByType(),{
+              method: 'POST',
+              headers: header,
+              body: types,
+          });
+          if(response.ok){
+            let conceptIdsList = await response.json() ;
+            conceptList = await GetConceptBulk(conceptIdsList);
+          }
+          else{
+          //  throw new Error(`Error! status: ${response.status}`);
+            console.log("This is the concept by type and character error", response.status);
+            HandleHttpError(response);
+          }
+    return conceptList;
 }
