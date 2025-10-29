@@ -242,7 +242,7 @@ export class Logger {
             };
 
             this.applicationLogsData.push(logEntry);
-            if(level == "ROUTE"){
+            if(level == "ROUTE" || level == "USER_EVENT"){
                 this.sendPackageLogsToServer(); 
                 this.sendApplicationLogsToServer();
             }
