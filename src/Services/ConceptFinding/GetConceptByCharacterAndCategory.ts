@@ -1,5 +1,6 @@
 import { GetConceptByCharacterValue } from "../../Api/GetConceptByCharacterValue";
 import { GetConceptByCharacterAndCategoryDirectApi } from "../../Api/SearchConcept/GetConceptByCharacterAndCategoryDirect";
+import { GetTypeConceptByBulk } from "../../Api/SearchConcept/GetTypeConceptByBulk";
 import { Concept, ConceptsData, CreateDefaultConcept, Logger, SplitStrings } from "../../app";
 
 export async function GetConceptByCharacterAndCategory(character: string){
@@ -26,6 +27,17 @@ export async function GetConceptByCharacterAndCategory(character: string){
     }
     Logger.logUpdate(logData);
     return concept;
+}
+
+export async function GetTypeConceptsByCharacterAndCategoryBulk(typeConcepts: string[]){
+    let concepts:Concept[] = [];
+    try{
+        concepts =  await GetTypeConceptByBulk(typeConcepts);
+    }
+    catch(error){
+        console.log(' This is the GetTypeConceptsByCharacterAndCategoryBulk error message: ',error);
+    }
+    return concepts;
 }
 
 export  async function GetConceptByCharacter(characterValue: string){

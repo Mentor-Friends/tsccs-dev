@@ -147,7 +147,7 @@ export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
 export {getUserDetails} from './Services/User/UserFromLocalStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
-
+export {LogEvent} from './Services/Logs/LogEvent';
 export {Selector} from './Api/Prototype/Selector';
 
 export {importLatestWidget, renderImportedWidget, renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';

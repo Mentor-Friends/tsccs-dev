@@ -5,7 +5,7 @@ import { GetConceptByCharacterAndCategoryApi } from "../Api/SearchConcept/GetCon
 import { Concept, Connection, ConnectionData, DeleteConnectionById, GetConceptByCharacter, handleServiceWorkerException, Logger, MakeTheTypeConceptApi, sendMessage, serviceWorker } from "../app";
 import { GetConnectionsByTypes } from "../DataStructures/ConnectionByType/GetConnectionByType";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
-import { GetConceptByCharacterAndCategory, GetConceptByCharacterAndCategoryFromMemory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
+import { GetConceptByCharacterAndCategory, GetConceptByCharacterAndCategoryFromMemory, GetTypeConceptsByCharacterAndCategoryBulk } from "./ConceptFinding/GetConceptByCharacterAndCategory";
 import { DeleteConnectionByIdBulk } from "./DeleteConnection";
 
 /**
@@ -70,12 +70,12 @@ export async function DeleteConnectionByTypeBulk(id: number, linkers: string[]){
     }
     let connections = await ConnectionData.GetConnectionsOfConcept(id);
     let categoryConcepts :Concept[] = [];
-    for(let i=0; i<linkers.length; i++){
-        let linker = linkers[i];
-        let categoryConcept  = await GetConceptByCharacterAndCategory(linker);
-        categoryConcepts.push(categoryConcept);
-
-    }
+    // for(let i=0; i<linkers.length; i++){
+    //     let linker = linkers[i];
+    //     let categoryConcept  = await GetConceptByCharacterAndCategory(linker);
+    //     categoryConcepts.push(categoryConcept);
+    // }
+    categoryConcepts = await GetTypeConceptsByCharacterAndCategoryBulk(linkers);
     let toDelete: number[] = [];
     console.log("this is all the connections for deleting taken",connections, categoryConcepts, linkers);
     for(let i=0; i<connections.length; i++){

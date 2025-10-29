@@ -8,7 +8,7 @@ module.exports = env => ({
    },
    //mode: 'development',
    mode: 'production',  // Set to 'production' for production
-   //devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
+  // devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
    devtool: false,
    watch: true,
    output: {
