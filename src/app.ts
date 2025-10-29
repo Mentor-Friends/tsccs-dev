@@ -63,6 +63,9 @@ export {GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
 export {GetConceptByCharacterAndCategoryDirectApi} from './Api/SearchConcept/GetConceptByCharacterAndCategoryDirect';
 export {SearchLinkMultipleApi} from './Api/Search/SearchLinkMultipleApi';
 export {GetCompositionWithIdFromMemoryFromConnections, GetCompositionWithIdFromMemory} from './Services/GetComposition';
+export {GetConceptByTypeBulk} from './Api/GetConceptByCharacterAndType';
+export {DeleteConnectionByTypeBulk,GetConnectionByTypeBulk} from './Services/Delete/DeleteConnectionByType';
+
 export {SyncData} from './DataStructures/SyncData';
 export {Concept} from './DataStructures/Concept';
 export {LConcept} from './DataStructures/Local/LConcept';

@@ -206,10 +206,23 @@ export class BaseUrl{
         return this.BASE_URL + '/api/delete_connection';
     }
 
+    static DeleteTheConnectionBulkUrl(){
+        return this.BASE_URL + '/api/delete_connection_bulk';
+    }
+
+
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR FREESCHEMA QUERY //////////////////////
     static FreeschemaQueryUrl(){
         return this.BASE_URL + '/api/freeschema-query';
+    }
+
+
+    ////////////////////////////////////////////////////////////////////
+    //////////////////////API FOR TYPE BULK ///////////////////////////
+
+    static GetConceptConnectionByType(){
+        return this.BASE_URL + '/api/get_type_concept_by_character_bulk';
     }
 
 
