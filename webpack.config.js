@@ -6,6 +6,7 @@ module.exports = env => ({
    mode: 'production',
    //devtool: 'inline-source-map',
    // devtool: false,
+   target: "node",
    watch: true,
    output: {
       filename: 'bundle.js',
