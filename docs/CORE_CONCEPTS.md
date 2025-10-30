@@ -1,6 +1,6 @@
 # Core Concepts
 
-This document provides an in-depth explanation of the fundamental building blocks of **mftsccs-browser**: Concepts, Connections, Compositions, and Transactions.
+This document provides an in-depth explanation of the fundamental building blocks of **mftsccs-browser**: Concepts, Connections, Compositions, Transactions, and Querying.
 
 ## Table of Contents
 
@@ -20,6 +20,18 @@ This document provides an in-depth explanation of the fundamental building block
   - [Composition Structure](#composition-structure)
   - [Composition Caching](#composition-caching)
   - [Working with Compositions](#working-with-compositions)
+- [FreeschemaQuery](#freeschemaquery)
+  - [What is FreeschemaQuery?](#what-is-freeschemaquery)
+  - [Basic Query Structure](#basic-query-structure)
+  - [Query Examples](#query-examples)
+- [Widget System](#widget-system)
+  - [What is the Widget System?](#what-is-the-widget-system)
+  - [Widget Hierarchy](#widget-hierarchy)
+  - [Basic Widget Example](#basic-widget-example)
+  - [Widget with FreeschemaQuery](#widget-with-freeschemaquery)
+  - [Widget Lifecycle](#widget-lifecycle)
+  - [BuilderStatefulWidget](#builderstatefulwidget)
+  - [Dynamic Page Rendering](#dynamic-page-rendering)
 - [The Knowledge Graph Model](#the-knowledge-graph-model)
 - [Local vs Server Concepts](#local-vs-server-concepts)
   - [Understanding the Virtual ID System](#understanding-the-virtual-id-system)
@@ -44,14 +56,16 @@ This document provides an in-depth explanation of the fundamental building block
 
 ## Introduction
 
-The **mftsccs-browser** package implements a knowledge graph data model consisting of four primary elements:
+The **mftsccs-browser** package implements a knowledge graph data model consisting of six primary elements:
 
 1. **Concepts** - The nodes (entities)
 2. **Connections** - The edges (relationships)
 3. **Compositions** - Structured groupings of concepts and connections
 4. **Transactions** - ACID-compliant atomic operations for data integrity
+5. **FreeschemaQuery** - Flexible querying system for retrieving data
+6. **Widget System** - React-like UI component framework for building interactive interfaces
 
-Together, these elements allow you to build complex, interconnected data structures that can represent virtually any domain - from social networks to organizational hierarchies to semantic knowledge bases.
+Together, these elements allow you to build complex, interconnected data structures that can represent virtually any domain - from social networks to organizational hierarchies to semantic knowledge bases - with a complete UI layer for user interaction.
 
 ### Why Transactions are Essential
 
@@ -605,9 +619,371 @@ compositions.forEach(comp => {
 });
 ```
 
+## FreeschemaQuery
+
+### What is FreeschemaQuery?
+
+**FreeschemaQuery** is the primary querying mechanism in mftsccs-browser that enables flexible, schema-free data retrieval from your knowledge graph. It provides a declarative way to query data without writing SQL or complex query languages.
+
+**Key Features:**
+- 🔍 **Schema-Free**: Query without rigid schema constraints
+- 🎯 **Declarative**: Describe what you want, not how to get it
+- 🔗 **Relationship-Aware**: Navigate connections between concepts naturally
+- 📊 **Multiple Formats**: Get data in formats suited to your use case
+- 🔄 **Reactive**: Observable pattern for real-time updates
+- 🚀 **Performance**: Optimized for complex graph queries
+
+### Basic Query Structure
+
+```javascript
+import { FreeschemaQuery, FreeschemaQueryApi, DATAID } from 'mftsccs-browser';
+
+// Create a query
+const query = new FreeschemaQuery();
+query.type = "person";           // Query concepts of type "person"
+query.outputFormat = DATAID;     // Structured output format
+query.inpage = 20;               // Results per page
+query.page = 1;                  // Current page
+query.order = "DESC";            // Sort order (newest first)
+
+// Execute the query
+const results = await FreeschemaQueryApi(query, authToken);
+```
+
+### Query Examples
+
+#### Simple Type Query
+
+Find all concepts of a specific type:
+
+```javascript
+const query = new FreeschemaQuery();
+query.type = "organization";
+query.inpage = 10;
+
+const organizations = await FreeschemaQueryApi(query, "");
+console.log('Found organizations:', organizations);
+```
+
+#### Query with Filters
+
+Apply filters to narrow down results:
+
+```javascript
+import { FilterSearch } from 'mftsccs-browser';
+
+const query = new FreeschemaQuery();
+query.type = "employee";
+
+// Create filter for department
+const deptFilter = new FilterSearch();
+deptFilter.name = "dept_filter";
+deptFilter.type = "the_department";
+deptFilter.search = "Engineering";
+deptFilter.logicoperator = "=";       // Exact match
+
+query.filters = [deptFilter];
+query.filterLogic = "( dept_filter )";
+
+const engineers = await FreeschemaQueryApi(query, "");
+```
+
+#### Query with Nested Relationships
+
+Navigate relationships using nested queries:
+
+```javascript
+const query = new FreeschemaQuery();
+query.type = "person";
+query.selectors = ["the_name", "the_title"];
+
+// Nested query to get email addresses
+const emailQuery = new FreeschemaQuery();
+emailQuery.typeConnection = "has_email";    // Navigate this connection
+emailQuery.name = "email";                  // Identifier for results
+emailQuery.selectors = ["the_email"];       // Properties to include
+
+// Nested query to get phone numbers
+const phoneQuery = new FreeschemaQuery();
+phoneQuery.typeConnection = "has_phone";
+phoneQuery.name = "phone";
+phoneQuery.selectors = ["the_phone"];
+
+query.freeschemaQueries = [emailQuery, phoneQuery];
+
+const personsWithContacts = await FreeschemaQueryApi(query, "");
+// Results include persons with their emails and phones nested
+```
+
+#### Complex Filter Logic
+
+Combine multiple filters with AND/OR logic:
+
+```javascript
+const query = new FreeschemaQuery();
+query.type = "employee";
+
+const seniorFilter = new FilterSearch();
+seniorFilter.name = "senior_filter";
+seniorFilter.type = "the_level";
+seniorFilter.search = "Senior";
+seniorFilter.logicoperator = "=";
+
+const managerFilter = new FilterSearch();
+managerFilter.name = "manager_filter";
+managerFilter.type = "the_role";
+managerFilter.search = "Manager";
+managerFilter.logicoperator = "=";
+
+const deptFilter = new FilterSearch();
+deptFilter.name = "dept_filter";
+deptFilter.type = "the_department";
+deptFilter.search = "Engineering";
+deptFilter.logicoperator = "=";
+
+query.filters = [seniorFilter, managerFilter, deptFilter];
+// Find Engineering employees who are EITHER Senior OR Manager
+query.filterLogic = "( dept_filter AND ( senior_filter OR manager_filter ) )";
+
+const results = await FreeschemaQueryApi(query, "");
+```
+
+#### Observable Pattern for Real-Time Updates
+
+Use observables to automatically update when data changes:
+
+```javascript
+import { SchemaQueryListener } from 'mftsccs-browser';
+
+const query = new FreeschemaQuery();
+query.type = "BlogPost";
+query.outputFormat = DATAID;
+query.inpage = 10;
+
+// Create observable that watches for changes
+const observer = SchemaQueryListener(query, authToken);
+
+// Subscribe to updates
+observer.subscribe((results, details) => {
+  console.log('Blog posts:', results);
+  console.log('Total count:', details.totalCount);
+
+  // Update UI automatically
+  renderBlogPosts(results);
+});
+
+// Observer automatically detects when:
+// - New BlogPost concepts are created
+// - Existing BlogPost concepts are modified
+// - BlogPost concepts are deleted
+```
+
+**For comprehensive FreeschemaQuery documentation**, see the [FreeschemaQuery Guide](./FREESCHEMA_QUERY.md) which includes:
+- Complete parameter reference
+- Filter operators (=, !=, like, >, <, >=, <=)
+- Deep nested queries
+- Output format comparison
+- Pagination examples
+- Best practices
+- Real-world use cases
+
+## Widget System
+
+### What is the Widget System?
+
+The **Widget System** provides a React-like component framework for building interactive user interfaces that integrate seamlessly with the concept-connection system.
+
+**Key Features:**
+- 🎨 **Component-Based**: Reusable, encapsulated UI components
+- 🔄 **Lifecycle Hooks**: before_render, render, after_render
+- 💾 **State Management**: Built-in state tracking with change detection
+- 🏗️ **Parent-Child Composition**: Hierarchical widget trees
+- 🔗 **Concept Integration**: Widgets connect directly to knowledge graph
+- ⚡ **Performance**: Efficient rendering with caching
+
+### Widget Hierarchy
+
+```
+BaseObserver (reactive pattern)
+  └── BaseWidget (DOM management)
+        └── StatefulWidget (lifecycle + state)
+              └── BuilderStatefulWidget (dynamic code execution)
+```
+
+### Basic Widget Example
+
+```javascript
+import { StatefulWidget } from 'mftsccs-browser';
+
+class TodoWidget extends StatefulWidget {
+  constructor() {
+    super();
+    this.state = { todos: [], input: '' };
+  }
+
+  // Lifecycle: Setup
+  before_render() {
+    // Load initial data, setup subscriptions
+    this.loadTodos();
+  }
+
+  // Template
+  getHtml() {
+    const todoList = this.state.todos.map(todo => `
+      <li>${todo.text}</li>
+    `).join('');
+
+    return `
+      <div>
+        <input id="todo-input" value="${this.state.input}" />
+        <button id="add-btn">Add</button>
+        <ul>${todoList}</ul>
+      </div>
+    `;
+  }
+
+  // Lifecycle: Event binding
+  after_render() {
+    const input = this.getElementById('todo-input');
+    const button = this.getElementById('add-btn');
+
+    button?.addEventListener('click', () => {
+      this.state.todos.push({ text: input.value });
+      this.state.input = '';
+      this.render(); // Update UI
+    });
+  }
+}
+
+// Usage
+const widget = new TodoWidget();
+widget.mount(document.getElementById('app'));
+```
+
+### Widget with FreeschemaQuery
+
+Combine widgets with queries for data-driven UIs:
+
+```javascript
+import { StatefulWidget, FreeschemaQuery, SchemaQueryListener, DATAID } from 'mftsccs-browser';
+
+class PersonListWidget extends StatefulWidget {
+  constructor() {
+    super();
+    this.state = { persons: [] };
+  }
+
+  before_render() {
+    const query = new FreeschemaQuery();
+    query.type = "person";
+    query.outputFormat = DATAID;
+    query.selectors = ["the_name", "the_email"];
+
+    // Real-time updates
+    SchemaQueryListener(query, "").subscribe((results) => {
+      this.state.persons = results;
+      this.render(); // Auto-update when data changes
+    });
+  }
+
+  getHtml() {
+    const personList = this.state.persons.map(p => `
+      <div class="person">
+        ${p.person.the_name.characterValue}
+      </div>
+    `).join('');
+
+    return `<div>${personList}</div>`;
+  }
+}
+```
+
+### Widget Lifecycle
+
+```
+1. Constructor → Create instance
+2. mount() → Attach to DOM
+3. before_render() → Setup (like componentDidMount)
+4. render() → Update DOM
+5. after_render() → Add event listeners
+6. State changes → render() → after_render()
+7. unmount() → Cleanup
+```
+
+### BuilderStatefulWidget
+
+Advanced widget with dynamic code execution:
+
+```javascript
+import { BuilderStatefulWidget } from 'mftsccs-browser';
+
+const widget = new BuilderStatefulWidget();
+
+// Dynamic functions executed in widget context
+widget.customFunctions = [
+  {
+    code: `
+      this.handleSubmit = async function(data) {
+        const transaction = new tsccs.LocalTransaction();
+        await transaction.initialize();
+
+        try {
+          const person = await transaction.MakeTheInstanceConceptLocal(
+            'the_person', data.name, false, 999, 4, 999
+          );
+          await transaction.commitTransaction();
+          this.state.success = true;
+          this.render();
+        } catch (error) {
+          await transaction.rollbackTransaction();
+        }
+      };
+    `
+  }
+];
+
+widget.html = `
+  <form onsubmit="this.handleSubmit(event)">
+    <input name="name" required />
+    <button type="submit">Submit</button>
+  </form>
+`;
+
+await widget.mount(parentElement);
+```
+
+### Dynamic Page Rendering
+
+Render complete pages with widgets:
+
+```javascript
+import { renderPage } from 'mftsccs-browser';
+
+// Render page stored as concept
+async function showDashboard() {
+  const pageId = 12345;
+  const container = document.getElementById('app');
+
+  // Loads page + all widgets, applies properties (title, meta tags, styles)
+  await renderPage(pageId, container, {
+    userId: 101
+  }, true); // showDocumentation
+}
+```
+
+**For comprehensive Widget System documentation**, see the [Widget System Guide](./WIDGET_SYSTEM.md) which includes:
+- Complete lifecycle explanation
+- State management patterns
+- Parent-child communication
+- Event handling
+- Observable integration
+- BuilderStatefulWidget features
+- Complete examples (Todo list, Dashboard, Forms)
+- Best practices
+
 ## The Knowledge Graph Model
 
-The combination of Concepts, Connections, and Compositions forms a powerful knowledge graph model.
+The combination of Concepts, Connections, Compositions, Queries, and Widgets forms a powerful knowledge graph model with UI capabilities.
 
 ### Example: Organization Structure
 
