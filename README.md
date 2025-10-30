@@ -70,7 +70,7 @@ yarn add mftsccs-browser
 ### Basic Usage
 
 ```javascript
-import { init, CreateTheConcept, GetTheConcept } from 'mftsccs-browser';
+import { init, MakeTheInstanceConceptLocal, GetTheConceptLocal } from 'mftsccs-browser';
 
 // Initialize the package
 await init({
@@ -79,13 +79,49 @@ await init({
   secureCoreModePath: false
 });
 
-// Create a concept
-const newConcept = await CreateTheConcept('My First Concept', 1, 1);
+// Create a concept (recommended: local-first with transactions)
+const newConcept = await MakeTheInstanceConceptLocal(
+  'the_name',           // Type (always use "the_" prefix)
+  'My First Concept',   // Value/referent
+  false,                // composition mode (false = get-or-create)
+  userId,               // User ID
+  accessId,             // Access ID
+  sessionId             // Session ID
+);
 console.log('Created:', newConcept);
 
 // Retrieve a concept
-const concept = await GetTheConcept(newConcept.id);
+const concept = await GetTheConceptLocal(newConcept.id);
 console.log('Retrieved:', concept);
+```
+
+### Using Transactions (Recommended)
+
+For multiple operations, use the `InnerActions` parameter for transactional behavior:
+
+```javascript
+import { MakeTheInstanceConceptLocal, CreateTheConnectionLocal, LocalSyncData } from 'mftsccs-browser';
+
+// Initialize actions tracker for transaction
+const actions = { concepts: [], connections: [] };
+
+// Create multiple concepts in a transaction
+const person = await MakeTheInstanceConceptLocal(
+  'the_person', 'Alice', false, userId, accessId, sessionId, undefined, actions
+);
+
+const email = await MakeTheInstanceConceptLocal(
+  'the_email', 'alice@example.com', false, userId, accessId, sessionId, undefined, actions
+);
+
+// Create connection in the same transaction
+await CreateTheConnectionLocal(
+  person.id, email.id, emailTypeId, 2, undefined, undefined, actions
+);
+
+// Sync all changes to server in one batch
+await LocalSyncData.SyncDataOnline(undefined, actions);
+console.log('All changes synced:', actions.concepts.length, 'concepts,', actions.connections.length, 'connections');
 ```
 
 ### With Service Worker (Recommended for Production)
@@ -109,10 +145,12 @@ const concepts = await sendMessage('getConcept', { id: 123 });
 
 ### 1. Concept
 A **Concept** represents an entity or node in your knowledge graph. Each concept has:
-- A unique `id`
+- A unique `id` (positive for server-synced, negative for local/virtual)
 - A `characterValue` (text representation)
 - `typeId` and `categoryId` for classification
 - Relationships to other concepts via connections
+
+**Best Practice**: Use `MakeTheInstanceConceptLocal()` to create concepts with the get-or-create pattern and transaction support. Always use the `"the_"` prefix for type parameters (e.g., `"the_name"`, `"the_email"`).
 
 ### 2. Connection
 A **Connection** represents a directed relationship between two concepts:
@@ -175,34 +213,84 @@ All code is fully documented with concise JSDoc comments:
 
 ## API Overview
 
-### Creating Data
+### Creating Data (Recommended Approach)
 
 ```javascript
-import { CreateTheConcept, CreateTheConnection, CreateTheComposition } from 'mftsccs-browser';
+import {
+  MakeTheInstanceConceptLocal,
+  CreateTheConnectionLocal,
+  CreateTheCompositionLocal
+} from 'mftsccs-browser';
 
-// Create a concept
-const concept = await CreateTheConcept('My Concept', typeId, categoryId);
+// Create a concept (local-first, with get-or-create pattern)
+const concept = await MakeTheInstanceConceptLocal(
+  'the_name',        // Type with "the_" prefix
+  'My Concept',      // Value
+  false,             // composition mode: false = get-or-create, true = always create new
+  userId,
+  accessId,
+  sessionId
+);
 
-// Create a connection between concepts
-const connection = await CreateTheConnection(fromConceptId, toConceptId, connectionTypeId);
+// Create a connection between concepts (local-first)
+const connection = await CreateTheConnectionLocal(
+  fromConceptId,
+  toConceptId,
+  connectionTypeId,
+  2  // orderId
+);
 
-// Create a composition
-const composition = await CreateTheComposition(mainConceptId, connectionTypeId);
+// Create a composition from JSON (local-first)
+const composition = await CreateTheCompositionLocal(
+  {
+    the_title: 'My Project',
+    the_description: 'Project details...',
+    the_status: 'Active'
+  },
+  mainConceptId,
+  userId
+);
+```
+
+### Using Transactions for Batch Operations
+
+```javascript
+import { MakeTheInstanceConceptLocal, LocalSyncData } from 'mftsccs-browser';
+
+// Track all changes in a transaction
+const actions = { concepts: [], connections: [] };
+
+// Create multiple concepts with transaction tracking
+const project = await MakeTheInstanceConceptLocal(
+  'the_project', 'New Project', false, userId, accessId, sessionId, undefined, actions
+);
+
+const task1 = await MakeTheInstanceConceptLocal(
+  'the_task', 'Task 1', false, userId, accessId, sessionId, undefined, actions
+);
+
+const task2 = await MakeTheInstanceConceptLocal(
+  'the_task', 'Task 2', false, userId, accessId, sessionId, undefined, actions
+);
+
+// Sync all changes to server in one batch
+await LocalSyncData.SyncDataOnline(undefined, actions);
+console.log(`Synced ${actions.concepts.length} concepts and ${actions.connections.length} connections`);
 ```
 
 ### Retrieving Data
 
 ```javascript
-import { GetTheConcept, GetConnection, GetComposition } from 'mftsccs-browser';
+import { GetTheConceptLocal, GetCompositionLocal } from 'mftsccs-browser';
 
-// Get a concept by ID
-const concept = await GetTheConcept(conceptId);
-
-// Get a connection
-const connection = await GetConnection(connectionId);
+// Get a concept by ID (works with both positive and negative IDs)
+const concept = await GetTheConceptLocal(conceptId);
 
 // Get a composition with all related data
-const composition = await GetComposition(conceptId, connectionTypeId);
+const composition = await GetCompositionLocal(conceptId);
+
+// Get composition with ID wrapper (DATAID format)
+const compositionWithId = await GetCompositionLocalWithId(conceptId);
 ```
 
 ### Searching
@@ -278,26 +366,52 @@ SECURE_MODE=true
 
 ## Examples
 
-### Example 1: Building a Knowledge Graph
+### Example 1: Building a Knowledge Graph (Recommended Approach)
 
 ```javascript
-import { init, CreateTheConcept, CreateTheConnection, GetComposition } from 'mftsccs-browser';
+import {
+  init,
+  MakeTheInstanceConceptLocal,
+  CreateConnectionBetweenTwoConceptsLocal,
+  GetCompositionLocal,
+  LocalSyncData
+} from 'mftsccs-browser';
 
 // Initialize
 await init({ url: API_URL, clientUrl: CLIENT_URL });
 
-// Create concepts
-const person = await CreateTheConcept('John Doe', TYPE_PERSON, CATEGORY_USER);
-const company = await CreateTheConcept('Acme Corp', TYPE_ORGANIZATION, CATEGORY_BUSINESS);
-const role = await CreateTheConcept('Software Engineer', TYPE_ROLE, CATEGORY_JOB);
+// Track all operations in a transaction
+const actions = { concepts: [], connections: [] };
 
-// Create connections
-await CreateTheConnection(person.id, company.id, CONNECTION_WORKS_AT);
-await CreateTheConnection(person.id, role.id, CONNECTION_HAS_ROLE);
+// Create concepts with transaction tracking
+const person = await MakeTheInstanceConceptLocal(
+  'the_person', 'John Doe', false, userId, accessId, sessionId, undefined, actions
+);
 
-// Get the full composition
-const personProfile = await GetComposition(person.id, CONNECTION_TYPE_ALL);
+const company = await MakeTheInstanceConceptLocal(
+  'the_organization', 'Acme Corp', false, userId, accessId, sessionId, undefined, actions
+);
+
+const role = await MakeTheInstanceConceptLocal(
+  'the_role', 'Software Engineer', false, userId, accessId, sessionId, undefined, actions
+);
+
+// Create named connections (easier to understand)
+await CreateConnectionBetweenTwoConceptsLocal(
+  person, company, 'works_at', false, actions
+);
+
+await CreateConnectionBetweenTwoConceptsLocal(
+  person, role, 'has_role', false, actions
+);
+
+// Get the full composition (works with virtual IDs)
+const personProfile = await GetCompositionLocal(person.id);
 console.log('Person Profile:', personProfile);
+
+// Sync all changes to server in one batch
+await LocalSyncData.SyncDataOnline(undefined, actions);
+console.log('Synced to server:', actions);
 ```
 
 ### Example 2: Searching and Filtering
@@ -316,22 +430,59 @@ const employees = await SearchWithTypeAndLinker(
 );
 ```
 
-### Example 3: Offline-First Application
+### Example 3: Offline-First Application with Transactions
 
 ```javascript
-import { init, CreateTheConceptLocal, GetTheConceptLocal } from 'mftsccs-browser';
+import {
+  init,
+  MakeTheInstanceConceptLocal,
+  CreateTheCompositionLocal,
+  GetTheConceptLocal,
+  LocalSyncData
+} from 'mftsccs-browser';
 
 // Initialize
 await init({ url: API_URL, clientUrl: CLIENT_URL });
 
-// Create local-only concept (works offline)
-const localConcept = await CreateTheConceptLocal('Draft Note', typeId, categoryId);
+// Track all offline operations
+const actions = { concepts: [], connections: [] };
 
-// Retrieve local concept
-const retrieved = await GetTheConceptLocal(localConcept.id);
+// Create concepts offline with transactions
+const draft = await MakeTheInstanceConceptLocal(
+  'the_note', 'Draft Article', false, userId, accessId, sessionId, undefined, actions
+);
+console.log('Created offline with virtual ID:', draft.id); // Negative ID
 
-// Later, sync to server when online
-// The package handles sync automatically when connection is restored
+// Create a composition from JSON
+const article = await CreateTheCompositionLocal(
+  {
+    the_title: 'My Article',
+    the_content: 'Article content here...',
+    the_author: 'John Doe',
+    the_status: 'Draft'
+  },
+  draft.id,
+  userId,
+  sessionId,
+  accessId,
+  actions
+);
+
+// Work continues offline...
+console.log('Total operations tracked:', actions.concepts.length + actions.connections.length);
+
+// Later, when online, sync everything in one batch
+try {
+  await LocalSyncData.SyncDataOnline(undefined, actions);
+  console.log('All offline changes synced to server');
+
+  // After sync, virtual IDs become positive (real server IDs)
+  // Ghost IDs preserve original negative IDs for local references
+  const synced = await GetTheConceptLocal(draft.id);
+  console.log('Real ID:', synced.id, '| Ghost ID:', synced.ghostId);
+} catch (error) {
+  console.log('Still offline, data remains local');
+}
 ```
 
 ### Example 4: Reactive State Management with Observables
