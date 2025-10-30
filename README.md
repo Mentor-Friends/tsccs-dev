@@ -39,19 +39,36 @@
 
 ## Features
 
+### Core Data Management
 - **Concept & Connection Management**: Create and manage entities (concepts) and their relationships (connections)
 - **Composition System**: Build complex hierarchical structures from concepts and connections
+- **Transaction Support (ACID Compliant)** ⭐: Atomic operations with commit/rollback for data integrity
+  - Atomicity: All-or-nothing operations
+  - Consistency: Guaranteed valid data state
+  - Isolation: Transaction isolation
+  - Durability: Permanent committed changes
+  - Bulk batching: Efficient multi-operation server sync
+
+### Offline & Sync
 - **Offline-First Architecture**: Full IndexedDB support with intelligent caching and virtual ID system
+- **Virtual ID System**: Negative IDs for local/offline, positive for synced, ghost IDs for reference preservation
+- **Sync Capabilities**: Seamless sync between local and remote data with automatic conflict resolution
 - **Service Worker Support**: Optional background processing for better performance
+
+### Search & Query
 - **Advanced Search**: Powerful search capabilities with filters, type matching, relationship queries, and recursive searches
 - **Binary Tree Indexing**: Fast in-memory indexing for optimal performance
+- **Bulk Operations**: Efficient batch processing for concepts, connections, and searches
+
+### Reactive & UI
 - **Reactive State Management**: Observable pattern with automatic change detection and subscriber notifications
 - **Widget System**: Complete UI widget framework with lifecycle management and state handling
+
+### Developer Experience
 - **Type System**: Strong TypeScript typing throughout with comprehensive JSDoc documentation
-- **Session Management**: Built-in user authentication and session handling
-- **Sync Capabilities**: Seamless sync between local and remote data with ghost ID preservation
-- **Bulk Operations**: Efficient batch processing for concepts, connections, and searches
 - **Comprehensive Documentation**: All functions, classes, and methods documented with concise JSDoc comments
+- **Session Management**: Built-in user authentication and session handling
+- **Transaction API**: Simple, intuitive API for complex multi-step operations
 
 ## Installation
 
@@ -97,15 +114,65 @@ console.log('Retrieved:', concept);
 
 ### Using Transactions (Recommended)
 
-For multiple operations, use the `InnerActions` parameter for transactional behavior:
+The `LocalTransaction` class provides a robust transaction pattern with commit and rollback support:
+
+```javascript
+import { LocalTransaction } from 'mftsccs-browser';
+
+// Initialize a new transaction
+const transaction = new LocalTransaction();
+await transaction.initialize();
+
+try {
+  // Create concepts within the transaction
+  const person = await transaction.MakeTheInstanceConceptLocal(
+    'the_person',     // Type
+    'Alice',          // Value
+    false,            // composition mode
+    userId,
+    accessId,
+    sessionId
+  );
+
+  const email = await transaction.MakeTheInstanceConceptLocal(
+    'the_email',
+    'alice@example.com',
+    false,
+    userId,
+    accessId,
+    sessionId
+  );
+
+  // Create connections within the transaction
+  await transaction.CreateConnectionBetweenTwoConceptsLocal(
+    person,
+    email,
+    'has_email',
+    false  // bidirectional
+  );
+
+  // Commit all changes to server in one atomic operation
+  await transaction.commitTransaction();
+  console.log('Transaction committed successfully');
+
+} catch (error) {
+  // Rollback all changes if any operation fails
+  await transaction.rollbackTransaction();
+  console.error('Transaction rolled back:', error);
+}
+```
+
+#### Manual Transaction Tracking (Alternative Approach)
+
+For simpler cases, you can manually track actions:
 
 ```javascript
 import { MakeTheInstanceConceptLocal, CreateTheConnectionLocal, LocalSyncData } from 'mftsccs-browser';
 
-// Initialize actions tracker for transaction
+// Initialize actions tracker
 const actions = { concepts: [], connections: [] };
 
-// Create multiple concepts in a transaction
+// Create multiple concepts with action tracking
 const person = await MakeTheInstanceConceptLocal(
   'the_person', 'Alice', false, userId, accessId, sessionId, undefined, actions
 );
@@ -114,14 +181,14 @@ const email = await MakeTheInstanceConceptLocal(
   'the_email', 'alice@example.com', false, userId, accessId, sessionId, undefined, actions
 );
 
-// Create connection in the same transaction
+// Create connection with action tracking
 await CreateTheConnectionLocal(
   person.id, email.id, emailTypeId, 2, undefined, undefined, actions
 );
 
-// Sync all changes to server in one batch
+// Sync all tracked changes to server in one batch
 await LocalSyncData.SyncDataOnline(undefined, actions);
-console.log('All changes synced:', actions.concepts.length, 'concepts,', actions.connections.length, 'connections');
+console.log('Synced:', actions.concepts.length, 'concepts,', actions.connections.length, 'connections');
 ```
 
 ### With Service Worker (Recommended for Production)
@@ -164,6 +231,39 @@ A **Composition** is a structured grouping that includes:
 - Associated connections
 - Related concepts
 - Nested sub-compositions
+
+### 4. Transaction (ACID Compliance) ⭐
+A **Transaction** provides atomic, consistent operations with commit and rollback capabilities:
+- **Atomicity**: All operations succeed or fail together
+- **Consistency**: Data remains in valid state
+- **Isolation**: Transactions are isolated from each other
+- **Durability**: Committed changes are permanent
+
+**Why Transactions Matter:**
+- ✅ **Bulk Operations**: Send multiple concepts/connections in a single batch to the server
+- ✅ **Data Integrity**: Guarantee all-or-nothing operations (no partial updates)
+- ✅ **Rollback Support**: Undo all changes if any operation fails
+- ✅ **Performance**: Reduce network calls by batching operations
+- ✅ **ACID Compliant**: Ensure database-level consistency guarantees
+
+**Best Practice**: Use `LocalTransaction` class for all multi-step operations to ensure data consistency and optimal performance.
+
+```javascript
+const transaction = new LocalTransaction();
+await transaction.initialize();
+
+try {
+  // Multiple operations tracked automatically
+  await transaction.MakeTheInstanceConceptLocal(...);
+  await transaction.CreateConnectionBetweenTwoConceptsLocal(...);
+
+  // Commit all changes in one atomic batch
+  await transaction.commitTransaction();
+} catch (error) {
+  // Rollback if anything fails
+  await transaction.rollbackTransaction();
+}
+```
 
 For detailed explanations, see [Core Concepts Documentation](./docs/CORE_CONCEPTS.md).
 
@@ -366,52 +466,54 @@ SECURE_MODE=true
 
 ## Examples
 
-### Example 1: Building a Knowledge Graph (Recommended Approach)
+### Example 1: Building a Knowledge Graph with Transactions
 
 ```javascript
-import {
-  init,
-  MakeTheInstanceConceptLocal,
-  CreateConnectionBetweenTwoConceptsLocal,
-  GetCompositionLocal,
-  LocalSyncData
-} from 'mftsccs-browser';
+import { init, LocalTransaction, GetCompositionLocal } from 'mftsccs-browser';
 
 // Initialize
 await init({ url: API_URL, clientUrl: CLIENT_URL });
 
-// Track all operations in a transaction
-const actions = { concepts: [], connections: [] };
+// Create a transaction for atomic operations
+const transaction = new LocalTransaction();
+await transaction.initialize();
 
-// Create concepts with transaction tracking
-const person = await MakeTheInstanceConceptLocal(
-  'the_person', 'John Doe', false, userId, accessId, sessionId, undefined, actions
-);
+try {
+  // Create concepts within the transaction
+  const person = await transaction.MakeTheInstanceConceptLocal(
+    'the_person', 'John Doe', false, userId, accessId, sessionId
+  );
 
-const company = await MakeTheInstanceConceptLocal(
-  'the_organization', 'Acme Corp', false, userId, accessId, sessionId, undefined, actions
-);
+  const company = await transaction.MakeTheInstanceConceptLocal(
+    'the_organization', 'Acme Corp', false, userId, accessId, sessionId
+  );
 
-const role = await MakeTheInstanceConceptLocal(
-  'the_role', 'Software Engineer', false, userId, accessId, sessionId, undefined, actions
-);
+  const role = await transaction.MakeTheInstanceConceptLocal(
+    'the_role', 'Software Engineer', false, userId, accessId, sessionId
+  );
 
-// Create named connections (easier to understand)
-await CreateConnectionBetweenTwoConceptsLocal(
-  person, company, 'works_at', false, actions
-);
+  // Create named connections within the transaction
+  await transaction.CreateConnectionBetweenTwoConceptsLocal(
+    person, company, 'works_at', false
+  );
 
-await CreateConnectionBetweenTwoConceptsLocal(
-  person, role, 'has_role', false, actions
-);
+  await transaction.CreateConnectionBetweenTwoConceptsLocal(
+    person, role, 'has_role', false
+  );
 
-// Get the full composition (works with virtual IDs)
-const personProfile = await GetCompositionLocal(person.id);
-console.log('Person Profile:', personProfile);
+  // Commit all changes atomically to server
+  await transaction.commitTransaction();
+  console.log('Knowledge graph created and synced successfully');
 
-// Sync all changes to server in one batch
-await LocalSyncData.SyncDataOnline(undefined, actions);
-console.log('Synced to server:', actions);
+  // Get the full composition (works with synced IDs)
+  const personProfile = await GetCompositionLocal(person.id);
+  console.log('Person Profile:', personProfile);
+
+} catch (error) {
+  // Rollback all changes if anything fails
+  await transaction.rollbackTransaction();
+  console.error('Transaction failed and rolled back:', error);
+}
 ```
 
 ### Example 2: Searching and Filtering
@@ -433,55 +535,52 @@ const employees = await SearchWithTypeAndLinker(
 ### Example 3: Offline-First Application with Transactions
 
 ```javascript
-import {
-  init,
-  MakeTheInstanceConceptLocal,
-  CreateTheCompositionLocal,
-  GetTheConceptLocal,
-  LocalSyncData
-} from 'mftsccs-browser';
+import { init, LocalTransaction, GetTheConceptLocal } from 'mftsccs-browser';
 
 // Initialize
 await init({ url: API_URL, clientUrl: CLIENT_URL });
 
-// Track all offline operations
-const actions = { concepts: [], connections: [] };
+// Create a transaction that works offline
+const transaction = new LocalTransaction();
+await transaction.initialize();
 
-// Create concepts offline with transactions
-const draft = await MakeTheInstanceConceptLocal(
-  'the_note', 'Draft Article', false, userId, accessId, sessionId, undefined, actions
-);
-console.log('Created offline with virtual ID:', draft.id); // Negative ID
-
-// Create a composition from JSON
-const article = await CreateTheCompositionLocal(
-  {
-    the_title: 'My Article',
-    the_content: 'Article content here...',
-    the_author: 'John Doe',
-    the_status: 'Draft'
-  },
-  draft.id,
-  userId,
-  sessionId,
-  accessId,
-  actions
-);
-
-// Work continues offline...
-console.log('Total operations tracked:', actions.concepts.length + actions.connections.length);
-
-// Later, when online, sync everything in one batch
 try {
-  await LocalSyncData.SyncDataOnline(undefined, actions);
+  // Create concepts offline - gets negative virtual IDs
+  const draft = await transaction.MakeTheInstanceConceptLocal(
+    'the_note', 'Draft Article', false, userId, accessId, sessionId
+  );
+  console.log('Created offline with virtual ID:', draft.id); // Negative ID (e.g., -12345)
+
+  // Create a composition from JSON
+  const article = await transaction.CreateTheCompositionLocal(
+    {
+      the_title: 'My Article',
+      the_content: 'Article content here...',
+      the_author: 'John Doe',
+      the_status: 'Draft'
+    },
+    draft.id,
+    userId,
+    accessId,
+    sessionId
+  );
+
+  // Work continues offline with virtual IDs...
+  console.log('Transaction has:', transaction.actions.concepts.length, 'concepts');
+
+  // When online, commit transaction - syncs everything atomically
+  await transaction.commitTransaction();
   console.log('All offline changes synced to server');
 
   // After sync, virtual IDs become positive (real server IDs)
   // Ghost IDs preserve original negative IDs for local references
   const synced = await GetTheConceptLocal(draft.id);
   console.log('Real ID:', synced.id, '| Ghost ID:', synced.ghostId);
+
 } catch (error) {
-  console.log('Still offline, data remains local');
+  // Rollback if sync fails (stays offline)
+  await transaction.rollbackTransaction();
+  console.error('Transaction rolled back, data remains local:', error);
 }
 ```
 
