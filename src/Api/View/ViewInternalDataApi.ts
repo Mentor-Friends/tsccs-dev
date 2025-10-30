@@ -2,6 +2,21 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { Connection, CreateDefaultConcept, GetConceptBulk } from "../../app";
+
+/**
+ * Retrieves internal data (connections and concepts) for multiple compositions.
+ * Returns a dictionary mapping composition IDs to their internal connection arrays.
+ *
+ * **Complex Logic**: For each composition ID, fetches connections and related concepts,
+ * builds a dictionary structure, and bulk-loads concepts for efficiency.
+ *
+ * @param ids - Array of composition IDs to fetch internal data for
+ * @returns Dictionary mapping composition ID to Connection arrays, or empty array on error
+ *
+ * @example
+ * const internalData = await ViewInternalDataApi([123, 456, 789]);
+ * // Returns: { 123: [...connections], 456: [...connections], 789: [...connections] }
+ */
 export async function ViewInternalDataApi(ids: number[]){
     let connectionList: Connection[] = [];
     try{

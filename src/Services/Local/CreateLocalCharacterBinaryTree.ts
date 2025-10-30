@@ -3,6 +3,14 @@ import { LNode } from "../../DataStructures/Local/LNode";
 import { getObjectsFromLocalIndexDb } from "../../Database/indexdblocal";
 import { Logger } from "../../app";
 
+/**
+ * Builds a binary search tree indexed by characterValue for fast text-based concept lookup.
+ *
+ * Loads all local concepts from IndexedDB and organizes them into a binary tree
+ * structure where each node is keyed by characterValue. Enables O(log n) lookups by text.
+ *
+ * @throws Error if IndexedDB read or tree construction fails
+ */
 export  async function CreateLocalCharacterBinaryTreeFromData(){
     Logger.logfunction("CreateLocalCharacterBinaryTreeFromData");
     try{

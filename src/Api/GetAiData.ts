@@ -6,6 +6,15 @@ import { GetRequestHeader, GetRequestHeaderWithAuthorization } from '../Services
 import { BinaryTree, Logger } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
+/**
+ * Fetches all AI-related concept data from the backend.
+ * Loads AI concepts into local ConceptsData cache and triggers database update.
+ *
+ * @returns void - Updates ConceptsData in-place with AI concepts
+ *
+ * @example
+ * await GetAiData(); // Loads all AI concepts into cache
+ */
 export async function GetAiData(){
   const logData:any = Logger.logfunction("GetAiData");
     try{

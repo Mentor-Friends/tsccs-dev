@@ -5,6 +5,22 @@ import {SearchQuery} from '../../DataStructures/SearchQuery';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
+/**
+ * Executes a freeschema query for flexible, schema-free data retrieval.
+ * Supports custom query structures with filters, pagination, and nested queries.
+ *
+ * @param query - FreeschemaQuery object containing query parameters, filters, and nested queries
+ * @param token - Authentication token (optional, defaults to empty string)
+ * @returns Query results array or empty array on error
+ *
+ * @example
+ * const results = await FreeschemaQueryApi({
+ *   type: "person",
+ *   filters: [{ field: "name", operator: "like", value: "John" }],
+ *   inpage: 10,
+ *   page: 1
+ * }, "auth-token");
+ */
 export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string=""){
     const logData : any = Logger.logfunction("FreeschemaQueryApi", arguments);
     var header = GetRequestHeaderWithAuthorization("application/json", token);

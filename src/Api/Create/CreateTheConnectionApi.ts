@@ -3,7 +3,22 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
-
+/**
+ * Creates connections on the backend server via API.
+ *
+ * Sends an array of connection objects to the backend for bulk creation.
+ * Used for creating multiple connections in a single API call.
+ *
+ * @param connectionData - Array of Connection objects to create
+ * @returns Connection object (note: current implementation returns default connection)
+ * @throws Error if HTTP request fails
+ *
+ * @example
+ * const connections = await CreateTheConnectionApi([
+ *   { ofTheConceptId: 100, toTheConceptId: 200, typeId: 42, ... },
+ *   { ofTheConceptId: 100, toTheConceptId: 300, typeId: 42, ... }
+ * ]);
+ */
 export async function CreateTheConnectionApi(connectionData: Connection[]){
   let result = new Connection(0,0,0,0,0,0,0);
     try{

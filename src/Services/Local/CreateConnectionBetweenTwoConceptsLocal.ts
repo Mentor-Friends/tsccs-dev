@@ -3,6 +3,47 @@ import { InnerActions } from "../../Constants/general.const";
 import { Logger } from "../../Middleware/logger.service";
 import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
+/**
+ * Creates a named connection between two concepts with optional bidirectional linking.
+ *
+ * **Complex Naming Logic**:
+ * - Forward connection type: "{ofType}_s_{linker}_s" (e.g., "person_s_knows_s")
+ * - Backward connection type: "{toType}_s_{linker}_by" (e.g., "person_s_knows_by")
+ * - Uses type.characterValue from concepts to build meaningful connection names
+ *
+ * **Bidirectional Mode (both=true)**:
+ * - Creates two connections: A→B and B→A
+ * - Forward: ofTheConcept → toTheConcept with "{ofType}_s_{linker}_s"
+ * - Backward: toTheConcept → ofTheConcept with "{toType}_s_{linker}_by"
+ *
+ * @param ofTheConcept - Source concept (connection starts here)
+ * @param toTheConcept - Target concept (connection points here)
+ * @param linker - Relationship name (e.g., "knows", "works_at", "has")
+ * @param both - If true, creates bidirectional connection (both A→B and B→A)
+ * @param actions - Action tracking for batch operations
+ * @returns The forward connection object
+ * @throws Error if connection creation fails
+ *
+ * @example
+ * // Create unidirectional "Alice knows Bob"
+ * const conn = await CreateConnectionBetweenTwoConceptsLocal(
+ *   aliceConcept,
+ *   bobConcept,
+ *   "knows",
+ *   false
+ * );
+ * // Creates: person_s_knows_s connection from Alice to Bob
+ *
+ * @example
+ * // Create bidirectional "Alice friends Bob" (both directions)
+ * await CreateConnectionBetweenTwoConceptsLocal(
+ *   aliceConcept,
+ *   bobConcept,
+ *   "friends",
+ *   true
+ * );
+ * // Creates: person_s_friends_s (Alice→Bob) AND person_s_friends_by (Bob→Alice)
+ */
 export async function CreateConnectionBetweenTwoConceptsLocal(ofTheConcept: Concept, toTheConcept: Concept, linker:string, both:boolean = false, actions: InnerActions = {concepts: [], connections: []}){
     const logData : any = Logger.logfunction("CreateConnectionBetweenTwoConceptsLocal", arguments) || {};
     let startTime = performance.now()

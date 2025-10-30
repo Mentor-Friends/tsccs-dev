@@ -1,4 +1,3 @@
-
 import { CharacterRepository } from "../../DataStructures/CharacterRepository";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
@@ -7,6 +6,27 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { Logger } from "../../app";
 
+/**
+ * Creates a character on the backend server with local caching.
+ *
+ * **Logic**:
+ * 1. Checks CharacterRepository for existing character by data value
+ * 2. If exists locally: Returns existing character ID
+ * 3. If not exists: Creates on server and adds to local repository
+ *
+ * Character data represents string values used across the system with deduplication.
+ *
+ * @param characterData - TheCharacter object to create
+ * @returns Returner object with character ID and metadata
+ * @throws Error if HTTP request fails
+ *
+ * @example
+ * const char = await CreateTheCharacter({
+ *   data: "user@example.com",
+ *   userId: 42
+ * });
+ * // If "user@example.com" already exists, returns existing ID
+ */
 export async function CreateTheCharacter(characterData: TheCharacter){
   const logData : any = Logger.logfunction("CreateTheCharacter", characterData);
     try{

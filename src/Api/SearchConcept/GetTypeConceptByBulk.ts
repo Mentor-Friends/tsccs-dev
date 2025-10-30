@@ -2,6 +2,19 @@ import { BaseUrl, Concept, GetConceptBulk } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 
+/**
+ * Retrieves type concepts for multiple character values in bulk.
+ * Optimizes fetching by batching character lookups in one request.
+ *
+ * **Complex Logic**: First fetches concept IDs for all character strings,
+ * then bulk-fetches the full concept objects.
+ *
+ * @param characters - Array of character value strings
+ * @returns Array of Concept objects matching the character values
+ *
+ * @example
+ * const concepts = await GetTypeConceptByBulk(["the_person", "the_place", "the_thing"]);
+ */
 export async function GetTypeConceptByBulk(characters: string[]){
     let concepts: Concept[] = [];
     try{

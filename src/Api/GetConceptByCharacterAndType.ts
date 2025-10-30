@@ -6,6 +6,20 @@ import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from 
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { AddTypeConcept } from "../Services/GetTheConcept";
 
+/**
+ * Retrieves a concept by character value and type ID.
+ * Checks local cache first, then fetches from backend if not found.
+ *
+ * **Complex Logic**: Checks local ConceptsData cache, falls back to API,
+ * supports service worker for offline capability.
+ *
+ * @param characterValue - Character value string to search for
+ * @param typeId - Type ID to filter by
+ * @returns Concept object or null if not found
+ *
+ * @example
+ * const concept = await GetConceptByCharacterAndType("the_person", 5);
+ */
 export async function GetConceptByCharacterAndType(characterValue: string, typeId: number){
   const logData : any = Logger.logfunction("GetConceptByCharacterAndType", arguments);
   try{

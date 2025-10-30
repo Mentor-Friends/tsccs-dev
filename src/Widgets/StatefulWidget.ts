@@ -1,74 +1,104 @@
 import { BaseWidget } from "./BaseWidget";
 
 /**
- * Implementation of a widget system. If you need to create a widget that is compatible with the concept connection 
- * system them extend this class and populate the functions such as getHtml() and widgetDidMount()
+ * Stateful widget with lifecycle management and hierarchical composition.
+ *
+ * Provides a React-like component system with state management, lifecycle hooks,
+ * and parent-child widget relationships. Extend this class to create custom widgets
+ * compatible with the concept connection system.
  */
 export class StatefulWidget extends BaseWidget{
 
+    /** Optional parameters passed to the widget */
     params: any;
+
+    /** HTML template string for the widget */
     html: string = "";
+
+    /** CSS styles for the widget */
     css:string = "";
+
+    /** JavaScript code for the widget */
     js: string = "";
 
-
+    /** Current widget state object */
     state: { [key: string]: any } = {};
+
+    /** Previous widget state for change detection */
     previousState: { [key: string]: any } = {};
 
-    /**
-     * These are the child widgets that need to be added to  this widget
-     */
+    /** Array of child widget instances */
     childWidgets: any = [];
 
+    /** Array of DOM elements hosting child widgets */
     childWidgetElement: any = [];
 
+    /** Reference to the parent widget instance */
     parentWidget:any;
 
-    /** 
-     * store widget state datas to pass through child widgets
-     */
+    /** Shared state data passed to child widgets */
     widgetState: { [key: string]: any } = {};
 
-    /**
-     * This is the id of the parentElement of this widget.
-     */
+    /** ID of the parent DOM element containing this widget */
     parentElement: string = "";
 
 
 
 
-    // Helper methods to query elements within the widget's element
+    /**
+     * Finds the first element matching a CSS selector within this widget.
+     *
+     * @param selector - CSS selector string
+     * @returns The first matching element or null
+     */
     querySelector(selector: string): Element | null {
       return this.element ? this.element.querySelector(selector) : null;
     }
-    
+
+    /**
+     * Finds all elements matching a CSS selector within this widget.
+     *
+     * @param selector - CSS selector string
+     * @returns NodeList of matching elements or null
+     */
     querySelectorAll(selector: string): NodeListOf<Element> | null{
       return this.element ? this.element.querySelectorAll(selector) : null;
     }
 
+    /**
+     * Gets the root DOM element of this widget.
+     *
+     * @returns The widget's root HTML element
+     */
     getElement(){
       return this.element;
     }
-  
+
+    /**
+     * Sets the browser document title.
+     *
+     * @param title - The new document title
+     */
     setTitle(title: string): void {
       document.title = title;
     }
 
-  
+
     /**
-     * 
-     * @returns the html string that needs to be mounted to the DOM.
+     * Gets the HTML template for this widget.
+     *
+     * @returns HTML string to be rendered
      */
-     getHtml(): string {  
+     getHtml(): string {
       return this.html;
     }
 
 
     /**
-     * This will help us update the data of the child widget. This will also call another function inside of the child widget
-     * called udpateWidget which the user can call after some data is udpated.
-     * @param value 
-     * @param widget 
+     * Updates a child widget's data and triggers re-render.
+     *
+     * @param value - New data to pass to the child widget
+     * @param widget - The child widget instance to update
      */
    UpdateChildData(value: any, widget: StatefulWidget){
     let passedWidget = widget;
@@ -78,14 +108,16 @@ export class StatefulWidget extends BaseWidget{
    }
 
    /**
-    * This is called after the data has been udpated by some other component.
+    * Lifecycle hook called after widget data is updated.
+    * Override this method to handle post-update logic.
     */
    update(){}
 
 
     /**
-     * 
-     * @param newState 
+     * Updates the entire widget state and triggers re-render if changed.
+     *
+     * @param newState - New state data to replace current state
      */
     setState(newState: any) {
       this.previousState = {...this};
@@ -97,6 +129,11 @@ export class StatefulWidget extends BaseWidget{
         }
     }
 
+    /**
+     * Updates specific state properties and triggers re-render if changed.
+     *
+     * @param newProperty - Object containing properties to update
+     */
     setStateProperty(newProperty:Object){
       this.previousState = {...this};
       Object.assign(this, newProperty);
@@ -108,15 +145,23 @@ export class StatefulWidget extends BaseWidget{
 
     }
 
-    // this will check to give true if the property has changed
-    // false if the property has not changed.
+    /**
+     * Checks if the widget state has changed since last update.
+     *
+     * @returns True if state changed, false otherwise
+     */
     hasStateChanged(): boolean {
       let state =  !this.isPropertyEqual(this.state, this.previousState);
       return state;
     }
 
-    // Compare the state of the widget with current state and previous stage.
-    // This is useful because it is not actual deepEqual but just the single property of the class.
+    /**
+     * Compares two state objects for shallow equality.
+     *
+     * @param obj1 - First state object
+     * @param obj2 - Second state object
+     * @returns True if objects are equal, false otherwise
+     */
     private isPropertyEqual(obj1: any, obj2: any): boolean {
       if (obj1 === obj2) return true; // Same reference or primitive values
       if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
@@ -136,7 +181,7 @@ export class StatefulWidget extends BaseWidget{
               let obj2Val = obj2[key];
               if(obj1Val != obj2Val){
                 return false;
-              } 
+              }
             }
 
           }
@@ -148,8 +193,7 @@ export class StatefulWidget extends BaseWidget{
     }
 
     /**
-     * If any child widgets are registered in the widget. Then without any other changes to the contents and state
-     * this loadChildWidgets will be called which will help the child widgets be rendered to their respective positions.
+     * Mounts all registered child widgets to their designated parent elements.
      */
     loadChildWidgets(){
           this.childWidgets.map((child: any) => {
@@ -163,8 +207,8 @@ export class StatefulWidget extends BaseWidget{
     }
 
   /**
-   * This is the main function that adds the html of the component to the element.
-   * The element is the mounted widget
+   * Re-renders the widget by updating the DOM with current HTML template.
+   * Also triggers child widget loading and after_render hook.
    */
    render(){
       if (this.element) {
@@ -182,6 +226,12 @@ export class StatefulWidget extends BaseWidget{
 
     }
 
+    /**
+     * Finds all elements with a specific class name within this widget.
+     *
+     * @param identifier - Class name to search for (without '.' prefix)
+     * @returns NodeList of matching elements
+     */
     getElementByClassName(identifier: string){
       let element = this.getComponent();
       if(element){
@@ -196,18 +246,23 @@ export class StatefulWidget extends BaseWidget{
 
 
     /**
-     * This is the function that needs to be called.
+     * Lifecycle hook for mounting child widgets.
+     * Override this method to define custom child mounting logic.
      */
     mount_child(){
     }
-  
+
     /**
-     * 
-     * @param parent This is the function that creates a new div and then mounts the html element to the parent.
+     * Mounts the widget to a parent DOM element and initializes lifecycle.
+     *
+     * Creates a wrapper div, assigns unique ID, renders HTML, and executes
+     * lifecycle hooks in sequence.
+     *
+     * @param parent - The parent HTML element to mount this widget into
      */
     async mount(parent: HTMLElement) {
       if(parent){
-        // create a div to wrap everything inside of it. 
+        // create a div to wrap everything inside of it.
         this.element = document.createElement("div");
         // assign an identifier to the element so that it does not conflict with others.
         this.element.id = this.createWidgetWrapperIdentifier();
@@ -228,14 +283,14 @@ export class StatefulWidget extends BaseWidget{
         // if(this.widgetMounted == false){
 
           // then after the widget has been mounted for the first time call this function
-          // user can update this function as per their requirement 
-          //this will mostly be used to bind data / call data 
+          // user can update this function as per their requirement
+          //this will mostly be used to bind data / call data
           this.before_render();
 
-          // since this is the first time the widget is being created. then all the child widgets are being mounted 
+          // since this is the first time the widget is being created. then all the child widgets are being mounted
           // as well here.
           this.mount_child();
-  
+
           // after the widget has been mounted for the first time then the widget has been updated.
           this.widgetMounted = true;
         // }
@@ -247,31 +302,26 @@ export class StatefulWidget extends BaseWidget{
       }
     }
 
-  
+
     /**
-     * This function will be called after the component mounts.
+     * Lifecycle hook called before rendering.
+     * Override for initialization logic. Default implementation calls render().
      */
     before_render(){
       this.render();
     }
 
     /**
-     * This is called after the render function has been called. So this is used for the user functions to be added
-     * for the widget and its html element. User can add any logic here.
+     * Lifecycle hook called after rendering.
+     * Override to add event listeners or post-render logic.
      */
     after_render(){
       console.log("this is calling the after render", this);
     }
 
     /**
-     * render child widgets
+     * Recursively renders all child widgets in the hierarchy.
      */
-    // renderChildWidgets(){
-    //   this.childWidgets?.forEach((child: StatefulWidget) => {
-    //     child.render();
-    //   });
-    // }
-
     renderChildWidgets(){
       console.log("this is the render child widget", this);
       function renderChildWidgetRecursive(childWidget: StatefulWidget) {
@@ -288,7 +338,10 @@ export class StatefulWidget extends BaseWidget{
     }
 
     /**
-     * save widget state data as key and value pair.
+     * Sets shared state data and propagates to all child widgets recursively.
+     *
+     * @param key - State property key
+     * @param value - State value to set
      */
     setWidgetState(key: string, value: any) {
       this.widgetState[key] = value;
@@ -304,9 +357,13 @@ export class StatefulWidget extends BaseWidget{
       updateChildStateRecursive(this);
       this.renderChildWidgets();
     }
-  
+
     /**
-     * get the saved widget state from stateful widget
+     * Retrieves shared state data by key.
+     *
+     * @param key - State property key to retrieve
+     * @param defaultValue - Default value if key doesn't exist
+     * @returns The state value or default value
      */
     getWidgetState(key:string ,defaultValue: any):object {
       if (Object.keys.length && this.widgetState[key]) {

@@ -105,13 +105,70 @@ export async  function RecursiveFetchBuildLayerNormal(id:number, connectionList:
 }
 
 /**
- * ## format JUSTDATA ##
- * this function builds the composition with the main id as the point of building.
- * This just requires the id
- * @param id id of the main composition that you want to build
- * @param connectionList  list of connections
- * @param compositionList list of of_the_concept_ids for all the connections.
- * @returns 
+ * Retrieves a complete composition structure for a given concept ID in JUSTDATA format.
+ *
+ * This is a primary composition retrieval function that builds a hierarchical structure
+ * containing the main concept, all its connections, and recursively fetched related concepts.
+ * The result is formatted as a nested object organized by concept types.
+ *
+ * **What is a Composition?**
+ * A composition represents a concept along with its connected relationships and sub-structures.
+ * Think of it as getting a "full profile" of a concept including everything connected to it.
+ *
+ * **Process:**
+ * 1. Fetches all connections associated with the concept
+ * 2. Identifies all related concept IDs from those connections
+ * 3. Recursively builds the composition tree
+ * 4. Fetches the main concept details
+ * 5. Organizes output by concept type (e.g., result["Person"] = {...})
+ * 6. Routes through service worker if enabled for better performance
+ *
+ * **Output Format (JUSTDATA):**
+ * Returns an object keyed by the main concept's type character value:
+ * ```
+ * {
+ *   "Person": {
+ *     id: 123,
+ *     characterValue: "Alice",
+ *     connections: [...],
+ *     relatedConcepts: {...}
+ *   }
+ * }
+ * ```
+ *
+ * @param id - The unique identifier of the concept for which to build the composition.
+ *            This becomes the root of the composition tree.
+ *
+ * @returns Promise resolving to an object containing the composition data organized by
+ *         the main concept's type. Returns empty object if concept not found or on error.
+ *
+ * @example
+ * // Get composition for a person concept
+ * const composition = await GetComposition(12345);
+ * console.log(composition["Person"]);
+ * // {
+ * //   id: 12345,
+ * //   characterValue: "Alice Smith",
+ * //   connections: [... all connections],
+ * //   Company: { ... related company data },
+ * //   Projects: { ... related projects }
+ * // }
+ *
+ * @example
+ * // Get composition for an organization
+ * const orgComposition = await GetComposition(456);
+ * console.log(orgComposition["Organization"]);
+ * // Contains the organization and all connected employees, departments, etc.
+ *
+ * @example
+ * // Use with service worker (automatic if enabled)
+ * // Service worker handles the heavy lifting in background
+ * const result = await GetComposition(789);
+ *
+ * @see {@link GetCompositionWithId} for composition with ID and timestamp (DATAID format)
+ * @see {@link GetCompositionBulk} for fetching multiple compositions efficiently
+ * @see {@link GetCompositionWithCache} for cached composition retrieval
+ * @see {@link recursiveFetch} for the recursive building logic
  */
 export async function GetComposition(id:number){
     if (serviceWorker) {

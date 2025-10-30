@@ -2,31 +2,44 @@ import { CompositionNode, ConnectionData } from "../app";
 import { NORMAL } from "../Constants/FormatConstants";
 
 /**
- * This is the class that helps us observe anything that the function is doing
- * This wrapper will allow all the concepts and connections to be tracked inside of the called function
- * This function helps us manage state using the concept connection system.
+ * Base observable class that tracks concepts and connections for reactive state management.
+ * Implements the observer pattern to notify subscribers when tracked data changes.
  */
 export class DependencyObserver{
-    subscribers: any[] = []; // this is the list of subscribers that are added to this observer.
+    /** List of subscriber callbacks */
+    subscribers: any[] = [];
+    /** Primary concept ID being observed */
     mainConcept: number = 0;
+    /** List of composition IDs */
     compositionIds: number[] = [];
+    /** List of concept IDs */
     conceptIds: number[] =[];
+    /** List of internal connection IDs */
     internalConnections: number[] = [];
+    /** List of reverse connection IDs */
     reverse: number[] = [];
+    /** List of linker connection IDs */
     linkers: number[] = [];
+    /** List of newly added IDs */
     newIds:number[] = [];
+    /** List of dependency IDs */
     dependency: number[] = [];
-    isDataLoaded: boolean = false; // checks to see if the data has been loaded to the widget/ function
-    isUpdating: boolean = false; // this flag helps us check if the state is being updated while the connection updates.
-    data: any;  // this is the actual data that needs to be returned.
+    /** Whether initial data has been loaded */
+    isDataLoaded: boolean = false;
+    /** Whether an update is currently in progress */
+    isUpdating: boolean = false;
+    /** The observable data to be returned */
+    data: any;
+    /** Whether data has been fetched */
     fetched: boolean = false;
+    /** Output format (NORMAL, DATAID, JUSTDATA, etc.) */
     format: number = NORMAL;
+    /** Map of concept IDs to their event handlers */
     eventHandlers: { [key: number]: (event: Event) => void } = {};
 
     /**
-     * This function will be called when there is a need to listen to a certain type of concept that will update
-     *  the ui.
-     * @param id this is the type id which needs to be tracked
+     * Listens to changes for a specific concept type and updates subscribers when new concepts of that type are created.
+     * @param id - The type concept ID to track
      */
     listenToEventType(id: number): void {
         if (this.eventHandlers[id]) return; // already added
@@ -89,10 +102,8 @@ export class DependencyObserver{
     }
 
     /**
-     * This is the of the concept id that needs to be listened . If this is called. All the connections that are
-     * created with of the concepts id with this passed id then the event is fired.
-     * 
-     * @param id Of the concept id that needs to be listened.
+     * Listens to connection changes for a specific concept and updates subscribers when connections are modified.
+     * @param id - The concept ID to track
      */
     listenToEvent(id: number) {
         if (this.eventHandlers[id]) return; // already added
@@ -149,6 +160,10 @@ export class DependencyObserver{
         window.addEventListener(`${id}`,handler);
     }
 
+    /**
+     * Removes an event listener for a specific concept ID.
+     * @param id - The concept ID to stop tracking
+     */
     removeListenToEvent(id: number) {
         const handler = this.eventHandlers[id];
         if (handler) {
@@ -159,13 +174,12 @@ export class DependencyObserver{
 
 
 
-        /**
-     * This is the of the concept id that needs to be listened . If this is called. All the connections that are
-     * created with of the concepts id with this passed id then the event is fired.
-     * 
-     * @param id Of the concept id that needs to be listened.
+    /**
+     * Listens to connection changes filtered by connection type for a specific concept.
+     * @param id - The concept ID to track
+     * @param connectionType - The connection type ID to filter by
      */
-        listenToEventConnectionType(id: number, connectionType: number) {
+    listenToEventConnectionType(id: number, connectionType: number) {
             window.addEventListener(`${id}`, (event) => {
                 if(!this.isUpdating){
                     this.isUpdating = true;
@@ -218,16 +232,24 @@ export class DependencyObserver{
 
 
     /**
-     * This function will bind the actual data to the widget or the function.
+     * Binds and refreshes the observable data. Override in subclasses to implement specific data fetching logic.
+     * @returns The bound data
      */
     async bind(){
         console.log("this is the old execute data");
     }
 
+    /**
+     * Executes the observable without subscribing. Override in subclasses for non-reactive data fetching.
+     * @returns The executed data
+     */
     async run(){
         console.log("this is non subscriber data");
     }
 
+    /**
+     * Forces a data refresh and notifies all subscribers.
+     */
     async update(){
         this.isDataLoaded = false;
         await this.bind();
@@ -235,9 +257,9 @@ export class DependencyObserver{
     }
 
     /**
-     * 
-     * @param callback the function that needs to be called with the data.
-     * @returns returns the callback with this data as the state.
+     * Subscribes a callback to receive data updates whenever tracked concepts/connections change.
+     * @param callback - Function to call with (data, observer) when updates occur
+     * @returns Result of calling the callback with current data
      */
     async subscribe(callback: any) {
         this.subscribers.push(callback);
@@ -246,10 +268,9 @@ export class DependencyObserver{
           return callback(this.data,this);
       }
 
-          /**
-     * 
-     * 
-     * @returns data
+    /**
+     * Executes the observable once without subscribing to updates.
+     * @returns The executed data
      */
     async execute() {
           return await this.run();
@@ -257,20 +278,20 @@ export class DependencyObserver{
 
 
 
-      /**
-       * 
-       * @param callback function that you need to remove from the subscribers list.
-       * @returns 
-       */
-      unsubscribe(callback: any){
+    /**
+     * Removes a callback from the subscriber list.
+     * @param callback - The callback function to remove
+     * @returns Number of remaining subscribers
+     */
+    unsubscribe(callback: any){
         this.subscribers.filter(fn=>fn!= callback);
         return this.subscribers.length;
-      }
+    }
 
 
-      /**
-       * This function will call all the subscribers that are registered in this wrapper.
-       */
+    /**
+     * Notifies all subscribers with the current data.
+     */
     notify() {
         //console.log('notifiers', this.subscribers)
         this.subscribers.map(subscriber => {

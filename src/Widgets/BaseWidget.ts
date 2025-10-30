@@ -1,26 +1,38 @@
 import { BaseObserver } from "./BaseObserver";
 
+/**
+ * Base widget class providing core DOM element management and identification.
+ *
+ * Extends BaseObserver to provide reactive data capabilities along with fundamental
+ * widget element operations and unique identification.
+ */
 export class BaseWidget extends BaseObserver{
 
-    /**
-     * This is the element that is a copy of the element that is mounted.
-     */
+    /** The mounted DOM element wrapper for this widget */
       element: HTMLElement | null = null;
-    /**
-     * This is a random identifier to the widget that is used to identify the widget and other elements
-     * inside of it.
-     */
+
+    /** Unique numeric identifier for this widget instance */
     elementIdentifier: number = 0;
-    /**
-     * This flag is set to denote that that widget has been mounted
-     */
+
+    /** Flag indicating whether the widget has been mounted to the DOM */
         widgetMounted: boolean = false;
 
+    /**
+     * Gets the root component element of this widget.
+     *
+     * @returns The widget's root HTML element or null if not mounted
+     */
     getComponent(): HTMLElement | null{
         let component = this.element;
         return component;
       }
-  
+
+    /**
+     * Finds an element by ID within this widget's scope.
+     *
+     * @param identifier - The element ID to search for (without '#' prefix)
+     * @returns The found HTML element or null if not found
+     */
       getElementById(identifier: string){
         let element = this.getComponent();
         let selectedElement: HTMLElement = document.body ;
@@ -32,16 +44,19 @@ export class BaseWidget extends BaseObserver{
            }
         }
         return null;
-  
+
       }
 
 
 
 
     /**
-     * 
-     * @returns random number that will be used to put into the main widget div so that we can uniqely identify 
-     * the widget and its children from others.
+     * Generates a unique identifier for this widget's wrapper element.
+     *
+     * Creates a random number to uniquely identify the widget and its children
+     * from other widgets in the DOM.
+     *
+     * @returns The generated identifier as a string
      */
     createWidgetWrapperIdentifier(){
         this.elementIdentifier = Math.random() * 10000;

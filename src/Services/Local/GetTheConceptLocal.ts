@@ -4,12 +4,66 @@ import { Concept, CreateDefaultLConcept, GetTheConcept, handleServiceWorkerExcep
 import { convertFromConceptToLConcept } from "../Conversion/ConvertConcepts";
 
 /**
- * This function converts any local/ virtual or real concept id to a LConcept. 
- * In case that the id is virtual then it tries to find it from the local memory. This will return -ve id.
- * In case that the virtual id has already been synced to the backend then it gets this from the relational binary tree(LocalGhostIdTree). This will return +ve id.
- * In case that we pass real id then this will return real concept but formatted in LConcept form. This might have undefined ghostId.
- * @param id the id that you want to find out the concept of. This could be a negative (virtual id ) or a real concept id.
- * @returns LConcept with either (-ve or +ve id)
+ * Retrieves a concept by ID with support for both local (virtual) and server concepts.
+ *
+ * This is the primary function for fetching concepts in offline/local mode. It intelligently
+ * handles three types of concept IDs and retrieves from appropriate sources:
+ *
+ * **ID Types Handled:**
+ * 1. **Negative IDs (Virtual/Local)**: Concepts created locally not yet synced
+ *    - Stored in LocalConceptsData (IndexedDB)
+ *    - Return negative IDs
+ *
+ * 2. **Synced Virtual IDs**: Originally local concepts now synced to backend
+ *    - Looked up via LocalGhostIdTree (maps negative to positive IDs)
+ *    - Returns positive (real) ID with ghostId reference
+ *
+ * 3. **Positive IDs (Server)**: Real backend concepts
+ *    - Fetched via GetTheConcept from backend
+ *    - Converted to LConcept format
+ *    - May have undefined ghostId
+ *
+ * **Retrieval Strategy:**
+ * - If id < 0: Check LocalConceptsData → Check LocalGhostIdTree
+ * - If id >= 0: Fetch from backend → Convert to LConcept
+ * - Routes through service worker if enabled
+ * - Returns default empty concept if not found
+ *
+ * **Ghost ID System:**
+ * - ghostId: Original negative ID (preserved after sync)
+ * - id: Current ID (negative if local, positive if synced)
+ * - LocalGhostIdTree maintains the mapping
+ *
+ * @param id - The concept ID to retrieve. Can be:
+ *            - Negative (e.g., -12345) for local-only concepts
+ *            - Positive (e.g., 789) for server concepts
+ *
+ * @returns Promise resolving to a Concept object in LConcept format.
+ *         Returns default concept (id=0) if not found.
+ *
+ * @example
+ * // Get a local concept (negative ID)
+ * const localConcept = await GetTheConceptLocal(-12345);
+ * console.log(localConcept.id); // -12345
+ * console.log(localConcept.characterValue); // "Draft Note"
+ *
+ * @example
+ * // Get a synced concept (originally local, now on server)
+ * const syncedConcept = await GetTheConceptLocal(-12345);
+ * console.log(syncedConcept.id); // 789 (now positive, synced)
+ * console.log(syncedConcept.ghostId); // -12345 (original ID preserved)
+ *
+ * @example
+ * // Get a server concept
+ * const serverConcept = await GetTheConceptLocal(456);
+ * console.log(serverConcept.id); // 456
+ * // Converted to LConcept format for consistency
+ *
+ * @throws Logs errors but returns default concept instead of throwing
+ *
+ * @see {@link CreateTheConceptLocal} for creating local concepts
+ * @see {@link GetTheConcept} for fetching server concepts only
+ * @see {@link convertFromConceptToLConcept} for format conversion
  */
 export async function GetTheConceptLocal(id: number){
     let startTime = performance.now()

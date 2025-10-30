@@ -8,6 +8,16 @@ import { handleServiceWorkerException, Logger } from "../app";
 import { BinaryTree, sendMessage, serviceWorker } from "../app";
 import { requestNextCacheServer } from "../Services/cacheService";
 
+/**
+ * Processes bulk concept data from API response.
+ * Internal helper to parse and cache bulk concept results.
+ *
+ * @param response - Fetch response object
+ * @param passedConcepts - Original concept ID array passed
+ * @param result - Array to populate with Concept objects
+ * @param logData - Logging data object
+ * @param startTime - Performance timestamp
+ */
 async function processBulkConceptData(response: Response, passedConcepts: number[], result:Concept[], logData:any, startTime:number) {
   if (response.ok) {
     let output = await response.json();
@@ -156,6 +166,16 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
     
 }
 
+/**
+ * Alternative API for fetching multiple concepts by IDs.
+ * Simpler version without caching logic, directly fetches from backend.
+ *
+ * @param bulkConceptFetch - Array of concept IDs to fetch
+ * @returns Array of Concept objects
+ *
+ * @example
+ * const concepts = await BulkConceptGetterApi([1, 2, 3, 4, 5]);
+ */
 export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
     const conceptList: Concept[] = []
     if (bulkConceptFetch.length > 0) {

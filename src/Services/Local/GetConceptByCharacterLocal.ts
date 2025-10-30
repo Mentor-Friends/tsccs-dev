@@ -2,15 +2,37 @@ import { GetLocalConceptByCharacterValue } from "../../Api/Local/GetLocalConcept
 import { LocalConceptsData } from "../../DataStructures/Local/LocalConceptData";
 import { Concept, CreateDefaultLConcept, handleServiceWorkerException, LocalSyncData, sendMessage, serviceWorker, SplitStrings } from "../../app";
 
+/**
+ * Retrieves a local concept by character value with typeId=51 (standard type).
+ *
+ * Simple lookup in LocalConceptsData for concepts matching the character value
+ * and having typeId of 51.
+ *
+ * @param characterValue - The character value to search for
+ * @returns Concept matching the character and type, or empty concept if not found
+ */
 export default async function GetConceptByCharacterLocal(characterValue: string){
     let concept = await LocalConceptsData.GetConceptByCharacterAndTypeLocal(characterValue,51);
     return concept;
 }
 
 /**
- * 
- * @param character the character value of the concept we want to find in our local system.
- * @returns LConcept which will be the associated concept with the character Value.
+ * Retrieves a local concept by character value, handling hierarchical type names.
+ *
+ * **Complex Logic**: For compound names (e.g., "the_person_email"):
+ * 1. Splits string by underscore
+ * 2. Recursively processes first part to get category ID
+ * 3. Searches using character value and derived category
+ * 4. Falls back to simple character search for single words
+ *
+ * **Special Case**: Returns concept with id=1 for character value "the".
+ *
+ * @param character - The character value to find (e.g., "the_status", "the_person_email")
+ * @returns Concept associated with the character value
+ *
+ * @example
+ * const concept = await GetConceptByCharacterAndCategoryLocal("the_person_email");
+ * // Splits into "the_person" (category) and searches with that context
  */
 export async function GetConceptByCharacterAndCategoryLocal(character: string){
     if (serviceWorker) {
@@ -46,11 +68,35 @@ export async function GetConceptByCharacterAndCategoryLocal(character: string){
     return lconcept;
 }
 
+/**
+ * Retrieves a concept by character value and category ID from local memory.
+ *
+ * Direct lookup in LocalConceptsData without server fallback.
+ *
+ * @param value - The character value to search for
+ * @param categoryId - The category ID to filter by
+ * @returns Concept matching the character and category, or empty concept if not found
+ */
 export async function GetConceptByCategoryAndCharacterLocalMemory(value:string, categoryId: number){
    let concept  =  LocalConceptsData.GetConceptByCharacterAndCategoryLocal(value, categoryId);
    return concept;
 }
 
+/**
+ * Retrieves a concept by character value with automatic server fallback.
+ *
+ * **Complex Logic**:
+ * 1. First checks LocalConceptsData for existing concept
+ * 2. If not found (id==0 or null), fetches from server via GetLocalConceptByCharacterValue
+ * 3. After server fetch, rechecks LocalConceptsData (now populated)
+ * 4. Returns the concept or throws error
+ *
+ * Use this when you need guaranteed concept retrieval with server sync.
+ *
+ * @param characterValue - The character value to search for
+ * @returns Concept from local storage, fetching from server if needed
+ * @throws Error if server fetch fails
+ */
 export  async function GetConceptByCharacterLocalFull(characterValue: string){
     try{
         let concept = await LocalConceptsData.GetConceptByCharacter(characterValue);
