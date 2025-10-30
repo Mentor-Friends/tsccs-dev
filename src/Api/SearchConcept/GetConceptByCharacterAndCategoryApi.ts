@@ -6,6 +6,17 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { AddTypeConcept } from "../../Services/GetTheConcept";
+
+/**
+ * Retrieves a concept by character value with category filtering.
+ * Fetches concept matching character and adds type information.
+ *
+ * @param characterValue - Character value string to search for
+ * @returns Concept object or default concept if not found
+ *
+ * @example
+ * const concept = await GetConceptByCharacterAndCategoryApi("the_person");
+ */
 export async function GetConceptByCharacterAndCategoryApi(characterValue: string){
   const logData : any = Logger.logfunction("GetConceptByCharacterAndCategoryApi", arguments);
     let concept = CreateDefaultConcept();

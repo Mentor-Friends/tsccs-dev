@@ -2,6 +2,25 @@ import { BaseUrl, ConnectionData, Logger } from "../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { GetOnlyTokenHeader } from "../Services/Security/GetRequestHeader";
 
+/**
+ * Deletes multiple connections from the backend in a single bulk operation.
+ *
+ * **Process**:
+ * 1. Sends array of connection IDs to backend for bulk deletion
+ * 2. If successful: Marks all connections as deleted in local ConnectionData
+ * 3. Returns overall deletion success status
+ *
+ * More efficient than calling DeleteTheConnection multiple times.
+ *
+ * @param ids - Array of connection IDs to delete
+ * @returns boolean - true if bulk deletion successful, false otherwise
+ *
+ * @example
+ * const deleted = await DeleteTheConnectionBulkApi([5001, 5002, 5003]);
+ * if (deleted) {
+ *   console.log("All 3 connections deleted successfully");
+ * }
+ */
 export default async function DeleteTheConnectionBulkApi(ids:number[]){
   const logData:any = Logger.logfunction("DeleteTheConnectionBulkApi", arguments);
   let isDeleted = false;

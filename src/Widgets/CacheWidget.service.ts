@@ -1,13 +1,37 @@
+/**
+ * Statistics about the current cache state.
+ */
 export interface CacheStats {
+  /** Number of cached entries */
   cacheSize: number;
+  /** Number of pending fetch requests */
   pendingRequests: number;
+  /** Array of all cache keys */
   keys: string[];
 }
 
+/**
+ * Generic data cache with promise deduplication.
+ *
+ * Provides in-memory caching with automatic request deduplication to prevent
+ * multiple simultaneous fetches for the same key.
+ */
 export class DataCache<T = any> {
+  /** Map storing cached data by key */
   static cache: Map<string, any> = new Map();
+
+  /** Map storing pending fetch promises by key */
   static promises: Map<string, Promise<any>> = new Map();
 
+  /**
+   * Gets data from cache or fetches if not cached.
+   *
+   * Automatically deduplicates concurrent requests for the same key.
+   *
+   * @param key - Cache key
+   * @param fetcher - Function to fetch data if not cached
+   * @returns Promise resolving to the cached or fetched data
+   */
   static async get<K>(key: string, fetcher: () => Promise<K>): Promise<K> {
     // Return cached data immediately
     if (DataCache.cache.has(key)) {
@@ -35,29 +59,51 @@ export class DataCache<T = any> {
     return promise;
   }
 
-  // Check if data exists without triggering fetch
+  /**
+   * Checks if a key exists in cache without fetching.
+   *
+   * @param key - Cache key to check
+   * @returns True if key exists in cache
+   */
   static has(key: string): boolean {
     return DataCache.cache.has(key);
   }
 
-  // Get cached data synchronously (returns undefined if not cached)
+  /**
+   * Gets cached data synchronously without fetching.
+   *
+   * @param key - Cache key
+   * @returns Cached data or undefined if not cached
+   */
   static peek<K>(key: string): K | undefined {
     return DataCache.cache.get(key) as K | undefined;
   }
 
-  // Remove specific cache entry
+  /**
+   * Removes a specific cache entry.
+   *
+   * @param key - Cache key to remove
+   */
   static invalidate(key: string): void {
     DataCache.cache.delete(key);
     DataCache.promises.delete(key);
   }
 
-  // Clear all cache
+  /**
+   * Clears all cached data and pending promises.
+   */
   static clear(): void {
     DataCache.cache.clear();
     DataCache.promises.clear();
   }
 
-  // Set data directly in cache
+  /**
+   * Sets data directly in cache without fetching.
+   *
+   * @param key - Cache key
+   * @param data - Data to cache
+   * @returns Promise resolving to the cached data
+   */
   static async set<K>(key: string, data: K): Promise<K> {
     // Clear any pending promises for this key
     DataCache.promises.delete(key);
@@ -68,7 +114,11 @@ export class DataCache<T = any> {
     return data;
   }
 
-  // Get cache statistics
+  /**
+   * Gets cache statistics including size and pending requests.
+   *
+   * @returns Object with cache statistics
+   */
   static stats(): CacheStats {
     return {
       cacheSize: DataCache.cache.size,
@@ -78,7 +128,11 @@ export class DataCache<T = any> {
   }
 }
 
-
+/**
+ * Initializes and returns a new widget cache instance.
+ *
+ * @returns A new DataCache instance
+ */
 export function initWidgetCache() {
   const widgetCache = new DataCache();
   return widgetCache

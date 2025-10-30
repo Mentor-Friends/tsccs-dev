@@ -5,6 +5,18 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultLConcept, Logger } from "../../app";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
+
+/**
+ * Retrieves a local concept by its character value.
+ * Fetches from backend and caches in LocalConceptsData.
+ *
+ * @param characterValue - Character value string to search for
+ * @returns Local Concept object or default local concept if not found
+ * @throws Default concept on error (legacy behavior)
+ *
+ * @example
+ * const localConcept = await GetLocalConceptByCharacterValue("the_local_person");
+ */
 export async function GetLocalConceptByCharacterValue(characterValue: string){
   const logData : any = Logger.logfunction("GetLocalConceptByCharacterValue", arguments);
   let result = CreateDefaultLConcept();

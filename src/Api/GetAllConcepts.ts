@@ -4,6 +4,17 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
+
+/**
+ * Retrieves all concepts belonging to a specific user.
+ * Fetches user's concepts from backend and caches them in ConceptsData.
+ *
+ * @param userId - ID of the user whose concepts to retrieve
+ * @returns void - Updates ConceptsData cache with user's concepts
+ *
+ * @example
+ * await GetAllUserConcepts(123); // Loads all concepts for user 123
+ */
 export async function GetAllUserConcepts(userId: number){
   const logData : any = Logger.logfunction("GetAllUserConcepts", arguments);
     try{

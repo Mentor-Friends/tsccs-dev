@@ -28,9 +28,47 @@ import {
   convertFromConnectionToLConnection,
 } from "../Conversion/ConvertConcepts";
 
-// function to update the cache composition
+/**
+ * Updates/patches a composition in local storage with new or modified properties.
+ *
+ * **Complex Patching Logic** (197 lines):
+ * 1. Fetches latest composition data from backend (all connections and concepts)
+ * 2. Iterates through patchObject properties to add/update
+ * 3. For each property:
+ *    - If value is object/array: Creates composition concept and nested composition
+ *    - If value is primitive: Creates instance concept with value
+ *    - Checks if concept type already exists in composition
+ *    - If exists: Marks old connections for deletion (replaces old value)
+ *    - If new: Simply adds new connection
+ * 4. Creates connections between parent composition and new/updated concepts
+ * 5. Deletes old connections (cleanup)
+ * 6. Syncs changes to backend
+ *
+ * **Use Case**: Updating fields in an existing composition without recreating it entirely.
+ *
+ * @param patcherStructure - Object containing:
+ *   - compositionId: The composition to update
+ *   - ofTheCompositionId: Optional parent composition for nested updates
+ *   - patchObject: Object with key-value pairs to add/update
+ *   - userId, sessionId, accessId: User context
+ * @param actions - Action tracking for batch operations and rollback
+ *
+ * @example
+ * // Update a person's email and phone
+ * await UpdateCompositionLocal({
+ *   compositionId: personId,
+ *   patchObject: {
+ *     the_email: "newemail@example.com",
+ *     the_phone: "555-1234"
+ *   },
+ *   userId: 101,
+ *   sessionId: 999,
+ *   accessId: 4
+ * });
+ * // Old email connection deleted, new email connection created
+ */
 export async function UpdateCompositionLocal(
-  patcherStructure: PatcherStructure, 
+  patcherStructure: PatcherStructure,
   actions: InnerActions = {concepts: [], connections: []}
 ) {
   let startTime = performance.now()

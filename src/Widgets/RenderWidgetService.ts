@@ -7,6 +7,17 @@ import { applyPageProperties } from "./RenderPage.service";
 import { initializeLibraries } from "./RenderWidgetLibrary.service";
 import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
 
+/**
+ * Renders a complete page with its widgets and properties.
+ *
+ * Fetches page data, applies page-level properties (meta tags, styles), and renders
+ * the page body widget. Adds fspage class for styling.
+ *
+ * @param pageId - The page concept ID to render
+ * @param attachNode - DOM element to attach the page to
+ * @param props - Optional properties to pass to the page widget
+ * @param showDocumentation - Whether to show documentation button
+ */
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any, showDocumentation?: boolean) {
       const widgets = await GetRelation(pageId, "the_page_body");
       
@@ -46,6 +57,18 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       }
     }
 
+/**
+ * Imports the latest version of a widget into cache for later rendering.
+ *
+ * Fetches widget data, builds widget tree, and stores in DataCache.
+ * Used for pre-loading widgets before rendering.
+ *
+ * @param widgetId - The widget origin ID to import
+ * @param attachNode - Optional DOM element (for future use)
+ * @param props - Optional properties to pass to the widget
+ * @param showDocumentation - Whether to show documentation button
+ * @returns Promise resolving to the widget tree
+ */
     export async function importLatestWidget(
       widgetId: number,
       attachNode?: HTMLElement,
@@ -66,6 +89,18 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       }
     }
 
+/**
+ * Renders a previously imported widget from cache.
+ *
+ * Retrieves widget tree from DataCache and renders it to the DOM.
+ * Must call importLatestWidget() first to populate cache.
+ *
+ * @param widgetId - The widget origin ID to render
+ * @param attachNode - DOM element to attach the widget to
+ * @param props - Optional properties to pass to the widget
+ * @param showDocumentation - Whether to show documentation button
+ * @returns Promise resolving to the rendered widget instance
+ */
     export async function renderImportedWidget(
       widgetId: number,
       attachNode: HTMLElement,
@@ -197,7 +232,18 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
 
       return newWidget;
     }
-  
+
+/**
+ * Renders the latest published version of a widget.
+ *
+ * Fetches and renders the most recent version of a widget by origin ID.
+ * Automatically handles "use latest" flag for child widgets.
+ *
+ * @param widgetId - The widget origin ID to render
+ * @param attachNode - DOM element to attach the widget to
+ * @param props - Optional properties to pass to the widget
+ * @param showDocumentation - Whether to show documentation button
+ */
     export async function renderLatestWidget(
       widgetId: number,
       attachNode: HTMLElement,
@@ -255,7 +301,18 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         attachNode.textContent = `Error: ${error.message}`
       }
     }
-  
+
+/**
+ * Renders a specific widget by ID.
+ *
+ * Fetches widget data and renders the exact version specified (not latest).
+ *
+ * @param widgetId - The specific widget ID to render
+ * @param attachNode - DOM element to attach the widget to
+ * @param props - Optional properties to pass to the widget
+ * @param showDocumentation - Whether to show documentation button
+ * @returns Promise resolving to the rendered widget instance
+ */
     export async function renderWidget(widgetId: number, attachNode: HTMLElement, props?: any, showDocumentation?: boolean) {
       try {
         const bulkWidget = await BuildWidgetFromId(widgetId);
@@ -266,6 +323,19 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       }
     }
 
+/**
+ * Materializes a widget tree into DOM elements with styles and scripts.
+ *
+ * Core rendering logic that converts widget data into live DOM, applies styles,
+ * initializes libraries, and attaches documentation if enabled.
+ *
+ * @param widgetId - The widget ID being materialized
+ * @param bulkWidget - Bulk widget data from backend
+ * @param attachNode - DOM element to attach the widget to
+ * @param props - Optional properties to pass to the widget
+ * @param showDocumentation - Whether to show documentation button (default: true)
+ * @returns Promise resolving to the rendered widget instance
+ */
     export async function materializeWidget(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props?: any, showDocumentation: boolean = true){
       const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
       if (!widgetTree.name) {
@@ -390,6 +460,12 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
 
     }
 
+/**
+ * Recursively processes widget tree to handle "use latest" child widgets.
+ *
+ * @param mainWidget - The main widget to process
+ * @param outputBulk - Array to collect processed widget data
+ */
     async function createBulkWidgetRecursive(mainWidget: any, outputBulk: any[]) {
       const childWidgets = mainWidget?.data?.the_widget?.the_widget_s_child;
       outputBulk.push(mainWidget);
@@ -421,9 +497,16 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
           // }
           await createBulkWidgetRecursive(childWidget.data.the_child_widget.the_child_widget_info, outputBulk)
         }
-      } 
+      }
     }
 
+/**
+ * Checks and resolves "use latest" flags for all child widgets in bulk data.
+ *
+ * @param bulkData - Bulk widget data array
+ * @param mainWidgetId - The main widget ID to start from
+ * @returns Promise resolving to processed bulk data array
+ */
     async function checkUseLatestWidget(bulkData: any, mainWidgetId: number) {
       const outputBulk : any[] = []
       const bulkDataArray: any[] = [...bulkData];
@@ -439,6 +522,14 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       return outputBulk;
     }
 
+/**
+ * Fetches and builds a complete widget tree from a widget ID.
+ *
+ * @param widgetId - The widget ID to fetch
+ * @param visitedWidgets - Array to track visited widgets (prevents cycles)
+ * @param token - Optional authentication token
+ * @returns Promise resolving to the widget tree
+ */
       export async function getWidgetFromId(widgetId: number,
         visitedWidgets: number[] = [],
         token: string = ""){
@@ -449,13 +540,18 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
           // const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
           return widgetTree;
       }
-  
+
     /**
-     * This function builds a widget tree. This tree is built fully along with its children
-     * This tree can then be used to build the whole dom for the widget.
-     * This has recursive property so that the recursion can be used to build this tree.
-     * @param widgetId the id of the widget
-     * @returns WidgetTree.
+     * Builds a complete widget tree from bulk widget data.
+     *
+     * Recursively processes widget hierarchy including children, custom functions,
+     * libraries, and lifecycle hooks to create a full WidgetTree structure.
+     *
+     * @param widgetId - The widget ID to build tree for
+     * @param visitedWidgets - Array tracking visited widgets to prevent cycles
+     * @param bulkWidget - Bulk widget data from backend
+     * @param token - Optional authentication token
+     * @returns Promise resolving to the complete widget tree
      */
     // async function getWidgetFromId(
     //   widgetId: number,
@@ -660,13 +756,20 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         throw ex;
       }
     }
-  
+
     /**
+     * Converts a widget tree structure into live widget instances and mounts to DOM.
      *
-     * @param tree Widget tree from getWidgetFromId(widgetId);
-     * @param parentElement this is the dom element on which we want to add our widget
-     * @returns the widgetree with widgets attached inside of it.
-     * Also this will add the tree to the dom.
+     * Recursively instantiates widgets from tree data, sets up parent-child relationships,
+     * applies styles, and mounts to the specified parent element.
+     *
+     * @param tree - The widget tree to convert
+     * @param parentElement - DOM element to mount the widget to
+     * @param isMain - Whether this is the main/root widget
+     * @param props - Optional properties to pass to the widget
+     * @param state - Optional state data to pass to the widget
+     * @param parentWidget - Parent widget instance for context
+     * @returns Promise resolving to the instantiated widget
      */
     export async function convertWidgetTreeToWidget(
       tree: WidgetTree,
@@ -744,7 +847,12 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
       return newWidget;
     }
 
-
+/**
+ * Creates a shallow copy of an object, excluding arrays and nested objects.
+ *
+ * @param input - Object to create shallow copy from
+ * @returns Shallow copy with only primitive and null values
+ */
 export function makeShallow(input:any){
   const shallow:any = {};
 
@@ -756,13 +864,19 @@ export function makeShallow(input:any){
   return shallow;
 }
 
-
-    /**
- * 
- * @param tree Widget tree from getWidgetFromId(widgetId);
- * @param parentElement this is the dom element on which we want to add our widget
- * @returns the widgetree with widgets attached inside of it.
- * Also this will add the tree to the dom.
+/**
+ * Converts widget tree to widget instances with development mode wrapper support.
+ *
+ * Similar to convertWidgetTreeToWidget but includes development mode features
+ * like visual editing and type selection.
+ *
+ * @param tree - The widget tree to convert
+ * @param parentElement - DOM element to mount the widget to
+ * @param isMain - Whether this is the main/root widget
+ * @param state - Optional state data to pass to the widget
+ * @param isInDevelopment - Enable development mode features
+ * @param parentWidget - Parent widget instance for context
+ * @returns Promise resolving to the instantiated widget
  */
 export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, parentElement:HTMLElement, isMain:boolean = true, state?:object, isInDevelopment?: boolean, parentWidget:StatefulWidget|null = null){
   let newWidget: BuilderStatefulWidget = new BuilderStatefulWidget();
@@ -816,7 +930,14 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   console.log("newWidget ->", newWidget,tree);
   return newWidget;
 }
-  
+
+/**
+ * Fetches widget code and metadata from backend by widget ID.
+ *
+ * @param widgetId - The widget ID to fetch
+ * @param token - Authentication token
+ * @returns Promise resolving to widget code data
+ */
     async function getWidgetCodeFromId(widgetId: number, token: string) {
       try {
         const searchFirst = new SearchQuery();
@@ -861,7 +982,15 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
       }
     }
 
-
+/**
+ * Cleans widget HTML by removing builder-specific classes and attributes.
+ *
+ * Removes drag-and-drop handlers, widget container classes, and other
+ * builder-only markup before rendering for production.
+ *
+ * @param widgetTree - The widget tree to clean
+ * @returns The cleaned widget tree
+ */
     function clearDraggedWidget(widgetTree: WidgetTree): WidgetTree {
       widgetTree.html = widgetTree.html.replace(
         /<[^>]*\bclass=["'][^"']*\bwidget_container\b[^"']*["'][^>]*>/g,
@@ -921,7 +1050,14 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
       );
       return widgetTree;
     }
-  
+
+/**
+ * Unwraps container elements, promoting child nodes to parent level.
+ *
+ * @param widgetContainerEl - The container element to unwrap
+ * @param queryParam - CSS selector for containers to unwrap
+ * @returns The modified element
+ */
     async function unwrapWidgetContainers(widgetContainerEl: any, queryParam: string) {
       // Select all div elements with the queryParam
       if (widgetContainerEl && widgetContainerEl.nodeType === 1) {
@@ -940,7 +1076,13 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
       }
       return widgetContainerEl;
     }
-  
+
+/**
+ * Recursively unwraps all matching container elements within a parent.
+ *
+ * @param parentElement - Parent element to search within
+ * @param selector - CSS selector for containers to unwrap
+ */
     export async function unwrapContainers(parentElement: HTMLElement, selector: string) {
       const elements: any = parentElement.querySelectorAll(selector);
       for (const el of elements) {
@@ -957,10 +1099,14 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
         }
       }
     }
-  
+
 /**
- * Opens documentation modal
- * @param widgetId 
+ * Opens the documentation preview modal for a widget.
+ *
+ * Fetches and displays widget documentation including API specs, code examples,
+ * images, videos, and links.
+ *
+ * @param widgetId - The widget ID to show documentation for
  */
 export async function openDocumentationPreviewModal(widgetId: number) {
   const documentationQueryText = new FreeschemaQuery();
@@ -1150,9 +1296,18 @@ export async function openDocumentationPreviewModal(widgetId: number) {
     await openModal("widget-documentation-preview-modal");
     showWidgetDocumentation(widgetDocumentData, widgetId);
   });
-  
+
 }
 
+/**
+ * Renders widget documentation content into the documentation view.
+ *
+ * Formats and displays documentation data including text, API details,
+ * code examples, and media attachments.
+ *
+ * @param widgetDocumentData - Documentation data to display
+ * @param widgetId - The widget ID being documented
+ */
 export async function showWidgetDocumentation(widgetDocumentData: any, widgetId: number) {
   const viewEl = <HTMLElement>document.getElementById('documentation-view');
   if (BaseUrl.DOCUMENTATION_WIDGET != 0 ) {
@@ -1353,8 +1508,9 @@ export async function showWidgetDocumentation(widgetDocumentData: any, widgetId:
 }
 
 /**
- * Opens modal
- * @param modalId 
+ * Opens a modal dialog by ID.
+ *
+ * @param modalId - The ID of the modal element to open
  */
 export async function openModal(modalId: string) {
   const modal: any = document.getElementById(modalId);
@@ -1362,8 +1518,9 @@ export async function openModal(modalId: string) {
 }
 
 /**
- * Closes modal
- * @param modalId 
+ * Closes a modal dialog by ID and resets its form if present.
+ *
+ * @param modalId - The ID of the modal element to close
  */
 export async function closeModal(modalId: string) {
   const modal: any = document.getElementById(modalId);

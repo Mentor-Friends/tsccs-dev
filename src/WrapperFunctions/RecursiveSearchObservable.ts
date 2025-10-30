@@ -9,21 +9,29 @@ import {
 } from "../app";
 import { RAW } from "../Constants/FormatConstants";
 
+/**
+ * Observable wrapper for recursive multi-level searches following linker paths with automatic updates.
+ */
 class RecursiveSearchObservable extends DependencyObserver {
+  /** Array of linker type names defining the search path */
   searchLinkers: string[];
+  /** Search text placeholder */
   searchText: string = "";
+  /** Text to search for in linked concepts */
   textSearch: string;
+  /** List of connection objects */
   connections: Connection[] = [];
+  /** List of external (linker) connection IDs */
   externalConnectionIds: number[] = [];
+  /** Search result data */
   data: any = [];
 
   /**
-   *
-   * @param id this is the id whose links need to be found
-   * @param linker this is the type connection that is connected to the mainConcept(id)
-   * @param inpage number of outputs that has to be displayed
-   * @param page the page which needs to be displayed as per the inpage parameter
-   * @param format the format in which the output should be displayed (RAW, undefined)
+   * Creates a new recursive search observable.
+   * @param id - The starting concept ID for the recursive search
+   * @param linkers - Array of linker type names defining the traversal path
+   * @param textSearch - Optional text to search for in linked concepts
+   * @param format - Output format (RAW for raw IDs, undefined for formatted compositions)
    */
   constructor(
     id: number,
@@ -39,10 +47,8 @@ class RecursiveSearchObservable extends DependencyObserver {
   }
 
   /**
-   * This is the of the concept id that needs to be listened . If this is called. All the connections that are
-   * created with of the concepts id with this passed id then the event is fired.
-   *
-   * @param id Of the concept id that needs to be listened.
+   * Overrides base method to track connection changes for concepts in the search results.
+   * @param id - The concept ID to track
    */
   listenToEvent(id: number) {
     window.addEventListener(`${id}`, (event) => {
@@ -90,6 +96,10 @@ class RecursiveSearchObservable extends DependencyObserver {
     });
   }
 
+  /**
+   * Executes recursive search and sets up change listeners for all found compositions.
+   * @returns Formatted search results or raw ID structure
+   */
   async bind(): Promise<any> {
     if (!this.isDataLoaded) {
       this.isDataLoaded = true;
@@ -132,6 +142,10 @@ class RecursiveSearchObservable extends DependencyObserver {
     return await this.build();
   }
 
+  /**
+   * Builds the search results in the specified format.
+   * @returns Formatted composition data or raw ID structure
+   */
   async build() {
 
     this.externalConnectionIds = this.linkers;
@@ -152,12 +166,16 @@ class RecursiveSearchObservable extends DependencyObserver {
 }
 
 /**
- * Method to listen the changes in recursive search data
- * @param id this is the id whose links need to be found
- * @param linker this is the type connection that is connected to the mainConcept(id)
- * @param inpage number of outputs that has to be displayed
- * @param page the page which needs to be displayed as per the inpage parameter
- * @param format the format in which the output should be displayed (RAW, undefined)
+ * Creates an observable that performs recursive multi-level searches and updates subscribers when results change.
+ * @param id - The starting concept ID for the recursive search
+ * @param linkers - Array of linker type names defining the traversal path
+ * @param searchText - Optional text to search for in linked concepts
+ * @param format - Output format (RAW for raw IDs, undefined for formatted compositions)
+ * @returns Observable instance for the recursive search
+ *
+ * @example
+ * const observer = RecursiveSearchListener(123, ["Author", "Category"], "tutorial", RAW);
+ * observer.subscribe((results) => console.log(results));
  */
 export function RecursiveSearchListener(
   id: number,

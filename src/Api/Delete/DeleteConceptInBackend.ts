@@ -1,6 +1,19 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl"
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting"
 
+/**
+ * Deletes (trashes) a concept from the backend with explicit token auth.
+ *
+ * Alternative delete function that requires manual token passing.
+ * Similar to DeleteTheConcept but with explicit authentication parameter.
+ *
+ * @param id - The concept ID to delete
+ * @param token - Bearer authentication token
+ * @throws Error if deletion fails
+ *
+ * @example
+ * await TrashTheConcept(12345, userToken);
+ */
 export  async function TrashTheConcept(
     id: number,
     token: string,

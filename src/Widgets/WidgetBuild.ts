@@ -7,8 +7,22 @@ import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../Services/Search/SearchWithTypeAndLinker";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { ConceptCircle } from "../Visualize/ConceptCircle";
+
+/** Cache for widget data requests by widget ID */
 const widgetCache = new Map<number, Promise<any>>();
+
+/** Cache for latest widget version requests by origin ID */
 const latestWidgetCache = new Map<number, Promise<any>>();
+
+/**
+ * Fetches and builds widget data from the backend by widget ID.
+ *
+ * Retrieves complete widget structure including concepts, connections, and metadata.
+ * Uses caching to prevent duplicate requests for the same widget.
+ *
+ * @param id - The widget ID to fetch
+ * @returns Promise resolving to formatted widget data
+ */
 export async function BuildWidgetFromId(id:number){
     Logger.logfunction("BuildWidgetFromId", arguments);
         try {
@@ -76,6 +90,12 @@ export async function BuildWidgetFromId(id:number){
 
 }
 
+/**
+ * Builds widget data from local cache instead of making API request.
+ *
+ * @param id - The widget ID to fetch from cache
+ * @returns Promise resolving to widget data object with mainId
+ */
 export async function BuildWidgetFromCache(id:number){
     try {
         if (serviceWorker) {
@@ -110,7 +130,15 @@ export async function BuildWidgetFromCache(id:number){
 
 }
 
-
+/**
+ * Fetches the latest published version of a widget by origin ID.
+ *
+ * Retrieves the most recent version of a widget, useful for always displaying
+ * updated content. Uses separate cache from standard widget requests.
+ *
+ * @param id - The origin widget ID to fetch latest version for
+ * @returns Promise resolving to object with widget data and mainId
+ */
 export async function BuildWidgetFromIdForLatest(id:number){
   Logger.logfunction("BuildWidgetFromIdForLatest", arguments);
       try {
@@ -190,6 +218,14 @@ export async function BuildWidgetFromIdForLatest(id:number){
       return BuildWidgetFromIdForLatest;
 
 }
+
+/**
+ * Finds and returns a specific widget from bulk widget data by ID.
+ *
+ * @param data - Array of widget data objects
+ * @param id - The widget ID to find
+ * @returns The matching widget object or undefined
+ */
 export function GetWidgetForTree(data:any, id:number){
 
     for(let i=0; i<data.length; i++){

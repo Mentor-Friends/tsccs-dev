@@ -6,6 +6,18 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { AddTypeConcept } from "../../Services/GetTheConcept";
+
+/**
+ * Retrieves a concept by character value and specific category ID.
+ * Direct API call with explicit category filtering.
+ *
+ * @param characterValue - Character value string to search for
+ * @param category_id - Category ID to filter by
+ * @returns Promise resolving to Concept object or default concept if not found
+ *
+ * @example
+ * const concept = await GetConceptByCharacterAndCategoryDirectApi("the_person", 5);
+ */
 export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: string, category_id: number): Promise<Concept>{
   const logData : any = Logger.logfunction("GetConceptByCharacterAndCategoryDirectApi", arguments);
   let concept:Concept = CreateDefaultConcept();

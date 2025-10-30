@@ -3,6 +3,23 @@ import { TheTexts } from "../../DataStructures/TheTexts";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+
+/**
+ * Creates text data on the backend server via API.
+ *
+ * Stores long-form text content (>255 characters) separately from concepts.
+ * Used for text values that exceed the characterValue field length limit.
+ *
+ * @param textData - TheTexts object containing text data to store
+ * @returns Created TheTexts object with server-assigned ID
+ * @throws Error if HTTP request fails or server returns error status
+ *
+ * @example
+ * const longText = await CreateTextData({
+ *   data: "Very long text content that exceeds 255 characters...",
+ *   userId: 42
+ * });
+ */
 export async function CreateTextData(textData: TheTexts){
     try{
             var header = GetRequestHeader();

@@ -5,15 +5,30 @@ import { DependencyObserver } from "./DepenedencyObserver";
 import { GetCompositionListener, GetCompositionObservable } from "./GetCompositionObservable";
 
 /**
- * This wrapper will wrap the listing function and then allow users to return the list.
+ * Observable wrapper for retrieving a paginated list of compositions by type with automatic updates.
  */
 export class GetCompositionListObservable extends DependencyObserver{
+    /** The composition type character name */
     compositionName: string;
+    /** The user ID who owns the compositions */
     userId: number;
+    /** Number of items per page */
     inpage: number;
+    /** Current page number */
     page: number;
+    /** List of composition data */
     data: any = [];
+    /** Starting page index */
     startPage:number = 0;
+
+    /**
+     * Creates a new composition list observable.
+     * @param compositionName - The composition type name
+     * @param userId - The user ID who owns the compositions
+     * @param inpage - Number of items per page
+     * @param page - Page number (1-indexed)
+     * @param format - Output format (JUSTDATA, DATAID, NORMAL)
+     */
     constructor(compositionName:string, userId: number, inpage: number , page: number, format: number){
         super();
         this.compositionName = compositionName;
@@ -25,17 +40,21 @@ export class GetCompositionListObservable extends DependencyObserver{
 
 
 
+    /**
+     * Fetches paginated composition list and sets up change listeners.
+     * @returns Array of formatted composition data
+     */
     async bind(){
         if(!this.isDataLoaded){
             var concept = await GetConceptByCharacter(this.compositionName);
-        
+
             if(concept){
                 await GetAllConceptsByType(this.compositionName, this.userId);
                 let conceptList = await ConceptsData.GetConceptsByTypeIdAndUser(concept.id,this.userId);
                 var startPage = this.inpage * (this.page - 1);
                 for(var i=startPage; i< startPage + this.inpage; i++){
                     if(conceptList[i]){
-                        
+
                         this.compositionIds.push(conceptList[i].id);
                     }
                 }
@@ -52,6 +71,10 @@ export class GetCompositionListObservable extends DependencyObserver{
         return mydata;
     }
 
+    /**
+     * Builds the list of compositions in the specified format.
+     * @returns Array of formatted composition data
+     */
     async build(){
         this.data = [];
         if(this.format == JUSTDATA){
@@ -96,16 +119,26 @@ export class GetCompositionListObservable extends DependencyObserver{
 }
 
 /**
- * This function will give you the list of the concepts by composition name with a listener to any data change.
+ * Creates an observable that tracks a paginated list of compositions and updates subscribers when they change.
+ * @param compositionName - The composition type name
+ * @param userId - The user ID who owns the compositions
+ * @param inpage - Number of items per page
+ * @param page - Page number (1-indexed)
+ * @param format - Output format (JUSTDATA, DATAID, NORMAL)
+ * @returns Observable instance for the composition list
+ *
+ * @example
+ * const observer = GetCompositionListListener("BlogPost", 123, 10, 1, JUSTDATA);
+ * observer.subscribe((data) => console.log(data));
  */
 export function GetCompositionListListener(compositionName:string, userId: number, inpage: number, page: number, format:number = JUSTDATA){
 
-    
+
     return  new GetCompositionListObservable(compositionName, userId, inpage, page,format);
-    
+
     // Add Log
     // Logger.logInfo(
-    //     startTime, 
+    //     startTime,
     //     userId,
     //     "read",
     //     "Unknown",

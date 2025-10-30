@@ -4,22 +4,28 @@ import { GetComposition, GetCompositionFromMemory, GetCompositionWithIdFromMemor
 import { DependencyObserver } from "./DepenedencyObserver";
 
 /**
- * This is a class that will give you the observable for the links from a certain concept.
+ * Observable wrapper for retrieving linked concepts from a source concept with automatic updates.
  */
 export class GetLinkObservable extends DependencyObserver
 {
+    /** The linker type name defining the relationship */
     linker:string;
+    /** Number of items per page */
     inpage: number;
+    /** Current page number */
     page: number;
+    /** List of connection objects */
     connections: Connection[] = [];
+    /** Array of linked composition data */
     data: any = [];
+
     /**
-     * 
-     * @param id this is the id whose links need to be found
-     * @param linker this is the type connection that is connected to the mainConcept(id)
-     * @param inpage number of outputs that has to be displayed
-     * @param page the page which needs to be displayed as per the inpage parameter
-     * @param format the format in which the output should be displayed (NORMAL, DATAID,JUSTDATA,DATAIDDATE)
+     * Creates a new link observable.
+     * @param id - The source concept ID whose links to retrieve
+     * @param linker - The linker type name defining the relationship
+     * @param inpage - Number of items per page
+     * @param page - Page number (1-indexed)
+     * @param format - Output format (NORMAL, DATAID, JUSTDATA, DATAIDDATE)
      */
     constructor(id: number, linker:string, inpage: number, page: number, format: number){
         super();
@@ -30,6 +36,10 @@ export class GetLinkObservable extends DependencyObserver
         this.format = format;
     }
 
+    /**
+     * Fetches linked concepts and sets up change listeners.
+     * @returns Array of linked composition data
+     */
     async bind(){
         if(!this.isDataLoaded){
             let  concept:Concept = await GetTheConcept(this.mainConcept);
@@ -55,6 +65,10 @@ export class GetLinkObservable extends DependencyObserver
         return await this.build();
     }
 
+    /**
+     * Builds the array of linked compositions in the specified format.
+     * @returns Array of formatted linked composition data
+     */
     async build(){
 
         this.data = []
@@ -135,12 +149,17 @@ export class GetLinkObservable extends DependencyObserver
 // }
 
 /**
- * 
- * @param id this is the id whose links need to be found
- * @param linker this is the type connection that is connected to the mainConcept(id)
- * @param inpage number of outputs that has to be displayed
- * @param page the page which needs to be displayed as per the inpage parameter
- * @param format the format in which the output should be displayed (NORMAL, DATAID,JUSTDATA,DATAIDDATE)
+ * Creates an observable that tracks linked concepts and updates subscribers when links change.
+ * @param id - The source concept ID whose links to retrieve
+ * @param linker - The linker type name defining the relationship
+ * @param inpage - Number of items per page
+ * @param page - Page number (1-indexed)
+ * @param format - Output format (NORMAL, DATAID, JUSTDATA, DATAIDDATE)
+ * @returns Observable instance for the linked concepts
+ *
+ * @example
+ * const observer = GetLinkListener(123, "Author", 10, 1, NORMAL);
+ * observer.subscribe((linkedData) => console.log(linkedData));
  */
 export function GetLinkListener(id:number, linker:string, inpage: number, page: number, format:number = NORMAL){
     return new GetLinkObservable(id, linker, inpage, page, format)

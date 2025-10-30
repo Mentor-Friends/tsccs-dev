@@ -3,6 +3,16 @@ import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from 
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { BaseUrl, Logger } from "../app";
 
+/**
+ * Retrieves all linker connections pointing to a specific concept.
+ * Fetches connections where the concept is the target/destination.
+ *
+ * @param conceptId - ID of the concept to get linker connections to
+ * @returns Array of Connection objects pointing to the concept
+ *
+ * @example
+ * const connections = await GetAllLinkerConnectionsToTheConcept(123);
+ */
 export async function GetAllLinkerConnectionsToTheConcept(conceptId:number){
   const logData : any = Logger.logfunction("GetAllLinkerConnectionsToTheConcept", arguments);
   var connections: Connection[] = [];

@@ -8,6 +8,20 @@ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
+/**
+ * Retrieves connections originating from a specific concept.
+ * Fetches connections filtered by type, concept, user, and pagination.
+ *
+ * @param typeId - Type ID to filter connections by
+ * @param ofTheConceptId - Concept ID that is the source of connections
+ * @param userId - User ID to filter by
+ * @param inpage - Number of results per page (default: 10)
+ * @param page - Page number (default: 1)
+ * @returns Array of Connection objects
+ *
+ * @example
+ * const connections = await GetConnectionOfTheConcept(5, 123, 456, 20, 1);
+ */
 export async function GetConnectionOfTheConcept(typeId: number, ofTheConceptId:number, userId:number, inpage:number=10, page:number=1 ){
   const logData : any = Logger.logfunction("GetConnectionOfTheConcept", arguments) || {};
   let connectionList:Connection[] = []; 

@@ -8,7 +8,31 @@ import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { Connection, Logger } from "../../app";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 
-
+/**
+ * Syncs local concepts and connections to the backend server in bulk (batch sync).
+ *
+ * **Complex Logic**:
+ * 1. Strips type objects from data to reduce payload size
+ * 2. If total items ≤2000: Sends in single request
+ * 3. If total items >2000: Chunks into 1000-item batches and sends in parallel
+ * 4. Returns arrays of created concepts and connections with real server IDs
+ *
+ * "Ghost" refers to preserving original local IDs (negative) as ghostId while assigning real positive IDs.
+ *
+ * @param conceptData - Array of Concept objects to sync (can include local negative IDs)
+ * @param connectionData - Array of Connection objects to sync
+ * @param withAuth - Whether to use authentication (default: true)
+ * @returns Object with {concepts: Concept[], connections: Connection[]} containing synced items
+ * @throws Error if any batch request fails
+ *
+ * @example
+ * const result = await CreateTheGhostConceptApi(
+ *   [concept1, concept2],
+ *   [connection1, connection2]
+ * );
+ * // result.concepts contains concepts with real server IDs
+ * // result.connections contains connections with real server IDs
+ */
 export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[], withAuth:boolean = true){
   const logData : any = Logger.logfunction("CreateTheGhostConceptApi",[conceptData.length, connectionData.length] )
   try {

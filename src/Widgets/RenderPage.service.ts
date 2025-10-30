@@ -1,8 +1,11 @@
 import { COMPOSITIONS } from "../Constants/page.const";
 
 /**
+ * Applies page-level properties from page data to the document.
  *
- * @param pageData
+ * Processes meta tags, width, font size, font family, and page type settings.
+ *
+ * @param pageData - Page data object containing property configurations
  */
 export async function applyPageProperties(pageData: any) {
   const properties = [
@@ -55,10 +58,12 @@ export async function applyPageProperties(pageData: any) {
 }
 
 /**
+ * Applies a single page property to the document.
  *
- * @param property
- * @param value
- * @returns
+ * Handles width, font size, font family, page type (fixed/fluid), and meta tags.
+ *
+ * @param property - Property name (e.g., "width", "meta_title", "font_size")
+ * @param value - Property value to apply
  */
 export async function applyPageProperty(property: string, value: any) {
   const scopedStyleEl =
@@ -100,9 +105,9 @@ export async function applyPageProperty(property: string, value: any) {
 }
 
 /**
+ * Removes old CSS rules matching a pattern from the page properties style element.
  *
- * @param property
- * @returns
+ * @param property - Regex pattern to match CSS rules to remove
  */
 function removeOldCssRule(property: string) {
   const scopedStyleEl = document.getElementById("fspage-properties");
@@ -113,8 +118,9 @@ function removeOldCssRule(property: string) {
 }
 
 /**
+ * Creates or retrieves the scoped style element for page properties.
  *
- * @returns
+ * @returns The style element with ID "fspage-properties"
  */
 function createScopedStyle() {
   const style = document.createElement("style");
@@ -124,9 +130,10 @@ function createScopedStyle() {
 }
 
 /**
+ * Updates or creates a meta tag in the document head.
  *
- * @param name
- * @param content
+ * @param name - Meta tag name attribute
+ * @param content - Meta tag content value
  */
 function updateMetaTag(name: string, content: string) {
   let metaTag = document.querySelector(`meta[name="${name}"]`);

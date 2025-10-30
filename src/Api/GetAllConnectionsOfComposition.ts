@@ -6,6 +6,20 @@ import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
 import { log } from 'console';
+
+/**
+ * Retrieves all connections belonging to a specific composition.
+ * Checks local cache first, then fetches from backend if needed.
+ *
+ * **Complex Logic**: First checks ConnectionData cache, then fetches from API,
+ * compares with cached data to detect deletions, and updates cache.
+ *
+ * @param composition_id - ID of the composition whose connections to retrieve
+ * @returns Array of Connection objects for the composition
+ *
+ * @example
+ * const connections = await GetAllConnectionsOfComposition(456);
+ */
 export async function GetAllConnectionsOfComposition(composition_id: number){
       const logData : any = Logger.logfunction("GetAllConnectionsOfComposition", arguments);
         var connectionList: Connection[] = [];
@@ -24,9 +38,16 @@ export async function GetAllConnectionsOfComposition(composition_id: number){
         Logger.logUpdate(logData);
         return connectionList;
         
-     
+
 }
 
+/**
+ * Fetches connections for a composition directly from the backend.
+ * Internal helper function for GetAllConnectionsOfComposition.
+ *
+ * @param composition_id - ID of the composition
+ * @returns Array of Connection objects from backend
+ */
 export async function GetAllConnectionsOfCompositionOnline(composition_id: number){
   const logData : any = Logger.logfunction("GetAllConnectionsOfCompositionOnline", arguments);
   var connectionList: Connection[] = [];

@@ -3,6 +3,20 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { SessionData } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 
+/**
+ * Creates a new session for tracking user activity.
+ * Records session metadata including user agent, IP, and timestamp.
+ *
+ * @param sessionData - SessionData object containing session information
+ * @returns Session object with generated ID, or null on error
+ *
+ * @example
+ * const session = await CreateSession({
+ *   userAgent: navigator.userAgent,
+ *   ipAddress: "192.168.1.1",
+ *   userId: 123
+ * });
+ */
 export async function CreateSession(sessionData: SessionData){
     try{
         var header = GetRequestHeader();

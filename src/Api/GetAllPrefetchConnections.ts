@@ -6,6 +6,17 @@ import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { ConnectionData, Logger } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
+/**
+ * Prefetches connections for a user with pagination.
+ * Loads connections into local storage for improved performance.
+ *
+ * @param userId - ID of the user whose connections to prefetch
+ * @param inpage - Number of connections per page
+ * @returns void - Updates ConnectionData storage with prefetched connections
+ *
+ * @example
+ * await GetAllPrefetchConnections(123, 50); // Prefetch 50 connections for user 123
+ */
 export async function GetAllPrefetchConnections(userId:number, inpage:number){
   const logData : any = Logger.logfunction("GetAllPrefetchConnections", arguments);
     try{

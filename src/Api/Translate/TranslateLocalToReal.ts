@@ -2,6 +2,17 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 import { Concept, ConceptsData, CreateDefaultConcept, Logger } from "../../app";
+
+/**
+ * Translates a local concept ID to its real backend concept.
+ * Fetches the actual concept from backend and caches it in ConceptsData.
+ *
+ * @param conceptId - Local concept ID to translate
+ * @returns Real Concept object from backend, or default concept on error
+ *
+ * @example
+ * const realConcept = await TranslateLocalToReal(123);
+ */
 export async function TranslateLocalToReal(conceptId: number){
   const logData : any = Logger.logfunction("TranslateLocalToReal", arguments);
   let result:Concept = CreateDefaultConcept();

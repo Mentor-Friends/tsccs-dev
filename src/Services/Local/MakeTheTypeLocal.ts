@@ -8,17 +8,37 @@ import { InnerActions } from "../../Constants/general.const";
 import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 /**
- * There are two types of concepts. One type of concept is a type concept. These concepts have no actual value and do not mean
- * anything unless they are associated with other values. These are placeholders like first_name, last_name, age etc that are required in the system.
- * These types need to be created seperately.
- * 
- * 
- * @param typeString type of the concept that needs to be created.
- * @param sessionId SessionId of the user
- * @param sessionUserId Not required pass 999
- * @param userId UserId of the user creating this concept
- * @param actions InnerActions|undefined actions to collect
- * @returns 
+ * Creates or retrieves a type concept locally - handles hierarchical type system.
+ *
+ * Type concepts are placeholders/templates (e.g., "the_first_name", "the_email") that define
+ * what kind of data a concept represents. They have no actual value themselves.
+ *
+ * **Hierarchical Processing (Complex Logic)**:
+ * - Single word (e.g., "status"): Creates simple type concept with typeId=51
+ * - Compound words (e.g., "the_person_email"): Splits into parts and creates hierarchy:
+ *   1. Creates category concept from first part ("the_person")
+ *   2. Creates type concept from second part ("email")
+ *   3. Creates final concept with category and type linked
+ *   **Uses recursion** to build multi-level type hierarchies
+ *
+ * Always checks for existing type concept before creating to prevent duplicates.
+ *
+ * @param typeString - The type name to create (e.g., "the_status", "the_person_email")
+ * @param sessionId - Session identifier (typically 999)
+ * @param sessionUserId - Session user ID (typically 999, not used)
+ * @param userId - User creating the type concept
+ * @param actions - Action tracking for batch operations
+ * @returns Type Concept (existing or newly created)
+ *
+ * @example
+ * // Simple type
+ * const statusType = await MakeTheTypeConceptLocal("the_status", 999, 999, 101);
+ * // Creates: "the_status" type concept
+ *
+ * @example
+ * // Hierarchical type (recursive processing)
+ * const emailType = await MakeTheTypeConceptLocal("the_person_email", 999, 999, 101);
+ * // Creates: "the_person" (category) + "email" (type) + "the_person_email" (combined)
  */
 export  async  function MakeTheTypeConceptLocal(typeString: string, sessionId: number, sessionUserId: number, userId: number, actions: InnerActions = {concepts: [], connections: []}
     ): Promise<Concept>
