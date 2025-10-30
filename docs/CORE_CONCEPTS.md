@@ -1,6 +1,6 @@
 # Core Concepts
 
-This document provides an in-depth explanation of the fundamental building blocks of **mftsccs-browser**: Concepts, Connections, and Compositions.
+This document provides an in-depth explanation of the fundamental building blocks of **mftsccs-browser**: Concepts, Connections, Compositions, and Transactions.
 
 ## Table of Contents
 
@@ -32,18 +32,42 @@ This document provides an in-depth explanation of the fundamental building block
   - [Hybrid Approach](#hybrid-approach-recommended)
 - [Advanced Concepts](#advanced-concepts)
 - [Data Usage Patterns](#data-usage-patterns)
+- [Transactions](#transactions)
+  - [The LocalTransaction Class](#the-localtransaction-class)
+  - [Transaction Methods](#transaction-methods)
+  - [Committing Transactions](#committing-transactions)
+  - [Transaction Features](#transaction-features)
+  - [Complete Transaction Example](#complete-transaction-example)
+  - [When to Use Transactions](#when-to-use-transactions)
 - [Best Practices](#best-practices)
 - [Summary](#summary)
 
 ## Introduction
 
-The **mftsccs-browser** package implements a knowledge graph data model consisting of three primary elements:
+The **mftsccs-browser** package implements a knowledge graph data model consisting of four primary elements:
 
 1. **Concepts** - The nodes (entities)
 2. **Connections** - The edges (relationships)
 3. **Compositions** - Structured groupings of concepts and connections
+4. **Transactions** - ACID-compliant atomic operations for data integrity
 
 Together, these elements allow you to build complex, interconnected data structures that can represent virtually any domain - from social networks to organizational hierarchies to semantic knowledge bases.
+
+### Why Transactions are Essential
+
+Transactions elevate the package from simple data storage to **ACID-compliant** database operations:
+
+- **Atomicity**: Create multiple concepts and connections that either all succeed or all fail together
+- **Consistency**: Ensure your knowledge graph remains in a valid state
+- **Isolation**: Transactions operate independently without interfering with each other
+- **Durability**: Once committed, changes are permanently stored
+
+**Key Benefits:**
+- 🚀 **Bulk Operations**: Send 100s of concepts/connections in a single server call
+- 🔒 **Data Integrity**: No partial updates or orphaned data
+- ↩️ **Rollback Support**: Undo everything if any operation fails
+- ⚡ **Performance**: Reduce network overhead with batched sync
+- 💾 **Offline-First**: Build entire knowledge graphs offline, sync atomically when online
 
 ## Concept
 
@@ -1083,6 +1107,334 @@ if (cached.id !== 0) {
 }
 ```
 
+## Transactions
+
+### What are Transactions?
+
+Transactions provide **ACID-compliant atomic operations** with commit and rollback capabilities, making the package suitable for production database applications.
+
+### ACID Compliance Explained
+
+**mftsccs-browser** implements full ACID guarantees through the `LocalTransaction` class:
+
+| Property | Description | How It Works |
+|----------|-------------|--------------|
+| **Atomicity** | All operations succeed or none do | Transaction commits all changes in one batch, or rolls back everything on error |
+| **Consistency** | Data remains in valid state | Validation occurs before commit; invalid states trigger rollback |
+| **Isolation** | Concurrent transactions don't interfere | Each transaction has unique ID; operations are isolated until commit |
+| **Durability** | Committed changes are permanent | Once committed to server, data persists even if client crashes |
+
+### Why This Matters
+
+Without transactions, creating 100 related concepts could result in:
+- ❌ 50 concepts created, 50 failed → **Partial data, broken relationships**
+- ❌ 100 separate API calls → **Network overhead, slow performance**
+- ❌ No rollback → **Manual cleanup of failed operations**
+
+With transactions:
+- ✅ All 100 concepts created or none → **Data integrity guaranteed**
+- ✅ Single batched API call → **90%+ network reduction**
+- ✅ Automatic rollback → **Zero manual cleanup needed**
+
+### The LocalTransaction Class
+
+The `LocalTransaction` class provides a robust transaction pattern:
+
+```javascript
+import { LocalTransaction } from 'mftsccs-browser';
+
+// Initialize a transaction
+const transaction = new LocalTransaction();
+await transaction.initialize();
+```
+
+### Transaction Methods
+
+#### Creating Concepts in a Transaction
+
+```javascript
+const person = await transaction.MakeTheInstanceConceptLocal(
+  'the_person',     // Type
+  'Alice Smith',    // Value
+  false,            // composition mode
+  userId,
+  accessId,
+  sessionId
+);
+```
+
+#### Creating Connections in a Transaction
+
+```javascript
+const connection = await transaction.CreateConnectionBetweenTwoConceptsLocal(
+  person,           // From concept
+  company,          // To concept
+  'works_at',       // Linker/relationship name
+  false             // bidirectional (false = one way, true = both ways)
+);
+```
+
+#### Creating Compositions in a Transaction
+
+```javascript
+const composition = await transaction.CreateTheCompositionLocal(
+  {
+    the_title: 'My Project',
+    the_description: 'Project details',
+    the_status: 'Active'
+  },
+  userId,
+  accessId,
+  sessionId
+);
+```
+
+### Committing Transactions
+
+```javascript
+try {
+  // Perform multiple operations
+  const person = await transaction.MakeTheInstanceConceptLocal(...);
+  const email = await transaction.MakeTheInstanceConceptLocal(...);
+  await transaction.CreateConnectionBetweenTwoConceptsLocal(person, email, 'has_email');
+
+  // Commit all changes atomically to server
+  await transaction.commitTransaction();
+  console.log('Transaction committed successfully');
+
+} catch (error) {
+  // Rollback all changes if anything fails
+  await transaction.rollbackTransaction();
+  console.error('Transaction rolled back:', error);
+}
+```
+
+### Transaction Features
+
+#### 1. Atomicity
+All operations in a transaction succeed or fail together:
+
+```javascript
+const transaction = new LocalTransaction();
+await transaction.initialize();
+
+try {
+  // Create 10 concepts
+  for (let i = 0; i < 10; i++) {
+    await transaction.MakeTheInstanceConceptLocal(`the_item`, `Item ${i}`, false, userId, accessId, sessionId);
+  }
+
+  // If this succeeds, all 10 concepts are created
+  // If this fails, NO concepts are created (rolled back)
+  await transaction.commitTransaction();
+
+} catch (error) {
+  // All 10 concepts are rolled back
+  await transaction.rollbackTransaction();
+}
+```
+
+#### 2. Automatic Action Tracking
+
+The transaction automatically tracks all operations:
+
+```javascript
+const transaction = new LocalTransaction();
+await transaction.initialize();
+
+await transaction.MakeTheInstanceConceptLocal(...);
+await transaction.MakeTheInstanceConceptLocal(...);
+await transaction.CreateConnectionBetweenTwoConceptsLocal(...);
+
+// Check how many operations are tracked
+console.log('Concepts:', transaction.actions.concepts.length);
+console.log('Connections:', transaction.actions.connections.length);
+```
+
+#### 3. Transaction State Management
+
+Transactions prevent operations after expiry:
+
+```javascript
+const transaction = new LocalTransaction();
+await transaction.initialize();
+
+await transaction.MakeTheInstanceConceptLocal(...);
+await transaction.commitTransaction(); // Transaction now expired
+
+// This will throw "Query Transaction Expired" error
+await transaction.MakeTheInstanceConceptLocal(...); // ❌ Error
+```
+
+### Complete Transaction Example
+
+```javascript
+import { LocalTransaction, GetCompositionLocal } from 'mftsccs-browser';
+
+async function createEmployeeProfile(employeeData) {
+  const transaction = new LocalTransaction();
+  await transaction.initialize();
+
+  try {
+    // Create person concept
+    const person = await transaction.MakeTheInstanceConceptLocal(
+      'the_person',
+      employeeData.name,
+      false,
+      userId,
+      accessId,
+      sessionId
+    );
+
+    // Create related concepts
+    const email = await transaction.MakeTheInstanceConceptLocal(
+      'the_email',
+      employeeData.email,
+      false,
+      userId,
+      accessId,
+      sessionId
+    );
+
+    const position = await transaction.MakeTheInstanceConceptLocal(
+      'the_position',
+      employeeData.position,
+      false,
+      userId,
+      accessId,
+      sessionId
+    );
+
+    // Create connections
+    await transaction.CreateConnectionBetweenTwoConceptsLocal(
+      person, email, 'has_email', false
+    );
+
+    await transaction.CreateConnectionBetweenTwoConceptsLocal(
+      person, position, 'has_position', false
+    );
+
+    // Commit all changes atomically
+    await transaction.commitTransaction();
+
+    // Get the complete profile
+    const profile = await GetCompositionLocal(person.id);
+    return { success: true, profile };
+
+  } catch (error) {
+    // Rollback on any error
+    await transaction.rollbackTransaction();
+    return { success: false, error: error.message };
+  }
+}
+
+// Use the function
+const result = await createEmployeeProfile({
+  name: 'John Doe',
+  email: 'john@company.com',
+  position: 'Senior Developer'
+});
+```
+
+### Transaction vs Manual Tracking
+
+#### Using LocalTransaction (Recommended)
+
+```javascript
+const transaction = new LocalTransaction();
+await transaction.initialize();
+
+await transaction.MakeTheInstanceConceptLocal(...);
+await transaction.CreateConnectionBetweenTwoConceptsLocal(...);
+await transaction.commitTransaction(); // Automatic sync with rollback support
+```
+
+#### Manual Tracking (Alternative)
+
+```javascript
+const actions = { concepts: [], connections: [] };
+
+await MakeTheInstanceConceptLocal(..., actions);
+await CreateConnectionBetweenTwoConceptsLocal(..., actions);
+await LocalSyncData.SyncDataOnline(undefined, actions); // Manual sync, no rollback
+```
+
+### Bulk Operations with Transactions
+
+Transactions excel at bulk operations by batching all changes into a single server request:
+
+```javascript
+import { LocalTransaction } from 'mftsccs-browser';
+
+async function importEmployees(employeeList) {
+  const transaction = new LocalTransaction();
+  await transaction.initialize();
+
+  try {
+    // Import 1000 employees
+    for (let i = 0; i < employeeList.length; i++) {
+      const emp = employeeList[i];
+
+      const person = await transaction.MakeTheInstanceConceptLocal(
+        'the_person', emp.name, false, userId, accessId, sessionId
+      );
+
+      const email = await transaction.MakeTheInstanceConceptLocal(
+        'the_email', emp.email, false, userId, accessId, sessionId
+      );
+
+      const dept = await transaction.MakeTheInstanceConceptLocal(
+        'the_department', emp.department, false, userId, accessId, sessionId
+      );
+
+      // Create connections
+      await transaction.CreateConnectionBetweenTwoConceptsLocal(person, email, 'has_email');
+      await transaction.CreateConnectionBetweenTwoConceptsLocal(person, dept, 'works_in');
+    }
+
+    // All 1000 employees (5000+ total operations) sent in ONE server call
+    await transaction.commitTransaction();
+    console.log('Successfully imported', employeeList.length, 'employees');
+
+    return { success: true, count: employeeList.length };
+
+  } catch (error) {
+    // Rollback ALL 1000 employees if anything fails
+    await transaction.rollbackTransaction();
+    return { success: false, error: error.message };
+  }
+}
+
+// Import 1000 employees with single atomic transaction
+const result = await importEmployees(employeeData);
+```
+
+**Performance Impact:**
+- Without transactions: 5000 API calls (1000 employees × 5 operations each)
+- With transactions: **1 API call** (99.98% reduction in network requests)
+
+### When to Use Transactions
+
+✅ **Use Transactions When:**
+- **Bulk operations**: Creating 10+ related concepts/connections
+- **Data imports**: Importing CSV, JSON, or external data
+- **Complex workflows**: Multi-step operations that must complete atomically
+- **Critical data**: Need rollback capability if something fails
+- **Performance matters**: Reduce network overhead significantly
+- **Offline sync**: Build entire data structures offline, sync when online
+
+✅ **Always Use Transactions For:**
+- Batch processing (10+ items)
+- Production data imports
+- Critical business operations
+- Any multi-step workflow
+
+⚠️ **Skip Transactions For:**
+- Single, simple operations (1-2 concepts)
+- Read-only queries
+- Quick prototyping/testing
+- When you don't need rollback capability
+
 ## Summary
 
 ### Core Components
@@ -1098,7 +1450,15 @@ if (cached.id !== 0) {
 - **Dual ID Access**: Retrieve concepts by either real ID or ghost ID
 - **Offline-First**: Create data locally, sync later
 
+### Transactions
+- **LocalTransaction** class for atomic operations
+- **Commit/Rollback** support for data consistency
+- **Automatic tracking** of all operations
+- **State management** prevents expired transaction use
+- **Batch processing** for efficient server sync
+
 ### Best Practices
+- Use **LocalTransaction** for complex, multi-step operations
 - Use **server concepts** for shared, persistent data
 - Use **local concepts** for drafts, offline work, and bulk imports
 - Leverage **virtual IDs** for offline-first applications
