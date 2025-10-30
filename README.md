@@ -57,13 +57,17 @@
 - **Service Worker Support**: Optional background processing for better performance
 
 ### Search & Query
+- **FreeschemaQuery System** ⭐: Flexible, schema-free querying with filters, nested relationships, and multiple output formats
 - **Advanced Search**: Powerful search capabilities with filters, type matching, relationship queries, and recursive searches
 - **Binary Tree Indexing**: Fast in-memory indexing for optimal performance
 - **Bulk Operations**: Efficient batch processing for concepts, connections, and searches
 
 ### Reactive & UI
+- **Widget System** ⭐: React-like component framework with lifecycle hooks, state management, and parent-child composition
+  - **StatefulWidget**: Full lifecycle management (before_render, render, after_render)
+  - **BuilderStatefulWidget**: Dynamic code execution and concept integration
+  - **Observable Integration**: Real-time UI updates when data changes
 - **Reactive State Management**: Observable pattern with automatic change detection and subscriber notifications
-- **Widget System**: Complete UI widget framework with lifecycle management and state handling
 
 ### Developer Experience
 - **Type System**: Strong TypeScript typing throughout with comprehensive JSDoc documentation
@@ -260,6 +264,25 @@ A **Transaction** provides atomic, consistent operations with commit and rollbac
 
 **Best Practice**: Use `LocalTransaction` class for all multi-step operations to ensure data consistency and optimal performance.
 
+### 5. FreeschemaQuery (Flexible Querying) ⭐
+A **FreeschemaQuery** is the primary querying mechanism for retrieving data from your knowledge graph:
+- **Schema-Free**: Query without rigid schema constraints
+- **Declarative**: Describe what you want, not how to get it
+- **Filters**: Complex filtering with AND/OR logic operators
+- **Nested Queries**: Navigate relationships through multiple levels
+- **Multiple Formats**: Get data in the format that suits your use case
+- **Observable**: Real-time updates when data changes
+
+**Key Capabilities:**
+- ✅ **Type-Based Queries**: Find all concepts of a specific type (e.g., "person", "organization")
+- ✅ **Complex Filters**: Combine multiple filters with logical operators (=, !=, like, >, <, >=, <=)
+- ✅ **Relationship Navigation**: Query connected concepts through typeConnections
+- ✅ **Deep Nesting**: Build complex queries by composing multiple FreeschemaQuery objects
+- ✅ **Pagination**: Handle large datasets efficiently with page/inpage parameters
+- ✅ **Reactive Updates**: Use observables for automatic UI updates
+
+**Best Practice**: Use `FreeschemaQuery` for all data retrieval operations. See the [FreeschemaQuery Guide](./docs/FREESCHEMA_QUERY.md) for comprehensive examples.
+
 ```javascript
 const transaction = new LocalTransaction();
 await transaction.initialize();
@@ -287,6 +310,8 @@ Comprehensive documentation is available throughout the codebase with JSDoc comm
 
 - **[Getting Started Guide](./docs/GETTING_STARTED.md)**: Detailed initialization and first steps
 - **[Core Concepts](./docs/CORE_CONCEPTS.md)**: In-depth explanation of concepts, connections, and compositions
+- **[FreeschemaQuery Guide](./docs/FREESCHEMA_QUERY.md)**: Complete querying system with filters, nested queries, and examples ⭐
+- **[Widget System Guide](./docs/WIDGET_SYSTEM.md)**: Component framework for building reactive UIs with lifecycle management ⭐
 
 ### Inline Documentation
 
@@ -427,7 +452,59 @@ const composition = await GetCompositionLocal(conceptId);
 const compositionWithId = await GetCompositionLocalWithId(conceptId);
 ```
 
-### Searching
+### Querying Data (FreeschemaQuery) ⭐
+
+FreeschemaQuery is the recommended way to query your knowledge graph with flexible filtering and relationship navigation.
+
+```javascript
+import { FreeschemaQuery, FreeschemaQueryApi, FilterSearch, DATAID } from 'mftsccs-browser';
+
+// Simple type-based query
+const query = new FreeschemaQuery();
+query.type = "person";           // Query all person concepts
+query.outputFormat = DATAID;     // Structured output
+query.inpage = 20;               // 20 results per page
+query.page = 1;                  // First page
+
+const results = await FreeschemaQueryApi(query, authToken);
+
+// Query with filters
+const filterQuery = new FreeschemaQuery();
+filterQuery.type = "employee";
+
+const deptFilter = new FilterSearch();
+deptFilter.name = "dept_filter";
+deptFilter.type = "the_department";
+deptFilter.search = "Engineering";
+deptFilter.logicoperator = "=";
+
+filterQuery.filters = [deptFilter];
+filterQuery.filterLogic = "( dept_filter )";
+
+const engineers = await FreeschemaQueryApi(filterQuery, authToken);
+
+// Query with nested relationships
+const personQuery = new FreeschemaQuery();
+personQuery.type = "person";
+personQuery.selectors = ["the_name"];
+
+// Get emails (nested query)
+const emailQuery = new FreeschemaQuery();
+emailQuery.typeConnection = "has_email";
+emailQuery.name = "emails";
+emailQuery.selectors = ["the_email"];
+
+personQuery.freeschemaQueries = [emailQuery];
+
+const personsWithEmails = await FreeschemaQueryApi(personQuery, authToken);
+// Returns persons with their emails nested in the results
+```
+
+**See the [FreeschemaQuery Guide](./docs/FREESCHEMA_QUERY.md) for complete documentation with advanced examples.**
+
+### Legacy Search Functions
+
+These functions are still supported but FreeschemaQuery is recommended for new code:
 
 ```javascript
 import { SearchConcept, SearchWithLinker, SearchWithTypeAndLinker } from 'mftsccs-browser';
@@ -641,44 +718,91 @@ compositionObserver.subscribe((data) => {
 // All subscribers are notified with fresh data
 ```
 
-### Example 5: Using the Widget System
+### Example 5: Building UI with Widget System
+
+The Widget System provides a React-like component framework for building interactive UIs.
 
 ```javascript
-import { StatefulWidget } from 'mftsccs-browser';
+import { StatefulWidget, FreeschemaQuery, SchemaQueryListener, DATAID } from 'mftsccs-browser';
 
-class MyCustomWidget extends StatefulWidget {
+class PersonListWidget extends StatefulWidget {
   constructor() {
     super();
-    this.state = { count: 0 };
+    this.state = {
+      persons: [],
+      loading: true
+    };
   }
 
-  // Lifecycle hook: called after mount
+  // Lifecycle: Setup after mount
   before_render() {
-    console.log('Widget mounted');
+    this.setupObserver();
   }
 
-  // Render method
-  render() {
+  setupObserver() {
+    // Create query
+    const query = new FreeschemaQuery();
+    query.type = "person";
+    query.outputFormat = DATAID;
+    query.inpage = 10;
+    query.selectors = ["the_name", "the_email"];
+
+    // Nested query for phone numbers
+    const phoneQuery = new FreeschemaQuery();
+    phoneQuery.typeConnection = "has_phone";
+    phoneQuery.name = "phone";
+    phoneQuery.selectors = ["the_phone"];
+
+    query.freeschemaQueries = [phoneQuery];
+
+    // Subscribe to real-time updates
+    SchemaQueryListener(query, "").subscribe((results) => {
+      this.state.persons = results;
+      this.state.loading = false;
+      this.render(); // Auto-update UI
+    });
+  }
+
+  // Template
+  getHtml() {
+    if (this.state.loading) {
+      return '<div class="loading">Loading persons...</div>';
+    }
+
+    const personList = this.state.persons.map(p => `
+      <div class="person-card">
+        <h3>${p.person.the_name.characterValue}</h3>
+        <p>Email: ${p.person.the_email?.characterValue || 'N/A'}</p>
+        <p>Phone: ${p.person.phone?.the_phone?.characterValue || 'N/A'}</p>
+      </div>
+    `).join('');
+
     return `
-      <div>
-        <h1>Count: ${this.state.count}</h1>
-        <button id="increment">Increment</button>
+      <div class="person-list">
+        <h2>Team Members</h2>
+        ${personList}
       </div>
     `;
   }
-
-  // Lifecycle hook: called after render
-  after_render() {
-    this.getElementById('increment').addEventListener('click', () => {
-      this.setState({ count: this.state.count + 1 });
-    });
-  }
 }
 
-// Use the widget
-const widget = new MyCustomWidget();
+// Mount widget
+const widget = new PersonListWidget();
 widget.mount(document.getElementById('app'));
+
+// Widget automatically updates when:
+// - New persons are created
+// - Existing persons are modified
+// - Phone numbers change
 ```
+
+**See the [Widget System Guide](./docs/WIDGET_SYSTEM.md) for complete documentation including:**
+- Lifecycle hooks (before_render, render, after_render)
+- State management and change detection
+- Parent-child widget composition
+- Event handling
+- BuilderStatefulWidget for dynamic code execution
+- Complete examples (Todo list, Dashboard, Forms)
 
 ## Development
 
