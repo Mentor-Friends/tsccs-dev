@@ -41,6 +41,7 @@
 
 ### Core Data Management
 - **Concept & Connection Management**: Create and manage entities (concepts) and their relationships (connections)
+  - **Simplified Connection API** ⭐: `CreateConnection()` auto-creates type concepts, saving developer time
 - **Composition System**: Build complex hierarchical structures from concepts and connections
 - **Transaction Support (ACID Compliant)** ⭐: Atomic operations with commit/rollback for data integrity
   - Atomicity: All-or-nothing operations
@@ -114,7 +115,7 @@ console.log('Retrieved:', concept);
 
 ### Using Transactions (Recommended)
 
-The `LocalTransaction` class provides a robust transaction pattern with commit and rollback support:
+The `LocalTransaction` class provides a robust transaction pattern with commit and rollback support. **Always use transactions for multi-step operations** to ensure ACID compliance and enable bulk batching to the server.
 
 ```javascript
 import { LocalTransaction } from 'mftsccs-browser';
@@ -143,12 +144,12 @@ try {
     sessionId
   );
 
-  // Create connections within the transaction
-  await transaction.CreateConnectionBetweenTwoConceptsLocal(
-    person,
+  // Create connection - RECOMMENDED: Use CreateConnection ⭐
+  // Auto-creates type concept, no manual MakeTheTypeConceptLocal() needed
+  await transaction.CreateConnection(
+    person,           // Pass concept objects directly
     email,
-    'has_email',
-    false  // bidirectional
+    'has_email'      // Type string - automatically handled
   );
 
   // Commit all changes to server in one atomic operation
@@ -167,23 +168,26 @@ try {
 For simpler cases, you can manually track actions:
 
 ```javascript
-import { MakeTheInstanceConceptLocal, CreateTheConnectionLocal, LocalSyncData } from 'mftsccs-browser';
+import { MakeTheInstanceConceptLocal, CreateConnection, LocalSyncData } from 'mftsccs-browser';
 
 // Initialize actions tracker
 const actions = { concepts: [], connections: [] };
 
 // Create multiple concepts with action tracking
 const person = await MakeTheInstanceConceptLocal(
-  'the_person', 'Alice', false, userId, accessId, sessionId, undefined, actions
+  'the_person', 'Alice', false, userId, accessId, sessionId, 0, actions
 );
 
 const email = await MakeTheInstanceConceptLocal(
-  'the_email', 'alice@example.com', false, userId, accessId, sessionId, undefined, actions
+  'the_email', 'alice@example.com', false, userId, accessId, sessionId, 0, actions
 );
 
-// Create connection with action tracking
-await CreateTheConnectionLocal(
-  person.id, email.id, emailTypeId, 2, undefined, undefined, actions
+// Create connection with action tracking - RECOMMENDED: Use CreateConnection ⭐
+await CreateConnection(
+  person,          // Pass concept objects
+  email,
+  'has_email',    // Type string - auto-creates type concept
+  actions
 );
 
 // Sync all tracked changes to server in one batch
@@ -224,6 +228,14 @@ A **Connection** represents a directed relationship between two concepts:
 - `ofTheConceptId` → `toTheConceptId` (from → to)
 - `typeId` to classify the connection type
 - `orderId` for ordering multiple connections
+
+**Best Practice**: Use `CreateConnection()` to create connections - it's simpler and saves development time:
+- ✅ **Automatic Type Creation**: No need to call `MakeTheTypeConceptLocal()` manually
+- ✅ **Intuitive API**: Pass concept objects directly (not IDs)
+- ✅ **Less Boilerplate**: Just provide the type string (e.g., `'has_email'`)
+- ✅ **Transaction Compatible**: Works seamlessly with `LocalTransaction` for ACID compliance
+
+Use `CreateTheConnectionLocal()` only when you need fine-grained control or already have the typeId.
 
 ### 3. Composition
 A **Composition** is a structured grouping that includes:
@@ -318,26 +330,48 @@ All code is fully documented with concise JSDoc comments:
 ```javascript
 import {
   MakeTheInstanceConceptLocal,
-  CreateTheConnectionLocal,
+  CreateConnection,
   CreateTheCompositionLocal
 } from 'mftsccs-browser';
 
-// Create a concept (local-first, with get-or-create pattern)
-const concept = await MakeTheInstanceConceptLocal(
-  'the_name',        // Type with "the_" prefix
-  'My Concept',      // Value
+// Create concepts (local-first, with get-or-create pattern)
+const person = await MakeTheInstanceConceptLocal(
+  'the_person',      // Type with "the_" prefix
+  'Alice',           // Value
   false,             // composition mode: false = get-or-create, true = always create new
   userId,
   accessId,
   sessionId
 );
 
-// Create a connection between concepts (local-first)
-const connection = await CreateTheConnectionLocal(
-  fromConceptId,
-  toConceptId,
-  connectionTypeId,
-  2  // orderId
+const email = await MakeTheInstanceConceptLocal(
+  'the_email',
+  'alice@example.com',
+  false,
+  userId,
+  accessId,
+  sessionId
+);
+
+// Create connection - RECOMMENDED: CreateConnection (simplified API) ⭐
+// Automatically creates the connection type concept if it doesn't exist
+const connection = await CreateConnection(
+  person,               // Source concept object
+  email,                // Target concept object
+  'has_email'          // Type string - auto-creates type concept
+);
+// ✅ No need to call MakeTheTypeConceptLocal() manually!
+// ✅ Pass concept objects directly (not IDs)
+// ✅ Saves developer time and reduces boilerplate
+
+// Alternative: CreateTheConnectionLocal (manual type creation required)
+// Use this if you already have the typeId or need fine-grained control
+const connectionTypeId = await MakeTheTypeConceptLocal('has_email', userId, userId, userId);
+const manualConnection = await CreateTheConnectionLocal(
+  person.id,           // Must extract ID manually
+  email.id,            // Must extract ID manually
+  connectionTypeId,    // Must create type concept first
+  1000                 // orderId
 );
 
 // Create a composition from JSON (local-first)
@@ -492,14 +526,10 @@ try {
     'the_role', 'Software Engineer', false, userId, accessId, sessionId
   );
 
-  // Create named connections within the transaction
-  await transaction.CreateConnectionBetweenTwoConceptsLocal(
-    person, company, 'works_at', false
-  );
-
-  await transaction.CreateConnectionBetweenTwoConceptsLocal(
-    person, role, 'has_role', false
-  );
+  // Create connections within the transaction using simplified API ⭐
+  // Auto-creates type concepts - no manual MakeTheTypeConceptLocal() needed!
+  await transaction.CreateConnection(person, company, 'works_at');
+  await transaction.CreateConnection(person, role, 'has_role');
 
   // Commit all changes atomically to server
   await transaction.commitTransaction();

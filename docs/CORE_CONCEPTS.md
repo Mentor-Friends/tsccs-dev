@@ -281,20 +281,126 @@ await CreateTheConnection(techCorpId, aliceId, CONNECTION_EMPLOYS);
 
 ### Working with Connections
 
-#### Creating a Connection
+#### Creating a Connection (Recommended Approach)
+
+**Use `CreateConnection()` for simplified connection creation** - it automatically handles type concept creation, saving you time and reducing boilerplate code.
 
 ```javascript
-import { CreateTheConnection } from 'mftsccs-browser';
+import { CreateConnection } from 'mftsccs-browser';
 
-const connection = await CreateTheConnection(
-  123,  // ofTheConceptId - source concept
-  456,  // toTheConceptId - target concept
-  5,    // typeId - type of connection
-  0     // orderId - order (optional, defaults to 0)
+// RECOMMENDED: CreateConnection - Simplified API ⭐
+// Automatically creates the connection type concept if it doesn't exist
+const connection = await CreateConnection(
+  personConcept,      // Source concept object (FROM)
+  emailConcept,       // Target concept object (TO)
+  'has_email'        // Type string - auto-creates type concept
 );
 
-console.log(connection.id);  // 789
+console.log(connection.id);  // -12345 (negative = local/virtual ID)
 ```
+
+**Key Advantages of CreateConnection:**
+
+✅ **No Manual Type Creation**: Automatically calls `MakeTheTypeConceptLocal()` internally
+✅ **Concept Objects**: Pass concept objects directly (not IDs)
+✅ **Less Boilerplate**: Just provide the type string (e.g., `'has_email'`, `'works_at'`)
+✅ **Developer Time Savings**: Reduces 3-4 lines of code per connection
+✅ **Transaction Compatible**: Works seamlessly with `LocalTransaction` for ACID compliance
+
+**How It Works:**
+
+```javascript
+// Behind the scenes, CreateConnection does this for you:
+// 1. Creates/retrieves type concept: MakeTheTypeConceptLocal('has_email', ...)
+// 2. Extracts IDs: personConcept.id, emailConcept.id, typeConcept.id
+// 3. Creates connection: CreateTheConnectionLocal(personId, emailId, typeId, ...)
+// 4. Returns the connection object
+
+// You save all this manual work!
+```
+
+#### Alternative: CreateTheConnectionLocal (Manual Approach)
+
+Use `CreateTheConnectionLocal()` only when you need fine-grained control or already have the typeId:
+
+```javascript
+import { CreateTheConnectionLocal, MakeTheTypeConceptLocal } from 'mftsccs-browser';
+
+// Step 1: Manually create the connection type concept
+const typeConcept = await MakeTheTypeConceptLocal('has_email', 999, 999, 999);
+
+// Step 2: Extract IDs manually
+const personId = personConcept.id;
+const emailId = emailConcept.id;
+
+// Step 3: Create the connection
+const connection = await CreateTheConnectionLocal(
+  personId,          // ofTheConceptId - source concept ID
+  emailId,           // toTheConceptId - target concept ID
+  typeConcept.id,    // typeId - must provide manually
+  1000,              // orderId (1000 = external connection)
+  'has_email',       // typeString
+  userId
+);
+
+console.log(connection.id);  // -12345
+```
+
+**When to use CreateTheConnectionLocal:**
+- You already have the typeId and want to avoid the lookup
+- You need fine-grained control over orderId (< 3 for internal, >= 999 for external)
+- You're working with low-level connection management
+
+#### Using CreateConnection with Transactions (Best Practice)
+
+Always use transactions for multi-step operations to ensure ACID compliance:
+
+```javascript
+import { LocalTransaction } from 'mftsccs-browser';
+
+const transaction = new LocalTransaction();
+await transaction.initialize();
+
+try {
+  // Create concepts
+  const person = await transaction.MakeTheInstanceConceptLocal(
+    'the_person', 'Alice', false, userId, accessId, sessionId
+  );
+
+  const email = await transaction.MakeTheInstanceConceptLocal(
+    'the_email', 'alice@example.com', false, userId, accessId, sessionId
+  );
+
+  const phone = await transaction.MakeTheInstanceConceptLocal(
+    'the_phone', '+1-555-0123', false, userId, accessId, sessionId
+  );
+
+  // Create connections - SIMPLE & CLEAN ⭐
+  await transaction.CreateConnection(person, email, 'has_email');
+  await transaction.CreateConnection(person, phone, 'has_phone');
+
+  // All operations (2 concepts + 2 connections) sent in ONE server call
+  await transaction.commitTransaction();
+  console.log('Transaction committed successfully');
+
+} catch (error) {
+  // Rollback all changes if any operation fails
+  await transaction.rollbackTransaction();
+  console.error('Transaction rolled back:', error);
+}
+```
+
+**Comparison: CreateConnection vs CreateTheConnectionLocal**
+
+| Feature | CreateConnection ⭐ | CreateTheConnectionLocal |
+|---------|-------------------|--------------------------|
+| **Type Creation** | Automatic | Manual (requires MakeTheTypeConceptLocal) |
+| **Parameters** | Concept objects + type string | Concept IDs + typeId |
+| **Lines of Code** | 1 line | 3-4 lines |
+| **Developer Time** | Fast | Slower (more steps) |
+| **Use Case** | Most scenarios | Fine-grained control |
+| **Transaction Support** | ✅ Yes | ✅ Yes |
+| **Recommended** | ✅ **Yes** | Only when needed |
 
 #### Retrieving Connections
 
