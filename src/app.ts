@@ -1,3 +1,12 @@
+/**
+ * Main application module for the Concept Connection System (CCS-JS).
+ * This module serves as the primary entry point and exports all public-facing APIs,
+ * data structures, and utilities for managing concepts, connections, and compositions.
+ *
+ * @module app
+ * @see {@link https://documentation.freeschema.com} for detailed documentation
+ */
+
 export {init, updateAccessToken};
 
 import CreateBinaryTreeFromData from './Services/CreateBinaryTreeFromData';
@@ -98,10 +107,73 @@ export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {GiveConnection,GetAllTheConnectionsByTypeAndOfTheConcept} from'./Services/Delete/GetAllConnectionByType';
 export {DATAID, NORMAL, JUSTDATA,ALLID,DATAIDDATE,RAW,LISTNORMAL} from './Constants/FormatConstants';
 export {Transaction} from './DataStructures/Transaction/Transaction';
+/**
+ * Updates the bearer access token used for authenticating API requests to the backend.
+ * This token is stored globally and used by all API calls that require authentication.
+ *
+ * @param accessToken - The new bearer access token to use for API authentication. Defaults to empty string if not provided.
+ *
+ * @example
+ * ```typescript
+ * // Update the access token after user login
+ * updateAccessToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+ * ```
+ *
+ * @see TokenStorage for token storage implementation
+ * @see https://documentation.freeschema.com for authentication details
+ */
 function updateAccessToken(accessToken:string = ""){
    TokenStorage.BearerAccessToken = accessToken;
 }
 
+/**
+ * Initializes the Concept Connection System with backend URLs and authentication.
+ * This is the primary initialization function that must be called before using any CCS features.
+ * It performs the following operations asynchronously:
+ *
+ * 1. Sets up base URLs for the main API and AI services
+ * 2. Stores the authentication token for API requests
+ * 3. Initializes the system (database setup)
+ * 4. Creates binary trees from concept data for efficient querying (by ID, character, and type)
+ * 5. Creates local binary trees for offline/local concept management
+ * 6. Loads connection data from IndexedDB into memory
+ * 7. Loads local connection data for offline operations
+ *
+ * All data loading operations run in parallel for optimal performance. The IdentifierFlags
+ * are updated as each operation completes to indicate which data structures are ready for use.
+ *
+ * @param url - The base URL for the main backend API endpoint (e.g., 'https://api.example.com')
+ * @param aiurl - The base URL for the AI service endpoint (e.g., 'https://ai.example.com')
+ * @param accessToken - The bearer access token for authenticating API requests
+ *
+ * @example
+ * ```typescript
+ * // Initialize the system with backend URLs and auth token
+ * init(
+ *   'https://api.freeschema.com',
+ *   'https://ai.freeschema.com',
+ *   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+ * );
+ *
+ * // After initialization, check if data is loaded before querying
+ * if (IdentifierFlags.isDataLoaded) {
+ *   // Safe to query concepts
+ * }
+ * ```
+ *
+ * @remarks
+ * The initialization process is asynchronous but does not return a Promise. Instead,
+ * it uses IdentifierFlags to signal when different components are ready:
+ * - `isDataLoaded`, `isCharacterLoaded`, `isTypeLoaded` - Remote concept data ready
+ * - `isLocalDataLoaded`, `isLocalTypeLoaded`, `isLocalCharacterLoaded` - Local concept data ready
+ * - `isConnectionLoaded`, `isConnectionTypeLoaded` - Remote connection data ready
+ * - `isLocalConnectionLoaded` - Local connection data ready
+ *
+ * @see IdentifierFlags for checking initialization status
+ * @see InitializeSystem for database initialization details
+ * @see CreateBinaryTreeFromData for concept tree creation
+ * @see https://documentation.freeschema.com/#installation for setup guide
+ */
 function init(url:string = "", aiurl:string="", accessToken:string = ""){
    BaseUrl.BASE_URL = url;
    BaseUrl.AI_URL = aiurl;

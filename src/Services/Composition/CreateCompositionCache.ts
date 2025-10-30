@@ -1,3 +1,7 @@
+/**
+ * @module CreateCompositionCache
+ * @description Provides functionality to create compositions from JSON objects with caching support
+ */
 
 import { Concept } from '../../DataStructures/Concept';
 import { Connection } from '../../DataStructures/Connection';
@@ -6,7 +10,45 @@ import { Composition } from '../../DataStructures/Composition/Composition';
 import MakeTheInstanceConcept from '../MakeTheInstanceConcept';
 import { createTheConnection } from '../../Services/CreateTheConnection';
 
-// create a composition with caching mechanism
+/**
+ * Creates a composition from a JSON object with caching mechanism.
+ * Recursively processes nested objects/arrays to create concepts and connections.
+ *
+ * @async
+ * @param {any} json - The JSON object to convert into a composition
+ * @param {number | null} [ofTheConceptId=null] - Parent concept ID (null for root)
+ * @param {number | null} [ofTheConceptUserId=null] - Parent concept's user ID
+ * @param {number | null} [mainKey=null] - Main composition ID (root concept ID)
+ * @param {number | null} [userId=null] - User ID creating the composition (defaults to 999)
+ * @param {number | null} [accessId=null] - Access level ID (defaults to 4)
+ * @param {number | null} [sessionInformationId=null] - Session ID (defaults to 999)
+ * @param {Composition | null} [composition=null] - Existing Composition object to populate
+ * @returns {Promise<Concept>} A promise that resolves to the main (root) Concept of the composition
+ *
+ * @example
+ * ```typescript
+ * const jsonData = {
+ *   user: {
+ *     name: "John",
+ *     email: "john@example.com",
+ *     age: 30
+ *   }
+ * };
+ * const mainConcept = await CreateTheCompositionWithCache(jsonData, null, null, null, 1, 4, 1);
+ * // Creates concepts for user, name, email, age with proper connections
+ * ```
+ *
+ * @remarks
+ * This function:
+ * - Recursively processes nested JSON structures
+ * - Creates concepts for each key-value pair
+ * - Establishes connections between parent and child concepts
+ * - Distinguishes between composition nodes (objects/arrays) and leaf values (primitives)
+ * - Populates the Composition object with all concepts and connections
+ * - Uses caching for improved performance
+ * - First call (no parent) creates the root concept
+ * - Subsequent recursive calls create child concepts linked to parents
+ */
 export  async function CreateTheCompositionWithCache(
   json: any,
   ofTheConceptId: number | null = null,

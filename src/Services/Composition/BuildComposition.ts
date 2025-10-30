@@ -1,19 +1,55 @@
 
-  import { ConceptsData } from '../../DataStructures/ConceptData';
-  import { Connection } from '../../DataStructures/Connection';
-  import { Concept } from '../../DataStructures/Concept';
-  import { CreateDefaultConcept } from '../../Services/CreateDefaultConcept';
-  import {default as GetTheConcept} from '../../Services/GetTheConcept';
-  // this is a different type of recurisve fetch because here all the concepts and connections are passed as it is
-  // so there is no need to query the connections and concepts from outside
-  // if the concept connection is not found then it will go to the backend to fetch it
-  export async function recursiveFetchNew(
-    id: number,
-    connectionList: Connection[],
-    conceptList: Concept[],
-    compositionList: number[],
-    visitedConcepts: number[] = []
-  ) {
+/**
+ * @module BuildComposition
+ * @description Provides functions to recursively build composition structures from concepts and connections with caching support
+ */
+
+import { ConceptsData } from '../../DataStructures/ConceptData';
+import { Connection } from '../../DataStructures/Connection';
+import { Concept } from '../../DataStructures/Concept';
+import { CreateDefaultConcept } from '../../Services/CreateDefaultConcept';
+import {default as GetTheConcept} from '../../Services/GetTheConcept';
+
+/**
+ * Recursively fetches and builds a composition structure from provided concepts and connections.
+ * Uses passed data rather than querying externally, with backend fallback for missing data.
+ *
+ * @async
+ * @param {number} id - The concept ID to start building the composition from
+ * @param {Connection[]} connectionList - Array of all connections to use for building
+ * @param {Concept[]} conceptList - Array of all concepts available for building
+ * @param {compositionList} compositionList - Array of concept IDs that are compositions (not leaf values)
+ * @param {number[]} [visitedConcepts=[]] - Array tracking visited concept IDs to prevent circular references
+ * @returns {Promise<any>} A promise that resolves to the built composition object or character value
+ *
+ * @example
+ * ```typescript
+ * const conceptId = 123;
+ * const connections: Connection[] = [...];
+ * const concepts: Concept[] = [...];
+ * const compositionIds = [123, 456];
+ * const visited: number[] = [];
+ * const result = await recursiveFetchNew(conceptId, connections, concepts, compositionIds, visited);
+ * // result = { user: { name: "John", email: "john@example.com" } }
+ * ```
+ *
+ * @remarks
+ * This function:
+ * - Works with pre-loaded concepts and connections (no external queries during recursion)
+ * - Falls back to backend API if concept/connection not found in provided lists
+ * - Tracks visited concepts to prevent infinite loops in circular relationships
+ * - Distinguishes between composition nodes (objects/arrays) and leaf values (strings)
+ * - Removes "the_" prefix from type names for cleaner keys
+ * - Handles numeric types as arrays, string types as objects
+ * - Returns empty string for concepts not in compositionList (leaf values)
+ */
+export async function recursiveFetchNew(
+  id: number,
+  connectionList: Connection[],
+  conceptList: Concept[],
+  compositionList: number[],
+  visitedConcepts: number[] = []
+) {
     let output: any = {};
     const arroutput: any = []
     if (id == 0) {
@@ -152,9 +188,29 @@
     return output;
   
   }
-  
-  // gets the concept from the list of concepts using the conceptId
-  function getConceptFromList(conceptList: Concept[], conceptId: number) {
+/**
+ * Retrieves a concept from a list of concepts by matching the concept ID.
+ *
+ * @param {Concept[]} conceptList - Array of concepts to search through
+ * @param {number} conceptId - The ID of the concept to find
+ * @returns {Concept} The matching concept, or a default empty concept if not found
+ *
+ * @example
+ * ```typescript
+ * const concepts: Concept[] = [
+ *   { id: 1, characterValue: "John" },
+ *   { id: 2, characterValue: "Jane" }
+ * ];
+ * const concept = getConceptFromList(concepts, 1);
+ * // concept = { id: 1, characterValue: "John" }
+ * ```
+ *
+ * @remarks
+ * - Returns a default concept (with id: 0) if no match is found
+ * - Uses linear search through the concept list
+ * - First match is returned immediately
+ */
+function getConceptFromList(conceptList: Concept[], conceptId: number) {
     let concept: Concept = CreateDefaultConcept()
     for (let i = 0; i < conceptList.length; i++) {
       if (conceptId == conceptList[i].id) {

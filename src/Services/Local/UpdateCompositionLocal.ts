@@ -1,3 +1,13 @@
+/**
+ * Local Composition Update Module
+ *
+ * This module provides functionality to update existing compositions in local storage
+ * by patching them with new data. It handles the complex process of modifying a graph
+ * structure, including replacing existing concepts, creating new ones, and managing
+ * connections while maintaining data integrity.
+ *
+ * @module UpdateCompositionLocal
+ */
 
 import { Connection } from '../../DataStructures/Connection';
 import { Concept } from '../../DataStructures/Concept';
@@ -27,7 +37,97 @@ import { MakeTheInstanceConceptLocal } from './MakeTheInstanceConceptLocal';
 import { CreateDefaultLConcept, CreateTheConnectionLocal, LConcept, LConnection } from '../../app';
 import { convertFromConceptToLConcept, convertFromConnectionToLConnection } from '../Conversion/ConvertConcepts';
 
-// function to update the cache composition
+/**
+ * Updates an existing composition by patching it with new data.
+ *
+ * This function performs a sophisticated update operation on a composition by:
+ * 1. Fetching the current composition structure from the backend
+ * 2. Identifying concepts that need to be replaced (same type, different value)
+ * 3. Creating new concepts for the patch data
+ * 4. Removing old connections and concepts that are being replaced
+ * 5. Creating new connections for the updated structure
+ * 6. Triggering synchronization with the backend
+ *
+ * The function handles both simple property updates and complex nested composition updates.
+ *
+ * @param patcherStructure - Object containing update instructions
+ * @param patcherStructure.compositionId - ID of the root composition to update
+ * @param patcherStructure.ofTheCompositionId - ID of immediate parent (for nested updates)
+ * @param patcherStructure.patchObject - The new data to patch into the composition
+ * @param patcherStructure.userId - ID of the user performing the update
+ * @param patcherStructure.sessionId - Session tracking ID
+ * @param patcherStructure.accessId - Access control ID
+ *
+ * @returns A promise that resolves when the update is complete
+ *
+ * @remarks
+ * - Fetches latest composition data from backend to ensure consistency
+ * - Identifies existing concepts by type and marks them for deletion
+ * - Creates new concepts with the updated values
+ * - Establishes proper connections between parent and new concepts
+ * - Deletes old connections associated with replaced concepts
+ * - Triggers online synchronization via SyncData.SyncDataOnline()
+ * - Handles both primitive values and nested compositions (objects/arrays)
+ * - For nested compositions, recursively creates the structure
+ * - Converts backend Concept/Connection types to local LConcept/LConnection types
+ *
+ * @example
+ * ```typescript
+ * // Update a user's name and age
+ * const patcher: PatcherStructure = {
+ *   compositionId: 12345,        // User composition ID
+ *   ofTheCompositionId: null,    // No immediate parent (root level)
+ *   patchObject: {
+ *     name: "Jane Doe",          // Updated name
+ *     age: 31                    // Updated age
+ *   },
+ *   userId: 123,
+ *   sessionId: 999,
+ *   accessId: 4
+ * };
+ *
+ * await UpdateCompositionLocal(patcher);
+ * // Result: Old name/age concepts replaced with new ones
+ *
+ * // Update nested property
+ * const nestedPatcher: PatcherStructure = {
+ *   compositionId: 12345,
+ *   ofTheCompositionId: 12350,   // Address composition ID
+ *   patchObject: {
+ *     city: "New York"            // Update city within address
+ *   },
+ *   userId: 123,
+ *   sessionId: 999,
+ *   accessId: 4
+ * };
+ *
+ * await UpdateCompositionLocal(nestedPatcher);
+ *
+ * // Update with complex nested structure
+ * const complexPatcher: PatcherStructure = {
+ *   compositionId: 12345,
+ *   ofTheCompositionId: null,
+ *   patchObject: {
+ *     address: {                  // Nested composition
+ *       street: "123 Main St",
+ *       city: "Boston"
+ *     }
+ *   },
+ *   userId: 123,
+ *   sessionId: 999,
+ *   accessId: 4
+ * };
+ *
+ * await UpdateCompositionLocal(complexPatcher);
+ * ```
+ *
+ * @see {@link PatcherStructure} - Structure defining update parameters
+ * @see {@link MakeTheInstanceConceptLocal} - Creates new concepts during update
+ * @see {@link CreateTheCompositionLocal} - Handles nested composition creation
+ * @see {@link CreateTheConnectionLocal} - Creates connections for new concepts
+ * @see {@link DeleteConnectionById} - Removes old connections
+ * @see {@link SyncData.SyncDataOnline} - Synchronizes changes with backend
+ */
 export  async function UpdateCompositionLocal(
   patcherStructure: PatcherStructure,
 ) {

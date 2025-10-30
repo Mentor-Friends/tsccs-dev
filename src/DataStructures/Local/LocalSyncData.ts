@@ -1,12 +1,45 @@
+/**
+ * @fileoverview Local Synchronization Data management for the Concept Connection System.
+ * This module manages temporary storage of concepts and connections that need to be
+ * synchronized with the local database periodically.
+ * @module DataStructures/Local/LocalSyncData
+ */
+
 import { LConcept } from "./LConcept";
 import { LConnection } from "./LConnection";
 import { storeToDatabase } from "../../Database/NoIndexDb";
 
+/**
+ * Manages synchronization data for local concepts and connections.
+ * Provides static methods for staging data before batch synchronization to the local database.
+ *
+ * @class LocalSyncData
+ * @export
+ */
 export class LocalSyncData{
+    /**
+     * Static array storing concepts pending synchronization.
+     * @type {LConcept[]}
+     * @static
+     */
     static  conceptsSyncArray:LConcept[] = [];
-    static  connectionSyncArray: LConnection[] = [];
-    
 
+    /**
+     * Static array storing connections pending synchronization.
+     * @type {LConnection[]}
+     * @static
+     */
+    static  connectionSyncArray: LConnection[] = [];
+
+
+    /**
+     * Checks if a concept already exists in the sync array.
+     *
+     * @static
+     * @method CheckContains
+     * @param {LConcept} concept - The concept to check
+     * @returns {boolean} True if the concept exists, false otherwise
+     */
     static  CheckContains(concept: LConcept){
         var contains = false;
         for(var i=0; i<this.conceptsSyncArray.length; i++){
@@ -17,6 +50,15 @@ export class LocalSyncData{
         return contains;
     }
 
+    /**
+     * Removes related concepts and connections from sync arrays when a concept is deleted.
+     * Removes the concept itself and any connections that reference it.
+     *
+     * @static
+     * @method SyncDataDelete
+     * @param {number} id - The ID of the concept being deleted
+     * @returns {void}
+     */
     static SyncDataDelete(id:number){
         for(var i=0; i< this.conceptsSyncArray.length;i++){
             if(id == this.conceptsSyncArray[i].id){
@@ -30,6 +72,14 @@ export class LocalSyncData{
         }
     }
 
+    /**
+     * Checks if a connection already exists in the sync array.
+     *
+     * @static
+     * @method CheckContainsConnection
+     * @param {LConnection} connection - The connection to check
+     * @returns {boolean} True if the connection exists, false otherwise
+     */
     static  CheckContainsConnection(connection: LConnection){
         var contains = false;
         for(var i=0; i<this.connectionSyncArray.length; i++){
@@ -40,6 +90,14 @@ export class LocalSyncData{
         return contains;
     }
 
+    /**
+     * Adds a concept to the sync array for later batch synchronization.
+     *
+     * @static
+     * @method AddConcept
+     * @param {LConcept} concept - The concept to add
+     * @returns {void}
+     */
     static AddConcept(concept: LConcept){
         var contains = false;
        // ConceptsData.AddConceptTemporary(concept);
@@ -48,6 +106,14 @@ export class LocalSyncData{
         }
      }
 
+     /**
+      * Removes a concept from the sync array.
+      *
+      * @static
+      * @method RemoveConcept
+      * @param {LConcept} concept - The concept to remove
+      * @returns {void}
+      */
      static RemoveConcept(concept: LConcept){
         for(var i=0; i<this.conceptsSyncArray.length; i++){
          if(this.conceptsSyncArray[i].id == concept.id){
@@ -56,10 +122,26 @@ export class LocalSyncData{
         }
      }
 
+     /**
+      * Adds a connection to the sync array for later batch synchronization.
+      *
+      * @static
+      * @method AddConnection
+      * @param {LConnection} connection - The connection to add
+      * @returns {void}
+      */
      static AddConnection(connection: LConnection){
          this.connectionSyncArray.push(connection);
      }
 
+     /**
+      * Removes a connection from the sync array.
+      *
+      * @static
+      * @method RemoveConnection
+      * @param {LConnection} connection - The connection to remove
+      * @returns {void}
+      */
      static RemoveConnection(connection: LConnection){
         for(var i=0; i<this.connectionSyncArray.length; i++){
          if(this.connectionSyncArray[i].id == connection.id){
@@ -69,6 +151,15 @@ export class LocalSyncData{
      }
 
 
+     /**
+      * Synchronizes all pending concepts and connections to the local database.
+      * Clears the sync arrays after successful synchronization.
+      *
+      * @static
+      * @async
+      * @method syncDataLocalDb
+      * @returns {Promise<string>} Returns "done" when synchronization is complete
+      */
      static async syncDataLocalDb(){
         if(this.conceptsSyncArray.length > 0){
             for(let i=0; i< this.conceptsSyncArray.length;i++){
@@ -86,7 +177,6 @@ export class LocalSyncData{
      }
 
 
- 
 
 
 }

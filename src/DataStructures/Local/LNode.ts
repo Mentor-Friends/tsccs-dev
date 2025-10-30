@@ -1,14 +1,68 @@
+/**
+ * @fileoverview Local Node data structure for binary tree operations.
+ * This module defines the LNode class which represents a node in an AVL
+ * (self-balancing) binary tree for storing and managing LConcept instances.
+ * @module DataStructures/Local/LNode
+ */
+
 import { LConcept } from "./LConcept";
 
+/**
+ * Represents a node in an AVL binary tree for local concepts.
+ * This class implements self-balancing tree operations including rotations,
+ * insertions, deletions, and lookups for efficient concept management.
+ *
+ * @class LNode
+ * @export
+ */
 export class LNode{
+    /**
+     * The key used for tree ordering (can be number or string).
+     * @type {any}
+     */
     key:any;
+    /**
+     * The concept value stored in this node.
+     * @type {LConcept}
+     */
     value:LConcept;
+    /**
+     * Reference to the left child node.
+     * @type {LNode | null}
+     */
     leftNode: LNode | null;
+    /**
+     * Reference to the right child node.
+     * @type {LNode | null}
+     */
     rightNode: LNode | null;
+    /**
+     * Reference to current node for linking nodes with same key.
+     * @type {LNode | null}
+     */
     currentNode: LNode | null;
+    /**
+     * Array of variant nodes with same key but different properties.
+     * @type {LNode[]}
+     * @default []
+     */
     variants: LNode [] = [] ;
+    /**
+     * Height of the node in the tree for AVL balancing.
+     * @type {number}
+     * @default 1
+     */
     height:number = 1;
 
+    /**
+     * Creates a new LNode instance.
+     *
+     * @constructor
+     * @param {any} key - The key used for tree ordering
+     * @param {LConcept} value - The concept value to store
+     * @param {LNode | null} leftNode - Reference to left child
+     * @param {LNode | null} rightNode - Reference to right child
+     */
     constructor(key:any, value:LConcept, leftNode: LNode | null, rightNode:LNode| null){
         this.key = key;
         this.value = value;
@@ -17,6 +71,15 @@ export class LNode{
         this.currentNode = null;
     }
 
+    /**
+     * Adds a current node to the chain based on typeId.
+     * This method links nodes with different typeIds.
+     *
+     * @method addCurrentNode
+     * @param {LNode} passedNode - The node to add
+     * @param {LNode | null} node - The current node in the chain
+     * @returns {LNode | null} The updated node chain
+     */
     public addCurrentNode(passedNode:LNode, node:LNode|null){
         if(node == null){
             node = passedNode;
@@ -28,6 +91,15 @@ export class LNode{
         return node;
     }
 
+    /**
+     * Adds a node as a variant if it has the same key but different id.
+     * This method manages variants (nodes with same key but different properties).
+     *
+     * @method addCurrentNodeType
+     * @param {LNode} passedNode - The node to add as variant
+     * @param {LNode | null} node - The current node
+     * @returns {LNode | null} The updated node
+     */
     public addCurrentNodeType(passedNode:LNode, node:LNode|null){
         if(node == null){
             node = passedNode;
@@ -46,6 +118,16 @@ export class LNode{
         return node;
     }
 
+    /**
+     * Adds a node to the AVL tree with automatic balancing.
+     * This method performs standard AVL insertion with rotations.
+     *
+     * @method addNode
+     * @param {LNode} passedNode - The node to insert
+     * @param {LNode | null} node - The current node in traversal
+     * @param {number} height - Current height for balancing
+     * @returns {LNode | null} The root of the updated subtree
+     */
      public addNode(passedNode:LNode, node:LNode|null, height:number){
         if(node  == null){
             node = passedNode;
@@ -98,9 +180,19 @@ export class LNode{
             }
         }
         return node;
-        
+
     }
 
+    /**
+     * Adds a character node to the tree with variant management.
+     * Handles nodes with character keys and manages variants for duplicate keys.
+     *
+     * @method addCharacterNode
+     * @param {LNode} passedNode - The node to insert
+     * @param {LNode | null} node - The current node in traversal
+     * @param {number} height - Current height for balancing
+     * @returns {LNode | null} The root of the updated subtree
+     */
     public addCharacterNode(passedNode:LNode, node:LNode|null, height:number){
         var debugFlag = false;
         if(passedNode.value.characterValue != ""){
@@ -220,6 +312,16 @@ export class LNode{
 
     }
 
+    /**
+     * Adds a type node to the tree with variant management.
+     * Handles nodes with typeId keys and manages variants for duplicate typeIds.
+     *
+     * @method addTypeNode
+     * @param {LNode} passedNode - The node to insert
+     * @param {LNode | null} node - The current node in traversal
+     * @param {number} height - Current height for balancing
+     * @returns {LNode | null} The root of the updated subtree
+     */
     public addTypeNode(passedNode:LNode, node:LNode|null, height:number){
         var debugFlag = false;
         if(passedNode.value.typeId != 0){
@@ -328,6 +430,13 @@ export class LNode{
 
     }
 
+    /**
+     * Performs a right rotation for AVL tree balancing.
+     *
+     * @method rightRotate
+     * @param {LNode | null} y - The node to rotate
+     * @returns {LNode | null} The new root of the rotated subtree
+     */
      public rightRotate(y:LNode | null){
         if(y){
             let x = y.leftNode;
@@ -335,10 +444,10 @@ export class LNode{
                 let T2 = x.rightNode;
 
                 y.leftNode = T2;
-    
+
                 x.rightNode = y;
                 y.height = Math.max(this.getHeight(y.leftNode), this.getHeight(y.rightNode)) + 1;
-                        
+
                 x.height = Math.max(this.getHeight(x.leftNode), this.getHeight(x.rightNode)) + 1;
                 return x;
             }
@@ -348,6 +457,13 @@ export class LNode{
 
       }
 
+      /**
+       * Performs a left rotation for AVL tree balancing.
+       *
+       * @method leftRotate
+       * @param {LNode | null} x - The node to rotate
+       * @returns {LNode | null} The new root of the rotated subtree
+       */
       public leftRotate(x:LNode | null){
 
         if(x){
@@ -365,23 +481,46 @@ export class LNode{
         return x;
 
       }
-      
 
+
+    /**
+     * Gets the height of a node.
+     *
+     * @method getHeight
+     * @param {LNode | null} node - The node to get height from
+     * @returns {number} The height of the node, or 0 if null
+     */
     public getHeight(node: LNode| null){
         if(node){
             return node.height;
-        }   
+        }
         return 0;
     }
 
+    /**
+     * Calculates the balance factor of a node.
+     * Balance factor = height(left subtree) - height(right subtree)
+     *
+     * @method getBalanceFactor
+     * @param {LNode | null} N - The node to calculate balance factor for
+     * @returns {number} The balance factor (-2, -1, 0, 1, or 2)
+     */
     public getBalanceFactor(N: LNode | null){
         if (N == null){
           return 0;
         }
-        
+
         return this.getHeight(N.leftNode) - this.getHeight(N.rightNode);
       }
 
+    /**
+     * Searches for a node by numeric id.
+     *
+     * @method getFromNode
+     * @param {number} id - The id to search for
+     * @param {LNode | null} node - The current node in traversal
+     * @returns {LNode | null} The found node or null
+     */
     public getFromNode(id: number, node: LNode | null) :LNode | null{
         if(node){
             if(id == node.key){
@@ -399,6 +538,14 @@ export class LNode{
 
     }
 
+    /**
+     * Searches for a node by character value.
+     *
+     * @method getCharacterFromNode
+     * @param {string} value - The character value to search for
+     * @param {LNode | null} node - The current node in traversal
+     * @returns {LNode | null} The found node or null
+     */
     public getCharacterFromNode(value: string, node:LNode | null) :LNode | null{
         if(node){
             if(value == node.key){
@@ -418,7 +565,17 @@ export class LNode{
 
 
 
-    
+
+    /**
+     * Searches for a node by both character value and type id.
+     * This method also searches through variants to find exact matches.
+     *
+     * @method getFromNodeWithCharacterAndType
+     * @param {string} value - The character value to search for
+     * @param {number} typeId - The type identifier to match
+     * @param {LNode | null} node - The current node in traversal
+     * @returns {LNode | null} The found node or null
+     */
     public getFromNodeWithCharacterAndType(value: string, typeId: number, node:LNode | null) :LNode | null{
         value = `${value}`;
         if(node){
@@ -448,6 +605,15 @@ export class LNode{
 
     }
 
+    /**
+     * Removes a node from the tree by id.
+     * Uses standard BST deletion with in-order successor replacement.
+     *
+     * @method removeNode
+     * @param {LNode | null} passedNode - The current node in traversal
+     * @param {number} id - The id of the node to remove
+     * @returns {LNode | null} The root of the updated subtree
+     */
     public removeNode(passedNode:LNode|null,id:number){
             if(passedNode == null){
                 return passedNode;
@@ -485,7 +651,7 @@ export class LNode{
                 passedNode = null;
                 return temp;
             }
-            else{                
+            else{
                 // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
                 var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
                 passedNode.value = immediateSuccessor.value;
@@ -496,9 +662,19 @@ export class LNode{
                 return passedNode;
 
             }
-    
+
     }
 
+    /**
+     * Removes a node with variant management.
+     * If the node has variants, replaces the removed node with first variant.
+     *
+     * @method removeNodeWithVariants
+     * @param {LNode | null} passedNode - The current node in traversal
+     * @param {any} typeIdentifier - The type identifier (key) to search for
+     * @param {number} conceptId - The concept id to remove
+     * @returns {LNode | null} The root of the updated subtree
+     */
     public removeNodeWithVariants(passedNode:LNode|null,typeIdentifier:any, conceptId:number){
         if(passedNode == null){
             return passedNode;
@@ -523,12 +699,12 @@ export class LNode{
                     passedNode.currentNode = newNode.currentNode;
                     passedNode.variants.splice(0,1);
                     return passedNode;
-    
+
                 }
             }
             else{
 
-                // in the condition that the main node is not equal to the checking value 
+                // in the condition that the main node is not equal to the checking value
                 for(let i=0; i<passedNode.variants.length; i++){
                     if(conceptId == passedNode.variants[i].value.id){
                         passedNode.variants.splice(i, 1);
@@ -549,7 +725,7 @@ export class LNode{
             passedNode = null;
             return temp;
         }
-        else{                
+        else{
             // passing the rightNode to the inOrderSuccessor gives the immediate successor of the node
             var immediateSuccessor =  this.inOrderSuccessor(passedNode.rightNode);
             passedNode.value = immediateSuccessor.value;
@@ -564,6 +740,13 @@ export class LNode{
 }
 
 
+    /**
+     * Counts the total number of nodes in the subtree.
+     *
+     * @method countNodeBelow
+     * @param {LNode | null} root - The root of the subtree
+     * @returns {number} The total count of nodes
+     */
       countNodeBelow(root:LNode|null):number{
         if(root==null)
         {
@@ -575,6 +758,14 @@ export class LNode{
         return 1 + this.countNodeBelow(root.leftNode) + this.countNodeBelow(root.rightNode);
     }
 
+    /**
+     * Finds the in-order successor (leftmost node in right subtree).
+     * Used during node deletion.
+     *
+     * @method inOrderSuccessor
+     * @param {LNode} root - The root to find successor from
+     * @returns {LNode} The in-order successor node
+     */
     inOrderSuccessor(root:LNode){
         while (root.leftNode != null) {
             root = root.leftNode;

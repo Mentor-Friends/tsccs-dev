@@ -1,16 +1,41 @@
+/**
+ * @module DataIdFormat
+ * @description Provides formatting functions for DATA-ID format output, which includes both data and ID information for each concept
+ */
+
 import { Connection, GetTheConcept } from "../../app";
 import { removeThePrefix } from "../Common/RegexFunction";
 
-    /**
-   * ## Format DATA-ID ##
-   * this function takes in connections and creates a single level objects so that all the data are added to its object/ array.
-   * This is then passed on further for stiching.
-   * @param connections 
-   * @param compositionData 
-   * @param reverse 
-   * @returns 
-   */
-    export async function FormatFunctionDataForData(connections:Connection[], compositionData: any[], reverse: number [] = []){
+/**
+ * Converts connections to single-level objects in DATA-ID format, preparing data for stitching.
+ * Creates objects with both ID and data properties for each concept.
+ *
+ * @async
+ * @param {Connection[]} connections - Array of Connection objects to process
+ * @param {any[]} compositionData - Array/dictionary that stores composition data indexed by concept ID
+ * @param {number[]} [reverse=[]] - Array of connection IDs for reverse direction processing
+ * @returns {Promise<any[]>} A promise that resolves to the updated compositionData with ID and data structure
+ *
+ * @example
+ * ```typescript
+ * const connections: Connection[] = [...];
+ * const compositionData = [];
+ * const reverse = [102];
+ * const result = await FormatFunctionDataForData(connections, compositionData, reverse);
+ * // result = { 123: { user: { name: { id: 1, data: { type: "John" } } } } }
+ * ```
+ *
+ * @remarks
+ * Format: DATA-ID - First pass formatting with ID information
+ * This function:
+ * - Processes connections in order without sorting
+ * - Creates nested data structure with explicit ID and data fields
+ * - Handles numeric linkers as arrays
+ * - Uses linker character or concept type (with prefix removed) as key
+ * - Skips "_s_" type linkers
+ * - Supports reverse connections with "_reverse" suffix
+ */
+export async function FormatFunctionDataForData(connections:Connection[], compositionData: any[], reverse: number [] = []){
       let myConcepts: number[] = [];
         for(let i=0 ; i< connections.length; i++){
           myConcepts.push(connections[i].toTheConceptId);
@@ -149,15 +174,44 @@ import { removeThePrefix } from "../Common/RegexFunction";
 
 
 
-      /**
- * ############ Format is data-id and is used for list. ############
- * This is helpful in building a format that has multiple mainCompositions i.e. in the context of the list
- * The list format is helpful because you do not have to go over each individual query.
- * @param connections the type connections that need (external connections) to be passed
- * @param compositionData  this is a dictionary type of format that has all the build compositions {id: { actual data}}
- * @param mainComposition this is list of  ids of the main composition that builds the tree
- * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
- * @returns 
+/**
+ * Formats concepts and connections for list views in DATA-ID format, stitching together multiple compositions.
+ * Each result includes concept ID, nested data object, and creation timestamp.
+ *
+ * @async
+ * @param {Connection[]} connections - Array of type connections (external connections) to process
+ * @param {any[]} compositionData - Dictionary format with all built compositions indexed by ID
+ * @param {any} newCompositionData - New composition data to be populated (unused parameter)
+ * @param {number[]} mainComposition - Array of main composition IDs that build the tree
+ * @param {number[]} [reverse=[]] - Array of connection IDs for reverse direction (to -> from)
+ * @param {any[]} CountDictionary - Dictionary containing count information for connections
+ * @returns {Promise<any[]>} A promise that resolves to an array of formatted main compositions with DATA-ID structure
+ *
+ * @example
+ * ```typescript
+ * const connections: Connection[] = [...];
+ * const compositionData = { 123: { user: "data" } };
+ * const mainIds = [123];
+ * const result = await FormatFromConnectionsAlteredArrayExternal(
+ *   connections,
+ *   compositionData,
+ *   {},
+ *   mainIds,
+ *   [],
+ *   {}
+ * );
+ * // result = [{ id: 123, data: {...}, created_on: timestamp }]
+ * ```
+ *
+ * @remarks
+ * Format: DATA-ID - Used for list views with full ID and data information
+ * This function:
+ * - Processes type connections to link compositions
+ * - Creates objects with id, data, and created_on properties
+ * - Handles both "_s_" (array) and regular (object) linker types
+ * - Supports reverse connections with "_reverse" suffix
+ * - Includes creation timestamp for each linked concept
+ * - Returns array of formatted main compositions
  */
 export async function FormatFromConnectionsAlteredArrayExternal(connections:Connection[], compositionData: any[], newCompositionData: any, mainComposition: number[], reverse: number [] = [],CountDictionary: any[] ){
   let startTime = new Date().getTime();
@@ -328,17 +382,35 @@ export async function FormatFromConnectionsAlteredArrayExternal(connections:Conn
   }
 
 
-  
-  /**
-   * ## Format DATA-ID ##
-   * this function takes in connections and creates a single level objects so that all the data are added to its object/ array.
-   * This is then passed on further for stiching.
-   * @param connections 
-   * @param compositionData 
-   * @param reverse 
-   * @returns 
-   */
-  export async function FormatFunctionData(connections:Connection[], compositionData: any[], reverse: number [] = []){
+/**
+ * Converts connections to initial single-level concept objects in DATA-ID format.
+ * This is the first pass that creates the basic concept structure before data nesting.
+ *
+ * @async
+ * @param {Connection[]} connections - Array of Connection objects to process
+ * @param {any[]} compositionData - Array/dictionary that stores composition data indexed by concept ID
+ * @param {number[]} [reverse=[]] - Array of connection IDs for reverse direction processing
+ * @returns {Promise<any[]>} A promise that resolves to the updated compositionData with initial structure
+ *
+ * @example
+ * ```typescript
+ * const connections: Connection[] = [...];
+ * const compositionData = [];
+ * const reverse = [];
+ * const result = await FormatFunctionData(connections, compositionData, reverse);
+ * // result = { 123: { user: {} }, 456: { post: {} } }
+ * ```
+ *
+ * @remarks
+ * Format: DATA-ID - Initial pass for concept creation
+ * This function:
+ * - Creates empty concept structures indexed by ID
+ * - Sets up the foundation for subsequent data population
+ * - Handles "_s_" type linkers by storing basic concept info
+ * - Does not add nested data (handled by FormatFunctionDataForData)
+ * - Supports reverse connections
+ */
+export async function FormatFunctionData(connections:Connection[], compositionData: any[], reverse: number [] = []){
     let myConcepts: number[] = [];
     for(let i=0 ; i< connections.length; i++){
       myConcepts.push(connections[i].toTheConceptId);

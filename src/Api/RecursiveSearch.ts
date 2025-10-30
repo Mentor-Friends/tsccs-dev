@@ -1,3 +1,11 @@
+/**
+ * API module for performing recursive searches through concept compositions.
+ * Enables complex queries that traverse concept relationships and compositions.
+ *
+ * @module Api/RecursiveSearch
+ * @see https://documentation.freeschema.com for reference
+ */
+
 import { Connection } from "../DataStructures/Connection";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { SearchQuery } from "../DataStructures/SearchQuery";
@@ -6,6 +14,42 @@ import { ConnectionData } from "../DataStructures/ConnectionData";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 
+/**
+ * Performs a recursive search through concept compositions using specified filters.
+ * This function searches through the network of concepts, following composition relationships
+ * and filtering by linker types and text content.
+ *
+ * Recursive search is a powerful feature of the Concept Connection System that allows
+ * navigation through complex concept hierarchies. It can find all concepts within a composition,
+ * filtered by specific relationship types (linkers) and text search terms.
+ *
+ * @param composition - The composition ID to search within (0 for global search)
+ * @param listLinkers - Array of linker type strings to filter connections (e.g., ['is_a', 'has_property'])
+ * @param textSearch - Text string to search for within concept names/properties
+ * @returns A promise that resolves to an array of concepts matching the search criteria
+ *
+ * @example
+ * ```typescript
+ * // Search for all concepts within composition 100 that have 'is_a' relationships
+ * const results = await RecursiveSearchApi(100, ['is_a']);
+ *
+ * // Search for concepts containing "person" in composition 200
+ * const personResults = await RecursiveSearchApi(200, [], 'person');
+ *
+ * // Combined search with linkers and text
+ * const filtered = await RecursiveSearchApi(300, ['has_property', 'located_at'], 'building');
+ * ```
+ *
+ * @remarks
+ * - Returns an empty array if the search fails or no results are found
+ * - The function retrieves both internal and external connections
+ * - Results are processed through GetCompositionFromConnectionsWithDataId to build full concept objects
+ * - HTTP errors are handled through HandleHttpError
+ * - Errors are logged and re-thrown for caller handling
+ *
+ * @see SearchQuery for the query data structure
+ * @see GetCompositionFromConnectionsWithDataId for result processing
+ */
 export  async function RecursiveSearchApi(composition:number = 0, listLinkers:string[] = [], textSearch:string = ""){
   var concepts:any[] = [];
 

@@ -1,18 +1,43 @@
+/**
+ * @module JustIdFormat
+ * @description Provides formatting functions for JustId format output, which includes simplified ID-based data structures
+ */
+
 import { Connection } from "../../app";
 import { CountInfo } from "../../DataStructures/Count/CountInfo";
 import { removeThePrefix } from "../Common/RegexFunction";
 import GetTheConcept from "../GetTheConcept";
 
-        /**
-   * ## Format Just-Id ##
-   * this function takes in connections and creates a single level objects so that all the data are added to its object/ array.
-   * This is then passed on further for stiching.
-   * @param connections 
-   * @param compositionData 
-   * @param reverse 
-   * @returns 
-   */
-    export async function FormatFunctionDataForDataJustId(connections:Connection[], compositionData: any[], reverse: number [] = []){
+/**
+ * Converts connections to single-level objects in JustId format, preparing simplified data for stitching.
+ * Creates lightweight objects with ID and essential data properties.
+ *
+ * @async
+ * @param {Connection[]} connections - Array of Connection objects to process
+ * @param {any[]} compositionData - Array/dictionary that stores composition data indexed by concept ID
+ * @param {number[]} [reverse=[]] - Array of connection IDs for reverse direction processing
+ * @returns {Promise<any[]>} A promise that resolves to the updated compositionData with JustId structure
+ *
+ * @example
+ * ```typescript
+ * const connections: Connection[] = [...];
+ * const compositionData = [];
+ * const reverse = [];
+ * const result = await FormatFunctionDataForDataJustId(connections, compositionData, reverse);
+ * // result = { 123: { user: { name: { id: 1, data: "John", created_on: timestamp } } } }
+ * ```
+ *
+ * @remarks
+ * Format: JustId - Lightweight formatting with minimal data
+ * This function:
+ * - Creates simplified data structure with ID, data value, and timestamp
+ * - Handles numeric linkers as arrays
+ * - Uses linker character or concept type (with prefix removed) as key
+ * - Skips "_s_" type linkers
+ * - Supports reverse connections with "_reverse" suffix
+ * - Optimized for list views and reduced data transfer
+ */
+export async function FormatFunctionDataForDataJustId(connections:Connection[], compositionData: any[], reverse: number [] = []){
             let myConcepts: number[] = [];
             for(let i=0 ; i< connections.length; i++){
               myConcepts.push(connections[i].toTheConceptId);
@@ -165,14 +190,43 @@ import GetTheConcept from "../GetTheConcept";
 
 
 /**
- * ############ Format is Just Id and is used for list. ############
- * This is helpful in building a format that has multiple mainCompositions i.e. in the context of the list
- * The list format is helpful because you do not have to go over each individual query.
- * @param connections the type connections that need (external connections) to be passed
- * @param compositionData  this is a dictionary type of format that has all the build compositions {id: { actual data}}
- * @param mainComposition this is list of  ids of the main composition that builds the tree
- * @param reverse this is the list of connections ids that needs to go to the reverse direction (to---->from)
- * @returns 
+ * Formats concepts and connections for list views in JustId format, stitching together multiple compositions.
+ * Creates lightweight list view with ID, data, and timestamp for each concept.
+ *
+ * @async
+ * @param {Connection[]} connections - Array of type connections (external connections) to process
+ * @param {any[]} compositionData - Dictionary format with all built compositions indexed by ID
+ * @param {number[]} mainComposition - Array of main composition IDs that build the tree
+ * @param {number[]} [reverse=[]] - Array of connection IDs for reverse direction (to -> from)
+ * @param {any[]} CountDictionary - Dictionary containing count information for connections by concept ID
+ * @returns {Promise<any[]>} A promise that resolves to an array of formatted main compositions with JustId structure
+ *
+ * @example
+ * ```typescript
+ * const connections: Connection[] = [...];
+ * const compositionData = { 123: { user: "data" } };
+ * const mainIds = [123];
+ * const countDict = { 123: { count: 5, connectionType: "follows" } };
+ * const result = await FormatFromConnectionsAlteredArrayExternalJustId(
+ *   connections,
+ *   compositionData,
+ *   mainIds,
+ *   [],
+ *   countDict
+ * );
+ * // result = [{ id: 123, user: { id: 1, data: "value", created_on: timestamp }, follows_count: 5 }]
+ * ```
+ *
+ * @remarks
+ * Format: JustId - Used for list views with lightweight ID-based structure
+ * This function:
+ * - Processes type connections to link compositions
+ * - Creates objects with id, data, and created_on properties
+ * - Handles both "_s_" (array) and regular (object) linker types
+ * - Supports reverse connections with "_reverse" suffix
+ * - Adds count information from CountDictionary (e.g., "follows_count")
+ * - Optimized for performance with minimal data payload
+ * - Useful for paginated lists and mobile applications
  */
 export async function FormatFromConnectionsAlteredArrayExternalJustId(connections:Connection[], compositionData: any[],  mainComposition: number[], reverse: number [] = [], CountDictionary: any[]){
             let startTime = new Date().getTime();
@@ -376,6 +430,28 @@ export async function FormatFromConnectionsAlteredArrayExternalJustId(connection
 }
 
 
+/**
+ * Adds count information to the concept data based on the CountDictionary.
+ * Appends a "_count" suffix to the connection type name.
+ *
+ * @param {number} ofTheConceptId - The ID of the concept to add count information for
+ * @param {any} CountDictionary - Dictionary containing count information indexed by concept ID
+ * @param {any} newData - The data object to add count information to
+ *
+ * @example
+ * ```typescript
+ * const conceptId = 123;
+ * const countDict = { 123: { connectionType: "follows", count: 42 } };
+ * const data = { user: "data" };
+ * AddCount(conceptId, countDict, data);
+ * // data now includes: { user: "data", follows_count: 42 }
+ * ```
+ *
+ * @remarks
+ * This function mutates the newData object by adding a count property
+ * The count property name format is: "{connectionType}_count"
+ * If the concept ID is not in CountDictionary, no changes are made
+ */
 export function AddCount(ofTheConceptId: number, CountDictionary: any, newData:any){
                       // algorith for count addition
               if(ofTheConceptId in CountDictionary){

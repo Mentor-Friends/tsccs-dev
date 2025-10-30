@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Composition update service for the CCS-JS system.
+ * This module provides comprehensive functionality for updating composition structures,
+ * managing the complex process of patching objects into compositions, handling nested
+ * compositions, updating caches, and synchronizing changes with the backend.
+ * @module Services/UpdateComposition
+ */
 
   import { Connection } from '../DataStructures/Connection';
   import { Concept } from '../DataStructures/Concept';
@@ -6,7 +13,7 @@
     CheckAllConnectionsConnectedInConnectionArray,
     CheckIfTypeConceptsExistsInArray,
   } from '../Helpers/CheckIfExists'
-  
+
   import {
     RemoveConceptFromList,
     RemoveConnectionFromList,
@@ -22,8 +29,123 @@ import { SyncData } from '../DataStructures/SyncData';
 import { CompositionBinaryTree } from '../DataStructures/Composition/CompositionBinaryTree';
 import { Composition } from '../DataStructures/Composition/Composition';
 import {CreateTheCompositionWithCache} from './Composition/CreateCompositionCache';
-  
-  // function to update the cache composition
+
+  /**
+   * Updates an existing composition by patching new data into it while maintaining cache consistency.
+   *
+   * This is a core function in the CCS-JS system that handles the complex process of updating
+   * compositions. It performs the following operations:
+   * 1. Retrieves the current composition and all its connections from the backend
+   * 2. Processes the patch object to create new concepts and connections
+   * 3. Identifies and removes outdated concepts and connections
+   * 4. Updates the composition cache and binary tree structure
+   * 5. Synchronizes changes with the backend
+   *
+   * The function handles both simple value updates and complex nested composition updates.
+   * It ensures data consistency by managing connection deletions, concept replacements, and
+   * cache invalidation across distributed servers.
+   *
+   * @param patcherStructure - Structure containing all necessary information for the update operation
+   *                           including compositionId, patchObject, userId, sessionId, and accessId
+   * @returns A promise that resolves to the updated composition cache data, or null if the composition
+   *          cannot be found or updated. The returned data includes the updated concepts, connections,
+   *          and subcompositions.
+   *
+   * @example
+   * ```typescript
+   * // Update a simple composition with new values
+   * import UpdateComposition from './UpdateComposition';
+   * import { PatcherStructure } from '../DataStructures/PatcherStructure';
+   *
+   * const patcher: PatcherStructure = {
+   *   compositionId: 123,
+   *   patchObject: { name: "Updated Name", age: 30 },
+   *   userId: 456,
+   *   sessionId: 999,
+   *   accessId: 4
+   * };
+   *
+   * const result = await UpdateComposition(patcher);
+   * console.log(result); // Updated composition data
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // Update a nested composition
+   * const patcher: PatcherStructure = {
+   *   compositionId: 123,
+   *   ofTheCompositionId: 789, // Parent concept ID for nested update
+   *   patchObject: {
+   *     profile: {
+   *       firstName: "John",
+   *       lastName: "Doe"
+   *     },
+   *     settings: {
+   *       theme: "dark"
+   *     }
+   *   },
+   *   userId: 456,
+   *   sessionId: 999,
+   *   accessId: 4
+   * };
+   *
+   * const result = await UpdateComposition(patcher);
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // Handle local concept conversion (negative ID to positive ID)
+   * const patcher: PatcherStructure = {
+   *   compositionId: -123, // Local concept ID
+   *   patchObject: { status: "active" },
+   *   userId: 456,
+   *   sessionId: 999,
+   *   accessId: 4
+   * };
+   *
+   * const result = await UpdateComposition(patcher);
+   * // Function will convert local ID to server ID before updating
+   * ```
+   *
+   * @remarks
+   * Complex behavior and important considerations:
+   *
+   * **Local Concept Handling:**
+   * - If compositionId is negative (local concept), the function attempts to find the persisted version
+   * - Returns null if the local concept hasn't been synced to the server yet
+   *
+   * **Cache Management:**
+   * - Marks the composition as "updating" to signal distributed servers to invalidate their cache
+   * - Rebuilds the composition cache with all updated concepts and connections
+   * - Updates the CompositionBinaryTree for fast access
+   *
+   * **Connection Management:**
+   * - Identifies existing concepts that match the new concepts being added
+   * - Removes old connections to those concepts before creating new ones
+   * - Deletes connections in bulk for efficiency
+   *
+   * **Nested Compositions:**
+   * - Supports updating subcompositions via the ofTheCompositionId parameter
+   * - Creates new composition concepts for object/array values
+   * - Recursively processes nested structures
+   *
+   * **Synchronization:**
+   * - Calls SyncData.SyncDataOnline() to push changes to the backend
+   * - Ensures consistency across distributed system
+   *
+   * **Performance Considerations:**
+   * - Fetches all connections from backend for latest data
+   * - Processes deletions and additions in batch
+   * - Uses caching to minimize redundant database queries
+   *
+   * @see {@link PatcherStructure} for the structure of the patcher parameter
+   * @see {@link CreateTheCompositionWithCache} for creating nested compositions
+   * @see {@link GetTheConcept} for concept retrieval
+   * @see {@link MakeTheInstanceConcept} for creating new concept instances
+   * @see {@link createTheConnection} for creating connections between concepts
+   * @see {@link DeleteConnectionById} for connection deletion
+   * @see {@link SyncData.SyncDataOnline} for backend synchronization
+   */
   export default async function UpdateComposition(
     patcherStructure: PatcherStructure,
   ) {
