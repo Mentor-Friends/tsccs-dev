@@ -5,7 +5,7 @@ import { DataCache } from "./CacheWidget.service";
 import { normalizeCSS } from "./NormalizeStyles.service";
 import { applyPageProperties } from "./RenderPage.service";
 import { initializeLibraries } from "./RenderWidgetLibrary.service";
-import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } from "./WidgetBuild";
+import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForRecent, GetWidgetForTree } from "./WidgetBuild";
 
 /**
  * Renders a complete page with its widgets and properties.
@@ -83,6 +83,37 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, GetWidgetForTree } fr
         const widgetTree = await getWidgetBulkFromId(latestWidgetId, [], trueBulk);
         DataCache.cache.set(`wdgt_${latestWidgetId}`, widgetTree);
         console.log("DataCache after, widgetTree -->", DataCache.cache, widgetTree);
+        return widgetTree;
+      } catch (error: any) {
+        console.error(`Error Caught Rendering Widget: ${error}`);
+      }
+    }
+
+
+    /**
+ * Imports the latest version of a widget into cache for later rendering.
+ *
+ * Fetches widget data, builds widget tree, and stores in DataCache.
+ * Used for pre-loading widgets before rendering.
+ *
+ * @param widgetId - The widget origin ID to import
+ * @param attachNode - Optional DOM element (for future use)
+ * @param props - Optional properties to pass to the widget
+ * @param showDocumentation - Whether to show documentation button
+ * @returns Promise resolving to the widget tree
+ */
+    export async function importRecentWidget(
+      widgetId: number,
+      attachNode?: HTMLElement,
+      props?: any,
+      showDocumentation?: boolean
+    ) {
+      try {
+        let cacheWidget = await BuildWidgetFromIdForRecent(widgetId);
+        let latestWidgetId = cacheWidget.mainId;
+        let bulkWidgetData = cacheWidget.data;
+        const trueBulk = await checkUseLatestWidget(bulkWidgetData, latestWidgetId)
+        const widgetTree = await getWidgetBulkFromId(latestWidgetId, [], trueBulk);
         return widgetTree;
       } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);

@@ -14,6 +14,8 @@ const widgetCache = new Map<number, Promise<any>>();
 /** Cache for latest widget version requests by origin ID */
 const latestWidgetCache = new Map<number, Promise<any>>();
 
+const recentWidgetCache = new Map<number, Promise<any>>();
+
 /**
  * Fetches and builds widget data from the backend by widget ID.
  *
@@ -216,6 +218,97 @@ export async function BuildWidgetFromIdForLatest(id:number){
 
       latestWidgetCache.set(id, BuildWidgetFromIdForLatest)
       return BuildWidgetFromIdForLatest;
+
+}
+
+
+
+/**
+ * Fetches the recent published version of a widget by origin ID.
+ *
+ * Retrieves the most recent version of a widget, useful for always displaying
+ * updated content. Uses separate cache from standard widget requests.
+ *
+ * @param id - The origin widget ID to fetch latest version for
+ * @returns Promise resolving to object with widget data and mainId
+ */
+export async function BuildWidgetFromIdForRecent(id:number){
+  Logger.logfunction("BuildWidgetFromIdForRecent", arguments);
+      try {
+        if (serviceWorker) {
+          const res: any = await sendMessage('BuildWidgetFromIdForRecent', {id})
+          // console.log('data received search from sw', res)
+          return res.data
+        }
+      } catch (error) { 
+        console.error('BuildWidgetFromIdForRecent error sw: ', error)
+        handleServiceWorkerException(error)
+      }
+      let data : any = {};
+      if (recentWidgetCache.has(id)) return recentWidgetCache.get(id) || data;
+      const BuildWidgetFromIdForRecent = (async()=>{
+        try{
+
+          let conceptIds: number[] = [];
+          let linkers: number [] = [];
+          let connections: number[] = [];
+          let reverse: number[] = [];
+          let mainCompositionIds: number[] = [];
+          let order = "DESC";
+          let countInfoStrings:string[] =  [];
+          let conceptsConnections: any = {} ;
+          let result: any = {};
+      let header = GetRequestHeader("application/json");
+    
+      let response;
+      try {   
+            let queryUrl = BaseUrl.getRecentWidgetData() + "?id=" + id;
+            response = await fetch(queryUrl,{
+                method: 'GET',
+                headers: header
+            });
+          } catch (error) {
+            response = await requestNextCacheServer({
+              method: 'GET',
+              headers: header
+          }, "?id=" + id)
+          }
+          if(response.ok){
+              result = await response.json();
+              // Add Log
+              // Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
+    
+          }
+          else{
+              HandleHttpError(response);
+              console.log("This is the BuildWidgetFromId error", response.status);
+              return [];
+    
+          }
+          conceptIds = result.conceptIds;
+          linkers = result.linkers;
+          reverse = result.reverse;
+          mainCompositionIds = result.mainCompositionIds;
+          countInfoStrings = result.countinfo;
+          let countInfos = DecodeCountInfo(countInfoStrings);
+          data = await formatConnectionsDataId(linkers, conceptIds, mainCompositionIds, reverse,countInfos, order);
+          let objectData:any = {
+            "data": data,
+            "mainId": result.mainId,
+          }
+          return objectData;
+        }
+        catch(e){
+          console.log("this is the error in the build widget", e);
+          throw e;
+        }
+        finally{
+          recentWidgetCache.delete(id);
+        }
+      })()
+
+      recentWidgetCache.set(id, BuildWidgetFromIdForRecent)
+      return BuildWidgetFromIdForRecent;
 
 }
 
