@@ -368,6 +368,10 @@ export class BaseUrl{
         }
     }
 
+    static getRecentWidgetData(){
+        return this.BASE_URL + '/api/get-recent-widget';
+    }
+
     static getConnectionsByTypes(){
         return this.BASE_URL + '/api/get-connection-by-types';
     }
