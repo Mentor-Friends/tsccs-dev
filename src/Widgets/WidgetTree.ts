@@ -84,4 +84,6 @@ export class WidgetTree{
 
     /** Widget dependency code string */
     dependency: string = '';
+
+    root: number = 0 ;
 }
