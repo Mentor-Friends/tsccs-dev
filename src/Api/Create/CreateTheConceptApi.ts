@@ -6,6 +6,25 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
+
+/**
+ * Creates a concept on the backend server via API.
+ *
+ * Sends concept data to the backend server for creation. Returns the created
+ * concept with server-assigned positive ID.
+ *
+ * @param conceptData - Concept data to create (can be partial concept object)
+ * @returns Created Concept object with server-assigned ID
+ * @throws Error if HTTP request fails or server returns error status
+ *
+ * @example
+ * const newConcept = await CreateTheConceptApi({
+ *   characterValue: "Alice",
+ *   typeId: 100,
+ *   userId: 42
+ * });
+ * console.log(newConcept.id); // Positive ID from server (e.g., 12345)
+ */
 export async function CreateTheConceptApi(conceptData: any){
   const logData : any = Logger.logfunction("CreateTheConceptApi", conceptData);
   let result = CreateDefaultConcept();

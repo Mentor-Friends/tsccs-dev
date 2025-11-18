@@ -9,6 +9,18 @@ import {
 } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 
+/**
+ * Retrieves composition connections between two concepts.
+ * Fetches connections linking two concepts filtered by a main key.
+ *
+ * @param ofConceptId - Source concept ID
+ * @param toConcept - Target concept ID
+ * @param mainKey - Main key to filter connections
+ * @returns Array of Connection objects between the two concepts
+ *
+ * @example
+ * const connections = await GetCompositionConnectionsBetweenTwoConcepts(123, 456, 789);
+ */
 export async function GetCompositionConnectionsBetweenTwoConcepts(
   ofConceptId: number,
   toConcept: number,

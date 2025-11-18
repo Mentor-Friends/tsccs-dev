@@ -7,6 +7,14 @@ import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from 
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { requestNextCacheServer } from "../Services/cacheService";
 
+/**
+ * Processes bulk connection data from API response.
+ * Internal helper to parse and cache bulk connection results.
+ *
+ * @param response - Fetch response object
+ * @param connectionList - Array to populate with Connection objects
+ * @param logData - Logging data object
+ */
 async function processBulkConnectionData(response: Response, connectionList:Connection[],logData: any) {
     if(response.ok){
         const result = await response.json();

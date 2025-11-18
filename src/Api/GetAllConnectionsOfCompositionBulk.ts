@@ -8,7 +8,19 @@ import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from '../app';
 
-
+/**
+ * Retrieves connections for multiple compositions in bulk.
+ * Optimizes fetching by batching multiple composition IDs in one request.
+ *
+ * **Complex Logic**: Checks in-memory cache, fetches from API, detects deletions
+ * by comparing old and new data, and bulk-fetches related concepts.
+ *
+ * @param composition_ids - Array of composition IDs to fetch connections for
+ * @returns Array of Connection objects for all compositions
+ *
+ * @example
+ * const connections = await GetAllConnectionsOfCompositionBulk([123, 456, 789]);
+ */
 export async function GetAllConnectionsOfCompositionBulk(composition_ids: number[] = []){
   const logData : any = Logger.logfunction("GetAllConnectionsOfCompositionBulk", arguments) || {};
   if (serviceWorker) {
@@ -38,6 +50,13 @@ export async function GetAllConnectionsOfCompositionBulk(composition_ids: number
   return connectionList;
 }
 
+/**
+ * Fetches connections for multiple compositions directly from backend.
+ * Internal helper function for GetAllConnectionsOfCompositionBulk.
+ *
+ * @param composition_ids - Array of composition IDs
+ * @returns Array of Connection objects from backend
+ */
 export async function GetAllConnectionsOfCompositionOnline(composition_ids: number[] = []){
   const logData :any = Logger.logfunction("GetAllConnectionsOfCompositionOnline", arguments);
   var connectionList: Connection[] = [];

@@ -6,6 +6,17 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
+
+/**
+ * Retrieves character data by character value string.
+ * Fetches TheCharacter object containing character metadata.
+ *
+ * @param characterValue - String value of the character to retrieve
+ * @returns TheCharacter object or undefined on error
+ *
+ * @example
+ * const char = await GetCharacterByCharacter("the_person");
+ */
 export async function GetCharacterByCharacter(characterValue: string){
   const logData : any = Logger.logfunction("GetCharacterByCharacter", arguments);
     try{

@@ -5,6 +5,19 @@ import {SearchQuery} from '../../DataStructures/SearchQuery';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
+/**
+ * Searches for concepts using multiple linked queries with performance tracking.
+ * Executes complex multi-criteria searches across concept relationships.
+ *
+ * @param searchQuery - Array of SearchQuery objects defining linked search criteria
+ * @param token - Authentication token (optional, defaults to empty string)
+ * @returns Array of search results or empty array on error
+ *
+ * @example
+ * const results = await SearchLinkMultipleApi([
+ *   { composition: 123, linker: "has_property", value: "example" }
+ * ], "auth-token");
+ */
 export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: string=""){
     const logData : any = Logger.logfunction("SearchLinkMultipleApi", arguments);
     let startTime = performance.now()

@@ -6,16 +6,106 @@ import {CreateTheConnectionLocal} from "./CreateTheConnectionLocal";
 import {MakeTheInstanceConceptLocal} from "./MakeTheInstanceConceptLocal";
 
 /**
- * This function converts a json data to concept connection and also preserves its relation.
- * @param json The json data that needs to be converted to the concept connection system
- * @param ofTheConceptId If in case that this composition is part of other composition then this must be the connecting concept.
- * @param ofTheConceptUserId If in case that this composition is part of other composition then this must be the user Id of the  connecting concept.
- * @param mainKey If in case that this composition is part of other composition then this must be the main composition
- * @param userId The user Id of the user creating the composition.
- * @param accessId The accessId of the user creating the composition.
- * @param sessionInformationId Session of the user.
- * @param automaticSync for future use.
- * @returns the main concept of this composition.
+ * Converts a JSON object into a local composition structure with concepts and connections.
+ *
+ * This powerful function recursively transforms any JSON object into the concept-connection
+ * system, creating local concepts for each key-value pair and establishing connections
+ * between them to preserve the hierarchical structure.
+ *
+ * **JSON to Composition Conversion:**
+ * - JSON keys become type concepts (e.g., "name", "email")
+ * - JSON string/number values become instance concepts
+ * - Nested objects/arrays create sub-compositions
+ * - Connections preserve parent-child relationships
+ * - All data stored locally (IndexedDB) for offline use
+ *
+ * **Recursive Process:**
+ * 1. Iterates through each key in JSON object
+ * 2. For nested objects/arrays: Creates composition concept + recurse
+ * 3. For primitive values: Creates instance concept
+ * 4. Creates connections from parent to child concepts
+ * 5. Returns the main/root concept
+ *
+ * **Example Transformation:**
+ * ```javascript
+ * Input JSON:
+ * {
+ *   name: "Alice",
+ *   email: "alice@example.com",
+ *   address: {
+ *     city: "NYC",
+ *     zip: "10001"
+ *   }
+ * }
+ *
+ * Creates:
+ * - Concept: "name" (type) → "Alice" (instance)
+ * - Concept: "email" (type) → "alice@example.com" (instance)
+ * - Concept: "address" (composition concept)
+ *   - Concept: "city" → "NYC"
+ *   - Concept: "zip" → "10001"
+ * - Connections linking all concepts in hierarchy
+ * ```
+ *
+ * @param json - The JSON object/array to convert to composition structure.
+ *              Can be any depth of nesting.
+ * @param ofTheConceptId - Parent concept ID if this is a sub-composition.
+ *                        Null for root composition. Used for connecting to parent.
+ * @param ofTheConceptUserId - User ID of the parent concept.
+ *                            Used for ownership tracking in nested structures.
+ * @param mainKey - The main composition ID (root concept ID).
+ *               Used as typeId for internal connections. Null for root.
+ * @param userId - User ID of the creator. Defaults to 999 (system).
+ * @param accessId - Access control level. Defaults to 999 (system).
+ * @param sessionInformationId - Session ID. Defaults to 999 (system).
+ * @param automaticSync - Reserved for future automatic sync feature.
+ *                       Currently not fully implemented.
+ * @param actions - Action tracking object that accumulates all created concepts
+ *                 and connections for batch operations. Defaults to empty arrays.
+ *
+ * @returns Promise resolving to the main/root Concept of the composition
+ *
+ * @example
+ * // Simple flat object
+ * const json = { name: "Alice", age: 30 };
+ * const mainConcept = await CreateTheCompositionLocal(
+ *   json,
+ *   null,  // No parent
+ *   null,
+ *   null,
+ *   101,   // userId
+ *   2,     // accessId
+ *   999
+ * );
+ * console.log(mainConcept.id); // Root concept ID
+ *
+ * @example
+ * // Nested object with action tracking
+ * const actions = { concepts: [], connections: [] };
+ * const userData = {
+ *   profile: {
+ *     firstName: "Alice",
+ *     lastName: "Smith"
+ *   },
+ *   settings: {
+ *     theme: "dark"
+ *   }
+ * };
+ * const root = await CreateTheCompositionLocal(
+ *   userData,
+ *   null, null, null,
+ *   101, 2, 999,
+ *   false,
+ *   actions
+ * );
+ * console.log(actions.concepts.length); // Total concepts created
+ * console.log(actions.connections.length); // Total connections created
+ *
+ * @throws Logs errors but does not throw. Returns created concepts even on partial failure.
+ *
+ * @see {@link MakeTheInstanceConceptLocal} for individual concept creation
+ * @see {@link CreateTheConnectionLocal} for connection creation
+ * @see {@link GetCompositionLocal} for retrieving created compositions
  */
 export async function CreateTheCompositionLocal(json: any, ofTheConceptId:number | null=null, ofTheConceptUserId:number | null=null, mainKey: number | null=null, userId: number | null=null, accessId:number | null=null, sessionInformationId:number | null=null, automaticSync: boolean  = false, actions: InnerActions = {concepts: [], connections: []})
 {

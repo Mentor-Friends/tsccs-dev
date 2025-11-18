@@ -14,6 +14,22 @@ import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from
 import { formatConnectionsDataId } from "../Services/Search/SearchWithTypeAndLinker";
 import { log } from "console";
 
+/**
+ * Performs recursive search through composition hierarchy.
+ * Searches through nested compositions using linker relationships.
+ *
+ * **Complex Logic**: Constructs SearchQuery, fetches composition IDs and connections,
+ * processes internal/external connections, and builds composition objects from results.
+ *
+ * @param composition - Root composition ID to start search from (default: 0)
+ * @param listLinkers - Array of linker strings to traverse (default: [])
+ * @param textSearch - Text search filter (default: "")
+ * @param fullLinkers - Array of full linker paths (default: [])
+ * @returns Array of composition objects with connections
+ *
+ * @example
+ * const results = await RecursiveSearchApi(123, ["has_child", "has_property"], "search text");
+ */
 export async function RecursiveSearchApi(
   composition: number = 0,
   listLinkers: string[] = [],
@@ -83,7 +99,15 @@ export async function RecursiveSearchApi(
   return concepts;
 }
 
-
+/**
+ * Performs recursive search returning results with internal connections.
+ * Similar to RecursiveSearchApi but uses different connection formatting.
+ *
+ * @param composition - Root composition ID to start search from (default: 0)
+ * @param listLinkers - Array of linker strings to traverse (default: [])
+ * @param textSearch - Text search filter (default: "")
+ * @returns Array of composition objects with internal connections
+ */
 export async function RecursiveSearchApiWithInternalConnections(
   composition: number = 0,
   listLinkers: string[] = [],
@@ -150,6 +174,16 @@ export async function RecursiveSearchApiWithInternalConnections(
   return concepts;
 }
 
+/**
+ * Performs recursive search returning raw API response.
+ * Returns unprocessed result with composition IDs and connection arrays.
+ *
+ * @param composition - Root composition ID (default: 0)
+ * @param listLinkers - Array of linker strings (default: [])
+ * @param textSearch - Text search filter (default: "")
+ * @param fullLinkers - Array of full linker paths (default: [])
+ * @returns Raw API response object with compositionIds, internalConnections, externalConnections
+ */
 export async function RecursiveSearchApiRaw(
   composition: number = 0,
   listLinkers: string[] = [],
@@ -215,6 +249,15 @@ export async function RecursiveSearchApiRaw(
   }
 }
 
+/**
+ * Performs recursive search using full linker paths, returning raw response.
+ * Uses complete linker path specifications instead of partial linkers.
+ *
+ * @param composition - Root composition ID (default: 0)
+ * @param fullLinkers - Array of complete linker path strings (default: [])
+ * @param textSearch - Text search filter (default: "")
+ * @returns Raw API response object with compositionIds and connections
+ */
 export async function RecursiveSearchApiRawFullLinker(
   composition: number = 0,
   fullLinkers: string[] = [],
@@ -277,6 +320,15 @@ export async function RecursiveSearchApiRawFullLinker(
   }
 }
 
+/**
+ * New version of recursive search with full linker paths.
+ * Alternative implementation of RecursiveSearchApiRawFullLinker.
+ *
+ * @param composition - Root composition ID (default: 0)
+ * @param fullLinkers - Array of complete linker path strings (default: [])
+ * @param textSearch - Text search filter (default: "")
+ * @returns Raw API response object with compositionIds and connections
+ */
 export async function RecursiveSearchApiNewRawFullLinker(
   composition: number = 0,
   fullLinkers: string[] = [],
@@ -339,6 +391,14 @@ export async function RecursiveSearchApiNewRawFullLinker(
   }
 }
 
+/**
+ * Performs recursive search using local data only.
+ * Placeholder for local-only search implementation.
+ *
+ * @param composition - Root composition ID
+ * @param listLinkers - Array of linker strings (default: [])
+ * @param textSearch - Text search filter (default: "")
+ */
 export async function RecursiveSearchLocal(
   composition: number,
   listLinkers: string[] = [],

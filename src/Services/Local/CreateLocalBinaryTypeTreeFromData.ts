@@ -3,6 +3,14 @@ import { LNode } from "../../DataStructures/Local/LNode";
 import { getObjectsFromLocalIndexDb } from "../../Database/indexdblocal";
 import { Logger } from "../../app";
 
+/**
+ * Builds a binary search tree indexed by typeId for fast type-based concept lookup.
+ *
+ * Loads all local concepts from IndexedDB and organizes them into a binary tree
+ * structure where each node is keyed by typeId. Enables O(log n) lookups by type.
+ *
+ * @throws Error if IndexedDB read or tree construction fails
+ */
 export  async function CreateLocalBinaryTypeTreeFromData(){
     Logger.logfunction("CreateLocalBinaryTypeTreeFromData");
     try{

@@ -8,6 +8,13 @@ import { Logger } from "../app";
 import { requestNextCacheServer } from "../Services/cacheService";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
+/**
+ * Processes connection data from API response.
+ * Internal helper to parse and cache connection data.
+ *
+ * @param response - Fetch response object
+ * @param result - Connection object to populate
+ */
 async function processConnectionData(response: Response, result: Connection) {
     if(response.ok){
         result = await response.json() as Connection;
@@ -19,6 +26,19 @@ async function processConnectionData(response: Response, result: Connection) {
     }
 }
 
+/**
+ * Retrieves a connection by its ID.
+ * Checks local cache first, then fetches from backend if needed.
+ *
+ * **Complex Logic**: Checks ConnectionData cache, falls back to API request,
+ * supports cache server fallback for resilience.
+ *
+ * @param id - Connection ID to retrieve
+ * @returns Connection object or default connection if not found
+ *
+ * @example
+ * const connection = await GetConnection(789);
+ */
 export async function GetConnection(id: number){
     const logData : any = Logger.logfunction("GetConnection", arguments);
     let result :Connection= await ConnectionData.GetConnection(id);

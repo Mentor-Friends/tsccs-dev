@@ -7,7 +7,12 @@ import { UpdatePackageLogWithError } from "../Common/ErrorPosting";
 
 
 /**
- * This will create a binary tree of local concepts that is saved from the indexdb.
+ * Loads local concepts from IndexedDB into memory-based binary tree for fast lookup.
+ *
+ * Retrieves all stored local concepts from IndexedDB and adds them to LocalConceptsData
+ * in-memory structure. Sets flags indicating local data is ready for use.
+ *
+ * @throws Error if IndexedDB read fails (retries after 2s delay)
  */
 export default  async function CreateLocalBinaryTreeFromIndexDb(){
     const logData : any = Logger.logfunction("CreateLocalBinaryTreeFromIndexDb");

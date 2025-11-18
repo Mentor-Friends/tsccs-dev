@@ -5,26 +5,88 @@ import { LocalId } from "../../DataStructures/Local/LocalId";
 import { Logger } from "../../Middleware/logger.service";
 
 /**
- * This function creates the concept in the local system (Local memory and IndexDb) but not in the backend database
- * To create this concept in the backend database you need to sync the local data to the backend by LocalSyncData class.
- * 
- * This function creates a id and ghost id which are equal to each other. 
- * These id and ghostId are negative which means that they are virtual concepts. After these concepts have been synced with the backend
- * they are converted to real id. After returning from the backend the id changes to positive(+) and real id while the ghostId remains the same
- * 
- * The system then saves this relation between -ve id and real id in the backend server and also in the local memory.
- * 
- * @param referent This is the string that is the actual value of the concept.
- * @param typecharacter The string that defines the type of the concept.
- * @param userId This is the userId of the creator.
- * @param categoryId This is the category Id of the concept.
- * @param typeId This is the type Id of the concept that relates to the typecharacter passed above.
- * @param accessId This is the accessId of the concept(most probably is the accessId of the user)
- * @param isComposition This is set in the case that the composition needs to be created.
- * @param referentId if this concept refers to any other concept then this needs to be passed.
- * @returns 
+ * Creates a concept in local storage (IndexedDB) without syncing to the backend.
+ *
+ * This is the primary function for creating offline-first concepts. The concept is stored
+ * locally in IndexedDB and memory, but NOT immediately sent to the backend. Sync happens
+ * later via the LocalSyncData class.
+ *
+ * **Virtual ID System:**
+ * - Generates a negative ID (e.g., -12345) to indicate local/virtual status
+ * - id and ghostId are initially equal and both negative
+ * - After backend sync: id becomes positive (real backend ID)
+ * - ghostId remains negative (preserves original local ID)
+ * - Mapping is stored in LocalGhostIdTree for future lookups
+ *
+ * **Sync Process:**
+ * 1. Create locally with negative ID
+ * 2. Use LocalSyncData to sync to backend
+ * 3. Backend returns positive ID
+ * 4. Update local concept with positive ID
+ * 5. Preserve negative ID as ghostId
+ * 6. Store mapping in LocalGhostIdTree
+ *
+ * **Special Case:**
+ * If referent is "the", returns a special concept with id=1 (system concept).
+ *
+ * @param referent - The character value (text/name) of the concept.
+ *                  This is the human-readable content (e.g., "Draft Note", "Local Task")
+ * @param typecharacter - The type name as a string (e.g., "the_note", "the_person").
+ *                       Used for display and classification.
+ * @param userId - The ID of the user creating this concept. Used for ownership.
+ * @param categoryId - The category classification ID for further classification within type.
+ * @param typeId - The type classification ID. Must correspond to typecharacter.
+ * @param accessId - Access control level (e.g., 1=Public, 2=Private).
+ *                  Usually matches the user's access level.
+ * @param isComposition - Set to true if this concept represents a composition root.
+ *                       Defaults to false.
+ * @param referentId - Optional reference to another concept ID. Used for instance relationships.
+ *                    Defaults to 0 (no reference).
+ * @param actions - Action tracking object that accumulates created concepts and connections.
+ *                 Used for batch operations and rollback. Defaults to empty arrays.
+ *
+ * @returns Promise resolving to the created Concept object with negative ID
+ *
+ * @example
+ * // Create a local draft note
+ * const draftNote = await CreateTheConceptLocal(
+ *   "Meeting Notes - Draft",  // referent
+ *   "the_note",               // typecharacter
+ *   101,                      // userId
+ *   1,                        // categoryId
+ *   3,                        // typeId
+ *   2                         // accessId (Private)
+ * );
+ * console.log(draftNote.id); // -12345 (negative = local)
+ * console.log(draftNote.ghostId); // -12345 (same initially)
+ *
+ * @example
+ * // Create with composition flag
+ * const project = await CreateTheConceptLocal(
+ *   "Local Project",
+ *   "the_project",
+ *   101,
+ *   1,
+ *   5,
+ *   2,
+ *   true  // isComposition = true
+ * );
+ *
+ * @example
+ * // Track actions for batch operations
+ * const actions = { concepts: [], connections: [] };
+ * const concept1 = await CreateTheConceptLocal("Item 1", "the_item", 101, 1, 4, 2, false, 0, actions);
+ * const concept2 = await CreateTheConceptLocal("Item 2", "the_item", 101, 1, 4, 2, false, 0, actions);
+ * console.log(actions.concepts.length); // 2
+ * // All created concepts tracked in actions array
+ *
+ * @throws Logs errors and re-throws for handling by caller
+ *
+ * @see {@link GetTheConceptLocal} for retrieving local concepts
+ * @see {@link LocalSyncData} for syncing local concepts to backend
+ * @see {@link CreateTheConcept} for creating server-synced concepts directly
  */
-export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, typeId:number, 
+export default async function CreateTheConceptLocal(referent:string, typecharacter:string, userId:number, categoryId:number, typeId:number,
 accessId:number, isComposition: boolean = false, referentId:number|null = 0, actions: InnerActions = {concepts: [], connections: []}){
     let startTime = performance.now()
     try{

@@ -5,6 +5,23 @@ import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRe
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { Connection, Logger } from "../../app";
+
+/**
+ * Syncs local connections to the backend server preserving ghost IDs.
+ *
+ * Creates connections on server while maintaining ghostId for local ID tracking.
+ * Used for syncing locally-created connections (negative IDs) to the backend.
+ *
+ * @param connectionData - Array of Connection objects to sync
+ * @returns Array of created Connection objects with server-assigned positive IDs
+ * @throws Error if HTTP request fails
+ *
+ * @example
+ * const synced = await CreateTheGhostConnectionApi([
+ *   { id: -123, ofTheConceptId: -100, toTheConceptId: -200, ... }
+ * ]);
+ * // Returns: [{ id: 5001, ghostId: -123, ofTheConceptId: 1001, toTheConceptId: 2001, ... }]
+ */
 export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
   const logData : any = Logger.logfunction("CreateTheGhostConnectionApi", [connectionData.length]);
   let result:Connection[] = [];

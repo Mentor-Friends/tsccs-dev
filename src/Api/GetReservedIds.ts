@@ -6,6 +6,16 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
+
+/**
+ * Fetches reserved concept IDs from the backend.
+ * Loads system-reserved concept IDs into ReservedIds cache.
+ *
+ * @returns void - Updates ReservedIds cache with reserved concept IDs
+ *
+ * @example
+ * await GetReservedIds(); // Loads reserved concept IDs
+ */
 export async function GetReservedIds(){
   const logData : any = Logger.logfunction("GetReservedIds", arguments);
     try{

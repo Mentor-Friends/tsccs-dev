@@ -2,15 +2,28 @@ import { Connection, ConnectionData, DATAID, GetComposition, JUSTDATA, NORMAL } 
 import { GetCompositionById, RecursiveFetchBuildLayer, RecursiveFetchBuildLayerDataId, RecursiveFetchBuildLayerNormal } from "../Services/GetComposition";
 import { DependencyObserver } from "./DepenedencyObserver";
 
+/**
+ * Observable wrapper for retrieving a composition with automatic updates when the composition changes.
+ */
 export class GetCompositionObservable extends DependencyObserver{
+    /** The composition ID to observe */
     id: number;
 
+    /**
+     * Creates a new composition observable.
+     * @param id - The composition concept ID
+     * @param format - Output format (JUSTDATA, DATAID, NORMAL)
+     */
     constructor(id:number, format:number = JUSTDATA){
         super();
         this.id = id;
         this.format = format;
     }
 
+    /**
+     * Fetches composition data and sets up change listeners.
+     * @returns The formatted composition data
+     */
     async bind(){
         if(!this.isDataLoaded){
             let conceptConnections = await GetCompositionById(this.id);
@@ -29,6 +42,10 @@ export class GetCompositionObservable extends DependencyObserver{
 
     }
 
+    /**
+     * Builds the composition data in the specified format.
+     * @returns The formatted composition data
+     */
     async build(){
         let latestConnectionList: Connection[]= [];
         let latestConnectionIds = this.internalConnections;
@@ -54,9 +71,14 @@ export class GetCompositionObservable extends DependencyObserver{
 }
 
 /**
- * 
- * @param id Id of the composition
- * @returns composition of the id given in the json form.
+ * Creates an observable that tracks a composition and updates subscribers when it changes.
+ * @param id - The composition concept ID to observe
+ * @param format - Output format (JUSTDATA, DATAID, NORMAL)
+ * @returns Observable instance for the composition
+ *
+ * @example
+ * const observer = GetCompositionListener(123, JUSTDATA);
+ * observer.subscribe((data) => console.log(data));
  */
 export function GetCompositionListener(id:number, format: number = JUSTDATA){
     return new GetCompositionObservable(id, format);

@@ -3,6 +3,18 @@ import { GetConnectionsByTypes } from "../../DataStructures/ConnectionByType/Get
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 
+/**
+ * Retrieves connections filtered by multiple connection type criteria.
+ * Fetches connections matching the specified type filters.
+ *
+ * @param connectionTypes - GetConnectionsByTypes object containing type filter criteria
+ * @returns Array of Connection objects matching the type filters
+ *
+ * @example
+ * const types = new GetConnectionsByTypes();
+ * types.typeIds = [1, 2, 3];
+ * const connections = await GetConnectionsByApiTypes(types);
+ */
 export async function GetConnectionsByApiTypes(connectionTypes: GetConnectionsByTypes){
     let connections:Connection[]= [];
   const logData : any = Logger.logfunction("GetConnectionsByApiTypes", arguments);

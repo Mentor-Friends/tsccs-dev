@@ -151,7 +151,7 @@ export {CountInfo} from './DataStructures/Count/CountInfo';
 export {LogEvent} from './Services/Logs/LogEvent';
 export {Selector} from './Api/Prototype/Selector';
 export { AccessControlService } from './Services/AccessControl/AccessControl';
-export {importLatestWidget, renderImportedWidget, renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
+export {importLatestWidget, importRecentWidget, renderImportedWidget, renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 export {CreateData} from './Services/automated/automated-concept-connection';
 
@@ -179,9 +179,67 @@ export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
 
 
 /**
- * This function lets you update the access token that the package uses. If this is not passed you cannot create, update, view or delete
- * Your concepts using this package.
- * @param accessToken access token got from the sign in process
+ * Updates the JWT access token used for authenticated API requests.
+ *
+ * This function should be called after user authentication to set or update the bearer token
+ * that will be used for all subsequent authenticated operations. The token is stored in
+ * TokenStorage and automatically included in API request headers.
+ *
+ * **When to Use:**
+ * - After successful login (LoginToBackend or Signin)
+ * - When refreshing an expired token
+ * - When switching between user sessions
+ * - When restoring a saved session on app reload
+ *
+ * **Token Flow:**
+ * 1. User logs in via LoginToBackend() or Signin()
+ * 2. Backend returns JWT token
+ * 3. Call updateAccessToken() with the token
+ * 4. Token is stored in memory (TokenStorage.BearerAccessToken)
+ * 5. All API calls automatically use this token
+ * 6. If service worker enabled, token is synced to service worker
+ *
+ * **Security Notes:**
+ * - Token is stored in memory only (not persisted to disk)
+ * - Token is cleared on page refresh (unless you save/restore it)
+ * - Never expose token in logs or client-side code
+ * - Token should be refreshed before expiration
+ *
+ * @param accessToken - The JWT bearer token obtained from authentication.
+ *                     Format: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                     Pass empty string to clear the token (logout).
+ *
+ * @param session - Optional session information to sync with token.
+ *                 Reserved for future use. Currently not fully implemented.
+ *
+ * @returns void
+ *
+ * @example
+ * // After login, update token
+ * const loginResult = await LoginToBackend("user@example.com", "password");
+ * updateAccessToken(loginResult.data.token);
+ * console.log("Token updated - now authenticated");
+ *
+ * @example
+ * // Restore token from localStorage on app reload
+ * const savedToken = localStorage.getItem("authToken");
+ * if (savedToken) {
+ *   updateAccessToken(savedToken);
+ * }
+ *
+ * @example
+ * // Clear token on logout
+ * updateAccessToken("");
+ * console.log("Token cleared - logged out");
+ *
+ * @example
+ * // Refresh expired token
+ * const newToken = await refreshTokenFromBackend();
+ * updateAccessToken(newToken);
+ *
+ * @see {@link LoginToBackend} for obtaining initial token
+ * @see {@link Signin} for alternative authentication
+ * @see {@link init} which can also set initial token
  */
 function updateAccessToken(accessToken: string = "", session?: any) {
   TokenStorage.BearerAccessToken = accessToken;
@@ -204,16 +262,129 @@ function updateAccessToken(accessToken: string = "", session?: any) {
 
 
 /**
+ * Initializes the mftsccs-browser package and sets up all required subsystems.
  *
- * @param url This is the url for the backend c# system or our main data fabric server
- * @param aiurl This is the AI url that pulls in the data using our AI system . If you do not enter this then also disable the enableAi flag.
+ * This is the FIRST function you must call before using any other functionality in the package.
+ * It configures the backend connections, initializes local databases, sets up service workers,
+ * and prepares the system for concept and connection operations.
+ *
+ * **Initialization Process:**
+ * 1. Configures Base URLs for backend, AI, and node servers
+ * 2. Sets up access token for authenticated requests
+ * 3. Generates unique application randomizer for IndexedDB identification
+ * 4. Initializes feature flags (logging, access tracking, etc.)
+ * 5. Checks for service worker support
+ * 6. Initializes local IndexedDB databases for caching
+ * 7. Sets up message listeners for service worker communication
+ * 8. Optionally registers and activates service worker
+ * 9. Falls back to main thread if service worker unavailable
+ *
+ * **Subsystems Initialized:**
+ * - IndexedDB databases (concepts, connections, settings)
+ * - Service worker (if enabled and supported)
+ * - Message passing between main thread and service worker
+ * - Broadcast channel for cross-tab communication
+ * - Access token storage
+ * - Logging and monitoring systems
+ * - Access tracking (if enabled)
+ *
+ * @param url - The backend API base URL (C# data fabric server).
+ *             This is the primary server for concept and connection data.
+ *             Example: "https://api.example.com" or "https://backend.yourdomain.com"
+ *             **Required** for most operations.
+ *
+ * @param aiurl - The AI service URL for AI-powered features and data preloading.
+ *               If not using AI features, pass empty string and set enableAi to false.
+ *               Example: "https://ai.example.com"
+ *
+ * @param accessToken - JWT bearer token for authenticated API requests.
+ *                     Can be empty string on initialization - set later with updateAccessToken().
+ *                     Token is obtained through LoginToBackend() or Signin().
+ *                     Example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *
+ * @param nodeUrl - The Node.js server URL for business logic and security features.
+ *                 Used for additional server-side operations.
+ *                 Example: "https://node.example.com"
+ *
+ * @param enableAi - Flag to enable/disable AI features and AI data preloading to IndexedDB.
+ *                  Set to false if not using AI features or if aiurl is not provided.
+ *                  Default: true
+ *
+ * @param applicationName - Unique identifier for your application.
+ *                         Used to create separate IndexedDB instances for different apps.
+ *                         Example: "my-app-v1", "project-manager", "knowledge-base"
+ *                         Useful when multiple applications share the same domain.
+ *
+ * @param enableSW - Service worker configuration object. Service worker enables background
+ *                  processing for better performance and offline capabilities.
+ *                  - activate: boolean - Enable/disable service worker
+ *                  - scope: string (optional) - Service worker scope path (default: "/")
+ *                  - pathToSW: string (optional) - Path to service worker file (default: "/service-worker.js")
+ *                  - manual: boolean (optional) - If true, assumes SW already registered manually
+ *                  Example: {activate: true, scope: "/", pathToSW: "/sw.js"}
+ *
+ * @param flags - Feature flags object for enabling/disabling various features:
+ *               - logApplication: boolean - Enable application-level logging
+ *               - logPackage: boolean - Enable package-level logging
+ *               - accessTracker: boolean - Enable access tracking/analytics
+ *               - isTest: boolean - Mark as test environment
+ *               All default to false if not specified.
+ *
+ * @param parameters - Additional configuration parameters:
+ *                    - logserver: string - Custom log server URL (default: "https://logdev.freeschema.com")
+ *
+ * @returns Promise<boolean> - Returns true if initialization succeeds, undefined if it fails.
+ *         On failure, falls back to main thread operation and logs warnings.
+ *
+ * @example
+ * // Basic initialization (minimum required)
+ * await init(
+ *   "https://api.myapp.com",     // backend URL
+ *   "",                           // no AI
+ *   "",                           // no token yet
+ *   "",                           // no node server
+ *   false,                        // disable AI
+ *   "my-app"                      // app name
+ * );
+ *
+ * @example
+ * // Full initialization with service worker
+ * await init(
+ *   "https://api.myapp.com",
+ *   "https://ai.myapp.com",
+ *   "",
+ *   "https://node.myapp.com",
+ *   true,
+ *   "my-app-v2",
+ *   {
+ *     activate: true,
+ *     scope: "/",
+ *     pathToSW: "/service-worker.js"
+ *   },
+ *   {
+ *     logApplication: true,
+ *     accessTracker: true
+ *   },
+ *   {
+ *     logserver: "https://logs.myapp.com"
+ *   }
+ * );
+ *
+ * @example
+ * // Initialize then login
+ * await init("https://api.example.com", "", "", "", false, "my-app");
+ * const loginResult = await LoginToBackend("user@example.com", "password");
+ * updateAccessToken(loginResult.data.token);
+ * // Now ready to use all authenticated operations
+ *
+ * @throws Does not throw - logs warnings and falls back to main thread on errors.
+ *        Common issues: Service worker registration failures, IndexedDB access denied.
+ *
+ * @see {@link updateAccessToken} for updating the access token after initialization
+ * @see {@link LoginToBackend} for obtaining an access token
+ * @see {@link sendMessage} for communicating with service worker after initialization
  * @param accessControlUrl This is the url for the access control system. This is another server in the data fabric that is used as server for business logic and security features.
- * @param accessToken This is the JWT token that needs to be passed (But since you have just initilized the system). There is no way we can get access token
- * So this access token can be empty string. You can set it afterwards with another function UpdateAccessToken();
- * @param nodeUrl This is the url for the node server. This is another server in the data fabric that is used as server for business logic and security features.
- * @param enableAi This flag is used to enable or disable the AI feature that preloads data in the indexdb.
- * @param applicationName This is an unique name that is given to a program. Use this to discern one indexdb from another.
- * @param enableSW {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined - This is for enabling service worker with its scope
+ *
  */
 async function init(
   url: string = "",

@@ -3,6 +3,26 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Concept } from "../DataStructures/Concept";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { GetOnlyTokenHeader, GetRequestHeader, GetRequestHeaderWithAuthorization } from "../Services/Security/GetRequestHeader";
+
+/**
+ * Deletes a concept from the backend server by ID.
+ *
+ * **Process**:
+ * 1. Sends delete request to backend with concept ID
+ * 2. If successful: Marks concept as deleted in local ConceptsData (NPC list)
+ * 3. Returns deletion success status
+ *
+ * NPC (Non-Present Concept) list tracks deleted concept IDs to prevent reuse.
+ *
+ * @param id - The concept ID to delete
+ * @returns boolean - true if successfully deleted, false otherwise
+ *
+ * @example
+ * const deleted = await DeleteTheConcept(12345);
+ * if (deleted) {
+ *   console.log("Concept deleted successfully");
+ * }
+ */
 export default async function DeleteTheConcept(id:number){
   let isDeleted = false;
   const logData:any =  Logger.logfunction("DeleteTheConcept", arguments);

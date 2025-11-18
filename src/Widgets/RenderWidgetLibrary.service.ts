@@ -2,6 +2,14 @@ import { CreateConnectionBetweenEntityLocal } from "../app";
 import { TLibrary } from "../DataStructures/TypeLibrary";
 import { WidgetTree } from "./WidgetTree";
 
+/**
+ * Initializes and loads external CSS and JS libraries for a widget.
+ *
+ * Processes widget library dependencies and injects them into the document
+ * in the correct order.
+ *
+ * @param widgetTree - The widget tree containing library definitions
+ */
 export async function initializeLibraries(widgetTree: WidgetTree) {
   if (widgetTree?.library?.css?.length) {
     listCSSLibraries(widgetTree);
@@ -15,9 +23,9 @@ export async function initializeLibraries(widgetTree: WidgetTree) {
 }
 
 /**
+ * Loads CSS library dependencies for a widget into document head.
  *
- * @param widgetTree
- * @returns
+ * @param widgetTree - The widget tree containing CSS libraries
  */
 function listCSSLibraries(widgetTree: WidgetTree) {
   const cssLibraries = widgetTree?.library?.css;
@@ -44,9 +52,12 @@ function listCSSLibraries(widgetTree: WidgetTree) {
 }
 
 /**
+ * Loads JavaScript library dependencies for a widget sequentially.
  *
- * @param widgetTree
- * @returns
+ * Ensures libraries load in order and waits for each to complete before
+ * loading the next. Handles errors and prevents duplicate loads.
+ *
+ * @param widgetTree - The widget tree containing JS libraries
  */
 // function listJSLibraries(widgetTree: WidgetTree) {
 //   const jsLibraries = widgetTree?.library?.js;
@@ -136,9 +147,9 @@ async function listJSLibraries(widgetTree: WidgetTree) {
 }
 
 /**
+ * Removes CSS library elements from document head by class name.
  *
- * @param cssClassName
- * @returns
+ * @param cssClassName - The class name of CSS library elements to remove
  */
 export function removeCSSLibrariesFromHead(cssClassName: string) {
   const queryParam = `link.${cssClassName}`;
@@ -152,9 +163,9 @@ export function removeCSSLibrariesFromHead(cssClassName: string) {
 }
 
 /**
+ * Removes JavaScript library elements from document head by class name.
  *
- * @param jsClassName
- * @returns
+ * @param jsClassName - The class name of JS library elements to remove
  */
 export function removeJSLibrariesFromHead(jsClassName: string) {
   const queryParam = `script.${jsClassName}`;

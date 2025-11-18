@@ -4,6 +4,18 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
+
+/**
+ * Retrieves all concepts of a specific type for a user.
+ * Fetches concepts filtered by type string and user ID.
+ *
+ * @param type - Type string to filter concepts by
+ * @param userId - User ID to filter by
+ * @returns void - Updates ConceptsData cache with matching concepts
+ *
+ * @example
+ * await GetAllConceptsByType("person", 123);
+ */
 export async function GetAllConceptsByType(type:string,userId: number){
   const logData:any = Logger.logfunction("GetAllConceptsByType", arguments);
     try{

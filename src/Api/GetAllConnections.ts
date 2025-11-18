@@ -4,6 +4,17 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
+
+/**
+ * Retrieves all connections belonging to a specific user.
+ * Fetches user's connections from backend and caches them in ConnectionData.
+ *
+ * @param userId - ID of the user whose connections to retrieve
+ * @returns void - Updates ConnectionData cache with user's connections
+ *
+ * @example
+ * await GetAllUserConnections(123); // Loads all connections for user 123
+ */
 export async function GetAllUserConnections(userId: number){
   const logData : any = Logger.logfunction("GetAllUserConnections", arguments);
     try{

@@ -1,7 +1,17 @@
 import { FilterSearch, FreeschemaQuery, SchemaQueryListener, StatefulWidget } from "../../app";
 import { removeAllChildren } from "../../Services/Common/RemoveAllChild";
 
-
+/**
+ * Selector widget for searchable dropdown selection.
+ * Provides a UI component with search filtering and freeschema query integration.
+ *
+ * **Complex Logic**: Builds a searchable select element that queries data using
+ * FreeschemaQuery, filters results dynamically, and populates options based on
+ * nested data structures.
+ *
+ * @example
+ * const selector = new Selector("person", "has_name", parentElement, "text", 10);
+ */
 export class Selector extends StatefulWidget{
 
     selector:string;

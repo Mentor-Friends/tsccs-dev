@@ -6,6 +6,16 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
+
+/**
+ * Fetches reserved connection IDs from the backend.
+ * Loads system-reserved connection IDs into ReservedConnectionIds cache.
+ *
+ * @returns void - Updates ReservedConnectionIds cache with reserved IDs
+ *
+ * @example
+ * await GetReservedConnectionIds(); // Loads reserved connection IDs
+ */
 export async function GetReservedConnectionIds(){
   const logData : any = Logger.logfunction("GetReservedConnectionIds", arguments);
     try{

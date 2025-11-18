@@ -2,6 +2,18 @@ import { BaseUrl, SearchQuery, SearchStructure } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
 
+/**
+ * Searches concepts by type with additional linker query filters.
+ * Combines type-based search with linker queries for refined results.
+ *
+ * **Complex Logic**: Constructs URL with search structure parameters, then applies
+ * linker queries as POST body for multi-dimensional filtering.
+ *
+ * @param searchStructure - Structure containing search text, type, pagination, and auth flag
+ * @param searchQuery - Array of linker query objects for additional filtering
+ * @param token - Authentication token (optional, defaults to empty string)
+ * @returns Array of concepts matching both type and linker criteria, or empty array on error
+ */
 export async function SearchWithTypeAndLinkerApi(searchStructure:SearchStructure, searchQuery:SearchQuery[], token = ""){
     let queryUrl = BaseUrl.SearchAllTypeWithLinker(searchStructure.auth);
     var header = GetRequestHeaderWithAuthorization("application/json", token);

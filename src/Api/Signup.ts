@@ -3,6 +3,34 @@ import { SignupModel } from "../DataStructures/SignupModel"
 import { HandleHttpError, HandleHttpErrorObject, HandleInternalError } from "../Services/Common/ErrorPosting";
 import { BaseUrl } from "../app"
 
+/**
+ * Registers a new user account on the backend server.
+ *
+ * Creates a new user with provided signup information including email, password,
+ * username, and profile details.
+ *
+ * @param signupModel - SignupModel object containing:
+ *   - email: User's email address
+ *   - password: User's password
+ *   - username: Unique username
+ *   - fname: First name
+ *   - lname: Last name
+ *   - title: Title/gender
+ *   - type: User type
+ * @returns FreeschemaResponse with signup result (status, message, data)
+ *
+ * @example
+ * const result = await Signup({
+ *   email: "newuser@example.com",
+ *   password: "securePass123",
+ *   username: "newuser",
+ *   fname: "John",
+ *   lname: "Doe"
+ * });
+ * if (result.status) {
+ *   console.log("Account created successfully");
+ * }
+ */
 export default async function Signup(signupModel: SignupModel){
     const signupResponse = await postData(BaseUrl.SignupUrl(), signupModel);
     return signupResponse;
@@ -110,22 +138,36 @@ async function postData(url = '', data = {}) {
   //   }
   // }
   
-  /**
-   * 
-   * @param signupData 
-   *   const signupData: any = {
-   *   type: typeValue,
-   *   username: usernameValue,
-   *   title: genderValue,
-   *   email: emailValue,
-   *   password: passwordValue,
-   *   timestamp: new Date().toISOString(),
-   *   fname: firstNameValue,
-   *   lname: lastNameValue,
-   * };
-   * @returns 
-   */
-  export async function SignupEntity(signupData: any) {
+/**
+ * Registers a new entity (organization/company account) on the backend.
+ *
+ * Creates entity-type accounts (different from regular user accounts).
+ * Includes timestamp for registration tracking.
+ *
+ * @param signupData - Signup data object containing:
+ *   - type: Entity type
+ *   - username: Unique username
+ *   - title: Title/designation
+ *   - email: Entity email
+ *   - password: Account password
+ *   - timestamp: Registration timestamp (ISO string)
+ *   - fname: First name / Entity name
+ *   - lname: Last name / Additional info
+ * @returns Response JSON with entity creation result
+ * @throws Error if signup fails (404, 500, or other HTTP errors)
+ *
+ * @example
+ * const result = await SignupEntity({
+ *   type: "organization",
+ *   username: "acme_corp",
+ *   email: "admin@acme.com",
+ *   password: "securePass",
+ *   timestamp: new Date().toISOString(),
+ *   fname: "ACME Corporation",
+ *   lname: "Inc."
+ * });
+ */
+export async function SignupEntity(signupData: any) {
     const baseURL = BaseUrl.NODE_URL
     const response: any = await fetch(`${baseURL}/api/v1/entity/signup`, {
       method: "POST",

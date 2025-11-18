@@ -4,10 +4,23 @@ import { GetCompositionLocal, GetCompositionLocalWithId } from "./GetComposition
 import GetConceptByCharacterLocal from "./GetConceptByCharacterLocal";
 
 /**
- * This function returns the list of composition which have the type @param compositionName
- * @param compositionName The type of the composition to pull
- * @param userId User Id of the user trying to pull the list
- * @returns list of compositions.
+ * Retrieves all compositions of a specific type from local storage.
+ *
+ * **Process Flow**:
+ * 1. Finds the type concept by compositionName (e.g., "the_project")
+ * 2. Queries all concepts with that typeId belonging to the user
+ * 3. Fetches full composition for each concept
+ * 4. Returns array of complete compositions
+ *
+ * @param compositionName - The type name of compositions to retrieve (e.g., "the_project", "the_person")
+ * @param userId - User ID to filter compositions by ownership
+ * @returns Array of composition objects (empty array if type not found)
+ * @throws Error if lookup or composition fetching fails
+ *
+ * @example
+ * // Get all local projects for a user
+ * const projects = await GetCompositionListLocal("the_project", 101);
+ * // Returns: [{id: -1, data: {...}}, {id: -2, data: {...}}]
  */
 export  async function GetCompositionListLocal(compositionName: string,userId:number){
    if (serviceWorker) {
@@ -39,10 +52,20 @@ export  async function GetCompositionListLocal(compositionName: string,userId:nu
 }
 
 /**
- * This function returns the list of composition with data - id format which have the type @param compositionName
- * @param compositionName The type of the composition to pull
- * @param userId User Id of the user trying to pull the list
- * @returns list of compositions with data - id format.
+ * Retrieves all compositions of a specific type with DATAID format (includes concept ID).
+ *
+ * Same as GetCompositionListLocal but returns compositions in data-id wrapper format,
+ * which includes both the composition data and its concept ID for easier reference.
+ *
+ * @param compositionName - The type name of compositions to retrieve
+ * @param userId - User ID to filter compositions by ownership
+ * @returns Array of composition objects in {id, data} format
+ * @throws Error if lookup or composition fetching fails
+ *
+ * @example
+ * // Get all local projects with IDs
+ * const projects = await GetCompositionListLocalWithId("the_project", 101);
+ * // Returns: [{id: -1, data: {the_name: "Project A"}}, {id: -2, data: {...}}]
  */
 export  async function GetCompositionListLocalWithId(compositionName: string, userId: number){
    if (serviceWorker) {

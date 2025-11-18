@@ -1,5 +1,14 @@
 import { BuilderStatefulWidget } from "./BuilderStatefulWidget";
 
+/**
+ * Opens the type editor interface for a widget in development mode.
+ *
+ * Creates an input field allowing developers to change the widget type
+ * dynamically. Updates the widget when type value changes.
+ *
+ * @param event - The click event that triggered the editor
+ * @param that - The BuilderStatefulWidget instance to edit
+ */
 export function TypeEditor( event:any, that:BuilderStatefulWidget){
     if(event){
         const inputVal = document.querySelector(
