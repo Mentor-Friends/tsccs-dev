@@ -35,35 +35,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
      * @returns Formatted query results
      */
     async run() {
-
-        this.query.outputFormat = ALLID;
-        this.compositionIds = [];
-        let result:any = await FreeschemaQueryApi(this.query, "");
-        this.conceptIds = result.conceptIds;
-        this.internalConnections = result.internalConnections ?? [];
-        this.linkers = result.linkers ?? [];
-        this.reverse = result.reverse;
-        this.compositionIds = result.mainCompositionIds;
-        this.totalCount = result.mainCount;
-        this.countInfoStrings = result.countinfo;
-
-        let output = await this.build();
-
-        return output;
-    }
-
-    /**
-     * Executes the query and sets up change listeners for all matching compositions.
-     * @returns Formatted query results
-     */
-    async bind() {
-        if(this.compositionIds.length > 0){
-            for(let i=0; i<this.compositionIds.length; i++){
-                this.removeListenToEvent(this.compositionIds[i]);
-            }
-        }
-
-        if(!this.isDataLoaded){
+        try {
             this.query.outputFormat = ALLID;
             this.compositionIds = [];
             let result:any = await FreeschemaQueryApi(this.query, "");
@@ -75,33 +47,70 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.totalCount = result.mainCount;
             this.countInfoStrings = result.countinfo;
 
-        }
-        else{
+            let output = await this.build();
 
-            for(let i=0 ;i<this.compositionIds.length; i++){
-                this.listenToEvent(this.compositionIds[i]);
-            }
+            return output;
+        } catch (err) {
+            console.error('Error in SchemaQueryObservable.run():', err);
+            throw err;
         }
-        let output = await this.build();
-        if(!this.isDataLoaded){
-            this.isDataLoaded = true;
-            for(let i=0 ;i<this.compositionIds.length; i++){
-                this.listenToEvent(this.compositionIds[i]);
-            }
-            if(this.query.type != ""){
-                let concept = await MakeTheTypeConceptApi(this.query.type, 999);
-                if(concept.id > 0){
-                    this.listenToEventType(concept.id);
+    }
+
+    /**
+     * Executes the query and sets up change listeners for all matching compositions.
+     * @returns Formatted query results
+     */
+    async bind() {
+        try {
+            if(this.compositionIds.length > 0){
+                for(let i=0; i<this.compositionIds.length; i++){
+                    this.removeListenToEvent(this.compositionIds[i]);
                 }
-    
             }
-        }
-        for(let i=0 ;i<this.newIds.length; i++){
-            this.listenToEvent(this.newIds[i]);
-        }
-        this.newIds = [];
 
-        return output;
+            if(!this.isDataLoaded){
+                this.query.outputFormat = ALLID;
+                this.compositionIds = [];
+                let result:any = await FreeschemaQueryApi(this.query, "");
+                this.conceptIds = result.conceptIds;
+                this.internalConnections = result.internalConnections ?? [];
+                this.linkers = result.linkers ?? [];
+                this.reverse = result.reverse;
+                this.compositionIds = result.mainCompositionIds;
+                this.totalCount = result.mainCount;
+                this.countInfoStrings = result.countinfo;
+
+            }
+            else{
+
+                for(let i=0 ;i<this.compositionIds.length; i++){
+                    this.listenToEvent(this.compositionIds[i]);
+                }
+            }
+            let output = await this.build();
+            if(!this.isDataLoaded){
+                this.isDataLoaded = true;
+                for(let i=0 ;i<this.compositionIds.length; i++){
+                    this.listenToEvent(this.compositionIds[i]);
+                }
+                if(this.query.type != ""){
+                    let concept = await MakeTheTypeConceptApi(this.query.type, 999);
+                    if(concept.id > 0){
+                        this.listenToEventType(concept.id);
+                    }
+
+                }
+            }
+            for(let i=0 ;i<this.newIds.length; i++){
+                this.listenToEvent(this.newIds[i]);
+            }
+            this.newIds = [];
+
+            return output;
+        } catch (err) {
+            console.error('Error in SchemaQueryObservable.bind():', err);
+            throw err;
+        }
     }
 
     /**
@@ -109,35 +118,40 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
      * @returns Formatted query results based on the output format
      */
     async build(){
-        Logger.logfunction("build", ["schemaquery", this.compositionIds]);
-        let countInfos = DecodeCountInfo(this.countInfoStrings);
+        try {
+            Logger.logfunction("build", ["schemaquery", this.compositionIds]);
+            let countInfos = DecodeCountInfo(this.countInfoStrings);
 
-        if(this.format == DATAID){
-            this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.compositionIds, this.reverse,countInfos, this.order);
-        }
-        else if(this.format == JUSTDATA){
-            this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
-        }
-        else if(this.format == DATAV2){
-            this.data = await formatConnectionsV2(this.linkers, this.conceptIds,this.compositionIds, this.reverse, countInfos, this.order );
-        }
-        else if(this.format == RAW){
-            console.log("this is the raw format");
-            this.data = {};
-            this.data.linkers = this.linkers;
-            this.data.conceptIds = this.conceptIds;
-            this.data.compositionIds = this.compositionIds;
-            this.data.reverse = this.reverse;
-            this.data.countInfos = countInfos;
-            this.data.order = this.order;
-        }
-        else{
+            if(this.format == DATAID){
+                this.data = await formatConnectionsDataId(this.linkers, this.conceptIds, this.compositionIds, this.reverse,countInfos, this.order);
+            }
+            else if(this.format == JUSTDATA){
+                this.data = await formatConnectionsJustId(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos, this.order);
+            }
+            else if(this.format == DATAV2){
+                this.data = await formatConnectionsV2(this.linkers, this.conceptIds,this.compositionIds, this.reverse, countInfos, this.order );
+            }
+            else if(this.format == RAW){
+                console.log("this is the raw format");
+                this.data = {};
+                this.data.linkers = this.linkers;
+                this.data.conceptIds = this.conceptIds;
+                this.data.compositionIds = this.compositionIds;
+                this.data.reverse = this.reverse;
+                this.data.countInfos = countInfos;
+                this.data.order = this.order;
+            }
+            else{
 
-            this.data = await formatConnections(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos);
+                this.data = await formatConnections(this.linkers, this.conceptIds, this.compositionIds, this.reverse, countInfos);
 
-            //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
+                //this.data = await formatDataArrayNormal(this.linkers, this.conceptIds, this.internalConnections,  this.mainCompositionIds, this.reverse );
+            }
+            return this.data;
+        } catch (err) {
+            console.error('Error in SchemaQueryObservable.build():', err);
+            throw err;
         }
-        return this.data
     }
 
 }

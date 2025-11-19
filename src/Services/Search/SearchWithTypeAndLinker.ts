@@ -182,24 +182,70 @@ export async function formatConnectionsJustId(linkers: number[], conceptIds: num
  * @returns 
  */
 export async function formatConnectionsDataId(linkers: number[], conceptIds: number [], mainCompositionIds: number[], reverse: number[], countInfos: CountInfo[], order:string = "DESC"){
+    try {
         if (serviceWorker) {
             try {
                 const res: any = await sendMessage('formatConnectionsDataId', {linkers,conceptIds,mainCompositionIds,reverse,countInfos,order})
                 return res.data
             } catch (error) {
-                console.error('GetConnectionDataPrefetch error sw: ', error)
+                console.error('formatConnectionsDataId error sw: ', error)
                 handleServiceWorkerException(error)
             }
         }
-    let prefetchConnections = await GetConnectionDataPrefetch(linkers);
-    let CountDictionary:any = await GetConnectionTypeForCount(countInfos);
-    prefetchConnections = orderTheConnections(prefetchConnections, order);
-    let compositionData: any [] = [];
-    let newCompositionData: any [] = [];
-    compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
-    compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
-     let output:any  = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData,newCompositionData, mainCompositionIds, reverse, CountDictionary );
-     return output;
+
+        let prefetchConnections;
+        try {
+            prefetchConnections = await GetConnectionDataPrefetch(linkers);
+        } catch (err) {
+            console.error('Error in GetConnectionDataPrefetch:', err);
+            throw new Error(`Failed to prefetch connections: ${err instanceof Error ? err.message : String(err)}`);
+        }
+
+        let CountDictionary: any;
+        try {
+            CountDictionary = await GetConnectionTypeForCount(countInfos);
+        } catch (err) {
+            console.error('Error in GetConnectionTypeForCount:', err);
+            throw new Error(`Failed to get connection type for count: ${err instanceof Error ? err.message : String(err)}`);
+        }
+
+        try {
+            prefetchConnections = orderTheConnections(prefetchConnections, order);
+        } catch (err) {
+            console.error('Error in orderTheConnections:', err);
+            throw new Error(`Failed to order connections: ${err instanceof Error ? err.message : String(err)}`);
+        }
+
+        let compositionData: any [] = [];
+        let newCompositionData: any [] = [];
+
+        try {
+            compositionData = await FormatFunctionData(prefetchConnections, compositionData, reverse);
+        } catch (err) {
+            console.error('Error in FormatFunctionData:', err);
+            throw new Error(`Failed to format function data: ${err instanceof Error ? err.message : String(err)}`);
+        }
+
+        try {
+            compositionData = await FormatFunctionDataForData(prefetchConnections, compositionData, reverse);
+        } catch (err) {
+            console.error('Error in FormatFunctionDataForData:', err);
+            throw new Error(`Failed to format function data for data: ${err instanceof Error ? err.message : String(err)}`);
+        }
+
+        let output: any;
+        try {
+            output = await FormatFromConnectionsAlteredArrayExternal(prefetchConnections, compositionData, newCompositionData, mainCompositionIds, reverse, CountDictionary);
+        } catch (err) {
+            console.error('Error in FormatFromConnectionsAlteredArrayExternal:', err);
+            throw new Error(`Failed to format from connections altered array external: ${err instanceof Error ? err.message : String(err)}`);
+        }
+
+        return output;
+    } catch (err) {
+        console.error('Error in formatConnectionsDataId:', err);
+        throw err;
+    }
 }
 
 
