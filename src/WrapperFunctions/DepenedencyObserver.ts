@@ -49,47 +49,51 @@ export class DependencyObserver{
             if(!this.isUpdating){
                 this.isUpdating = true;
                 let that = this;
-                
+
                 setTimeout( async function(){
-                    let myEvent = event as CustomEvent;
-                    if(!that.compositionIds.includes(myEvent?.detail)){
-                        that.compositionIds.unshift(myEvent?.detail);
-                        that.listenToEvent(myEvent?.detail);
+                    try {
+                        let myEvent = event as CustomEvent;
+                        if(!that.compositionIds.includes(myEvent?.detail)){
+                            that.compositionIds.unshift(myEvent?.detail);
+                            that.listenToEvent(myEvent?.detail);
 
-                        let newId = myEvent?.detail;
-                        let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(newId, newId);
-                        for(let i=0 ;i< newConnection.length; i++){
-                        
-                            await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
-                                 if(conn.typeId == that.mainConcept){
-                                     if(!that.internalConnections.includes(conn.id)){
-                                         that.internalConnections.push(conn.id);
+                            let newId = myEvent?.detail;
+                            let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(newId, newId);
+                            for(let i=0 ;i< newConnection.length; i++){
+
+                                await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
+                                     if(conn.typeId == that.mainConcept){
+                                         if(!that.internalConnections.includes(conn.id)){
+                                             that.internalConnections.push(conn.id);
+                                         }
                                      }
-                                 }
-                                 else{
-                                     if(!that.linkers.includes(conn.id)){
-                                         that.linkers.push(conn.id);
+                                     else{
+                                         if(!that.linkers.includes(conn.id)){
+                                             that.linkers.push(conn.id);
+                                         }
+
+
                                      }
-                                     
+                                     if(!that.conceptIds.includes(conn.toTheConceptId)){
+                                         that.conceptIds.push(conn.toTheConceptId);
+                                     }
+                                     if(!that.compositionIds.includes(conn.ofTheConceptId)){
+                                         that.compositionIds.push(conn.ofTheConceptId);
+                                     }
 
-                                 }
-                                 if(!that.conceptIds.includes(conn.toTheConceptId)){
-                                     that.conceptIds.push(conn.toTheConceptId);
-                                 }
-                                 if(!that.compositionIds.includes(conn.ofTheConceptId)){
-                                     that.compositionIds.push(conn.ofTheConceptId);
-                                 }
+                                 });
 
-                             });
-                         
 
-                         }
+                             }
+                        }
+                        that.isUpdating = false;
+                        await that.bind();
+                        that.notify();
+                    } catch (err) {
+                        console.error('Error in typeHandler event listener:', err);
+                        that.isUpdating = false;
+                        throw err;
                     }
-                    that.isUpdating = false;
-                    await that.bind();
-                    that.notify();
-
-
                 }, 200);
             }
             else{
@@ -114,42 +118,46 @@ export class DependencyObserver{
                 let that = this;
 
                 setTimeout( async function(){
-                    let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
-                    for(let i=0 ;i< newConnection.length; i++){
-                        
-                               await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
+                    try {
+                        let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+                        for(let i=0 ;i< newConnection.length; i++){
 
-                                    if(conn.typeId == that.mainConcept){
-                                        if(!that.internalConnections.includes(conn.id)){
-                                            that.internalConnections.push(conn.id);
+                                   await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
+
+                                        if(conn.typeId == that.mainConcept){
+                                            if(!that.internalConnections.includes(conn.id)){
+                                                that.internalConnections.push(conn.id);
+                                            }
                                         }
-                                    }
-                                    else{
-                                        if(!that.linkers.includes(conn.id)){
-                                            that.linkers.push(conn.id);
+                                        else{
+                                            if(!that.linkers.includes(conn.id)){
+                                                that.linkers.push(conn.id);
+                                            }
+
+                                        }
+                                        if(!that.conceptIds.includes(conn.toTheConceptId)){
+                                            that.conceptIds.push(conn.toTheConceptId);
+                                        }
+                                        if(!that.compositionIds.includes(conn.ofTheConceptId)){
+                                            that.compositionIds.push(conn.ofTheConceptId);
+                                            if(!that.newIds.includes(conn.ofTheConceptId)){
+                                                that.newIds.push(conn.ofTheConceptId);
+                                            }
                                         }
 
-                                    }
-                                    if(!that.conceptIds.includes(conn.toTheConceptId)){
-                                        that.conceptIds.push(conn.toTheConceptId);
-                                    }
-                                    if(!that.compositionIds.includes(conn.ofTheConceptId)){
-                                        that.compositionIds.push(conn.ofTheConceptId);
-                                        if(!that.newIds.includes(conn.ofTheConceptId)){
-                                            that.newIds.push(conn.ofTheConceptId);
-                                        }
-                                    }
+
+                                    });
 
 
-                                });
-                            
-
+                        }
+                        that.isUpdating = false;
+                        await that.bind();
+                        that.notify();
+                    } catch (err) {
+                        console.error('Error in event listener for concept', id, ':', err);
+                        that.isUpdating = false;
+                        throw err;
                     }
-                    that.isUpdating = false;
-                    await that.bind();
-                    that.notify();
-
-
                 }, 200);
             }
             else{
@@ -259,14 +267,23 @@ export class DependencyObserver{
     /**
      * Subscribes a callback to receive data updates whenever tracked concepts/connections change.
      * @param callback - Function to call with (data, observer) when updates occur
+     * @param errorCallback - Optional function to call when errors occur
      * @returns Result of calling the callback with current data
      */
-    async subscribe(callback: any) {
+    async subscribe(callback: any, errorCallback?: (error: Error) => void) {
         this.subscribers.push(callback);
-          //  console.log('again executing data');
-          await this.bind();
-          return callback(this.data,this);
-      }
+        try {
+            //  console.log('again executing data');
+            await this.bind();
+            return callback(this.data, this);
+        } catch (err) {
+            console.error('Error in subscribe:', err);
+            if (errorCallback) {
+                errorCallback(err as Error);
+            }
+            throw err;
+        }
+    }
 
     /**
      * Executes the observable once without subscribing to updates.
