@@ -1,7 +1,4 @@
-import { Console } from 'console';
-import { GetConcept } from '../../Api/GetConcept';
 import {SearchStructure,SearchQuery, GetConnectionBulk, SearchWithTypeAndLinkerApi, GetTheConcept, GetAllConnectionsOfCompositionBulk, serviceWorker, sendMessage, handleServiceWorkerException} from '../../app';
-import { recursiveFetchConceptSingleLoop } from '../GetComposition';
 import { GetCompositionFromConnectionsInObject, GetCompositionFromConnectionsInObjectNormal, GetCompositionFromConnectionsWithDataIdInObject, GetConnectionDataPrefetch } from '../GetCompositionBulk';
 import { FormatConceptsAndConnectionsNormalList, formatFunction, formatFunctionForData } from './FormatData';
 import { FormatConceptsAndConnections, FormatFromConnectionsAltered, FormatFromConnectionsAlteredArray } from './SearchLinkMultiple';
