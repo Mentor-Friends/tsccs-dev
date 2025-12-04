@@ -182,7 +182,9 @@ export async function SignupEntity(signupData: any) {
     } else {
       if (response.status === 404) throw new Error("404, Not found");
       if (response.status === 500) throw new Error("500, internal server error");
-      throw new Error(response.status);
+      let errorResponse = await response.json();
+      console.log("This is the error from package", errorResponse);
+      throw new Error(errorResponse.message);
     }
   }
   
