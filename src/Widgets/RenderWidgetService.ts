@@ -505,7 +505,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
           const childWidget = childWidgets[index];
           let originIdOfChildWidget =
             childWidget?.data.the_child_widget?.the_child_widget_info?.data
-              ?.the_widget?.the_widget_root?.data?.the_root;
+              ?.the_widget?.the_widget_root?.id;
           const useLatest = childWidget?.data?.the_child_widget
             ?.the_child_widget_use_latest?.data
             ? true
