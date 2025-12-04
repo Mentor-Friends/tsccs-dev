@@ -680,15 +680,15 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
         widgetNode.css = widgetInfo?.the_widget_css?.data?.the_css;
         widgetNode.js = widgetInfo?.the_widget_js?.data?.the_js;
         widgetNode.root = Number(widgetInfo?.the_widget_root?.id ?? 0)
-        let isRoot = widgetNode.root != 0 ? true : false;
-        if(isRoot){
-          widgetNode.origin = widgetNode.root;
-        }
-        else{
-          widgetNode.origin = Number( 
-            widgetInfo?.the_widget_origin?.data?.the_origin || widgetInfo?.the_widget_origin?.data?.the_originid
-          );
-        }
+        // let isRoot = widgetNode.root != 0 ? true : false;
+        // if(isRoot){
+        // }
+        widgetNode.origin = widgetNode.root;
+        // else{
+        //   widgetNode.origin = Number( 
+        //     widgetInfo?.the_widget_origin?.data?.the_origin || widgetInfo?.the_widget_origin?.data?.the_originid
+        //   );
+        // }
 
         widgetNode.version =
           widgetInfo?.the_widget_version?.data?.the_version;
