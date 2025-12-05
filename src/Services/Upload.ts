@@ -29,7 +29,12 @@ export async function uploadAttachment(
     console.log("File Type", file.type);
     const formData = new FormData();
     let response: any;
-    if (validDocumentFormats.includes(file.type)) {
+
+    const isDocument =
+      validDocumentFormats.includes(file.type) ||
+      file.name.toLowerCase().endsWith(".md"); // fallback extension check
+
+    if (isDocument) {
       // File
       formData.append("file", file, file.name);
       response = await uploadFile(formData, token);
