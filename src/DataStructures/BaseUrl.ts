@@ -22,6 +22,8 @@ export class BaseUrl{
 
     static isNearestCache = true;
 
+    static ACCESS_CONTROL_BASE_URL: string = "http://localhost:5001";
+
     static FLAGS : any= {
         logApplication: false,
         logPackage: false,

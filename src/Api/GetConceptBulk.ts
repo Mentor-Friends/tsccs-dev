@@ -119,7 +119,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
           Logger.logfunction(logData);
           return result;
         } else {
-          let header = GetRequestHeader();
+          let header = GetRequestHeader("application/json");
           let response;
           const requestData = {
             method: "POST",
@@ -179,9 +179,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
 export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
     const conceptList: Concept[] = []
     if (bulkConceptFetch.length > 0) {
-      const myHeaders = {
-        'Content-Type': 'application/json',
-      }
+      const myHeaders = GetRequestHeader("application/json")
       try {
         const response = await fetch(BaseUrl.GetConceptBulkUrl(), {
           method: 'POST',

@@ -65,7 +65,7 @@ export async function RecursiveSearchApi(
     searchQuery.textSearch = textSearch;
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
-    let myHeaders = GetRequestHeader();
+    let myHeaders = GetRequestHeader("application/json");
     const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
@@ -139,7 +139,7 @@ export async function RecursiveSearchApiWithInternalConnections(
     searchQuery.textSearch = textSearch;
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
-    let myHeaders = GetRequestHeader();
+    let myHeaders = GetRequestHeader("application/json");
     const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
@@ -218,7 +218,7 @@ export async function RecursiveSearchApiRaw(
     searchQuery.fullLinkers = fullLinkers;
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
-    let myHeaders = GetRequestHeader();
+    let myHeaders = GetRequestHeader("application/json");
     const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
@@ -289,7 +289,7 @@ export async function RecursiveSearchApiRawFullLinker(
     searchQuery.textSearch = textSearch;
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
-    let myHeaders = GetRequestHeader();
+    let myHeaders = GetRequestHeader("application/json");
     const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
@@ -360,7 +360,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
     searchQuery.textSearch = textSearch;
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
-    let myHeaders = GetRequestHeader();
+    let myHeaders = GetRequestHeader("application/json");
     const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
