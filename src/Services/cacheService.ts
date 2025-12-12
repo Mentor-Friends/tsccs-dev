@@ -3,10 +3,11 @@ import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 function updateToNextNearestServer() {
   const currentCacheServer = BaseUrl.NODE_CACHE_URL;
+  let cacheServerName = BaseUrl.BASE_APPLICATION + "_cacheServers";
   if (currentCacheServer === BaseUrl.BASE_URL) {
     throw new Error("Base Server Down");
   }
-  let myCacheServer = sessionStorage.getItem("cacheServers") as any;
+  let myCacheServer = sessionStorage.getItem(cacheServerName) as any;
   myCacheServer = JSON.parse(myCacheServer) as string[];
   const indexOfCurrentCacheServer = myCacheServer.indexOf(currentCacheServer);
   BaseUrl.isNearestCache = false;
@@ -15,7 +16,7 @@ function updateToNextNearestServer() {
       myCacheServer.splice(indexOfCurrentCacheServer, 1);
     }
   }
-  sessionStorage.setItem("cacheServers", JSON.stringify(myCacheServer));
+  sessionStorage.setItem(cacheServerName, JSON.stringify(myCacheServer));
   // console.log("remaining cache servers", myCacheServer, BaseUrl.BASE_URL);
   if (myCacheServer.length) {
     const nextNearestCacheServer = myCacheServer[0];

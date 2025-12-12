@@ -1059,11 +1059,14 @@ async function checkIfExecutingProcess(messageId: string, type: string) {
 }
 
 async function initializeAppConfig() {
-  let myCacheServer = sessionStorage.getItem("cacheServers");
-  let appConfig = sessionStorage.getItem("config")
+  let cacheServerName = BaseUrl.BASE_APPLICATION + "_cacheServers";
+  let cacheConfigName = BaseUrl.BASE_APPLICATION + "_config";
+  let cacheConfigSession = BaseUrl.BASE_APPLICATION + "_session";
+  let myCacheServer = sessionStorage.getItem(cacheServerName);
+  let appConfig = sessionStorage.getItem(cacheConfigName)
 
 
-  let sessionString = sessionStorage.getItem("session") ?? "999";
+  let sessionString = sessionStorage.getItem(cacheConfigSession) ?? "999";
   let sessionId = parseInt(sessionString);
 
 
@@ -1088,9 +1091,9 @@ async function initializeAppConfig() {
   
         const cacheRes = await response.json();
         if (cacheRes.success) {
-          sessionStorage.setItem("cacheServers", JSON.stringify(cacheRes.servers));
-          sessionStorage.setItem("config", JSON.stringify(cacheRes.config));
-          sessionStorage.setItem('session',cacheRes.session)
+          sessionStorage.setItem(cacheServerName, JSON.stringify(cacheRes.servers));
+          sessionStorage.setItem(cacheConfigName, JSON.stringify(cacheRes.config));
+          sessionStorage.setItem(cacheConfigSession,cacheRes.session)
           TokenStorage.setSession(cacheRes.session);
           //TokenStorage.sessionId = cacheRes.session;
           if (!cacheRes.servers) {
