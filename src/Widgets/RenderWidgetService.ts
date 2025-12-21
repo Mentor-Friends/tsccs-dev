@@ -167,6 +167,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
       // add newWidget css to the page
       const style = document.createElement("style");
       style.id = "mystyleid";
+      style.classList.add("mftsccs-css");
       const finalCSS = `
         .${randomStr} {
           ${widgetTree.css + newWidget.css + ckeditorCSS} 
@@ -390,6 +391,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
       // add newWidget css to the page
       const style = document.createElement("style");
       style.id = "mystyleid";
+      style.classList.add("mftsccs-css");
       const finalCSS = `
         .${randomStr} {
           ${widgetTree.css + newWidget.css + ckeditorCSS} 
