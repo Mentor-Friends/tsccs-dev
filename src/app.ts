@@ -1079,7 +1079,7 @@ async function initializeAppConfig() {
   async function getAppConfigHandler() {
     let response
     try {
-      let windowApplication = window?.location?.hostname ?? "boomconsole";
+      let windowApplication = BaseUrl.BASE_APPLICATION ?? "boomconsole";
 
         response = await fetch(BaseUrl.getAppConfig() + "?application=" + windowApplication, {
           method: "POST",
