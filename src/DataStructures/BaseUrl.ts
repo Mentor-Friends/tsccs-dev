@@ -324,6 +324,14 @@ export class BaseUrl{
     }
 
 
+    //////////////////////////////////////////////////////////////////////
+    ///////////////////API FOR GETTING UPLOAD LIMIT SIZE/////////////////
+
+    static UploadFileLimitUrl(){
+        return this.BASE_URL + '/api/upload/limit';
+    }
+
+
 
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR FREESCHEMA QUERY //////////////////////
@@ -336,6 +344,8 @@ export class BaseUrl{
     static uploadImageUrl(){
         return this.BASE_URL + '/api/Image/UploadImage';
     }
+
+
 
     static uploadImageUrlWithSmall(){
         return this.BASE_URL + '/api/Image/UploadImageV2';

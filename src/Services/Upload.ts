@@ -1,5 +1,6 @@
 import { BaseUrl, Logger } from "../app";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
+import { GetRequestHeader } from "./Security/GetRequestHeader";
 
 export const validImageFormats = [
   "image/jpeg",
@@ -160,4 +161,24 @@ export async function uploadFile(body: FormData, token: string = "") {
     UpdatePackageLogWithError(logData, 'uploadFile', err);
     return null;
   }
+}
+
+
+export async function getUploadFileLimit(){
+  let header = await GetRequestHeader();
+  let output = {};
+  try{
+    const response = await fetch(BaseUrl.UploadFileLimitUrl(),{
+      method: 'GET',
+      headers: header
+    });
+    if(response.ok){
+      output = response.json();
+    }
+  }
+  catch(err){
+    console.error(err);
+    throw err;
+  }
+  return output;
 }
