@@ -51,49 +51,60 @@ class RecursiveSearchObservable extends DependencyObserver {
    * @param id - The concept ID to track
    */
   listenToEvent(id: number) {
-    window.addEventListener(`${id}`, (event) => {
+    if (this.eventHandlers[id]) return; // already added
+
+    const handler = async (event: Event) => {
       // console.log("this is listening after the event is fired", id, event);
       if (!this.isUpdating) {
         this.isUpdating = true;
         let that = this;
 
         setTimeout(async function () {
-          let newConnection =
-            await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
-          for (let i = 0; i < newConnection.length; i++) {
-            await ConnectionData.GetConnection(newConnection[i]).then(
-              (conn) => {
-                if (conn.typeId == that.mainConcept) {
-                  if (!that.internalConnections.includes(conn.id)) {
-                    that.internalConnections.push(conn.id);
+          try {
+            let newConnection =
+              await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
+            for (let i = 0; i < newConnection.length; i++) {
+              await ConnectionData.GetConnection(newConnection[i]).then(
+                (conn) => {
+                  if (conn.typeId == that.mainConcept) {
+                    if (!that.internalConnections.includes(conn.id)) {
+                      that.internalConnections.push(conn.id);
+                    }
+                  } else {
+                    if (!that.linkers.includes(conn.id)) {
+                      that.linkers.push(conn.id);
+                    }
                   }
-                } else {
-                  if (!that.linkers.includes(conn.id)) {
-                    that.linkers.push(conn.id);
+                  if (!that.conceptIds.includes(conn.toTheConceptId)) {
+                    that.conceptIds.push(conn.toTheConceptId);
                   }
-                }
-                if (!that.conceptIds.includes(conn.toTheConceptId)) {
-                  that.conceptIds.push(conn.toTheConceptId);
-                }
 
-                // compositions
-                if (!that.compositionIds.includes(conn.ofTheConceptId)) {
-                  that.compositionIds.push(conn.ofTheConceptId);
+                  // compositions
+                  if (!that.compositionIds.includes(conn.ofTheConceptId)) {
+                    that.compositionIds.push(conn.ofTheConceptId);
+                  }
+                  if (!that.compositionIds.includes(conn.toTheConceptId)) {
+                    that.compositionIds.push(conn.toTheConceptId);
+                  }
                 }
-                if (!that.compositionIds.includes(conn.toTheConceptId)) {
-                  that.compositionIds.push(conn.toTheConceptId);
-                }
-              }
-            );
+              );
+            }
+            that.isUpdating = false;
+            await that.bind();
+            that.notify();
+          } catch (err) {
+            console.error('Error in RecursiveSearchObservable event listener:', err);
+            that.isUpdating = false;
+            throw err;
           }
-          that.isUpdating = false;
-          await that.bind();
-          that.notify();
         }, 200);
       } else {
        // console.log("rejected this");
       }
-    });
+    };
+
+    this.eventHandlers[id] = handler;
+    window.addEventListener(`${id}`, handler);
   }
 
   /**
