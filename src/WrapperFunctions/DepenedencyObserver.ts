@@ -34,8 +34,8 @@ export class DependencyObserver{
     fetched: boolean = false;
     /** Output format (NORMAL, DATAID, JUSTDATA, etc.) */
     format: number = NORMAL;
-    /** Map of concept IDs to their event handlers */
-    eventHandlers: { [key: number]: (event: Event) => void } = {};
+    /** Map of concept IDs to their event handlers (string keys to support composite keys) */
+    eventHandlers: { [key: string]: (event: Event) => void } = {};
 
     /**
      * Listens to changes for a specific concept type and updates subscribers when new concepts of that type are created.
@@ -188,16 +188,20 @@ export class DependencyObserver{
      * @param connectionType - The connection type ID to filter by
      */
     listenToEventConnectionType(id: number, connectionType: number) {
-            window.addEventListener(`${id}`, (event) => {
-                if(!this.isUpdating){
-                    this.isUpdating = true;
-                    let that = this;
-    
-                    setTimeout( async function(){
+        const key = `${id}_type_${connectionType}`;
+        if (this.eventHandlers[key]) return; // already added
+
+        const handler = async (event: Event) => {
+            if(!this.isUpdating){
+                this.isUpdating = true;
+                let that = this;
+
+                setTimeout( async function(){
+                    try {
                         let newConnection = await ConnectionData.GetConnectionByOfTheConceptAndType(id, id);
                         for(let i=0 ;i< newConnection.length; i++){
-                            
-                            if(newConnection.typeId == connectionType){
+
+                            if(newConnection[i].typeId == connectionType){
                                 await ConnectionData.GetConnection(newConnection[i]).then((conn)=>{
                                     if(conn.typeId == that.mainConcept){
                                         if(!that.internalConnections.includes(conn.id)){
@@ -208,7 +212,7 @@ export class DependencyObserver{
                                         if(!that.linkers.includes(conn.id)){
                                             that.linkers.push(conn.id);
                                         }
-                                        
+
 
                                     }
                                     if(!that.conceptIds.includes(conn.toTheConceptId)){
@@ -219,24 +223,26 @@ export class DependencyObserver{
                                     }
 
                                 });
-                        }
-
-                                
-    
+                            }
                         }
                         that.isUpdating = false;
                         await that.bind();
                         that.notify();
-    
-    
-                    }, 200);
-                }
-                else{
-                   // console.log("rejected this");
-                }
-    
-            });
-        }
+                    } catch (err) {
+                        console.error('Error in connectionType handler:', err);
+                        that.isUpdating = false;
+                        throw err;
+                    }
+                }, 200);
+            }
+            else{
+               // console.log("rejected this");
+            }
+        };
+
+        this.eventHandlers[key] = handler;
+        window.addEventListener(`${id}`, handler);
+    }
 
 
     /**
