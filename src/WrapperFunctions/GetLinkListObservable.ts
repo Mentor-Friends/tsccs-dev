@@ -43,11 +43,14 @@ export class GetLinkListObservable extends DependencyObserver{
      * @param id - The type concept ID to track
      */
     listenToEventType(id: number): void {
-            window.addEventListener(`${id}`, (event) => {
-                if(!this.isUpdating){
-                    this.isUpdating = true;
-                    let that = this;
-                    setTimeout( async function(){
+        if (this.eventHandlers[id]) return; // already added
+
+        const handler = async (event: Event) => {
+            if(!this.isUpdating){
+                this.isUpdating = true;
+                let that = this;
+                setTimeout( async function(){
+                    try {
                         let myEvent = event as CustomEvent;
                         if(!that.mainCompositionIds.includes(myEvent?.detail)){
                             that.mainCompositionIds.unshift(myEvent?.detail);
@@ -62,16 +65,21 @@ export class GetLinkListObservable extends DependencyObserver{
                         that.isUpdating = false;
                         await that.bind();
                         that.notify();
-    
-    
-                    }, 200);
-                }
-                else{
-                   // console.log("rejected this");
-                }
-    
-            });
-        }
+                    } catch (err) {
+                        console.error('Error in GetLinkListObservable event listener:', err);
+                        that.isUpdating = false;
+                        throw err;
+                    }
+                }, 200);
+            }
+            else{
+               // console.log("rejected this");
+            }
+        };
+
+        this.eventHandlers[id] = handler;
+        window.addEventListener(`${id}`, handler);
+    }
 
 
     /**
