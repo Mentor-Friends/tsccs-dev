@@ -1,379 +1,603 @@
-// src/services/AccessControlService.ts
+/**
+ * AccessControlService
+ *
+ * This service provides access control functionality including:
+ * - Check access for concepts with complex permission logic
+ * - Assign and revoke access permissions
+ * - Bulk operations for access management
+ * - Super admin checks
+ * - Access inheritance management
+ *
+ * This is the TypeScript equivalent of the C# AccessControlService class.
+ */
 
-import { BaseUrl } from "../../app";
+import GetTheConcept from '../GetTheConcept';
+import {
+  AccessResult,
+  BulkAccessRequest,
+  AccessInheritanceRequest,
+  SuperAdminRequest,
+  BulkConceptAccessRequest
+} from '../../DataStructures/AccessControl/AccessControlModels';
+import { APIClientService, IAPIClientService } from './APIClientService';
+import { ConceptsData } from '../../DataStructures/ConceptData';
 
 /**
- * Service for managing access control operations.
- * Provides methods to assign, revoke, and query access for concepts, entities, and users.
+ * Interface for the Access Control Service
  */
-export class AccessControlService {
-  /**
-   * Assigns access to a specific entity for a concept.
-   * @param request - AddAccessByEntityRequest
-   */
-  static async assignAccessToEntity(request: {
-    conceptId: number;
-    access: string;
-    entityId: number;
-    makePublic: boolean;
-    nestedAccessLevel?: number;
-  }): Promise<any> {
-    return this._post('/api/access-control/access', request, 'Failed to assign access to entity');
+export interface IAccessControlService {
+  // Check Access
+  checkAccess(conceptId: number, permission: string, entityId?: number | null): Promise<boolean>;
+  getConceptIdsWithPermission(permission: string, conceptIdsFilter: number[], entityId?: number | null): Promise<number[]>;
+
+  // Assign Access
+  // assignAccess(conceptId: number, permission: string, entityId?: number | null): Promise<boolean>;
+  assignAccess(request: BulkConceptAccessRequest): Promise<AccessResult[]>;
+
+  // Revoke Access
+  revokeAccess(conceptId: number, permission: string, entityId?: number | null): Promise<boolean>;
+  revokeAccessBulk(request: BulkConceptAccessRequest): Promise<AccessResult[]>;
+
+  // Access Inheritance
+  setAccessInheritance(conceptId: number): Promise<boolean>;
+  getAccessInheritanceStatus(conceptId: number, connectionTypeId?: number): Promise<boolean>;
+  setAccessInheritanceStatus(conceptId: number, isEnabled: boolean, connectionTypeId?: number): Promise<boolean>;
+
+  // Super Admin
+  isSuperAdmin(entityId: number): Promise<boolean>;
+  assignSuperAdmin(entityId: number): Promise<number>;
+  revokeSuperAdmin(entityId: number): Promise<string>;
+}
+
+export class AccessControlService implements IAccessControlService {
+  private readonly apiClient: IAPIClientService;
+
+  constructor(
+    apiClient?: IAPIClientService
+  ) {
+    this.apiClient = apiClient || new APIClientService();
   }
 
-  /**
-   * Assigns public access to a concept or list of concepts.
-   * @param request - AddPublicAccessToConcept
-   */
-  static async assignPublicAccess(request: {
-    conceptId: number;
-    conceptIdList?: number[];
-    accessList: string[];
-    nestedAccessLevel?: number;
-  }): Promise<any> {
-    return this._post('/api/access-control/public-access', {
-      ...request,
-      conceptIdList: request.conceptIdList ?? [],
-      accessList: request.accessList ?? [],
-      nestedAccessLevel: request.nestedAccessLevel ?? 0,
-    }, 'Failed to assign public access');
-  }
+  // #region Check Access
 
   /**
-   * Assigns public access to multiple concepts in bulk.
-   * @param request - AddPublicAccessToConcept
+   * Check whether a user/entity has the specified permission.
+   * Returns true if allowed, false otherwise.
+   *
+   * @param conceptId - The ID of the concept to check access for
+   * @param permission - The permission to check (read, write, execute, delete)
+   * @param entityId - Optional entity ID to check access for
+   * @returns Promise<boolean> - True if access is granted, false otherwise
    */
-  static async assignPublicAccessBlukConcept(request: {
-    conceptId: number;
-    conceptIdList?: number[];
-    accessList: string[];
-    nestedAccessLevel?: number;
-  }): Promise<any> {
-    return this._post('/api/access-control/public-access', {
-      ...request,
-      conceptIdList: request.conceptIdList ?? [],
-      accessList: request.accessList ?? [],
-      nestedAccessLevel: request.nestedAccessLevel ?? 0,
-    }, 'Failed to assign public access');
-  }
+  async checkAccess(conceptId: number, permission: string, entityId?: number | null): Promise<boolean> {
+    if (!permission || permission.trim() === '') {
+      throw new Error('Permission is required');
+    }
 
-  /**
-   * Assigns access to multiple entities and concepts in bulk.
-   * @param request - AddAccessByEntityBulkRequest
-   */
-  static async assignAccessToEntityBulk(request: {
-    conceptId: number;
-    conceptIdList?: number[];
-    entityIdList?: number[];
-    accessList?: string[];
-    nestedAccessLevel?: number;
-  }): Promise<any> {
-    return this._post('/api/access-control/access/bulk', {
-      ...request,
-      conceptIdList: request.conceptIdList ?? [],
-      entityIdList: request.entityIdList ?? [],
-      accessList: request.accessList ?? [],
-      nestedAccessLevel: request.nestedAccessLevel ?? 0,
-    }, 'Failed to assign access in bulk');
-  }
+    permission = permission.toLowerCase();
 
-  /**
-   * Assigns access to a user for a concept.
-   * @param request - AddAccessByUserRequest
-   */
-  static async assignAccessByUser(request: {
-    conceptId: number;
-    access: string;
-    userId: number;
-    makePublic: boolean;
-  }): Promise<any> {
-    return this._post('/api/access-control/user-access', request, 'Failed to assign access by user');
+    const concept = await GetTheConcept(conceptId);
+    const accessId = concept.accessId ?? 0;
+
+    const typeConcept = await GetTheConcept(concept.typeId);
+    const typeAccessId = typeConcept.accessId ?? 0;
+
+    // If own concept → allow
+    const entityConcept = await GetTheConcept(entityId ?? 0);
+    if (entityConcept.userId === concept.userId) return true;
+
+    // Type concept → allow
+    if (concept.referentId === null || concept.referentId === undefined || concept.referentId === 0) return true;
+
+    // Public concept → allow
+    if (concept.userId === 999 && (concept.accessId ?? 0) < 10000) return true;
+
+    // Super-admin check
+    if (await this.isSuperAdmin(entityId ?? 0)) return true;
+
+    // Private concepts → deny
+    if (concept.userId > 999 && (concept.accessId ?? 0) < 10000) return false;
+
+    // Public concepts or private with assigned accessId
+    if (await this.checkAccessInternal(typeAccessId, permission, null)) return true;
+    if (await this.checkAccessInternal(accessId, permission, null)) return true;
+
+    // Check with entityId
+    if (await this.checkAccessInternal(typeAccessId, permission, entityId)) return true;
+    return await this.checkAccessInternal(accessId, permission, entityId);
   }
 
   /**
-   * Revokes access for an entity from a concept.
-   * @param params - conceptId, access, entityId
+   * Get all accessIds which have a certain permission for an entity.
+   * Optional filter by a list of accessIds.
+   *
+   * @param permission - The permission to check
+   * @param conceptIdsFilter - List of concept IDs to filter
+   * @param entityId - Optional entity ID
+   * @returns Promise<number[]> - Array of concept IDs that have the permission
    */
-  static async revokeAccess(params: {
-    conceptId: number;
-    access: string;
-    entityId: number;
-  }): Promise<any> {
-    const { conceptId, access, entityId } = params;
-    const url = `/api/access-control/access?conceptId=${conceptId}&access=${encodeURIComponent(access)}&entityId=${entityId}`;
-    return this._delete(url, undefined, 'Failed to revoke access');
+  async getConceptIdsWithPermission(
+    permission: string,
+    conceptIdsFilter: number[],
+    entityId?: number | null
+  ): Promise<number[]> {
+    if (!permission || permission.trim() === '') {
+      throw new Error('Permission is required');
+    }
+
+    permission = permission.toLowerCase();
+    const results: number[] = [];
+
+    for (const conceptId of conceptIdsFilter) {
+      if (await this.checkAccess(conceptId, permission, entityId)) {
+        results.push(conceptId);
+      }
+    }
+
+    return results;
+  }
+
+  // #endregion
+
+  // #region Assign Access
+
+  // /**
+  //  * Assign access permission to an entity
+  //  *
+  //  * @param conceptId - The concept ID to assign access for
+  //  * @param permission - The permission to assign
+  //  * @param entityId - Optional entity ID
+  //  * @returns Promise<boolean> - True if successful, false otherwise
+  //  */
+  // async assignAccess(conceptId: number, permission: string, entityId?: number | null): Promise<boolean> {
+  //   if (!permission || permission.trim() === '') {
+  //     throw new Error('Permission is required');
+  //   }
+
+  //   try {
+  //     const apiResponse = await this.apiClient.assignConceptAccessAsync({
+  //       conceptId,
+  //       permission,
+  //       entityId
+  //     });
+
+  //     return apiResponse?.status === true;
+  //   } catch (error) {
+  //     throw new Error(`Error assigning access for conceptId ${conceptId}, permission '${permission}', entityId ${entityId}: ${error}`);
+  //   }
+  // }
+
+  /**
+   * Assign access permissions to multiple targets in bulk
+   *
+   * @param request - Bulk access request containing targets
+   * @returns Promise<AccessResult[]> - Array of access results
+   */
+  async assignAccess(request: BulkConceptAccessRequest): Promise<AccessResult[]> {
+    if (!request || !request.conceptIds || request.conceptIds.length === 0) {
+      throw new Error('Request must contain at least one conceptId');
+    }
+
+    try {
+      const apiResponse = await this.apiClient.assignConceptAccessBulkAsync(request);
+
+      if (apiResponse?.status !== true) {
+        throw new Error(apiResponse?.message || 'Failed to assign bulk access');
+      }
+
+      // If API returned explicit results, return them
+      if (apiResponse?.data && Array.isArray(apiResponse.data)) {
+        return apiResponse.data as AccessResult[];
+      }
+      return [];
+    } catch (error) {
+      console.error('Failed to assign bulk access:', error);
+      throw error;
+    }
+  }
+
+  // #endregion
+
+  // #region Revoke Access
+
+  /**
+   * Revoke access permission from an entity
+   *
+   * @param conceptId - The concept ID to revoke access for
+   * @param permission - The permission to revoke
+   * @param entityId - Optional entity ID
+   * @returns Promise<boolean> - True if successfully revoked, false otherwise
+   */
+  async revokeAccess(conceptId: number, permission: string, entityId?: number | null): Promise<boolean> {
+    try {
+      const concept = await GetTheConcept(conceptId);
+      const accessId = concept.accessId ?? 0;
+
+      if (accessId === 0) {
+        throw new Error(`Concept with ID ${conceptId} does not have a valid accessId`);
+      }
+
+      const apiResponse = await this.apiClient.revokeAccessAsync({
+        accessId,
+        permission,
+        entityId
+      });
+
+      return apiResponse?.status === true;
+    } catch (error) {
+      throw new Error(`Error revoking access for concept ${conceptId}, permission '${permission}', entityId ${entityId}: ${error}`);
+    }
+  }
+
+  async revokeAccessBulk(request: BulkConceptAccessRequest): Promise<AccessResult[]> {
+    if (!request || !request.conceptIds || request.conceptIds.length === 0) {
+      throw new Error('Request must contain at least one conceptId');
+    }
+
+    try {
+      const apiResponse = await this.apiClient.revokeConceptAccessBulkAsync(request);
+
+      if (apiResponse?.status !== true) {
+        throw new Error(apiResponse?.message || 'Failed to revoke bulk concept access');
+      }
+
+      if (apiResponse?.data && Array.isArray(apiResponse.data)) {
+        return apiResponse.data as AccessResult[];
+      }
+      return [];
+    } catch (error) {
+      console.error('Failed to revoke bulk concept access:', error);
+      throw error;
+    }
+  }
+
+  // #endregion
+
+  // #region Access Inheritance
+
+  /**
+   * Set access inheritance for a concept
+   *
+   * @param conceptId - The concept ID to set inheritance for
+   * @returns Promise<boolean> - True if successful, false otherwise
+   */
+  async setAccessInheritance(conceptId: number): Promise<boolean> {
+    try {
+      const concept = await GetTheConcept(conceptId);
+      if (!concept || concept.id === 0) {
+        throw new Error(`Concept with ID ${conceptId} not found`);
+      }
+
+      const request: AccessInheritanceRequest = {
+        accessId: concept.accessId,
+        connectionTypeId: 999 // Default connection type ID
+      };
+
+      const response = await this.apiClient.setAccessInheritanceAsync(request);
+      return response?.status ?? false;
+    } catch (error) {
+      throw new Error(`Error setting access inheritance for conceptId ${conceptId}: ${error}`);
+    }
   }
 
   /**
-   * Revokes access for multiple entities in bulk.
-   * @param request - AddAccessByEntityBulkRequest
+   * Get access inheritance status for a concept
+   *
+   * @param conceptId - The concept ID to check
+   * @param connectionTypeId - The connection type ID (default: 999)
+   * @returns Promise<boolean> - True if inheritance is enabled, false otherwise
    */
-  static async revokeAccessBulk(request: {
-    conceptId: number;
-    conceptIdList?: number[];
-    entityIdList?: number[];
-    accessList?: string[];
-    nestedAccessLevel?: number;
-  }): Promise<any> {
-    return this._delete('/api/access-control/access/bulk', {
-      ...request,
-      conceptIdList: request.conceptIdList ?? [],
-      entityIdList: request.entityIdList ?? [],
-      accessList: request.accessList ?? [],
-      nestedAccessLevel: request.nestedAccessLevel ?? 0,
-    }, 'Failed to revoke access in bulk');
+  async getAccessInheritanceStatus(conceptId: number, connectionTypeId: number = 999): Promise<boolean> {
+    try {
+      const concept = await GetTheConcept(conceptId);
+      if (!concept || concept.id === 0) {
+        throw new Error(`Concept with ID ${conceptId} not found`);
+      }
+
+      const accessId = concept.accessId ?? 0;
+      if (accessId === 0) {
+        throw new Error(`Concept with ID ${conceptId} does not have a valid accessId`);
+      }
+
+      const response = await this.apiClient.getAccessInheritanceStatusAsync(accessId, connectionTypeId);
+
+      if (response?.status === true && response.data !== undefined) {
+        if (typeof response.data === 'boolean') {
+          return response.data;
+        }
+        if (typeof response.data === 'string') {
+          return response.data.toLowerCase() === 'true';
+        }
+      }
+
+      return false;
+    } catch (error) {
+      throw new Error(`Error getting access inheritance status for conceptId ${conceptId}, connectionTypeId ${connectionTypeId}: ${error}`);
+    }
   }
 
   /**
-   * Gets the access list for a concept and user.
+   * Set access inheritance status for a concept
+   *
+   * @param conceptId - The concept ID to set inheritance status for
+   * @param isEnabled - Whether to enable or disable inheritance
+   * @param connectionTypeId - The connection type ID (default: 999)
+   * @returns Promise<boolean> - True if successful, false otherwise
    */
-  static async getAccessList(conceptId: number, userId: number): Promise<any> {
-    const url = `/api/access-control/access-list?conceptId=${conceptId}&userId=${userId}`;
-    return this._get(url, 'Failed to get access list');
+  async setAccessInheritanceStatus(conceptId: number, isEnabled: boolean, connectionTypeId: number = 999): Promise<boolean> {
+    try {
+      const concept = await GetTheConcept(conceptId);
+      if (!concept || concept.id === 0) {
+        throw new Error(`Concept with ID ${conceptId} not found`);
+      }
+
+      const request: AccessInheritanceRequest = {
+        accessId: concept.accessId,
+        enable: isEnabled,
+        connectionTypeId
+      };
+
+      const response = await this.apiClient.setAccessInheritanceAsync(request);
+
+      if (response?.status === true) {
+        if (typeof response.data === 'number') {
+          concept.accessId = response.data;
+          // Update concept in cache
+          ConceptsData.AddConcept(concept);
+        }
+        return true;
+      }
+
+      return response?.status ?? false;
+    } catch (error) {
+      throw new Error(`Error setting access inheritance status for conceptId ${conceptId}: ${error}`);
+    }
+  }
+
+  // #endregion
+
+  // #region Super Admin
+
+  /**
+   * Check if an entity is a super admin
+   *
+   * @param entityId - The entity ID to check
+   * @returns Promise<boolean> - True if super admin, false otherwise
+   */
+  async isSuperAdmin(entityId: number): Promise<boolean> {
+    try {
+      if (entityId === 0) return false;
+
+      const entityConcept = await GetTheConcept(entityId);
+      if (!entityConcept || entityConcept.id === 0) {
+        throw new Error(`Entity with ID ${entityId} not found`);
+      }
+
+      const accessId = entityConcept.accessId ?? 0;
+      const response = await this.apiClient.checkSuperAdminStatusAsync(accessId);
+
+      if (response?.status === true && response.data !== undefined) {
+        if (typeof response.data === 'boolean') {
+          return response.data;
+        }
+        if (typeof response.data === 'string') {
+          return response.data.toLowerCase() === 'true';
+        }
+      }
+
+      return false;
+    } catch (error) {
+      throw new Error(`Error checking super admin status for entityId ${entityId}: ${error}`);
+    }
   }
 
   /**
-   * Gets the public access list for a list of concept IDs.
+   * Assign super admin access to an entity
+   *
+   * @param entityId - The entity ID to grant super admin access to
+   * @returns Promise<number> - The entity ID if successful, 0 otherwise
    */
-  static async getPublicAccessList(conceptIdList: number[]): Promise<any> {
-    return this._post('/api/access-control/public-access/by-concept-ids', conceptIdList, 'Failed to get public access list');
+  async assignSuperAdmin(entityId: number): Promise<number> {
+    try {
+      const entityConcept = await GetTheConcept(entityId);
+      if (!entityConcept || entityConcept.id === 0) {
+        throw new Error(`Entity with ID ${entityId} not found`);
+      }
+
+      const request: SuperAdminRequest = {
+        accessId: entityConcept.accessId
+      };
+
+      const response = await this.apiClient.assignSuperAdminAccessAsync(request);
+
+      if (response?.status === true && response.data !== undefined) {
+        if (typeof response.data === 'number') {
+          entityConcept.accessId = response.data;
+          // Update concept in cache
+          ConceptsData.AddConcept(entityConcept);
+          return entityId;
+        }
+      }
+
+      return 0;
+    } catch (error) {
+      throw new Error(`Failed to assign super admin for entityId ${entityId}: ${error}`);
+    }
   }
 
   /**
-   * Revokes public access for a concept.
-   * @param request - AddPublicAccessToConcept
+   * Revoke super admin access from an entity
+   *
+   * @param entityId - The entity ID to revoke super admin access from
+   * @returns Promise<string> - Success message or error message
    */
-  static async revokePublicAccess(request: {
-    conceptId: number;
-    conceptIdList?: number[];
-    accessList: string[];
-    nestedAccessLevel?: number;
-  }): Promise<any> {
-    return this._delete('/api/access-control/public-access', {
-      ...request,
-      conceptIdList: request.conceptIdList ?? [],
-      accessList: request.accessList ?? [],
-      nestedAccessLevel: request.nestedAccessLevel ?? 0,
-    }, 'Failed to revoke public access');
+  async revokeSuperAdmin(entityId: number): Promise<string> {
+    try {
+      const entityConcept = await GetTheConcept(entityId);
+      if (!entityConcept || entityConcept.id === 0) {
+        throw new Error(`Entity with ID ${entityId} not found`);
+      }
+
+      const accessId = entityConcept.accessId ?? 0;
+      if (accessId === 0) {
+        throw new Error(`Entity with ID ${entityId} does not have a valid accessId`);
+      }
+
+      const request: SuperAdminRequest = {
+        accessId
+      };
+
+      const response = await this.apiClient.revokeSuperAdminAccessAsync(request);
+
+      if (response?.status === true && response.message) {
+        return response.message;
+      }
+
+      return 'Super admin access deletion failed';
+    } catch (error) {
+      throw new Error(`Failed to revoke super admin for entityId ${entityId}: ${error}`);
+    }
+  }
+
+  // #endregion
+
+  // #region Private Methods
+
+  /**
+   * Internal method to check access via API
+   *
+   * @param accessId - The access ID to check
+   * @param permission - The permission to check
+   * @param entityId - Optional entity ID
+   * @returns Promise<boolean> - True if access is granted, false otherwise
+   */
+  private async checkAccessInternal(
+    accessId: number,
+    permission: string,
+    entityId?: number | null
+  ): Promise<boolean> {
+    try {
+      const apiResponse = await this.apiClient.checkAccessAsync({
+        accessId,
+        permission,
+        entityId
+      });
+
+      return apiResponse?.status === true;
+    } catch (error) {
+      throw new Error(`Error checking internal access for accessId ${accessId}, permission '${permission}', entityId ${entityId}: ${error}`);
+    }
+  }
+
+  // #endregion
+
+  // #region Static Methods (for backwards compatibility)
+
+  /**
+   * Static method to check if an entity is a super admin
+   * Uses the default singleton instance
+   *
+   * @param entityId - The entity ID to check
+   * @returns Promise<boolean> - True if super admin, false otherwise
+   */
+  static async isSuperAdmin(entityId: number): Promise<boolean> {
+    return getAccessControlService().isSuperAdmin(entityId);
   }
 
   /**
-   * Checks if an entity has a specific permission for a concept.
+   * Static method to assign super admin access
+   * Uses the default singleton instance
+   *
+   * @param entityId - The entity ID to grant super admin access to
+   * @returns Promise<number> - The entity ID if successful, 0 otherwise
    */
-  static async checkAccess(params: {
-    conceptId: number;
-    permission: string;
-    entityId: number;
-  }): Promise<any> {
-    const url = `/api/access-control/access/check?conceptId=${params.conceptId}&permission=${encodeURIComponent(params.permission)}&entityId=${params.entityId}`;
-    return this._get(url, 'Failed to check access');
+  static async assignSuperAdmin(entityId: number): Promise<number> {
+    return getAccessControlService().assignSuperAdmin(entityId);
   }
 
   /**
-   * Checks if a user has a specific access for a concept.
-   * @param request - AddAccessByUserRequest
+   * Static method to revoke super admin access
+   * Uses the default singleton instance
+   *
+   * @param entityId - The entity ID to revoke super admin access from
+   * @returns Promise<string> - Success message or error message
    */
-  static async checkAccessByUser(request: {
-    conceptId: number;
-    access: string;
-    userId: number;
-    makePublic?: boolean;
-  }): Promise<any> {
-    return this._post('/api/access-control/user-access/check', request, 'Failed to check access by user');
+  static async revokeSuperAdmin(entityId: number): Promise<string> {
+    return getAccessControlService().revokeSuperAdmin(entityId);
   }
 
   /**
-   * Filters concepts by access for a user.
-   * @param request - CheckAccessBulk
+   * Static method to check access
+   * Uses the default singleton instance
+   *
+   * @param conceptId - The concept ID to check access for
+   * @param permission - The permission to check
+   * @param entityId - Optional entity ID
+   * @returns Promise<boolean> - True if access is granted, false otherwise
    */
-  static async filterConceptsByAccess(request: {
-    conceptIdList?: number[];
-    connectionIdList?: number[];
-    access: string;
-    userId: number;
-  }): Promise<any> {
-    return this._post('/api/access-control/concepts/filter-by-access', request, 'Failed to filter concepts by access');
+  static async checkAccess(conceptId: number, permission: string, entityId?: number | null): Promise<boolean> {
+    return getAccessControlService().checkAccess(conceptId, permission, entityId);
   }
 
   /**
-   * Checks access for a user on multiple concepts in bulk.
-   * @param request - CheckAccessBulk
+   * Static method to assign access in bulk
+   * Uses the default singleton instance
+   *
+   * @param request - BulkConceptAccessRequest containing conceptIds and permissions
+   * @returns Promise<AccessResult[]> - Array of access results
    */
-  static async checkAccessOfConceptBulk(request: {
-    conceptIdList?: number[];
-    connectionIdList?: number[];
-    access: string;
-    userId: number;
-  }): Promise<any> {
-    return this._post('/api/access-control/concepts/check-access-bulk', request, 'Failed to check access of concept bulk');
+  static async assignAccess(request: BulkConceptAccessRequest): Promise<AccessResult[]> {
+    return getAccessControlService().assignAccess(request);
   }
 
   /**
-   * Gets entities with a specific access for a concept.
+   * Static method to revoke access
+   * Uses the default singleton instance
+   *
+   * @param conceptId - The concept ID to revoke access for
+   * @param permission - The permission to revoke
+   * @param entityId - Optional entity ID
+   * @returns Promise<boolean> - True if successfully revoked, false otherwise
    */
-  static async getEntitiesByAccess(conceptId: number, access: string): Promise<any> {
-    const url = `/api/access-control/entities/by-access?conceptId=${conceptId}&access=${encodeURIComponent(access)}`;
-    return this._get(url, 'Failed to get entities by access');
+  static async revokeAccess(conceptId: number, permission: string, entityId?: number | null): Promise<boolean> {
+    return getAccessControlService().revokeAccess(conceptId, permission, entityId);
   }
 
   /**
-   * Gets all entities with any access for a concept.
+   * Static method to revoke concept access in bulk
+   * Uses the default singleton instance
+   *
+   * @param request - BulkConceptAccessRequest containing conceptIds and permissions
+   * @returns Promise<AccessResult[]> - Array of access results
    */
-  static async getEntitiesWithAccess(conceptId: number): Promise<any> {
-    const url = `/api/access-control/entities/with-access?conceptId=${conceptId}`;
-    return this._get(url, 'Failed to get entities with access');
+  static async revokeAccessBulk(request: BulkConceptAccessRequest): Promise<AccessResult[]> {
+    return getAccessControlService().revokeAccessBulk(request);
   }
 
-  /**
-   * Gets access groups by entity.
-   */
-  static async getAccessGroupByEntity(entityId?: number): Promise<any> {
-    const url = `/api/access-control/access-group/by-entity${entityId !== undefined ? `?entityId=${entityId}` : ''}`;
-    return this._get(url, 'Failed to get access group by entity');
-  }
+  // #endregion
+}
 
-  /**
-   * Gets access groups by user.
-   */
-  static async getAccessGroupByUser(userId?: number): Promise<any> {
-    const url = `/api/access-control/access-group/by-user${userId !== undefined ? `?userId=${userId}` : ''}`;
-    return this._get(url, 'Failed to get access group by user');
-  }
+// Singleton instance for convenience (optional usage pattern)
+let defaultInstance: AccessControlService | null = null;
 
-  /**
-   * Gets public access by access IDs.
-   */
-  static async getPublicAccessByAccessIds(accessIdList: number[]): Promise<any> {
-    return this._post('/api/access-control/public-access/by-access-ids', accessIdList, 'Failed to get public access by access ids');
+/**
+ * Get the default singleton instance of AccessControlService
+ */
+export function getAccessControlService(): AccessControlService {
+  if (!defaultInstance) {
+    defaultInstance = new AccessControlService();
   }
+  return defaultInstance;
+}
 
-  /**
-   * Gets the full access mapping for public users.
-   */
-  static async getFullAccessMappingForPublic(): Promise<any> {
-    return this._get('/api/access-control/concepts/by-public-access', 'Failed to get full access mapping for public');
-  }
-
-  /**
-   * Assigns public access for all users.
-   */
-  static async assignPublicAccessForAllUser(): Promise<any> {
-    return this._post('/api/access-control/public-access/assign-for-all-users', undefined, 'Failed to assign public access for all user');
-  }
-
-  /**
-   * Assigns access by connection type for users.
-   */
-  static async assignAccessByConncetionTypeOfUser(): Promise<any> {
-    return this._post('/api/access-control/access/by-connection-type', undefined, 'Failed to assign access by connection type of user');
-  }
-
-  /**
-   * Sets access inheritance for a concept.
-   * @param request - AccessInheritanceRequest
-   */
-  static async setAccessInheritance(request: {
-    mainConceptId: number;
-    connectionTypeId: number;
-    enable: boolean;
-  }): Promise<any> {
-    return this._post('/api/access-control/access-inheritance', request, 'Failed to set access inheritance');
-  }
-
-  /**
-   * Sets access inheritance for multiple concepts in bulk.
-   * @param request - BulkAccessInheritanceRequest
-   */
-  static async setAccessInheritanceBulk(request: {
-    items: Array<{
-      mainConceptId: number;
-      connectionTypeIds: number[];
-    }>;
-    enable: boolean;
-  }): Promise<any> {
-    return this._post('/api/access-control/access-inheritance/bulk', request, 'Failed to set access inheritance in bulk');
-  }
-
-  /**
-   * Gets the status of access inheritance for a concept.
-   */
-  static async getAccessInheritanceStatus(mainConceptId: number, connectionTypeId: number = 999): Promise<any> {
-    const url = `/api/access-control/access-inheritance/status?mainConceptId=${mainConceptId}&connectionTypeId=${connectionTypeId}`;
-    return this._get(url, 'Failed to get access inheritance status');
-  }
-
-  /**
-   * Gets the access matrix for a given access ID.
-   */
-  static async getAccessMatrix(accessId: number): Promise<any> {
-    const url = `/api/access-control/access-matrix?AccessId=${accessId}`;
-    return this._get(url, 'Failed to get access matrix');
-  }
-
-  /**
-   * Assigns super admin access.
-   * @param request - SuperAdminRequest
-   */
-  static async assignSuperAdminAccess(request: {
-    entityConceptId: number;
-  }): Promise<any> {
-    return this._post('/api/access-control/super-admin-access', request, 'Failed to assign super admin access');
-  }
-
-  /**
-   * Revokes super admin access.
-   * @param request - SuperAdminRequest
-   */
-  static async revokeSuperAdminAccess(request: {
-    entityConceptId: number;
-  }): Promise<any> {
-    return this._delete('/api/access-control/super-admin-access', request, 'Failed to revoke super admin access');
-  }
-
-  /**
-   * Gets super admin access info for an entity concept.
-   */
-  static async getSuperAdminAccess(entityConceptId: number): Promise<any> {
-    const url = `/api/access-control/super-admin-access?entityConceptId=${entityConceptId}`;
-    return this._get(url, 'Failed to get super admin access');
-  }
-
-  static async isSuperAdmin(entityConceptId: number): Promise<any> {
-    const superAdminInfo = await this.getSuperAdminAccess(entityConceptId);
-    return superAdminInfo?.data ?? false;
-  }
-
-  // --- Private helper methods ---
-
-  private static get baseUrl() {
-    return BaseUrl.ACCESS_CONTROL_BASE_URL;
-  }
-
-  private static async _get(path: string, errorMsg: string): Promise<any> {
-    const response = await fetch(`${this.baseUrl}${path}`, { method: 'GET' });
-    if (!response.ok) throw new Error(errorMsg);
-    return response.json();
-  }
-
-  private static async _post(path: string, body?: any, errorMsg?: string): Promise<any> {
-    const response = await fetch(`${this.baseUrl}${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-    });
-    if (!response.ok) throw new Error(errorMsg || 'Request failed');
-    return response.json();
-  }
-
-  private static async _delete(path: string, body?: any, errorMsg?: string): Promise<any> {
-    const response = await fetch(`${this.baseUrl}${path}`, {
-      method: 'DELETE',
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
-      ...(body ? { body: JSON.stringify(body) } : {}),
-    });
-    if (!response.ok) throw new Error(errorMsg || 'Request failed');
-    return response.json();
-  }
+/**
+ * Initialize the default singleton instance with custom configuration
+ */
+export function initializeAccessControlService(
+  apiClient?: IAPIClientService
+): AccessControlService {
+  defaultInstance = new AccessControlService(apiClient);
+  return defaultInstance;
 }
 
 export default AccessControlService;
