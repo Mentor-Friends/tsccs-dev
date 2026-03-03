@@ -3,6 +3,7 @@ import { ALLID, DATAID, DATAV2, JUSTDATA, NORMAL, RAW } from "../Constants/Forma
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId, formatConnectionsV2, formatDataArrayDataId, formatDataArrayNormal } from "../Services/Search/SearchWithTypeAndLinker";
 import { DependencyObserver } from "./DepenedencyObserver";
+import { QueryCacheManager } from "./QueryCacheManager";
 
 /**
  * Observable wrapper for executing free-schema queries with automatic updates.
@@ -17,6 +18,8 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     order: string = "DESC";
     /** Total count of matching results */
     totalCount:number = 0;
+    /** Cleanup function for cache subscription */
+    private unsubscribeCache: (() => void) | null = null;
 
     /**
      * Creates a new schema query observable.
@@ -28,6 +31,13 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         this.query = query;
         this.format = query.outputFormat;
         this.order = query.order;
+        QueryCacheManager.getHash(query).then(hash => {
+            this.unsubscribeCache = QueryCacheManager.subscribe(hash, async (result) => {
+                this.isDataLoaded = false;
+                await this.bind();
+                this.notify();
+            });
+        });
     }
 
     /**
@@ -132,7 +142,6 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
                 this.data = await formatConnectionsV2(this.linkers, this.conceptIds,this.compositionIds, this.reverse, countInfos, this.order );
             }
             else if(this.format == RAW){
-                console.log("this is the raw format");
                 this.data = {};
                 this.data.linkers = this.linkers;
                 this.data.conceptIds = this.conceptIds;

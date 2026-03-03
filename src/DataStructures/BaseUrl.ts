@@ -22,6 +22,8 @@ export class BaseUrl{
 
     static isNearestCache = true;
 
+    static isPwa = false;
+
     static FLAGS : any= {
         logApplication: false,
         logPackage: false,

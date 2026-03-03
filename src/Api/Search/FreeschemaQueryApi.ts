@@ -1,9 +1,8 @@
 import { FreeschemaQuery, Logger } from "../../app";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { FreeSchemaResponse } from "../../DataStructures/Responses/ErrorResponse";
-import {SearchQuery} from '../../DataStructures/SearchQuery';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { QueryCacheManager } from "../../WrapperFunctions/QueryCacheManager";
 
 /**
  * Executes a freeschema query for flexible, schema-free data retrieval.
@@ -26,6 +25,29 @@ export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string="
     var header = GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.FreeschemaQueryUrl();
     const body = JSON.stringify(query);
+    const hash = await QueryCacheManager.getHash(query);
+    const cached = QueryCacheManager.get(hash);
+    if(cached){
+        // Return cached data immediately, revalidate in the background
+        fetch(queryUrl, {
+            method: 'POST',
+            headers: header,
+            body: body
+        }).then(async (response: any) => {
+            if (response.ok) {
+                const fresh = await response.json();
+                QueryCacheManager.set(hash, fresh);
+            } else {
+                HandleHttpError(response);
+            }
+        }).catch((ex: any) => {
+            HandleInternalError(ex, queryUrl);
+            UpdatePackageLogWithError(logData, 'FreeschemaQueryApi', ex);
+        });
+        console.log("This is the cached response", cached);
+        return cached;
+    }
+
     try{
         const response = await fetch(queryUrl,{
             method: 'POST',
@@ -34,21 +56,19 @@ export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string="
         });
         if(response.ok){
             let result = await response.json();
+            QueryCacheManager.set(hash, result);
+            Logger.logUpdate(logData);
             return result;
-
         }
         else{
             HandleHttpError(response);
-            console.log("This is the freeschema query error", response.status);
             return [];
-
         }
-        Logger.logUpdate(logData);
-
     }
     catch(ex:any){
-        console.log("This is the freeschema query error others", ex);
         HandleInternalError(ex, queryUrl);
         UpdatePackageLogWithError(logData, 'FreeschemaQueryApi', ex);
     }
 }
+
+

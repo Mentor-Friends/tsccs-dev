@@ -49,7 +49,7 @@ export {GetCompositionWithCache, GetCompositionWithDataIdWithCache, GetCompositi
 export {CreateSession} from './Api/Session/CreateSession';
 export {CreateSessionVisit} from './Api/Session/CreateSessionVisit';
 export {  } from './Api/GetConceptByCharacterAndType';
-export {GetRelation, GetRelationRaw} from './Services/GetRelation';
+export {GetRelation, GetRelationRaw, GetRelationNew} from './Services/GetRelation';
 export { recursiveFetchNew} from './Services/Composition/BuildComposition'
 export {CreateTheCompositionWithCache} from './Services/Composition/CreateCompositionCache';
 export {CreateDefaultLConcept} from './Services/Local/CreateDefaultLConcept';
@@ -391,7 +391,7 @@ async function init(
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
   flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
-  parameters: { logserver?:string} = {},
+  parameters: { logserver?:string, isPwa?:boolean} = {},
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -407,6 +407,7 @@ async function init(
     // BaseUrl.BASE_RANDOMIZER = 999;
     
     BaseUrl.setRandomizer(randomizer)
+    BaseUrl.isPwa = parameters.isPwa ?? false;
 
     // Change Default Flags
     const defaultFlags = {
