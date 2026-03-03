@@ -5,7 +5,7 @@ import { GetCompositionWithIdAndDateFromMemory } from "./GetComposition";
 import GetTheConcept from "./GetTheConcept";
 import { GetAllConnectionsOfCompositionBulk } from "../Api/GetAllConnectionsOfCompositionBulk";
 import { GetConceptByCharacterAndCategory } from "./ConceptFinding/GetConceptByCharacterAndCategory";
-import { GetConceptBulk, handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
+import { DATAID, FreeschemaQuery, GetConceptBulk, handleServiceWorkerException, Logger, NORMAL, SchemaQuery, sendMessage, serviceWorker } from "../app";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
 import { GetConnectionToTheConcept } from "../Api/GetConnectionToTheConcept";
 
@@ -64,6 +64,19 @@ export async function GetRelation(id:number, relation:string, inpage:number=10, 
     }
     Logger.logUpdate(logData);
     return  output;
+}
+
+export async function GetRelationNew(id:number, relation:string,inpage:number=10, page:number=1, reverse:boolean = false){
+      let query = new FreeschemaQuery();
+      query.conceptIds = [id];
+      query.selectors = [relation];
+      query.outputFormat = DATAID;
+      query.inpage = inpage;
+      query.page = page;
+      query.limit = true;
+      let output = await SchemaQuery(query, "");
+      console.log("this is the output for get relation", output);
+      return output;
 }
 
 export async function GetRelationRaw(id:number, relation:string, inpage:number=10, page:number=1, reverse:boolean = false){
