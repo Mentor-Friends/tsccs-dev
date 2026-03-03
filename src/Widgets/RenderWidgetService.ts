@@ -1,4 +1,4 @@
-import { BaseUrl, BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, StatefulWidget, WidgetTree } from "../app";
+import { BaseUrl, BuilderStatefulWidget, BuildWidgetFromId, Concept, DATAID, FreeschemaQuery, GetRelation, SchemaQuery, SchemaQueryListener, SearchLinkMultipleAll, SearchQuery, StatefulWidget, WidgetTree } from "../app";
 import { ckeditorCSS } from "../Constants/ckeditorCSS";
 import { COMPOSITIONS } from "../Constants/page.const";
 import { DataCache } from "./CacheWidget.service";
@@ -19,7 +19,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
  * @param showDocumentation - Whether to show documentation button
  */
     export async function renderPage(pageId: number, attachNode: HTMLElement, props?: any, showDocumentation?: boolean) {
-      const widgets = await GetRelation(pageId, "the_page_body");
+      //const widgets = await GetRelation(pageId, "the_page_body");
       
       // apply page properties
       const freeschemaQuery = new FreeschemaQuery();
@@ -39,19 +39,21 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
         "the_page_meta_keywords",
       ];
 
-      SchemaQueryListener(freeschemaQuery, "").subscribe(async (data: any) => {
-        await applyPageProperties(data?.[0]?.data?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}`]);
-      })
+      // SchemaQueryListener(freeschemaQuery, "").subscribe(async (data: any) => {
+      //   await applyPageProperties(data?.[0]?.data?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}`]);
+      // })
 
+      let output:any = await SchemaQuery(freeschemaQuery, "");
+      applyPageProperties(output?.[0]?.data?.[`the_${COMPOSITIONS.PAGE_COMP_NAME}`]);
       const fspagePreview = <HTMLElement>document.getElementById("app");
       fspagePreview.classList.add("fspage");
 
       const stylesOnHead = document.head.querySelectorAll("style#mystyleid");
       Array.from(stylesOnHead).forEach((styleEl) => styleEl.remove());
 
-      if (widgets?.[0]?.id)
+      if (output?.[0]?.data?.the_page?.the_page_body?.id)
         // await renderWidget(widgets[0].id, attachNode, props);
-        await renderLatestWidget(widgets[0].id, attachNode, props, showDocumentation);
+        await renderLatestWidget(output?.[0]?.data?.the_page?.the_page_body?.id, attachNode, props, showDocumentation);
       else{
         attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4>'
       }
