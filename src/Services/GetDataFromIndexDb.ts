@@ -5,6 +5,7 @@ import { LocalConceptsData } from "../DataStructures/Local/LocalConceptData";
 import { LocalConnectionData } from "../DataStructures/Local/LocalConnectionData";
 import { getObjectsFromLocalIndexDb } from "../Database/indexdblocal";
 import { getObjectsFromIndexDb } from "../Database/indexeddb";
+import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../app";
 
 
@@ -12,8 +13,10 @@ import { Connection } from "../app";
 
  export async function GetConnectionsFromIndexDb(){
     try{
-        //let connectionList:Connection[] = await getObjectsFromIndexDb("connection");
         let connectionList:Connection[] = [];
+        if(BaseUrl.isPwa){
+            connectionList = await getObjectsFromIndexDb("connection") as Connection[];
+        }
         if(Array.isArray(connectionList)){
             for(let i=0 ;i < connectionList.length ;i++){
                 ConnectionData.AddConnectionToMemory(connectionList[i]);

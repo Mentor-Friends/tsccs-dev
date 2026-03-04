@@ -32,7 +32,7 @@ export class ApplicationMonitor {
       if(typeof window === undefined) return;      
       
       // Track runtime errors
-      window.onerror = (message, source, lineno, colno, error) => {
+      (window as any).onerror = (message: string | Event, source: string | undefined, lineno: number | undefined, colno: number | undefined, error: Error | undefined) => {
       const sessionId = TokenStorage.sessionId || "unknown";
 
         const errorDetails = {

@@ -1,6 +1,8 @@
 export { init, updateAccessToken };
 
 import CreateConceptBinaryTreeFromIndexDb from "./Services/CreateBinaryTreeFromData";
+import { WidgetCacheManager } from "./Widgets/WidgetCacheManager";
+import { QueryCacheManager } from "./WrapperFunctions/QueryCacheManager";
 
 import { IdentifierFlags } from './DataStructures/IdentifierFlags';
 export {SearchLinkMultipleApi} from './Api/Search/SearchLinkMultipleApi';
@@ -144,6 +146,7 @@ export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
+export { clearAllCaches } from './Services/CacheClear';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
 export {getUserDetails} from './Services/User/UserFromLocalStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
@@ -808,6 +811,19 @@ async function initConceptConnection() {
       //console.log("This is the error in creating connections tree");
       throw event;
     });
+
+  /**
+   * Load persisted widget and query caches from IndexedDB into memory.
+   * These run in parallel since they are independent of each other.
+   * Once loaded, WidgetCacheManager and QueryCacheManager serve reads
+   * synchronously from in-memory Maps for maximum speed.
+   */
+  await Promise.all([
+    WidgetCacheManager.init(),
+    QueryCacheManager.init(),
+  ]).catch((error) => {
+    console.error("Cache init error (non-fatal):", error);
+  });
 }
 
 /**

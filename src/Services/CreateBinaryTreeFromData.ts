@@ -1,15 +1,18 @@
 import { Concept, DelayFunctionExecution } from "../app";
 import { getObjectsFromIndexDb } from "../Database/indexeddb";
+import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { IdentifierFlags } from "../DataStructures/IdentifierFlags";
 
 /**
- * This function builds up the binary tree on startup from the indexdb 
+ * This function builds up the binary tree on startup from the indexdb
  */
 export default  async function CreateConceptBinaryTreeFromIndexDb(){
     try{
-        //let conceptList = await getObjectsFromIndexDb("concept");
         let conceptList: Concept[] = [];
+        if(BaseUrl.isPwa){
+            conceptList = await getObjectsFromIndexDb("concept") as Concept[];
+        }
         if(Array.isArray(conceptList)){
             for(let i=0 ;i < conceptList.length ;i++){
                 let concept = conceptList[i];
