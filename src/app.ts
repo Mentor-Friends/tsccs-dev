@@ -889,7 +889,6 @@ function initializeFlags(flags: any) {
     if (flags.logApplication) {
       ApplicationMonitor.initialize();
       Logger.logApplicationActivationStatus = true;
-      console.warn("Application log started.");
     }
     if (flags.logPackage) {
       Logger.logPackageActivationStatus = true;

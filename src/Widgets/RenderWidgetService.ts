@@ -881,7 +881,6 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
           }
         }
       }
-      console.log("newWidget ->", newWidget, tree);
   
       // Unwrap specific containers
      // await unwrapContainers(parentElement, ".mftsccs-marking-element");

@@ -81,7 +81,6 @@ export async function GetConcept(id: number) {
         },
       };
       try {
-        console.log("this is the url", BaseUrl.GetConceptUrl());
         response = await fetch(BaseUrl.GetConceptUrl(), requestData);
       } catch (error) {
         response = await requestNextCacheServer(requestData, "/api/getConcept");

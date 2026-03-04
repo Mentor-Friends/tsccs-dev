@@ -44,7 +44,6 @@ export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string="
             HandleInternalError(ex, queryUrl);
             UpdatePackageLogWithError(logData, 'FreeschemaQueryApi', ex);
         });
-        console.log("This is the cached response", cached);
         return cached;
     }
 

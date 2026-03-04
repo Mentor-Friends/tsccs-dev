@@ -5,7 +5,6 @@ import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 export class ApplicationMonitor {
   static initialize() {
     try {
-      console.warn("Initialized Application Monitoring for tracking errors...");
 
       // Initialize error handling and logging
       this.initGlobalErrorHandlers();
@@ -215,7 +214,6 @@ export class ApplicationMonitor {
   
         // Check if the URL is in the ignored URLs list
         if (ignoredUrls.includes(urlString)) {
-          console.log("Ignored URLs detected : ", urlString);
           let networkDetails = {
             'url' : urlString,
             'detail' : 'skip'
