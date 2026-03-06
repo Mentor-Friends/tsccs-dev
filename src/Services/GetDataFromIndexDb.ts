@@ -8,8 +8,13 @@ import { getObjectsFromIndexDb } from "../Database/indexeddb";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../app";
 
+/** Number of records to process per chunk before yielding to the main thread */
+const CHUNK_SIZE = 500;
 
-
+/** Yields to the main thread so the browser can paint and handle events */
+function yieldToMainThread(): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, 0));
+}
 
  export async function GetConnectionsFromIndexDb(){
     try{
@@ -20,8 +25,10 @@ import { Connection } from "../app";
         if(Array.isArray(connectionList)){
             for(let i=0 ;i < connectionList.length ;i++){
                 ConnectionData.AddConnectionToMemory(connectionList[i]);
+                if (i > 0 && i % CHUNK_SIZE === 0) {
+                    await yieldToMainThread();
+                }
             }
-    
         }
     }
     catch(error){
