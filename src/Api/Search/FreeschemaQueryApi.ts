@@ -26,7 +26,7 @@ export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string="
     const queryUrl = BaseUrl.FreeschemaQueryUrl();
     const body = JSON.stringify(query);
     const hash = await QueryCacheManager.getHash(query);
-    const cached = QueryCacheManager.get(hash);
+    const cached = query.cache !== false ? QueryCacheManager.get(hash) : null;
     if(cached){
         // Return cached data immediately, revalidate in the background
         fetch(queryUrl, {

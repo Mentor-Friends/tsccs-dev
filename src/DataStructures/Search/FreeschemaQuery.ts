@@ -24,4 +24,5 @@ export class FreeschemaQuery{
     isSecure:boolean = false;
     includeInFilter: boolean = false;
     isOldConnectionType: boolean = false;
+    cache: boolean = true;
 }
