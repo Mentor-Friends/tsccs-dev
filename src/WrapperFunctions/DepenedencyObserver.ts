@@ -276,19 +276,22 @@ export class DependencyObserver{
      * @param errorCallback - Optional function to call when errors occur
      * @returns Result of calling the callback with current data
      */
-    async subscribe(callback: any, errorCallback?: (error: Error) => void) {
+    subscribe(callback: any, errorCallback?: (error: Error) => void) {
         this.subscribers.push(callback);
-        try {
-            //  console.log('again executing data');
-            await this.bind();
-            return callback(this.data, this);
-        } catch (err) {
+        const unsubscribeFn = () => this.unsubscribe(callback);
+        const promise: any = this.bind().then(async () => {
+            await callback(this.data, this);
+            return { unsubscribe: unsubscribeFn };
+        }).catch((err) => {
             console.error('Error in subscribe:', err);
             if (errorCallback) {
                 errorCallback(err as Error);
             }
             throw err;
-        }
+        });
+        // Attach unsubscribe directly on the promise for sync access
+        promise.unsubscribe = unsubscribeFn;
+        return promise;
     }
 
     /**
@@ -307,7 +310,7 @@ export class DependencyObserver{
      * @returns Number of remaining subscribers
      */
     unsubscribe(callback: any){
-        this.subscribers.filter(fn=>fn!= callback);
+        this.subscribers = this.subscribers.filter(fn=>fn!= callback);
         return this.subscribers.length;
     }
 

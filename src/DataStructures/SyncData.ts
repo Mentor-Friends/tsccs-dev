@@ -7,6 +7,7 @@ import { Connection } from "./Connection";
 import { ConnectionData } from "./ConnectionData";
 import { ReservedIds } from "./ReservedIds";
 import { handleServiceWorkerException, sendMessage, serviceWorker } from "../app";
+import { QueryCacheManager } from "../WrapperFunctions/QueryCacheManager";
 
 export class SyncData{
     static  conceptsSyncArray:Concept[] = [];
@@ -107,6 +108,7 @@ export class SyncData{
             this.connectionSyncArray = [];
             await CreateTheConnectionApi(connectionsArray);
         }
+        QueryCacheManager.clearAll();
         return "done";
 
      }

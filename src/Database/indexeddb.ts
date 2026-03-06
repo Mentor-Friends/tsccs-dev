@@ -13,108 +13,83 @@ let version = 10;
 
 
 /**
- * This class will help us store the indexdb  reference in memory and not go back to index db.
+ * This class will help us store the indexdb reference in memory and not go back to index db.
  */
 export class IndexDb{
   static db:IDBDatabase;
 }
 
+/** Cached promise so concurrent callers share a single open request */
+let openPromise: Promise<IDBDatabase> | null = null;
+
 /**
- * 
- * @param databaseName not required actually. This is not used you can pass anything.
- * @returns a promise that either resolves or rejects opening the database.
+ * Opens the FreeSchema IndexedDB database (or returns the cached instance).
+ *
+ * - Returns the cached db reference immediately if already open.
+ * - Deduplicates concurrent calls — only one indexedDB.open() runs at a time.
+ * - On error, rejects without deleting the database to avoid data loss.
+ *
+ * @param databaseName kept for backward compatibility (not used in db name)
+ * @returns a promise resolving to the IDBDatabase instance
  */
 export function openDatabase(databaseName:string): Promise<IDBDatabase>{
   const logData : any = Logger.logfunction("openDatabase", [databaseName, "indexdb"]);
-  return new Promise(function(resolve, reject){
-  
-  // if the indexdb is already initialized then you do not need to again initialize the db so you can get 
-  // from memory.
+
+  // Return cached db reference if already open
   if(IndexDb.db){
     Logger.logUpdate(logData);
-    resolve( IndexDb.db);
+    return Promise.resolve(IndexDb.db);
   }
 
- // the name of the database is passed here. We are statically passing the dbName with inputs from user
- // the BASE_URL is the api that the framework calls
- // the BASE_APPLICATION is a thing that differentiates an application from another so no two application create
- // and use the same index db.
-  let dbName = BaseUrl.BASE_URL + "_FreeSchema"  + BaseUrl.BASE_APPLICATION;
-
-  // open the database.
-  const request = indexedDB.open(dbName,version);
-  console.log("this is the update version", version, request);
-  request.onupgradeneeded = (event) => {
-    let target = event.target as IDBOpenDBRequest;
-    let db = target.result as IDBDatabase;
-    let conceptDb = "concept";
-    let connectionDb = "connection";
-    let settings = "settings"
-    console.log("this is the version update for index", version);
-    if (db.objectStoreNames.contains(conceptDb)){
-       db.deleteObjectStore(conceptDb);
-
-    }
-    if (db.objectStoreNames.contains(connectionDb)){
-      db.deleteObjectStore(connectionDb);
-
-    }
-    if (db.objectStoreNames.contains(settings)){
-       db.deleteObjectStore(settings);
-
-    }
-    if (!db.objectStoreNames.contains(conceptDb)) { // if there's no database name
-      let  objectStore = db.createObjectStore(conceptDb, {keyPath: 'id'}); // create it
-      objectStore.transaction.oncomplete = (event: Event) => {
-          // you can do something here after the db has been created.
-      }
-    }
-    if (!db.objectStoreNames.contains(connectionDb)) { // if there's no database name
-      let  objectStore = db.createObjectStore(connectionDb, {keyPath: 'id'}); // create it
-      objectStore.transaction.oncomplete = (event: Event) => {
-        // you can do something here after the db has been created.
-      }
-    }
-
-    if(!db.objectStoreNames.contains(settings)){
-      let  objectStore = db.createObjectStore(settings, {keyPath: 'id'}); // create it
-      objectStore.transaction.oncomplete = (event: Event) => {
-        // you can do something here after the db has been created.
-      }
-    }
-    Logger.logUpdate(logData);
-    resolve(db);
+  // Deduplicate concurrent calls — reuse the same promise
+  if (openPromise) {
+    return openPromise;
   }
 
-  // in case that the database is not opened then log the error.
-  // then we delete the database that is already present with the name
-  // then again try to create the database, since this is a temporary database so it might not matter
-  // but this is a point that we might need to be careful about.
-  // we then reject the promise and report this problem.
-  request.onerror = (event) => {
-      console.error("Why didn't you allow my web app to use IndexedDB?!", event);
-      indexedDB.deleteDatabase(dbName);
-      openDatabase(databaseName);
+  openPromise = new Promise<IDBDatabase>(function(resolve, reject){
+    let dbName = BaseUrl.BASE_URL + "_FreeSchema"  + BaseUrl.BASE_APPLICATION;
+
+    const request = indexedDB.open(dbName, version);
+
+    request.onupgradeneeded = (event) => {
+      let db = (event.target as IDBOpenDBRequest).result;
+      let conceptDb = "concept";
+      let connectionDb = "connection";
+      let settings = "settings";
+
+      // Delete and recreate stores to ensure clean schema
+      if (db.objectStoreNames.contains(conceptDb)){
+        db.deleteObjectStore(conceptDb);
+      }
+      if (db.objectStoreNames.contains(connectionDb)){
+        db.deleteObjectStore(connectionDb);
+      }
+      if (db.objectStoreNames.contains(settings)){
+        db.deleteObjectStore(settings);
+      }
+
+      db.createObjectStore(conceptDb, {keyPath: 'id'});
+      db.createObjectStore(connectionDb, {keyPath: 'id'});
+      db.createObjectStore(settings, {keyPath: 'id'});
+      // Don't resolve here — onsuccess fires after the upgrade transaction completes
+    };
+
+    request.onsuccess = function(event:Event) {
+      let target = event.target as IDBOpenDBRequest;
+      IndexDb.db = target.result as IDBDatabase;
+      Logger.logUpdate(logData);
+      resolve(IndexDb.db);
+    };
+
+    request.onerror = (event) => {
+      console.error("IndexedDB open failed:", event);
+      openPromise = null; // Allow retry on next call
       UpdatePackageLogWithError(logData, 'openDatabase', event);
       reject(event);
-  };
+    };
+  });
 
-  // in case that the database is allowed to be opened then we return the database object.
-  request.onsuccess = function(event:Event) {
-
-      
-    let target = event.target as IDBOpenDBRequest;
-    IndexDb.db = target.result as IDBDatabase;
-    Logger.logUpdate(logData);
-    resolve(IndexDb.db);
-
-};
-
-// in case that the version is upgraded then we delete all the old databases and then create a new database.
-// version upgrade is a way which we can clean up old databases and its structures.
-
-});
-
+  return openPromise;
 }
 
 
