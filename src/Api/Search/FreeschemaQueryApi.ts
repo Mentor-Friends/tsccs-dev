@@ -46,7 +46,6 @@ export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string="
         });
         return cached;
     }
-
     try{
         const response = await fetch(queryUrl,{
             method: 'POST',
