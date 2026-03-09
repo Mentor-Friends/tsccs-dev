@@ -9,7 +9,6 @@ export function GetRequestHeader(
     const token = TokenStorage.BearerAccessToken;
     const xSessionId = TokenStorage.sessionId?.toString();
     
-    console.log("this is the token", token)
     // Add Authorization if token is available
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;

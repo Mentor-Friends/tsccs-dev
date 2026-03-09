@@ -17,7 +17,13 @@ import {
   AccessInheritanceRequest,
   SuperAdminRequest,
   BulkConceptAccessRequest,
-  ConceptAccessRequest
+  ConceptAccessRequest,
+  ParentAccessInheritanceRequest,
+  ParentAccessInheritanceWithConceptRequest,
+  BulkParentAccessInheritanceWithConceptRequest,
+  BulkParentAccessInheritanceResult,
+  SuperAdminWithConceptRequest,
+  AccessInheritanceWithConceptRequest
 } from '../../DataStructures/AccessControl/AccessControlModels';
 
 export interface IAPIClientService {
@@ -44,6 +50,29 @@ export interface IAPIClientService {
   assignSuperAdminAccessAsync(request: SuperAdminRequest): Promise<AccessControlAPIResponse>;
   revokeSuperAdminAccessAsync(request: SuperAdminRequest): Promise<AccessControlAPIResponse>;
   checkSuperAdminStatusAsync(accessId: number): Promise<AccessControlAPIResponse>;
+
+  // Parent Access Inheritance
+  setParentAccessInheritanceAsync(request: ParentAccessInheritanceRequest): Promise<AccessControlAPIResponse>;
+  removeParentAccessInheritanceAsync(accessId: number, parentAccessId?: number): Promise<AccessControlAPIResponse>;
+  hasParentAccessInheritanceAsync(accessId: number, parentAccessId?: number): Promise<AccessControlAPIResponse>;
+  getParentAccessIdAsync(accessId: number): Promise<AccessControlAPIResponse>;
+
+  // Concept-based Parent Access Inheritance (server resolves conceptId → accessId)
+  setParentAccessInheritanceByConceptAsync(request: ParentAccessInheritanceWithConceptRequest): Promise<AccessControlAPIResponse>;
+  setParentAccessInheritanceBulkByConceptAsync(request: BulkParentAccessInheritanceWithConceptRequest): Promise<AccessControlAPIResponse<BulkParentAccessInheritanceResult[]>>;
+  removeParentAccessInheritanceByConceptAsync(childConceptId: number, parentConceptId?: number): Promise<AccessControlAPIResponse>;
+  removeParentAccessInheritanceBulkByConceptAsync(request: BulkParentAccessInheritanceWithConceptRequest): Promise<AccessControlAPIResponse<BulkParentAccessInheritanceResult[]>>;
+  hasParentAccessInheritanceByConceptAsync(childConceptId: number, parentConceptId?: number): Promise<AccessControlAPIResponse>;
+  getParentAccessIdByConceptAsync(childConceptId: number): Promise<AccessControlAPIResponse>;
+
+  // Concept-based Super Admin (server resolves conceptId → accessId)
+  assignSuperAdminByConceptAsync(request: SuperAdminWithConceptRequest): Promise<AccessControlAPIResponse>;
+  revokeSuperAdminByConceptAsync(request: SuperAdminWithConceptRequest): Promise<AccessControlAPIResponse>;
+  checkSuperAdminByConceptAsync(conceptId: number): Promise<AccessControlAPIResponse>;
+
+  // Concept-based Access Inheritance (server resolves conceptId → accessId)
+  setAccessInheritanceByConceptAsync(request: AccessInheritanceWithConceptRequest): Promise<AccessControlAPIResponse>;
+  getAccessInheritanceStatusByConceptAsync(conceptId: number, connectionTypeId?: number): Promise<AccessControlAPIResponse>;
 }
 
 export class APIClientService implements IAPIClientService {
@@ -285,6 +314,172 @@ export class APIClientService implements IAPIClientService {
     return APIClientService.postAsync<AccessControlAPIResponse<AccessResult[]>>(
       '/access/concept/revoke/bulk',
       request
+    );
+  }
+
+  // #endregion
+
+  // #region Parent Access Inheritance
+
+  /**
+   * Set parent access inheritance link
+   */
+  async setParentAccessInheritanceAsync(request: ParentAccessInheritanceRequest): Promise<AccessControlAPIResponse> {
+    return APIClientService.postAsync<AccessControlAPIResponse>(
+      '/access/inheritance/parent',
+      request
+    );
+  }
+
+  /**
+   * Remove parent access inheritance link
+   */
+  async removeParentAccessInheritanceAsync(accessId: number, parentAccessId?: number): Promise<AccessControlAPIResponse> {
+    let url = `/access/inheritance/parent?accessId=${accessId}`;
+    if (parentAccessId !== undefined && parentAccessId !== null) {
+      url += `&parentAccessId=${parentAccessId}`;
+    }
+    return APIClientService.deleteAsync<AccessControlAPIResponse>(url);
+  }
+
+  /**
+   * Check if parent access inheritance link exists
+   */
+  async hasParentAccessInheritanceAsync(accessId: number, parentAccessId?: number): Promise<AccessControlAPIResponse> {
+    let url = `/access/inheritance/parent/status?accessId=${accessId}`;
+    if (parentAccessId !== undefined && parentAccessId !== null) {
+      url += `&parentAccessId=${parentAccessId}`;
+    }
+    return APIClientService.getAsync<AccessControlAPIResponse>(url);
+  }
+
+  /**
+   * Get the parent access ID for a given access ID
+   */
+  async getParentAccessIdAsync(accessId: number): Promise<AccessControlAPIResponse> {
+    return APIClientService.getAsync<AccessControlAPIResponse>(
+      `/access/inheritance/parent?accessId=${accessId}`
+    );
+  }
+
+  // #endregion
+
+  // #region Concept-Based Parent Access Inheritance
+
+  /**
+   * Set parent access inheritance by concept IDs (server resolves conceptId → accessId)
+   */
+  async setParentAccessInheritanceByConceptAsync(request: ParentAccessInheritanceWithConceptRequest): Promise<AccessControlAPIResponse> {
+    return APIClientService.postAsync<AccessControlAPIResponse>(
+      '/access/inheritance/parent/concept',
+      request
+    );
+  }
+
+  /**
+   * Set parent access inheritance for multiple children with one parent (concept-based)
+   */
+  async setParentAccessInheritanceBulkByConceptAsync(request: BulkParentAccessInheritanceWithConceptRequest): Promise<AccessControlAPIResponse<BulkParentAccessInheritanceResult[]>> {
+    return APIClientService.postAsync<AccessControlAPIResponse<BulkParentAccessInheritanceResult[]>>(
+      '/access/inheritance/parent/concept/bulk',
+      request
+    );
+  }
+
+  /**
+   * Remove parent access inheritance by concept IDs
+   */
+  async removeParentAccessInheritanceByConceptAsync(childConceptId: number, parentConceptId?: number): Promise<AccessControlAPIResponse> {
+    let url = `/access/inheritance/parent/concept?childConceptId=${childConceptId}`;
+    if (parentConceptId !== undefined && parentConceptId !== null) {
+      url += `&parentConceptId=${parentConceptId}`;
+    }
+    return APIClientService.deleteAsync<AccessControlAPIResponse>(url);
+  }
+
+  /**
+   * Remove parent access inheritance for multiple children (concept-based)
+   */
+  async removeParentAccessInheritanceBulkByConceptAsync(request: BulkParentAccessInheritanceWithConceptRequest): Promise<AccessControlAPIResponse<BulkParentAccessInheritanceResult[]>> {
+    return APIClientService.deleteAsync<AccessControlAPIResponse<BulkParentAccessInheritanceResult[]>>(
+      '/access/inheritance/parent/concept/bulk',
+      request
+    );
+  }
+
+  /**
+   * Check if parent access inheritance exists by concept IDs
+   */
+  async hasParentAccessInheritanceByConceptAsync(childConceptId: number, parentConceptId?: number): Promise<AccessControlAPIResponse> {
+    let url = `/access/inheritance/parent/concept/status?childConceptId=${childConceptId}`;
+    if (parentConceptId !== undefined && parentConceptId !== null) {
+      url += `&parentConceptId=${parentConceptId}`;
+    }
+    return APIClientService.getAsync<AccessControlAPIResponse>(url);
+  }
+
+  /**
+   * Get the parent access ID by child concept ID
+   */
+  async getParentAccessIdByConceptAsync(childConceptId: number): Promise<AccessControlAPIResponse> {
+    return APIClientService.getAsync<AccessControlAPIResponse>(
+      `/access/inheritance/parent/concept?childConceptId=${childConceptId}`
+    );
+  }
+
+  // #endregion
+
+  // #region Concept-Based Super Admin
+
+  /**
+   * Assign super admin by concept ID
+   */
+  async assignSuperAdminByConceptAsync(request: SuperAdminWithConceptRequest): Promise<AccessControlAPIResponse> {
+    return APIClientService.postAsync<AccessControlAPIResponse>(
+      '/access/super-admin/concept',
+      request
+    );
+  }
+
+  /**
+   * Revoke super admin by concept ID
+   */
+  async revokeSuperAdminByConceptAsync(request: SuperAdminWithConceptRequest): Promise<AccessControlAPIResponse> {
+    return APIClientService.deleteAsync<AccessControlAPIResponse>(
+      '/access/super-admin/concept',
+      request
+    );
+  }
+
+  /**
+   * Check super admin status by concept ID
+   */
+  async checkSuperAdminByConceptAsync(conceptId: number): Promise<AccessControlAPIResponse> {
+    return APIClientService.getAsync<AccessControlAPIResponse>(
+      `/access/super-admin/concept?conceptId=${conceptId}`
+    );
+  }
+
+  // #endregion
+
+  // #region Concept-Based Access Inheritance
+
+  /**
+   * Set access inheritance by concept ID
+   */
+  async setAccessInheritanceByConceptAsync(request: AccessInheritanceWithConceptRequest): Promise<AccessControlAPIResponse> {
+    return APIClientService.postAsync<AccessControlAPIResponse>(
+      '/access/inheritance/concept',
+      request
+    );
+  }
+
+  /**
+   * Get access inheritance status by concept ID
+   */
+  async getAccessInheritanceStatusByConceptAsync(conceptId: number, connectionTypeId: number = 999): Promise<AccessControlAPIResponse> {
+    return APIClientService.getAsync<AccessControlAPIResponse>(
+      `/access/inheritance/concept/status?conceptId=${conceptId}&connectionTypeId=${connectionTypeId}`
     );
   }
 

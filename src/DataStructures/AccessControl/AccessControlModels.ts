@@ -42,9 +42,9 @@ export interface BulkAccessRequest {
 }
 
 export interface BulkCheckAccessRequest {
-  accessId: number;
-  permissions: string[];
-  entityIds: number[];
+  accessIds: number[];
+  permission: string;
+  entityId?: number | null;
 }
 
 // #endregion
@@ -67,6 +67,49 @@ export interface SuperAdminRequest {
 
 // #endregion
 
+// #region Parent Access Inheritance Types
+
+/**
+ * Request model for parent access inheritance operations
+ * Mirrors C# ParentAccessInheritanceRequest
+ */
+export interface ParentAccessInheritanceRequest {
+  parentAccessId: number;
+  childAccessId?: number | null;
+}
+
+// #endregion
+
+// #region Concept-Based Request Types (for server-side conceptId → accessId resolution)
+
+export interface ParentAccessInheritanceWithConceptRequest {
+  parentConceptId: number;
+  childConceptId?: number | null;
+}
+
+export interface BulkParentAccessInheritanceWithConceptRequest {
+  parentConceptId: number;
+  childConceptIds: number[];
+}
+
+export interface BulkParentAccessInheritanceResult {
+  childConceptId: number;
+  accessId: number;
+  success: boolean;
+  message?: string;
+}
+
+export interface SuperAdminWithConceptRequest {
+  conceptId: number;
+}
+
+export interface AccessInheritanceWithConceptRequest {
+  conceptId: number;
+  connectionTypeId?: number;
+  enable?: boolean;
+}
+
+// #endregion
 
 // #region Concept Access Types
 export interface ConceptAccessRequest {
