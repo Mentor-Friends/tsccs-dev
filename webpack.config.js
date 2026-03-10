@@ -1,15 +1,15 @@
 const path = require('path');
 const { optimize } = require('webpack');
 
-module.exports = env => ({
+module.exports = env => {
+  const isDev = env?.NODE_ENV === 'development';
+  return {
    entry: {
       main: './src/app.ts',  // Main app entry point
       serviceWorker: './src/service-worker.ts'  // Service worker entry point
    },
-   //mode: 'development',
-   mode: 'production',  // Set to 'production' for production
-  // devtool: 'source-map',  // Use 'source-map' for debugging (remove for production)
-   devtool: false,
+   mode: isDev ? 'development' : 'production',
+   devtool: isDev ? 'source-map' : false,
    watch: true,
    output: {
       filename: '[name].bundle.js',
@@ -37,4 +37,5 @@ module.exports = env => ({
    experiments: {
       outputModule: true,  // Enable support for ES module output
    },
-});
+  };
+};

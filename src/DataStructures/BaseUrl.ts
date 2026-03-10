@@ -24,6 +24,8 @@ export class BaseUrl{
 
     static ACCESS_CONTROL_BASE_URL: string = "http://localhost:5001";
 
+    static isPwa = false;
+
     static FLAGS : any= {
         logApplication: false,
         logPackage: false,

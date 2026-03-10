@@ -7,6 +7,7 @@ import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../Services/Search/SearchWithTypeAndLinker";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { ConceptCircle } from "../Visualize/ConceptCircle";
+import { WidgetCacheManager } from "./WidgetCacheManager";
 
 /** Cache for widget data requests by widget ID */
 const widgetCache = new Map<number, Promise<any>>();
@@ -15,6 +16,7 @@ const widgetCache = new Map<number, Promise<any>>();
 const latestWidgetCache = new Map<number, Promise<any>>();
 
 const recentWidgetCache = new Map<number, Promise<any>>();
+
 
 /**
  * Fetches and builds widget data from the backend by widget ID.
@@ -30,65 +32,63 @@ export async function BuildWidgetFromId(id:number){
         try {
           if (serviceWorker) {
             const res: any = await sendMessage('BuildWidgetFromId', {id})
-            // console.log('data received search from sw', res)
             return res.data
           }
-        } catch (error) { 
+        } catch (error) {
           console.error('BuildWidgetFromId error sw: ', error)
           handleServiceWorkerException(error)
         }
         let data : any = {};
 
         if (widgetCache.has(id)) return widgetCache.get(id) || data;
-        const BuildWidgetFromId = (async()=>{
-          try{
 
-            let conceptIds: number[] = [];
-            let linkers: number [] = [];
-            let connections: number[] = [];
-            let reverse: number[] = [];
-            let mainCompositionIds: number[] = [];
-            let order = "DESC";
-            let countInfoStrings:string[] =  [];
-            let conceptsConnections: any = {} ;
-            let result: any = {};
         let header = GetRequestHeader("application/json");
         let queryUrl = BaseUrl.getWidgetData() + "?id=" + id;
+
+        const cached = WidgetCacheManager.getWidget(id);
+        if (cached) {
+            // Return cached data immediately, revalidate in the background
+            fetch(queryUrl, { method: 'GET', headers: header })
+                .then(async (response) => {
+                    if (response.ok) {
+                        const fresh = await response.json();
+                        WidgetCacheManager.setWidget(id, fresh);
+                    } else {
+                        HandleHttpError(response);
+                    }
+                }).catch(() => {});
+
+            let countInfos = DecodeCountInfo(cached.countinfo);
+            return await formatConnectionsDataId(cached.linkers, cached.conceptIds, cached.mainCompositionIds, cached.reverse, countInfos, "DESC");
+        }
+
+        const buildPromise = (async()=>{
+          try{
             const response = await fetch(queryUrl,{
                 method: 'GET',
                 headers: header
             });
             if(response.ok){
-                result = await response.json();
-                // Add Log
-                // Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
-    
+                let result = await response.json();
+                WidgetCacheManager.setWidget(id, result);
+                let countInfos = DecodeCountInfo(result.countinfo);
+                data = await formatConnectionsDataId(result.linkers, result.conceptIds, result.mainCompositionIds, result.reverse, countInfos, "DESC");
+                return data;
             }
             else{
                 HandleHttpError(response);
-                console.log("This is the BuildWidgetFromId error", response.status);
                 return [];
-    
             }
-            conceptIds = result.conceptIds;
-            linkers = result.linkers;
-            reverse = result.reverse;
-            mainCompositionIds = result.mainCompositionIds;
-            countInfoStrings = result.countinfo;
-            let countInfos = DecodeCountInfo(countInfoStrings);
-            data = await formatConnectionsDataId(linkers, conceptIds, mainCompositionIds, reverse,countInfos, order);
-            return data;
           }
           catch(e){
-            console.log("this is the error in the build widget", e);
             throw e;
           }
           finally{
             widgetCache.delete(id);
           }
         })()
-        widgetCache.set(id,BuildWidgetFromId );
-        return BuildWidgetFromId;
+        widgetCache.set(id, buildPromise);
+        return buildPromise;
 
 }
 
@@ -146,69 +146,69 @@ export async function BuildWidgetFromIdForLatest(id:number){
       try {
         if (serviceWorker) {
           const res: any = await sendMessage('BuildWidgetFromIdForLatest', {id})
-          // console.log('data received search from sw', res)
           return res.data
         }
-      } catch (error) { 
+      } catch (error) {
         console.error('BuildWidgetFromIdForLatest error sw: ', error)
         handleServiceWorkerException(error)
       }
       let data : any = {};
       if (latestWidgetCache.has(id)) return latestWidgetCache.get(id) || data;
-      const BuildWidgetFromIdForLatest = (async()=>{
-        try{
 
-          let conceptIds: number[] = [];
-          let linkers: number [] = [];
-          let connections: number[] = [];
-          let reverse: number[] = [];
-          let mainCompositionIds: number[] = [];
-          let order = "DESC";
-          let countInfoStrings:string[] =  [];
-          let conceptsConnections: any = {} ;
-          let result: any = {};
       let header = GetRequestHeader("application/json");
-    
-      let response;
-      try {   
-            let queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
-            response = await fetch(queryUrl,{
-                method: 'GET',
-                headers: header
-            });
-          } catch (error) {
-            response = await requestNextCacheServer({
-              method: 'GET',
-              headers: header
-          }, "?id=" + id)
-          }
+
+      const cached = WidgetCacheManager.getLatest(id);
+      if (cached) {
+          // Return cached data immediately, revalidate in the background
+          (async () => {
+              let response;
+              try {
+                  let queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
+                  response = await fetch(queryUrl, { method: 'GET', headers: header });
+              } catch (error) {
+                  response = await requestNextCacheServer({ method: 'GET', headers: header }, "?id=" + id);
+              }
+              if (response.ok) {
+                  const fresh = await response.json();
+                  WidgetCacheManager.setLatest(id, fresh);
+              } else {
+                  HandleHttpError(response);
+              }
+          })().catch(() => {});
+
+          let countInfos = DecodeCountInfo(cached.countinfo);
+          let formattedData = await formatConnectionsDataId(cached.linkers, cached.conceptIds, cached.mainCompositionIds, cached.reverse, countInfos, "DESC");
+          return { data: formattedData, mainId: cached.mainId };
+      }
+
+      const buildPromise = (async()=>{
+        try{
+          let response;
+          try {
+                let queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
+                response = await fetch(queryUrl,{
+                    method: 'GET',
+                    headers: header
+                });
+              } catch (error) {
+                response = await requestNextCacheServer({
+                  method: 'GET',
+                  headers: header
+              }, "?id=" + id)
+              }
           if(response.ok){
-              result = await response.json();
-              // Add Log
-              // Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
-    
+              let result = await response.json();
+              WidgetCacheManager.setLatest(id, result);
+              let countInfos = DecodeCountInfo(result.countinfo);
+              data = await formatConnectionsDataId(result.linkers, result.conceptIds, result.mainCompositionIds, result.reverse, countInfos, "DESC");
+              return { data: data, mainId: result.mainId };
           }
           else{
               HandleHttpError(response);
-              console.log("This is the BuildWidgetFromId error", response.status);
               return [];
-    
           }
-          conceptIds = result.conceptIds;
-          linkers = result.linkers;
-          reverse = result.reverse;
-          mainCompositionIds = result.mainCompositionIds;
-          countInfoStrings = result.countinfo;
-          let countInfos = DecodeCountInfo(countInfoStrings);
-          data = await formatConnectionsDataId(linkers, conceptIds, mainCompositionIds, reverse,countInfos, order);
-          let objectData:any = {
-            "data": data,
-            "mainId": result.mainId,
-          }
-          return objectData;
         }
         catch(e){
-          console.log("this is the error in the build widget", e);
           throw e;
         }
         finally{
@@ -216,8 +216,8 @@ export async function BuildWidgetFromIdForLatest(id:number){
         }
       })()
 
-      latestWidgetCache.set(id, BuildWidgetFromIdForLatest)
-      return BuildWidgetFromIdForLatest;
+      latestWidgetCache.set(id, buildPromise)
+      return buildPromise;
 
 }
 
@@ -237,69 +237,69 @@ export async function BuildWidgetFromIdForRecent(id:number){
       try {
         if (serviceWorker) {
           const res: any = await sendMessage('BuildWidgetFromIdForRecent', {id})
-          // console.log('data received search from sw', res)
           return res.data
         }
-      } catch (error) { 
+      } catch (error) {
         console.error('BuildWidgetFromIdForRecent error sw: ', error)
         handleServiceWorkerException(error)
       }
       let data : any = {};
       if (recentWidgetCache.has(id)) return recentWidgetCache.get(id) || data;
-      const BuildWidgetFromIdForRecent = (async()=>{
-        try{
 
-          let conceptIds: number[] = [];
-          let linkers: number [] = [];
-          let connections: number[] = [];
-          let reverse: number[] = [];
-          let mainCompositionIds: number[] = [];
-          let order = "DESC";
-          let countInfoStrings:string[] =  [];
-          let conceptsConnections: any = {} ;
-          let result: any = {};
       let header = GetRequestHeader("application/json");
-    
-      let response;
-      try {   
-            let queryUrl = BaseUrl.getRecentWidgetData() + "?id=" + id;
-            response = await fetch(queryUrl,{
-                method: 'GET',
-                headers: header
-            });
-          } catch (error) {
-            response = await requestNextCacheServer({
-              method: 'GET',
-              headers: header
-          }, "?id=" + id)
-          }
+
+      const cached = WidgetCacheManager.getRecent(id);
+      if (cached) {
+          // Return cached data immediately, revalidate in the background
+          (async () => {
+              let response;
+              try {
+                  let queryUrl = BaseUrl.getRecentWidgetData() + "?id=" + id;
+                  response = await fetch(queryUrl, { method: 'GET', headers: header });
+              } catch (error) {
+                  response = await requestNextCacheServer({ method: 'GET', headers: header }, "?id=" + id);
+              }
+              if (response.ok) {
+                  const fresh = await response.json();
+                  WidgetCacheManager.setRecent(id, fresh);
+              } else {
+                  HandleHttpError(response);
+              }
+          })().catch(() => {});
+
+          let countInfos = DecodeCountInfo(cached.countinfo);
+          let formattedData = await formatConnectionsDataId(cached.linkers, cached.conceptIds, cached.mainCompositionIds, cached.reverse, countInfos, "DESC");
+          return { data: formattedData, mainId: cached.mainId };
+      }
+
+      const buildPromise = (async()=>{
+        try{
+          let response;
+          try {
+                let queryUrl = BaseUrl.getRecentWidgetData() + "?id=" + id;
+                response = await fetch(queryUrl,{
+                    method: 'GET',
+                    headers: header
+                });
+              } catch (error) {
+                response = await requestNextCacheServer({
+                  method: 'GET',
+                  headers: header
+              }, "?id=" + id)
+              }
           if(response.ok){
-              result = await response.json();
-              // Add Log
-              // Logger.logInfo(startTime, "unknown", "search", "unknown", undefined, 200, result, "SearchLinkMultipleApi", ['searchQuery', 'token'], "unknown", undefined )
-    
+              let result = await response.json();
+              WidgetCacheManager.setRecent(id, result);
+              let countInfos = DecodeCountInfo(result.countinfo);
+              data = await formatConnectionsDataId(result.linkers, result.conceptIds, result.mainCompositionIds, result.reverse, countInfos, "DESC");
+              return { data: data, mainId: result.mainId };
           }
           else{
               HandleHttpError(response);
-              console.log("This is the BuildWidgetFromId error", response.status);
               return [];
-    
           }
-          conceptIds = result.conceptIds;
-          linkers = result.linkers;
-          reverse = result.reverse;
-          mainCompositionIds = result.mainCompositionIds;
-          countInfoStrings = result.countinfo;
-          let countInfos = DecodeCountInfo(countInfoStrings);
-          data = await formatConnectionsDataId(linkers, conceptIds, mainCompositionIds, reverse,countInfos, order);
-          let objectData:any = {
-            "data": data,
-            "mainId": result.mainId,
-          }
-          return objectData;
         }
         catch(e){
-          console.log("this is the error in the build widget", e);
           throw e;
         }
         finally{
@@ -307,8 +307,8 @@ export async function BuildWidgetFromIdForRecent(id:number){
         }
       })()
 
-      recentWidgetCache.set(id, BuildWidgetFromIdForRecent)
-      return BuildWidgetFromIdForRecent;
+      recentWidgetCache.set(id, buildPromise)
+      return buildPromise;
 
 }
 
