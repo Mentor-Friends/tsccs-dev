@@ -148,7 +148,8 @@ export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/Cr
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export { clearAllCaches } from './Services/CacheClear';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
-export {getUserDetails} from './Services/User/UserFromLocalStorage';
+export {getUserDetails, getUserDetailsAsync} from './Services/User/UserFromLocalStorage';
+export { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
 export {LogEvent} from './Services/Logs/LogEvent';
 export {Selector} from './Api/Prototype/Selector';
