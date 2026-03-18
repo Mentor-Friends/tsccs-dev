@@ -56,8 +56,9 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
             this.compositionIds = result.mainCompositionIds;
             this.totalCount = result.mainCount;
             this.countInfoStrings = result.countinfo;
-
             let output = await this.build();
+
+
 
             return output;
         } catch (err) {

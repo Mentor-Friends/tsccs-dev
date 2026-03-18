@@ -6,6 +6,7 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { AddTypeConcept } from "../../Services/GetTheConcept";
+import { UpdateToDatabase } from "../../Database/indexeddb";
 
 /**
  * Retrieves a concept by character value and specific category ID.
@@ -35,6 +36,7 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
             concept = conceptString as Concept;
               AddTypeConcept(concept).then(()=>{
                   ConceptsData.AddConcept(concept);
+                  UpdateToDatabase("concept", concept).catch(() => {});
               });
           }
           else{

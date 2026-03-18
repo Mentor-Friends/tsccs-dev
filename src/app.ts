@@ -1,6 +1,8 @@
 export { init, updateAccessToken };
 
 import CreateConceptBinaryTreeFromIndexDb from "./Services/CreateBinaryTreeFromData";
+import { WidgetCacheManager } from "./Widgets/WidgetCacheManager";
+import { QueryCacheManager } from "./WrapperFunctions/QueryCacheManager";
 
 import { IdentifierFlags } from './DataStructures/IdentifierFlags';
 export {SearchLinkMultipleApi} from './Api/Search/SearchLinkMultipleApi';
@@ -144,8 +146,10 @@ export { DeleteUser } from './Services/DeleteConcept';
 export { AccessTracker } from './AccessTracker/accessTracker'
 export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/CreateConnectionEntity';
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
+export { clearAllCaches } from './Services/CacheClear';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
-export {getUserDetails} from './Services/User/UserFromLocalStorage';
+export {getUserDetails, getUserDetailsAsync} from './Services/User/UserFromLocalStorage';
+export { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
 export {LogEvent} from './Services/Logs/LogEvent';
 export {Selector} from './Api/Prototype/Selector';
@@ -716,98 +720,60 @@ function listenPostMessagaes() {
  * @returns Promise<any>
  */
 async function initConceptConnection() {
-  
+
   /**
-   * We initialize the system so that we get all the concepts from the backend system that are most likely to be used
-   * We use some sort of AI algorithm to initilize these concepts with the most used concept.
-   * @param enableAi enableAi is a flag that the user can choose to set if they want to use this enable AI feature
-   * If the developer does not want to use this feature then they can just set enableAi to false.
+   * InitializeSystem must run first — it opens both IndexedDB databases
+   * so all subsequent reads have a connection ready.
    */
   await InitializeSystem();
   const start = new Date().getTime();
 
   /**
-   * This  will create a binary tree in the memory from the indexdb.
-   * This process will set Flags to denote that the binary tree is loaded, the character binary tree is  loaded
-   * and that the type binary tree has been loaded.
-   * These trees are helpful in caching concepts and connections for the data fabric.
+   * All IndexedDB loads run in parallel since they read from independent stores.
+   * This replaces the old sequential waterfall which waited for each to finish
+   * before starting the next.
    */
-  await CreateConceptBinaryTreeFromIndexDb()
-    .then(() => {
-      // IdentifierFlags.isDataLoaded= true;
-      // IdentifierFlags.isCharacterLoaded= true;
-      // IdentifierFlags.isTypeLoaded= true;
-      let elapsed = new Date().getTime() - start;
-      console.log("The time taken to prepare concept  data is  ", elapsed);
-    })
-    .catch((event) => {
-      // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
+  await Promise.all([
+    // Concepts from IndexedDB → BinaryTree Map + BinaryCharacterTree
+    CreateConceptBinaryTreeFromIndexDb()
+      .then(() => {
+        console.log("Concepts loaded in", new Date().getTime() - start, "ms");
+      }),
+
+    // Local concepts from local IndexedDB → LocalBinaryTree
+    CreateLocalBinaryTreeFromIndexDb()
+      .then(() => {
+        console.log("Local concepts loaded in", new Date().getTime() - start, "ms");
+      }),
+
+    // Connections from IndexedDB → ConnectionBinaryTree Map
+    GetConnectionsFromIndexDb()
+      .then(() => {
+        IdentifierFlags.isConnectionLoaded = true;
+        IdentifierFlags.isConnectionTypeLoaded = true;
+        console.log("Connections loaded in", new Date().getTime() - start, "ms");
+      }),
+
+    // Local connections from local IndexedDB
+    GetConnectionsFromIndexDbLocal()
+      .then(() => {
+        IdentifierFlags.isLocalConnectionLoaded = true;
+      }),
+
+    // Local IDs from local IndexedDB
+    PopulateTheLocalConnectionToMemory().catch((event) => {
+      console.log("This is the error in populating binary tree");
       throw event;
-    });
+    }),
 
-  /**
-   * This will create a binary tree of local concepts that is saved from the indexdb.
-   * This process after finishing creating a binary tree of local concepts then set flag to denote that
-   * LocalBinaryTree has been created from the concepts in indexdb
-   * Local Binary Type tree has been loaded to the index db (flag is set to denote that)
-   * Character Binary Tree has been loaded from indexdb to memory (flag is set to denote that)
-   */
-  await CreateLocalBinaryTreeFromIndexDb()
-    .then(() => {
-      // IdentifierFlags.isLocalDataLoaded = true;
-      // IdentifierFlags.isLocalTypeLoaded = true;
-      // IdentifierFlags.isLocalCharacterLoaded = true;
-      let elapsed = new Date().getTime() - start;
-      console.log("The time taken to prepare local concept  ", elapsed);
-    })
-    .catch((event) => {
-      throw event;
-    });
+    // Widget and query caches from CacheStore IndexedDB
+    WidgetCacheManager.init(),
+    QueryCacheManager.init(),
+  ]).catch((error) => {
+    console.error("Init parallel load error:", error);
+  });
 
-  /**
-   * This process gets the local connections from indexdb and loads it to the local connections array which is inside of
-   * a static class called LocalConnectionData.
-   * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
-   */
-  await GetConnectionsFromIndexDbLocal()
-    .then(() => {
-      IdentifierFlags.isLocalConnectionLoaded = true;
-    })
-    .catch((event) => {
-      //console.log("This is the error in creating local connections binary tree");
-      throw event;
-    });
-
-  /**
-   * We have designed our system to use local concepts and connections with its own local ids(negative ids) that
-   * is only valid for the browser that creates this. We have a translator in our node server.
-   * This function does this process in initlization.
-   */
-  await PopulateTheLocalConnectionToMemory().catch((event) => {
-    console.log("This is the error in populating binary tree");
-   throw event;
- });
-
-//  await PopulateTheLocalConceptsToMemory().catch((event)=>{
-//   console.log("This is the error in populating binary tree");
-//  });
-
-  /**
-   * This process gets the connections from indexdb and loads it to the connections array which is inside of
-   * a static class called ConnectionData.
-   * This function will also set and IdentifierFlag that tells the whole program that this process has finished.
-   */
-  await GetConnectionsFromIndexDb()
-    .then(() => {
-      IdentifierFlags.isConnectionLoaded = true;
-      IdentifierFlags.isConnectionTypeLoaded = true;
-      let elapsed = new Date().getTime() - start;
-      console.log("The time taken to prepare connections  ", elapsed);
-    })
-    .catch((event) => {
-      //console.log("This is the error in creating connections tree");
-      throw event;
-    });
+  console.log("Total init time:", new Date().getTime() - start, "ms");
 }
 
 /**
@@ -873,7 +839,6 @@ function initializeFlags(flags: any) {
     if (flags.logApplication) {
       ApplicationMonitor.initialize();
       Logger.logApplicationActivationStatus = true;
-      console.warn("Application log started.");
     }
     if (flags.logPackage) {
       Logger.logPackageActivationStatus = true;
