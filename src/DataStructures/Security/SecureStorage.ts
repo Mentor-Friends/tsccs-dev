@@ -26,7 +26,7 @@ async function deriveKey(salt: Uint8Array): Promise<CryptoKey> {
 }
 
 /**
- * Encrypts and stores a profile object in sessionStorage.
+ * Encrypts and stores a profile object in localStorage.
  * Uses AES-GCM with a browser-bound derived key so the ciphertext
  * is not portable to other origins or browsers.
  */
@@ -49,14 +49,14 @@ export async function saveProfile(profile: Record<string, any>): Promise<void> {
     packed.set(iv, salt.length);
     packed.set(new Uint8Array(ciphertext), salt.length + iv.length);
 
-    sessionStorage.setItem(STORAGE_KEY, arrayToBase64(packed));
+    localStorage.setItem(STORAGE_KEY, arrayToBase64(packed));
 }
 
 /**
  * Decrypts and returns the stored profile, or null if absent/tampered.
  */
 export async function loadProfile(): Promise<Record<string, any> | null> {
-    const stored = sessionStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
 
     try {
@@ -83,7 +83,7 @@ export async function loadProfile(): Promise<Record<string, any> | null> {
  * Removes the stored profile.
  */
 export function clearProfile(): void {
-    sessionStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY);
 }
 
 // --- helpers ---

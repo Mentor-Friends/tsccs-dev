@@ -148,7 +148,7 @@ export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/Cr
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export { clearAllCaches } from './Services/CacheClear';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
-export {getUserDetails, getUserDetailsAsync} from './Services/User/UserFromLocalStorage';
+export {getUserDetails} from './Services/User/UserFromLocalStorage';
 export { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
 export {LogEvent} from './Services/Logs/LogEvent';
@@ -162,7 +162,6 @@ export {Prototype} from './DataStructures/Prototype/Prototype';
 export {Environments} from './DataStructures/environments/environments';
 export {createPrototypeLocal} from './prototype/prototype.service';
 export {GetImageApi} from './Api/Images/GetImages';
-
 export {GetFreeschemaImage,GetFreeschemaImageUrl} from './Services/assets/GetImageService';
 type listeners = {
   listenerId: string | number
@@ -403,9 +402,11 @@ async function init(
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
     BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
-    console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
     updateAccessToken(accessToken);
     //TokenStorage.BearerAccessToken = accessToken;
+
+    // Decrypt stored profile into memory so getUserDetails() works synchronously
+    await TokenStorage.hydrateProfile();
     let randomizer = Math.floor(Math.random() * 100000000);
     // BaseUrl.BASE_RANDOMIZER = randomizer;
     // BaseUrl.BASE_RANDOMIZER = 999;
