@@ -1,6 +1,6 @@
 import { AccessTracker } from "../AccessTracker/accessTracker";
 import { GetConcept } from "../Api/GetConcept";
-import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, LocalConceptsData, Logger, sendMessage, serviceWorker } from "../app";
+import { convertFromLConceptToConcept, GetUserGhostId, handleServiceWorkerException, BinaryTree, LocalConceptsData, Logger, sendMessage, serviceWorker } from "../app";
 import { Concept } from "../DataStructures/Concept";
 import { ConceptsData } from "../DataStructures/ConceptData";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
@@ -64,6 +64,8 @@ const conceptCache = new Map<number, Promise<Concept>>();
  * @see {@link AddTypeConcept} for manually adding type information to a concept
  */
 export default async function GetTheConcept(id: number, userId: number = 999){
+    // Guard: coerce string IDs to number (widget code may pass "123" instead of 123)
+    id = Number(id);
     let startTime = performance.now()
     //Logger.logfunction(GetTheConcept,arguments);
 
@@ -76,10 +78,23 @@ export default async function GetTheConcept(id: number, userId: number = 999){
         }
     }
 
+    // Check main-thread BinaryTree directly (bypasses SW) to avoid round-trip
+    if (id > 0) {
+        const node = await BinaryTree.getNodeFromTree(id);
+        if (node?.value && node.value.id > 0) {
+            return node.value as Concept;
+        }
+    }
+
     if (serviceWorker) {
         try {
             const res: any = await sendMessage('GetTheConcept', {id, userId})
-            return res.data as Concept
+            const data = res.data as Concept;
+            // Cache in main thread for future lookups
+            if (data && data.id > 0) {
+                ConceptsData.AddConceptToMemory(data);
+            }
+            return data;
         } catch (error) {
             console.error('GetTheConcept sw error: ', error)
             handleServiceWorkerException(error)

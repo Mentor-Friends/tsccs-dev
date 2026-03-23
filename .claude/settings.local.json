@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/mentor/ friends2/CCS-JS-LOCAL/src/Widgets/**)"
+    ]
+  }
+}
