@@ -1035,7 +1035,7 @@ async function initializeAppConfig() {
 
   myCacheServer = JSON.parse(myCacheServer as string) 
   const config: Record<string, number> = JSON.parse(appConfig as string);
-  async function getAppConfigHandler() {
+  async function getAppConfigHandler(updateSession: boolean = true) {
     let response
     try {
       let windowApplication = BaseUrl.BASE_APPLICATION ?? "boomconsole";
@@ -1043,18 +1043,20 @@ async function initializeAppConfig() {
         response = await fetch(BaseUrl.getAppConfig() + "?application=" + windowApplication, {
           method: "POST",
         });
-  
+
         if (!response.ok) {
           throw new Error("Failed to sync data to the server.");
         }
-  
+
         const cacheRes = await response.json();
         if (cacheRes.success) {
           sessionStorage.setItem(cacheServerName, JSON.stringify(cacheRes.servers));
           sessionStorage.setItem(cacheConfigName, JSON.stringify(cacheRes.config));
-          sessionStorage.setItem(cacheConfigSession,cacheRes.session)
-          TokenStorage.setSession(cacheRes.session);
-          //TokenStorage.sessionId = cacheRes.session;
+          // Only update session on first load, not on background revalidation
+          if (updateSession) {
+            sessionStorage.setItem(cacheConfigSession,cacheRes.session)
+            TokenStorage.setSession(cacheRes.session);
+          }
           if (!cacheRes.servers) {
             BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
           } else {
@@ -1069,26 +1071,22 @@ async function initializeAppConfig() {
     }
   }
   
-  if (!myCacheServer || !config || !config.documentationWidget || sessionId == 999) {
-    // navigator.geolocation.getCurrentPosition(
-    //   async (data) => {
-        await getAppConfigHandler();
-      // },
-      // async (error) => {
-      //   if (error.code === error.PERMISSION_DENIED) {
-      //     // await getCacheServer();
-      //     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
-      //   }
-      // }
-    // );
-  } else {
+  if (myCacheServer && config && config.documentationWidget && sessionId != 999) {
+    // Use cached values immediately so the app isn't blocked
     if (Array.isArray(myCacheServer) && myCacheServer.length) {
       BaseUrl.NODE_CACHE_URL = myCacheServer[0];
     } else {
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
     TokenStorage.setSession(sessionId);
-    BaseUrl.DOCUMENTATION_WIDGET = config.documentationWidget
+    BaseUrl.DOCUMENTATION_WIDGET = config.documentationWidget;
+
+    // Always revalidate — await so servers actually get updated in sessionStorage
+    // Pass false to preserve current sessionId for tracking continuity
+    getAppConfigHandler(false);
+  } else {
+    // No cached values — must fetch before proceeding
+    await getAppConfigHandler();
   }
   console.log("before the payload in app", TokenStorage.sessionId);
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {

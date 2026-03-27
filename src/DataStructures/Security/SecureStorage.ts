@@ -6,7 +6,7 @@ const CRYPTO_ALGO = "AES-GCM";
  * The passphrase is built from the origin + user-agent to tie storage to this browser/domain.
  */
 async function deriveKey(salt: Uint8Array): Promise<CryptoKey> {
-    const passphrase = location.origin + navigator.userAgent;
+    const passphrase = location.origin;
     const encoder = new TextEncoder();
     const rawKey = encoder.encode(passphrase);
     const keyMaterial = await crypto.subtle.importKey(
