@@ -5,7 +5,6 @@ import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 export class ApplicationMonitor {
   static initialize() {
     try {
-      console.warn("Initialized Application Monitoring for tracking errors...");
 
       // Initialize error handling and logging
       this.initGlobalErrorHandlers();
@@ -32,7 +31,7 @@ export class ApplicationMonitor {
       if(typeof window === undefined) return;      
       
       // Track runtime errors
-      window.onerror = (message, source, lineno, colno, error) => {
+      (window as any).onerror = (message: string | Event, source: string | undefined, lineno: number | undefined, colno: number | undefined, error: Error | undefined) => {
       const sessionId = TokenStorage.sessionId || "unknown";
 
         const errorDetails = {
@@ -215,7 +214,6 @@ export class ApplicationMonitor {
   
         // Check if the URL is in the ignored URLs list
         if (ignoredUrls.includes(urlString)) {
-          console.log("Ignored URLs detected : ", urlString);
           let networkDetails = {
             'url' : urlString,
             'detail' : 'skip'

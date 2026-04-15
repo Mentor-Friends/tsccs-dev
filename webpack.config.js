@@ -1,5 +1,6 @@
 const path = require('path');
 const { optimize } = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = env => {
   const isDev = env?.NODE_ENV === 'development';
@@ -34,6 +35,18 @@ module.exports = env => {
    plugins: [
    ],
    target: 'web',  // Ensure output is compatible with browsers
+   optimization: {
+      minimize: !isDev,
+      minimizer: [
+         new TerserPlugin({
+            terserOptions: {
+               compress: {
+                  drop_console: !isDev,
+               },
+            },
+         }),
+      ],
+   },
    experiments: {
       outputModule: true,  // Enable support for ES module output
    },

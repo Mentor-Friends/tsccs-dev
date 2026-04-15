@@ -323,11 +323,11 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
 //     }
 //   </style>
 // `;
-
         let cacheWidget = await BuildWidgetFromIdForLatest(widgetId);
         let latestWidgetId = cacheWidget.mainId;
         let bulkWidgetData = cacheWidget.data;
         const trueBulk = await checkUseLatestWidget(bulkWidgetData, latestWidgetId)
+
         return await materializeWidget(latestWidgetId, trueBulk, attachNode, props, showDocumentation);
         // return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
       } catch (error: any) {
@@ -881,7 +881,6 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
           }
         }
       }
-      console.log("newWidget ->", newWidget, tree);
   
       // Unwrap specific containers
      // await unwrapContainers(parentElement, ".mftsccs-marking-element");

@@ -5,6 +5,7 @@ import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import * as tsccs from "../app";
 import { TypeEditor } from "./BuilderSpeceficFunctions";
 import { TCustomFunction } from "../DataStructures/TypeLibrary";
+import { loadProfile } from "../DataStructures/Security/SecureStorage";
 
 /**
  * BuilderStatefulWidget - A dynamic, stateful widget component for building interactive UI elements.
@@ -132,17 +133,14 @@ export class BuilderStatefulWidget extends StatefulWidget {
    * console.log('Current user:', userId);
    */
   async getUserId() {
-    const profileData: any = await new Promise((resolve: any) => {
-      let dataFromLocalStorage: string = localStorage?.getItem("profile") || "";
-      if (dataFromLocalStorage) {
-        const profileData = JSON.parse(dataFromLocalStorage);
-        resolve(profileData)
-      } else {
-        resolve()
-      }
-    });
-    const userId = profileData?.userId;
-    return userId;
+    // Try encrypted storage first, fall back to legacy localStorage
+    const profileData = await loadProfile();
+    if (profileData?.userId) return profileData.userId;
+
+    try {
+      const raw: string = localStorage?.getItem("profile") || "";
+      if (raw) return JSON.parse(raw)?.userId;
+    } catch { /* ignore */ }
   }
 
   /**

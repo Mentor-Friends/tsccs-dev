@@ -189,7 +189,6 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
                 handleServiceWorkerException(error)
             }
         }
-
         let prefetchConnections;
         try {
             prefetchConnections = await GetConnectionDataPrefetch(linkers);
@@ -197,7 +196,6 @@ export async function formatConnectionsDataId(linkers: number[], conceptIds: num
             console.error('Error in GetConnectionDataPrefetch:', err);
             throw new Error(`Failed to prefetch connections: ${err instanceof Error ? err.message : String(err)}`);
         }
-
         let CountDictionary: any;
         try {
             CountDictionary = await GetConnectionTypeForCount(countInfos);

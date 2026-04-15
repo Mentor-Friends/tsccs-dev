@@ -9,6 +9,7 @@ import { CreateDefaultConcept, CreateDefaultLConcept, handleServiceWorkerExcepti
 import { LocalConnectionData } from "./LocalConnectionData";
 import { LocalBinaryTree } from "./LocalBinaryTree";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
+import { QueryCacheManager } from "../../WrapperFunctions/QueryCacheManager";
 
 type syncContainer = {
     id: string,
@@ -180,6 +181,7 @@ export class LocalSyncData{
             
             // Logger.logInfo(startTime, "unknown", undefined, "unknown", undefined, 200, conceptsArray, "SyncDataOnline", [], "unknown", undefined )
     
+            QueryCacheManager.clearAll();
             return conceptsArray;
         }
         catch(error){

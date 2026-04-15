@@ -1,5 +1,8 @@
-import { BaseUrl, ConceptsData, DATAID, handleServiceWorkerException, JUSTDATA, Logger, SearchLinkMultipleApi, sendMessage, serviceWorker } from "../app";
+import { BaseUrl, ConceptsData, Connection, ConnectionData, DATAID, GetTheConcept, handleServiceWorkerException, JUSTDATA, Logger, SearchLinkMultipleApi, sendMessage, serviceWorker } from "../app";
+import { BinaryTree } from "../DataStructures/BinaryTree";
+import { ConnectionBinaryTree } from "../DataStructures/ConnectionBinaryTree/ConnectionBinaryTree";
 import { WidgetDetails } from "../DataStructures/WidgetCache/WidgetDetails";
+import { UpdateToDatabase } from "../Database/indexeddb";
 import { requestNextCacheServer } from "../Services/cacheService";
 import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
@@ -8,6 +11,7 @@ import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } f
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 import { ConceptCircle } from "../Visualize/ConceptCircle";
 import { WidgetCacheManager } from "./WidgetCacheManager";
+import { GetConnection } from "../Api/GetConnection";
 
 /** Cache for widget data requests by widget ID */
 const widgetCache = new Map<number, Promise<any>>();
@@ -17,6 +21,39 @@ const latestWidgetCache = new Map<number, Promise<any>>();
 
 const recentWidgetCache = new Map<number, Promise<any>>();
 
+/**
+ * Persists widget-related concepts and connections to IndexedDB for PWA offline support.
+ * Only saves data that the widget build requires — not all concepts/connections.
+ * Runs in the background so it doesn't block widget rendering.
+ */
+function persistWidgetDataToIndexDb(linkers: number[], conceptIds: number[]) {
+    if (!BaseUrl.isPwa) return;
+    (async () => {
+        const allConceptIds = new Set<number>(conceptIds);
+
+        for (const linkerId of linkers) {
+            const node:Connection|undefined = await ConnectionData.GetConnection(linkerId);
+            if(node){
+              if (node?.id > 0) {
+                  allConceptIds.add(node.ofTheConceptId);
+                  allConceptIds.add(node.toTheConceptId);
+                  allConceptIds.add(node.typeId);
+                  UpdateToDatabase("connection", node);
+              }
+            }
+
+        }
+
+        for (const conceptId of allConceptIds) {
+            if (conceptId > 0) {
+                const node = await ConceptsData.GetConcept(conceptId);;
+                if (node && node.id > 0) {
+                    UpdateToDatabase("concept", node);
+                }
+            }
+        }
+    })().catch(() => {});
+}
 
 /**
  * Fetches and builds widget data from the backend by widget ID.
@@ -59,7 +96,9 @@ export async function BuildWidgetFromId(id:number){
                 }).catch(() => {});
 
             let countInfos = DecodeCountInfo(cached.countinfo);
-            return await formatConnectionsDataId(cached.linkers, cached.conceptIds, cached.mainCompositionIds, cached.reverse, countInfos, "DESC");
+            let formattedData = await formatConnectionsDataId(cached.linkers, cached.conceptIds, cached.mainCompositionIds, cached.reverse, countInfos, "DESC");
+            persistWidgetDataToIndexDb(cached.linkers, cached.conceptIds);
+            return formattedData;
         }
 
         const buildPromise = (async()=>{
@@ -73,6 +112,7 @@ export async function BuildWidgetFromId(id:number){
                 WidgetCacheManager.setWidget(id, result);
                 let countInfos = DecodeCountInfo(result.countinfo);
                 data = await formatConnectionsDataId(result.linkers, result.conceptIds, result.mainCompositionIds, result.reverse, countInfos, "DESC");
+                persistWidgetDataToIndexDb(result.linkers, result.conceptIds);
                 return data;
             }
             else{
@@ -178,6 +218,7 @@ export async function BuildWidgetFromIdForLatest(id:number){
 
           let countInfos = DecodeCountInfo(cached.countinfo);
           let formattedData = await formatConnectionsDataId(cached.linkers, cached.conceptIds, cached.mainCompositionIds, cached.reverse, countInfos, "DESC");
+          persistWidgetDataToIndexDb(cached.linkers, cached.conceptIds);
           return { data: formattedData, mainId: cached.mainId };
       }
 
@@ -201,6 +242,7 @@ export async function BuildWidgetFromIdForLatest(id:number){
               WidgetCacheManager.setLatest(id, result);
               let countInfos = DecodeCountInfo(result.countinfo);
               data = await formatConnectionsDataId(result.linkers, result.conceptIds, result.mainCompositionIds, result.reverse, countInfos, "DESC");
+              persistWidgetDataToIndexDb(result.linkers, result.conceptIds);
               return { data: data, mainId: result.mainId };
           }
           else{
@@ -269,6 +311,7 @@ export async function BuildWidgetFromIdForRecent(id:number){
 
           let countInfos = DecodeCountInfo(cached.countinfo);
           let formattedData = await formatConnectionsDataId(cached.linkers, cached.conceptIds, cached.mainCompositionIds, cached.reverse, countInfos, "DESC");
+          persistWidgetDataToIndexDb(cached.linkers, cached.conceptIds);
           return { data: formattedData, mainId: cached.mainId };
       }
 
@@ -292,6 +335,7 @@ export async function BuildWidgetFromIdForRecent(id:number){
               WidgetCacheManager.setRecent(id, result);
               let countInfos = DecodeCountInfo(result.countinfo);
               data = await formatConnectionsDataId(result.linkers, result.conceptIds, result.mainCompositionIds, result.reverse, countInfos, "DESC");
+              persistWidgetDataToIndexDb(result.linkers, result.conceptIds);
               return { data: data, mainId: result.mainId };
           }
           else{
