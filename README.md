@@ -554,7 +554,7 @@ await init({
 
   // Optional: Custom configuration
   identificationKey: 'your-app-key'
-});
+}, "", "", "", true, "", undefined, { accessControl: true }, {}, "https://your-access-api.com");
 ```
 
 ### Environment Variables

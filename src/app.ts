@@ -436,6 +436,10 @@ async function init(
     initializeFlags(BaseUrl.FLAGS)
     // console.log("BaseUrl.FLAGS before sending to service worker : ",  BaseUrl.FLAGS)
 
+    if (BaseUrl.FLAGS && BaseUrl.FLAGS.accessControl && !BaseUrl.ACCESS_CONTROL_BASE_URL) {
+      console.warn("accessControl is enabled but accessControlUrl is missing. API requests for Access Control may fail.");
+    }
+
     if (!("serviceWorker" in navigator)) {
       await initConceptConnection();
       console.warn("Service Worker not supported in this browser.");
