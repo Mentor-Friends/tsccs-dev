@@ -12,6 +12,7 @@
  */
 
 import GetTheConcept from '../GetTheConcept';
+import { BaseUrl } from '../../DataStructures/BaseUrl';
 import {
   AccessResult,
   BulkCheckAccessRequest,
@@ -114,6 +115,12 @@ export class AccessControlService implements IAccessControlService {
     const results = new Map<number, boolean>();
 
     if (!conceptIds || conceptIds.length === 0) return results;
+
+    // Check if access control is globally disabled
+    if (!BaseUrl.FLAGS || !BaseUrl.FLAGS.accessControl) {
+      for (const id of conceptIds) results.set(id, true);
+      return results;
+    }
 
     // ── Phase 1: Super-admin short-circuit ──
     if (entityId !== null && entityId !== undefined && entityId > 0) {
@@ -622,6 +629,8 @@ export class AccessControlService implements IAccessControlService {
   async isSuperAdmin(entityId: number): Promise<boolean> {
     try {
       if (entityId === 0) return false;
+
+      if (!BaseUrl.FLAGS || !BaseUrl.FLAGS.accessControl) return true;
 
       const response = await this.apiClient.checkSuperAdminByConceptAsync(entityId);
       return AccessControlService.parseBoolData(response);
