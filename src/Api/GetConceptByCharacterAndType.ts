@@ -39,7 +39,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
           'type_id': typeId 
         };
         var toSendJson = JSON.stringify(json);
-          var header = GetRequestHeader();
+          var header = GetRequestHeader("application/json");
           const response = await fetch(BaseUrl.GetConceptByCharacterAndTypeUrl(),{
               method: 'POST',
               headers: header,

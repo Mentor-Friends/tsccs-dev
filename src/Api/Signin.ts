@@ -1,7 +1,7 @@
 import { FreeschemaResponse } from "../DataStructures/Responses/StandardResponses"
 import { SigninModel } from "../DataStructures/SigninModel"
 import { HandleHttpError, HandleHttpErrorObject, HandleInternalError } from "../Services/Common/ErrorPosting"
-import { BaseUrl } from "../app"
+import { BaseUrl, updateAccessToken } from "../app"
 
 /**
  * Alternative sign-in function using SigninModel structure.
@@ -54,6 +54,7 @@ export default async function Signin(signinInfo: SigninModel) {
         statusCode: 200,
         data: dataObject,
       }
+      updateAccessToken(dataObject.token)
     } else {
       HandleHttpErrorObject(response, output);
     }

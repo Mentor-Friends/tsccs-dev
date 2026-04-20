@@ -128,6 +128,7 @@ import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
 import { getCookie, LogData } from "./Middleware/logger.service";
 import { randomInt } from "crypto";
+import { access } from "fs";
 export { sendEmail } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
@@ -153,7 +154,7 @@ export { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
 export {LogEvent} from './Services/Logs/LogEvent';
 export {Selector} from './Api/Prototype/Selector';
-
+export { AccessControlService } from './Services/AccessControl/AccessControl';
 export {importLatestWidget, importRecentWidget, renderImportedWidget, renderLatestWidget, renderPage, renderWidget,convertWidgetTreeToWidgetWithWrapper, getWidgetFromId, convertWidgetTreeToWidget, unwrapContainers,getWidgetBulkFromId} from './Widgets/RenderWidgetService';
 
 export {CreateData} from './Services/automated/automated-concept-connection';
@@ -162,6 +163,8 @@ export {Prototype} from './DataStructures/Prototype/Prototype';
 export {Environments} from './DataStructures/environments/environments';
 export {createPrototypeLocal} from './prototype/prototype.service';
 export {GetImageApi} from './Api/Images/GetImages';
+
+export { GetAllLinkerConnectionsFromTheConcept } from "./Api/GetAllLinkerConnectionsFromTheConcept";
 export {GetFreeschemaImage,GetFreeschemaImageUrl} from './Services/assets/GetImageService';
 type listeners = {
   listenerId: string | number
@@ -384,6 +387,8 @@ function updateAccessToken(accessToken: string = "", session?: any) {
  * @see {@link updateAccessToken} for updating the access token after initialization
  * @see {@link LoginToBackend} for obtaining an access token
  * @see {@link sendMessage} for communicating with service worker after initialization
+ * @param accessControlUrl This is the url for the access control system. This is another server in the data fabric that is used as server for business logic and security features.
+ *
  */
 async function init(
   url: string = "",
@@ -393,8 +398,9 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
+  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean; accessControl?: boolean } = {},
   parameters: { logserver?:string, isPwa?:boolean} = {},
+  accessControlUrl: string = "",
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -402,7 +408,10 @@ async function init(
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
     BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
-    updateAccessToken(accessToken);
+    BaseUrl.ACCESS_CONTROL_BASE_URL = accessControlUrl;
+    console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
+    if (accessToken) updateAccessToken(accessToken);
+
     //TokenStorage.BearerAccessToken = accessToken;
 
     // Decrypt stored profile into memory so getUserDetails() works synchronously
@@ -419,7 +428,8 @@ async function init(
       logApplication: false,
       logPackage: false,
       accessTracker: false,
-      isTest: false
+      isTest: false,
+      accessControl: false
     };
     BaseUrl.FLAGS = defaultFlags
 
@@ -428,6 +438,10 @@ async function init(
 
     initializeFlags(BaseUrl.FLAGS)
     // console.log("BaseUrl.FLAGS before sending to service worker : ",  BaseUrl.FLAGS)
+
+    if (BaseUrl.FLAGS && BaseUrl.FLAGS.accessControl && !BaseUrl.ACCESS_CONTROL_BASE_URL) {
+      console.warn("accessControl is enabled but accessControlUrl is missing. API requests for Access Control may fail.");
+    }
 
     if (!("serviceWorker" in navigator)) {
       await initConceptConnection();
@@ -1001,7 +1015,8 @@ async function initServiceWorker() {
     nodeUrl: BaseUrl.NODE_URL,
     enableAi: false,
     applicationName: BaseUrl.BASE_APPLICATION,
-    flags: BaseUrl.FLAGS
+    flags: BaseUrl.FLAGS,
+    accessControlUrl: BaseUrl.ACCESS_CONTROL_BASE_URL,
   });
 }
 
