@@ -6,7 +6,7 @@ const CRYPTO_ALGO = "AES-GCM";
  * The passphrase is built from the origin + user-agent to tie storage to this browser/domain.
  */
 async function deriveKey(salt: Uint8Array): Promise<CryptoKey> {
-    const passphrase = location.origin;
+    const passphrase = "mftsccs-browser-v1";
     const encoder = new TextEncoder();
     const rawKey = encoder.encode(passphrase);
     const keyMaterial = await crypto.subtle.importKey(
@@ -49,7 +49,12 @@ export async function saveProfile(profile: Record<string, any>): Promise<void> {
     packed.set(iv, salt.length);
     packed.set(new Uint8Array(ciphertext), salt.length + iv.length);
 
-    localStorage.setItem(STORAGE_KEY, arrayToBase64(packed));
+    try {
+        localStorage.setItem(STORAGE_KEY, arrayToBase64(packed));
+        console.error("[SecureStorage] ccs_profile saved to localStorage successfully, size:", packed.length, "bytes");
+    } catch (e) {
+        console.error("[SecureStorage] ccs_profile failed to save to localStorage:", e);
+    }
 }
 
 /**
@@ -59,8 +64,17 @@ export async function loadProfile(): Promise<Record<string, any> | null> {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
 
+    let packed: Uint8Array;
     try {
-        const packed = base64ToArray(stored);
+        packed = base64ToArray(stored);
+        if (packed.length < 29) throw new Error("too short");
+    } catch (e) {
+        console.error("[SecureStorage] ccs_profile is corrupt (base64 parse failed), clearing:", e);
+        clearProfile();
+        return null;
+    }
+
+    try {
         const salt = packed.slice(0, 16);
         const iv = packed.slice(16, 28);
         const ciphertext = packed.slice(28);
@@ -72,8 +86,8 @@ export async function loadProfile(): Promise<Record<string, any> | null> {
             ciphertext.buffer as ArrayBuffer
         );
         return JSON.parse(new TextDecoder().decode(plainBuf));
-    } catch {
-        // Tampered or corrupted — wipe it
+    } catch (e) {
+        console.error("[SecureStorage] ccs_profile decryption failed, clearing:", e);
         clearProfile();
         return null;
     }
@@ -83,6 +97,7 @@ export async function loadProfile(): Promise<Record<string, any> | null> {
  * Removes the stored profile.
  */
 export function clearProfile(): void {
+    console.error("[SecureStorage] ccs_profile is being removed. Stack trace:", new Error().stack);
     localStorage.removeItem(STORAGE_KEY);
 }
 

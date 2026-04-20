@@ -31,15 +31,16 @@ export class TokenStorage {
             TokenStorage.refreshToken = refreshToken;
 
             // Build profile object (tokens included — encrypted at rest)
+            // Support both raw API response format and flat IUser format
             const profile = {
                 token,
                 refreshToken,
                 email: data?.email ?? "",
-                userId: data?.entity?.[0]?.userId ?? 0,
+                userId: data?.entity?.[0]?.userId ?? data?.userId ?? data?.theUserId ?? 0,
                 userConcept: data?.userConcept ?? 0,
-                entityId: data?.entityDetails?.id ?? 0,
+                entityId: data?.entityDetails?.id ?? data?.entityId ?? 0,
                 roles: data?.roles ?? [],
-                amcode: btoa(JSON.stringify(data?.roles ?? [])),
+                amcode: data?.amcode ?? btoa(JSON.stringify(data?.roles ?? [])),
             };
 
             // Cache in memory for sync access
