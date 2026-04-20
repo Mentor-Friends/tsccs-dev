@@ -261,8 +261,6 @@ async function init(
         // IdentifierFlags.isDataLoaded= true;
         // IdentifierFlags.isCharacterLoaded= true;
         // IdentifierFlags.isTypeLoaded= true;
-        let elapsed = new Date().getTime() - start;
-        console.log("The time taken to prepare concept  data is  ", elapsed);
       })
       .catch((event) => {
         // console.log("This is the error in creating binary tree", IdentifierFlags.isDataLoaded, IdentifierFlags.isCharacterLoaded, IdentifierFlags.isTypeLoaded);
@@ -281,8 +279,6 @@ async function init(
         // IdentifierFlags.isLocalDataLoaded = true;
         // IdentifierFlags.isLocalTypeLoaded = true;
         // IdentifierFlags.isLocalCharacterLoaded = true;
-        let elapsed = new Date().getTime() - start;
-        console.log("The time taken to prepare local concept  ", elapsed);
       })
       .catch((event) => {
         throw event;
@@ -318,8 +314,6 @@ async function init(
       .then(() => {
         IdentifierFlags.isConnectionLoaded = true;
         IdentifierFlags.isConnectionTypeLoaded = true;
-        let elapsed = new Date().getTime() - start;
-        console.log("The time taken to prepare connections  ", elapsed);
       })
       .catch((event) => {
         //console.log("This is the error in creating connections tree");

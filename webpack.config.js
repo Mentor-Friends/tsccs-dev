@@ -42,6 +42,7 @@ module.exports = env => {
             terserOptions: {
                compress: {
                   drop_console: !isDev,
+                  pure_funcs: !isDev ? ['console.log', 'console.warn', 'console.info', 'console.debug'] : [],
                },
             },
          }),

@@ -36,7 +36,6 @@ export class BaseUrl{
     public static BASE_RANDOMIZER = 999;
 
     static setRandomizer(id: number) {
-        console.log('set randomizer', id)
         this.BASE_RANDOMIZER = id
     }
     static getRandomizer() {

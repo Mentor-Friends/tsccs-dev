@@ -149,7 +149,7 @@ export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/Cr
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export { clearAllCaches } from './Services/CacheClear';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
-export {getUserDetails, getUserDetailsAsync} from './Services/User/UserFromLocalStorage';
+export {getUserDetails} from './Services/User/UserFromLocalStorage';
 export { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
 export {LogEvent} from './Services/Logs/LogEvent';
@@ -165,7 +165,6 @@ export {createPrototypeLocal} from './prototype/prototype.service';
 export {GetImageApi} from './Api/Images/GetImages';
 
 export { GetAllLinkerConnectionsFromTheConcept } from "./Api/GetAllLinkerConnectionsFromTheConcept";
-
 export {GetFreeschemaImage,GetFreeschemaImageUrl} from './Services/assets/GetImageService';
 type listeners = {
   listenerId: string | number
@@ -412,7 +411,11 @@ async function init(
     BaseUrl.ACCESS_CONTROL_BASE_URL = accessControlUrl;
     console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
     if (accessToken) updateAccessToken(accessToken);
+
     //TokenStorage.BearerAccessToken = accessToken;
+
+    // Decrypt stored profile into memory so getUserDetails() works synchronously
+    await TokenStorage.hydrateProfile();
     let randomizer = Math.floor(Math.random() * 100000000);
     // BaseUrl.BASE_RANDOMIZER = randomizer;
     // BaseUrl.BASE_RANDOMIZER = 999;
@@ -1047,7 +1050,7 @@ async function initializeAppConfig() {
 
   myCacheServer = JSON.parse(myCacheServer as string) 
   const config: Record<string, number> = JSON.parse(appConfig as string);
-  async function getAppConfigHandler() {
+  async function getAppConfigHandler(updateSession: boolean = true) {
     let response
     try {
       let windowApplication = BaseUrl.BASE_APPLICATION ?? "boomconsole";
@@ -1055,18 +1058,20 @@ async function initializeAppConfig() {
         response = await fetch(BaseUrl.getAppConfig() + "?application=" + windowApplication, {
           method: "POST",
         });
-  
+
         if (!response.ok) {
           throw new Error("Failed to sync data to the server.");
         }
-  
+
         const cacheRes = await response.json();
         if (cacheRes.success) {
           sessionStorage.setItem(cacheServerName, JSON.stringify(cacheRes.servers));
           sessionStorage.setItem(cacheConfigName, JSON.stringify(cacheRes.config));
-          sessionStorage.setItem(cacheConfigSession,cacheRes.session)
-          TokenStorage.setSession(cacheRes.session);
-          //TokenStorage.sessionId = cacheRes.session;
+          // Only update session on first load, not on background revalidation
+          if (updateSession) {
+            sessionStorage.setItem(cacheConfigSession,cacheRes.session)
+            TokenStorage.setSession(cacheRes.session);
+          }
           if (!cacheRes.servers) {
             BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
           } else {
@@ -1081,26 +1086,22 @@ async function initializeAppConfig() {
     }
   }
   
-  if (!myCacheServer || !config || !config.documentationWidget || sessionId == 999) {
-    // navigator.geolocation.getCurrentPosition(
-    //   async (data) => {
-        await getAppConfigHandler();
-      // },
-      // async (error) => {
-      //   if (error.code === error.PERMISSION_DENIED) {
-      //     // await getCacheServer();
-      //     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL
-      //   }
-      // }
-    // );
-  } else {
+  if (myCacheServer && config && config.documentationWidget && sessionId != 999) {
+    // Use cached values immediately so the app isn't blocked
     if (Array.isArray(myCacheServer) && myCacheServer.length) {
       BaseUrl.NODE_CACHE_URL = myCacheServer[0];
     } else {
       BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
     }
     TokenStorage.setSession(sessionId);
-    BaseUrl.DOCUMENTATION_WIDGET = config.documentationWidget
+    BaseUrl.DOCUMENTATION_WIDGET = config.documentationWidget;
+
+    // Always revalidate — await so servers actually get updated in sessionStorage
+    // Pass false to preserve current sessionId for tracking continuity
+    getAppConfigHandler(false);
+  } else {
+    // No cached values — must fetch before proceeding
+    await getAppConfigHandler();
   }
   console.log("before the payload in app", TokenStorage.sessionId);
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {

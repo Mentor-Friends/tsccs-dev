@@ -76,7 +76,13 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
         logData.serviceWorker = true;
         try {
           const res: any = await sendMessage('GetConceptBulk', {passedConcepts})
-          Logger.logUpdate(logData); 
+          // Also cache in main thread so GetTheConcept can find them locally
+          if (res.data && res.data.length > 0) {
+            for (const concept of res.data) {
+              ConceptsData.AddConceptToMemory(concept);
+            }
+          }
+          Logger.logUpdate(logData);
           return res.data
         } catch (error) {
           console.error('GetConceptBulk sw error: ', error);
