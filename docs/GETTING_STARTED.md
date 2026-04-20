@@ -756,9 +756,10 @@ await init({
 Now that you understand the basics, explore these advanced topics:
 
 1. **[Core Concepts](./CORE_CONCEPTS.md)** - Deep dive into concepts, connections, and compositions
-2. **[API Reference](./API_REFERENCE.md)** - Complete function documentation
-3. **[Architecture Guide](./ARCHITECTURE.md)** - Understand the system design
-4. **[Examples](./EXAMPLES.md)** - Real-world usage patterns
+2. **[Access Control](./ACCESS_CONTROL.md)** - Understand the newly integrated role and inheritance-based access rules
+3. **[API Reference](./API_REFERENCE.md)** - Complete function documentation
+4. **[Architecture Guide](./ARCHITECTURE.md)** - Understand the system design
+5. **[Examples](./EXAMPLES.md)** - Real-world usage patterns
 
 ### Example Projects
 
