@@ -100,7 +100,7 @@ export async function LoginToBackend(email:string, password:string, application:
             });
             const result = await response.json();
             if(response.ok){
-              TokenStorage.BearerAccessToken = result.data.token;
+              await TokenStorage.saveUserProfile(result);
               Logger.logUpdate(logData);
              return result;
 

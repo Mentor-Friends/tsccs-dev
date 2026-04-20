@@ -34,16 +34,16 @@ export async function CreateConnectionBetweenEntityLocal(
       userId,
       actions
     );
-    console.log(
-      await CreateTheConnectionLocal(
-        concept1Data.id,
-        concept2Data.id,
-        connectionConcept.id,
-        1000,
-        undefined,
-        undefined,
-        actions
-      )
+    if (!connectionConcept) return;
+    const connection = await CreateTheConnectionLocal(
+      concept1Data.id,
+      concept2Data.id,
+      connectionConcept.id,
+      1000,
+      undefined,
+      undefined,
+      actions
     );
     Logger.logUpdate(logData);
+    return connection;
   }
