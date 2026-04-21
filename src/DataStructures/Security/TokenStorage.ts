@@ -63,8 +63,13 @@ export class TokenStorage {
             const profile = await loadProfile();
             if (profile) {
                 TokenStorage.profileCache = profile;
-                TokenStorage.BearerAccessToken = profile.token ?? "";
-                TokenStorage.refreshToken = profile.refreshToken ?? "";
+                // Only hydrate tokens if they aren't already set (e.g. by init's updateAccessToken)
+                if (!TokenStorage.BearerAccessToken) {
+                    TokenStorage.BearerAccessToken = profile.token ?? "";
+                }
+                if (!TokenStorage.refreshToken) {
+                    TokenStorage.refreshToken = profile.refreshToken ?? "";
+                }
             }
         }
     }

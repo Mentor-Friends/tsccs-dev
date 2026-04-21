@@ -410,12 +410,20 @@ async function init(
     BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
     BaseUrl.ACCESS_CONTROL_BASE_URL = accessControlUrl;
     console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
-    if (accessToken) updateAccessToken(accessToken);
+    const explicitAccessToken = (accessToken ?? "").trim();
+    if (explicitAccessToken) {
+      updateAccessToken(explicitAccessToken);
+    }
 
     //TokenStorage.BearerAccessToken = accessToken;
 
     // Decrypt stored profile into memory so getUserDetails() works synchronously
     await TokenStorage.hydrateProfile();
+
+    // If token came from secure storage, sync it to main-thread state/SW once.
+    if (!explicitAccessToken && TokenStorage.BearerAccessToken) {
+      updateAccessToken(TokenStorage.BearerAccessToken);
+    }
     let randomizer = Math.floor(Math.random() * 100000000);
     // BaseUrl.BASE_RANDOMIZER = randomizer;
     // BaseUrl.BASE_RANDOMIZER = 999;
