@@ -2,6 +2,7 @@ import {
     openCacheDatabase, cachePut, cacheDelete, cacheClear,
     STORE_QUERY
 } from "../Database/CacheDatabase";
+import { Environments } from "../DataStructures/environments/environments";
 
 /**
  * QueryCacheManager — In-memory cache with IndexedDB persistence for freeschema query results.
@@ -34,10 +35,14 @@ export class QueryCacheManager {
 
     /**
      * Loads all persisted query cache data from IndexedDB into memory.
-     * Call this once during app initialization.
+     * Call this once during app initialization (handled automatically by `init()`).
      * Safe to call multiple times — just overwrites the Map.
+     *
+     * Skips entirely when `Environments.getValue('enableCache', true)` is `false`,
+     * which is set by the `enableCache` parameter passed to `init()`.
      */
     static async init(): Promise<void> {
+        if (!Environments.getValue('enableCache', true)) return;
         try {
             // queryCache store uses out-of-line keys, so we need key+value pairs.
             // cacheGetAll returns values; we need a different approach for out-of-line keys.
@@ -67,10 +72,14 @@ export class QueryCacheManager {
     /**
      * Retrieves cached query results by hash key (synchronous, from memory).
      *
+     * Returns `null` immediately when `Environments.getValue('enableCache', true)` is `false`,
+     * causing `FreeschemaQueryApi` to fall through to a live backend fetch.
+     *
      * @param hash - The SHA-256 hash of the query (from getHash)
-     * @returns The cached result data, or null if not found
+     * @returns The cached result data, or null if not found or cache is disabled
      */
     static get(hash: string): any | null {
+        if (!Environments.getValue('enableCache', true)) return null;
         return this.cacheMap.get(hash) ?? null;
     }
 
@@ -81,10 +90,14 @@ export class QueryCacheManager {
      * what's already in memory, the write and event dispatch are both skipped.
      * This prevents infinite revalidation loops (set → event → fetch → set → ...).
      *
+     * No-ops entirely when `Environments.getValue('enableCache', true)` is `false`
+     * so neither memory nor IndexedDB is written to.
+     *
      * @param hash - The SHA-256 hash key for this query
      * @param data - The query result data to cache
      */
     static set(hash: string, data: any): void {
+        if (!Environments.getValue('enableCache', true)) return;
         // Dedup guard: skip if data hasn't changed
         const existing = this.cacheMap.get(hash);
         const serialized = JSON.stringify(data);

@@ -1,21 +1,24 @@
 {
   "name": "mftsccs-browser",
-  "version": "2.1.221-beta",
+  "version": "2.1.230-beta",
   "environment": "production",
   "description": "Full Pack of concept and connection system",
   "main": "dist/main.bundle.js",
   "types": "dist/types/app.d.ts",
   "files": [
     "dist",
-    "scripts",
-    "LICENSE",
+    "scripts/postinstall.js",
     "README.md",
     "package.json"
   ],
   "scripts": {
+    "generate-autocomplete-metadata": "node ./scripts/generate-autocomplete-metadata.cjs",
     "start": "npx webpack",
     "dev": "webpack --env NODE_ENV=development --mode development",
     "build": "webpack --config webpack.config.js",
+    "prebuild:wico": "npm run generate-autocomplete-metadata",
+    "build:wico": "webpack --config webpack.wico.config.js",
+    "postbuild:wico": "node ./scripts/create-wico-package.cjs",
     "postinstall": "node ./scripts/postinstall.js",
     "test": "jest"
   },

@@ -41,6 +41,11 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
       "concepts": [],
       "connections": []
     };
+
+    if (conceptData.length === 0 && connectionData.length === 0) {
+      Logger.logUpdate(logData);
+      return result
+    }
     
     // strip data
     const stripedConcept = await stripTypeFromConceptOrConnection(conceptData);

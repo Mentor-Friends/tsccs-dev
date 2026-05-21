@@ -7,5 +7,6 @@
 *.sublime-project
 
 /dist/
+/dist-wico/
 /node_modules/
 .env.*

@@ -2,6 +2,7 @@ import {
     cachePut, cacheDelete, cacheClear, cacheGetAll,
     STORE_WIDGET, STORE_LATEST, STORE_RECENT
 } from "../Database/CacheDatabase";
+import { Environments } from "../DataStructures/environments/environments";
 
 /**
  * WidgetCacheManager — In-memory cache with IndexedDB persistence for widget data.
@@ -31,10 +32,14 @@ export class WidgetCacheManager {
 
     /**
      * Loads all persisted widget cache data from IndexedDB into memory.
-     * Call this once during app initialization (e.g. in init() or initConceptConnection()).
+     * Called automatically during `init()` / `initConceptConnection()`.
      * Safe to call multiple times — just overwrites the Maps.
+     *
+     * Skips entirely when `Environments.getValue('enableCache', true)` is `false`,
+     * keeping all three maps empty so no stale data is ever served.
      */
     static async init(): Promise<void> {
+        if (!Environments.getValue('enableCache', true)) return;
         try {
             const [widgets, latests, recents] = await Promise.all([
                 cacheGetAll(STORE_WIDGET),
@@ -69,20 +74,25 @@ export class WidgetCacheManager {
 
     /**
      * Retrieves cached widget data by widget ID (synchronous, from memory).
+     * Returns `null` when cache is disabled via `Environments.setValue('enableCache', false)`,
+     * causing `BuildWidgetFromId` to always fetch fresh from the backend.
      * @param id - The widget ID to look up
-     * @returns The cached data object, or null if not cached
+     * @returns The cached data object, or null if not cached or cache is disabled
      */
     static getWidget(id: number): any | null {
+        if (!Environments.getValue('enableCache', true)) return null;
         return this.widgetMap.get(id) ?? null;
     }
 
     /**
      * Stores widget data in memory and persists to IndexedDB in the background.
+     * No-ops when cache is disabled via `Environments.setValue('enableCache', false)`.
      * Skips if data is identical to what's already cached (dedup guard).
      * @param id - The widget ID
      * @param data - The widget data object to cache
      */
     static setWidget(id: number, data: any): void {
+        if (!Environments.getValue('enableCache', true)) return;
         if (this._isDuplicate(this.widgetMap, id, data)) return;
         this.widgetMap.set(id, data);
         cachePut(STORE_WIDGET, { id, ...data }).catch(() => {});
@@ -101,20 +111,23 @@ export class WidgetCacheManager {
 
     /**
      * Retrieves cached latest-version widget data (synchronous, from memory).
+     * Returns `null` when cache is disabled, causing a live backend fetch.
      * @param id - The origin widget ID
-     * @returns The cached data object, or null if not cached
+     * @returns The cached data object, or null if not cached or cache is disabled
      */
     static getLatest(id: number): any | null {
+        if (!Environments.getValue('enableCache', true)) return null;
         return this.latestMap.get(id) ?? null;
     }
 
     /**
      * Stores latest-version widget data in memory and persists to IndexedDB.
-     * Skips if data is identical to what's already cached.
+     * No-ops when cache is disabled. Skips if data is identical to what's already cached.
      * @param id - The origin widget ID
      * @param data - The latest widget data to cache
      */
     static setLatest(id: number, data: any): void {
+        if (!Environments.getValue('enableCache', true)) return;
         if (this._isDuplicate(this.latestMap, id, data)) return;
         this.latestMap.set(id, data);
         cachePut(STORE_LATEST, { id, ...data }).catch(() => {});
@@ -133,20 +146,23 @@ export class WidgetCacheManager {
 
     /**
      * Retrieves cached recent-version widget data (synchronous, from memory).
+     * Returns `null` when cache is disabled, causing a live backend fetch.
      * @param id - The origin widget ID
-     * @returns The cached data object, or null if not cached
+     * @returns The cached data object, or null if not cached or cache is disabled
      */
     static getRecent(id: number): any | null {
+        if (!Environments.getValue('enableCache', true)) return null;
         return this.recentMap.get(id) ?? null;
     }
 
     /**
      * Stores recent-version widget data in memory and persists to IndexedDB.
-     * Skips if data is identical to what's already cached.
+     * No-ops when cache is disabled. Skips if data is identical to what's already cached.
      * @param id - The origin widget ID
      * @param data - The recent widget data to cache
      */
     static setRecent(id: number, data: any): void {
+        if (!Environments.getValue('enableCache', true)) return;
         if (this._isDuplicate(this.recentMap, id, data)) return;
         this.recentMap.set(id, data);
         cachePut(STORE_RECENT, { id, ...data }).catch(() => {});
