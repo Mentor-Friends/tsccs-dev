@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/mentor/ friends2/CCS-JS-LOCAL/src/Widgets/**)"
+      "Read(//c/Users/mentor/ friends2/CCS-JS-LOCAL/src/Widgets/**)",
+      "Read(//c/Users/mentor friends2/csharp/C-RestAPI/FreeSchemaCoreApi/**)",
+      "Read(//c/Users/mentor friends2/frontend/documentation/**)",
+      "Bash(grep -E \"\\\\.\\(md|html|css|js\\)$\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\mentor friends2\\frontend\\documentation"
     ]
   }
 }

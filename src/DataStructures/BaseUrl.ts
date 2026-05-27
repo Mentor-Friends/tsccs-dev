@@ -389,6 +389,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/get-connection-by-types';
     }
 
+    static GetConnectionsBetweenUrl(){
+        return this.BASE_URL + '/api/get-connection-between';
+    }
+
     static CreatePrototypeUrl(){
         return this.BASE_URL + '/api/create-prototype';
     }

@@ -55,7 +55,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
         // await renderWidget(widgets[0].id, attachNode, props);
         await renderLatestWidget(output?.[0]?.data?.the_page?.the_page_body?.id, attachNode, props, showDocumentation);
       else{
-        attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4>'
+        attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4> ' + pageId; 
       }
     }
 
@@ -146,7 +146,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
       const widgetTree = DataCache.cache.get(`wdgt_${latestWidgetId}`);
       console.log("renderImportedWidget widgetTree -->", widgetTree);
       if (!widgetTree.name) {
-        attachNode.innerHTML = "<h4>Invalid or Widget doesn't exist</h4>";
+        attachNode.innerHTML = "<h4>Invalid or Widget doesn't exist</h4>" + widgetId;
         return;
       }
       const appElement = attachNode;
@@ -372,8 +372,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
  */
     export async function materializeWidget(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props?: any, showDocumentation: boolean = true){
       const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
+      console.log("this is the widget tree", widgetTree);
       if (!widgetTree.name) {
-        attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>'
+        attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>' + widgetId;
         return 
       }
       const appElement = attachNode;
@@ -679,7 +680,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
   
         const widgetInfo = output?.data?.the_widget;
         widgetNode.name = widgetInfo?.the_widget_name?.data?.the_name;
-
+        console.log("Widget name",widgetNode, widgetInfo);
         widgetNode.html = widgetInfo?.the_widget_html?.data?.the_html;
         widgetNode.css = widgetInfo?.the_widget_css?.data?.the_css;
         widgetNode.js = widgetInfo?.the_widget_js?.data?.the_js;

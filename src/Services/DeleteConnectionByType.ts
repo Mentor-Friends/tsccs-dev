@@ -50,6 +50,9 @@ export async function DeleteConnectionByType(id: number, linker: string){
 }
 
 
+
+
+
 export async function DeleteConnectionByTypeBulk(id: number, linkers: string[]){
     const logData : any = Logger.logfunction("DeleteConnectionByTypeBulk", arguments) || {}
     if (serviceWorker) {
