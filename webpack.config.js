@@ -11,10 +11,11 @@ module.exports = env => {
    },
    mode: isDev ? 'development' : 'production',
    devtool: isDev ? 'source-map' : false,
-   watch: true,
+   watch: isDev,
    output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
+      clean: true,
       // Enable ES Module output
       module: true,  // This tells Webpack to treat the output as ES modules
       libraryTarget: 'module',  // Ensures it's treated as an ES module
@@ -27,7 +28,12 @@ module.exports = env => {
       rules: [
          {
             test: /\.ts$/,
-            use: 'ts-loader',   // Use ts-loader for TypeScript files
+            use: {
+               loader: 'ts-loader',
+               options: {
+                  onlyCompileBundledFiles: true,
+               },
+            },
             exclude: /node_modules/,
          },
       ],

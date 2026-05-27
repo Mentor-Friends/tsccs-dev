@@ -931,6 +931,14 @@ This creates the `dist/` folder with:
 - `dist/main.bundle.js` - Main bundle
 - `dist/types/` - TypeScript declarations
 
+For the lean WICO autocomplete metadata package:
+
+```bash
+npm run build:wico
+```
+
+This creates `dist-wico/` with a metadata-only bundle, minimal TypeScript declarations, and a small package manifest.
+
 #### 3. Test the Package Locally (Optional but Recommended)
 
 ```bash

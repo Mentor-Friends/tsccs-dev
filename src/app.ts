@@ -117,6 +117,7 @@ import CreateLocalBinaryTreeFromIndexDb, { PopulateTheLocalConceptsToMemory, Pop
 import InitializeSystem from './Services/InitializeSystem';
 import { BaseUrl } from './DataStructures/BaseUrl';
 import { TokenStorage } from './DataStructures/Security/TokenStorage';
+import { Environments } from './DataStructures/environments/environments';
 import { broadcastChannel } from "./Constants/general.const";
 export { Logger } from "./Middleware/logger.service";
 import { WidgetTree } from "./Widgets/WidgetTree";
@@ -139,6 +140,8 @@ export { createFormFieldData } from './Validator/utils';
 export {BaseUrl} from './DataStructures/BaseUrl';
 export {StatefulWidget} from './Widgets/StatefulWidget';
 export {DeleteConnectionByType, DeleteConnectionByTypeBulk, GetAllTheConnectionsByTypeAndOfTheConcept} from './Services/DeleteConnectionByType';
+export {GetConnectionsBetweenApi} from './Api/GetConnections/GetConnectionsBetweenApi';
+export {FetchConnection, FetchConnectionQuery, buildFetchConnection} from './DataStructures/FetchConnection';
 export {FreeschemaQuery} from './DataStructures/Search/FreeschemaQuery';
 export {FreeschemaQueryApi} from './Api/Search/FreeschemaQueryApi';
 export {SchemaQueryListener, SchemaQuery} from './WrapperFunctions/SchemaQueryObservable';
@@ -336,6 +339,12 @@ function updateAccessToken(accessToken: string = "", session?: any) {
  *
  * @param parameters - Additional configuration parameters:
  *                    - logserver: string - Custom log server URL (default: "https://logdev.freeschema.com")
+ *                    - isPwa: boolean - Enable PWA offline persistence to IndexedDB (default: false)
+ *                    - enableCache: boolean - Enable/disable widget and FreeschemaQuery caching.
+ *                      When false, QueryCacheManager and WidgetCacheManager skip all reads and writes
+ *                      (memory and IndexedDB). Stored in Environments under key 'enableCache' so it
+ *                      can be read or changed at runtime via Environments.getValue/setValue.
+ *                      Default: true.
  *
  * @returns Promise<boolean> - Returns true if initialization succeeds, undefined if it fails.
  *         On failure, falls back to main thread operation and logs warnings.
@@ -399,7 +408,7 @@ async function init(
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
   flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean; accessControl?: boolean } = {},
-  parameters: { logserver?:string, isPwa?:boolean} = {},
+  parameters: { logserver?:string, isPwa?:boolean, enableCache?:boolean} = {},
   accessControlUrl: string = "",
 ) {
   try {
@@ -430,6 +439,7 @@ async function init(
     
     BaseUrl.setRandomizer(randomizer)
     BaseUrl.isPwa = parameters.isPwa ?? false;
+    Environments.setValue('enableCache', parameters.enableCache ?? true);
 
     // Change Default Flags
     const defaultFlags = {

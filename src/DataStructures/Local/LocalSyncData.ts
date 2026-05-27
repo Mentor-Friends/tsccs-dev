@@ -163,6 +163,9 @@ export class LocalSyncData{
             }
             console.log("syncing... inside the syncer 2", withAuth, conceptsArray);
             //if(connectionsArray.length > 0){
+                if (toSyncConcepts.length === 0 && connectionsArray.length === 0) {
+                    return conceptsArray;
+                }
                 await this.UpdateConceptListToIncludeRelatedConcepts(connectionsArray, toSyncConcepts);
                 let result = await CreateTheGhostConceptApi(toSyncConcepts, connectionsArray, withAuth);
 
