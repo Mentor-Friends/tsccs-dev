@@ -75,6 +75,7 @@ export {GetConnectionBetweenTwoConceptsLinker} from './Services/GetConnectionBet
 export {DelayFunctionExecution} from './Services/Common/DelayFunction';
 export {GetCompositionWithIdAndDateFromMemory,GetCompositionFromMemoryWithConnections} from './Services/GetComposition';
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
+export { GetInstanceConceptByCharacterType} from './Api/GetInstanceConceptByCharacterType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
 export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL, DATAV2} from './Constants/FormatConstants';
