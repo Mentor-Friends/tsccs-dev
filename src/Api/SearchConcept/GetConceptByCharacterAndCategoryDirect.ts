@@ -25,7 +25,7 @@ export async function GetConceptByCharacterAndCategoryDirectApi(characterValue: 
 
     try{
 
-        var header = GetRequestHeader('application/x-www-form-urlencoded');
+        var header = await GetRequestHeader('application/x-www-form-urlencoded');
           const response = await fetch(BaseUrl.GetConceptByCharacterAndCategoryDirectUrl(),{
               method: 'POST',
               headers: header,

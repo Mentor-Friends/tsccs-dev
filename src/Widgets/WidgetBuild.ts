@@ -79,7 +79,7 @@ export async function BuildWidgetFromId(id:number){
 
         if (widgetCache.has(id)) return widgetCache.get(id) || data;
 
-        let header = GetRequestHeader("application/json");
+        let header = await GetRequestHeader("application/json");
         let queryUrl = BaseUrl.getWidgetData() + "?id=" + id;
 
         const cached = WidgetCacheManager.getWidget(id);
@@ -195,7 +195,7 @@ export async function BuildWidgetFromIdForLatest(id:number){
       let data : any = {};
       if (latestWidgetCache.has(id)) return latestWidgetCache.get(id) || data;
 
-      let header = GetRequestHeader("application/json");
+      let header = await GetRequestHeader("application/json");
 
       const cached = WidgetCacheManager.getLatest(id);
       if (cached) {
@@ -288,7 +288,7 @@ export async function BuildWidgetFromIdForRecent(id:number){
       let data : any = {};
       if (recentWidgetCache.has(id)) return recentWidgetCache.get(id) || data;
 
-      let header = GetRequestHeader("application/json");
+      let header = await GetRequestHeader("application/json");
 
       const cached = WidgetCacheManager.getRecent(id);
       if (cached) {

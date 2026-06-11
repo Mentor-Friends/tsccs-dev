@@ -152,6 +152,7 @@ const actions: Actions = {
             payload?.url,
             payload?.aiurl,
             payload?.accessToken,
+            payload?.refreshToken,
             payload?.nodeUrl,
             payload?.enableAi,
             payload?.applicationName,
@@ -161,7 +162,7 @@ const actions: Actions = {
         return {success: true, data: undefined, name: 'init'}
     },
     updateAccessToken: async (payload) => {
-        await updateAccessToken(payload.accessToken, payload.session)
+        await updateAccessToken(payload.accessToken, payload.session, payload.refreshToken)
         return {success: true, name: 'updateAccessToken'}
     },
     SESSION_DATA: async (payload) => {
@@ -197,6 +198,7 @@ async function init(
     url: string = "",
     aiurl: string = "",
     accessToken: string = "",
+    refreshToken: string = "",
     nodeUrl: string = "",
     enableAi: boolean = true,
     applicationName: string = "",
@@ -208,6 +210,7 @@ async function init(
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
     TokenStorage.BearerAccessToken = accessToken;
+    TokenStorage.refreshToken = refreshToken;
     let randomizer = Math.floor(Math.random() * 100000000);
     // BaseUrl.BASE_RANDOMIZER = randomizer;
     console.log("Flags came in init of service worker is ", flags)

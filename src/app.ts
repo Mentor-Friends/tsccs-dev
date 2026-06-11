@@ -152,7 +152,7 @@ export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/Cr
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export { clearAllCaches } from './Services/CacheClear';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
-export {getUserDetails} from './Services/User/UserFromLocalStorage';
+export {getUserDetails, getUserDetailsWithRefresh} from './Services/User/UserFromLocalStorage';
 export { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
 export {LogEvent} from './Services/Logs/LogEvent';
@@ -246,8 +246,11 @@ export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
  * @see {@link Signin} for alternative authentication
  * @see {@link init} which can also set initial token
  */
-function updateAccessToken(accessToken: string = "", session?: any) {
+function updateAccessToken(accessToken: string = "", session?: any, refreshToken: string = "") {
   TokenStorage.BearerAccessToken = accessToken;
+  if (refreshToken) {
+    TokenStorage.refreshToken = refreshToken;
+  }
 
   // because in the service worker document is not defined.
   if(typeof document == undefined){
@@ -260,7 +263,7 @@ function updateAccessToken(accessToken: string = "", session?: any) {
     //TokenStorage.sessionId = parseInt(parsedCookie);
   }
  // let parsedCookie = getCookie("SessionId") ?? "999";
-  if (serviceWorker) sendMessage('updateAccessToken', { accessToken, session: TokenStorage.sessionId})
+  if (serviceWorker) sendMessage('updateAccessToken', { accessToken, refreshToken: TokenStorage.refreshToken, session: TokenStorage.sessionId})
 }
 
 
@@ -1009,6 +1012,7 @@ async function initServiceWorker() {
     url: BaseUrl.BASE_URL,
     aiurl: BaseUrl.AI_URL,
     accessToken: TokenStorage.BearerAccessToken,
+    refreshToken: TokenStorage.refreshToken,
     nodeUrl: BaseUrl.NODE_URL,
     enableAi: false,
     applicationName: BaseUrl.BASE_APPLICATION,

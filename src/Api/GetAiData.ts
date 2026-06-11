@@ -19,7 +19,7 @@ export async function GetAiData(){
   const logData:any = Logger.logfunction("GetAiData");
     try{
       const start = new Date().getTime();
-        var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
+        var header = await GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
         const response = await fetch(BaseUrl.GetAllAiData(),{
             method: 'GET',
             headers: header,

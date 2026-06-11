@@ -114,18 +114,14 @@ const syncConceptConnection = async (concepts: Concept[], connections: Connectio
     "connections": []
   };
   try{
-    const myHeaders = new Headers();
       let myBody = {
         "concepts": concepts,
         "connections": connections
       }
 
-     myHeaders.set("Content-Type","application/json" );
-     myHeaders.set('Authorization', "Bearer " + TokenStorage.BearerAccessToken)
-     myHeaders.set('Accept',  'application/json');
-     myHeaders.set('X-Session-Id', TokenStorage.sessionId.toString())
+     const myHeaders = await GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
     //  myHeaders.set('Randomizer', BaseUrl.BASE_RANDOMIZER.toString());
-     myHeaders.set('Randomizer', BaseUrl.getRandomizer().toString());
+     myHeaders.Randomizer = BaseUrl.getRandomizer().toString();
       const response = await fetch(BaseUrl.CreateGhostConceptApiUrl(withAuth),{
           method: 'POST',
           headers: myHeaders,

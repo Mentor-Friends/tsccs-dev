@@ -15,7 +15,7 @@ import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
  */
 export async function CreateSessionVisit(sessionId: number, url: string){
     try{
-        var header = GetRequestHeader("application/x-www-form-urlencoded");
+        var header = await GetRequestHeader("application/x-www-form-urlencoded");
         const urlencoded = new URLSearchParams();
         urlencoded.append("sessionId", sessionId.toString());
         urlencoded.append("url", url);

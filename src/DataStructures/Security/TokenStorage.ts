@@ -23,24 +23,25 @@ export class TokenStorage {
         try {
             // Support both { data: { token, ... } } and flat { token, ... }
             const data = signinResponse?.data ?? signinResponse;
-            const token = data?.token ?? "";
+            const token = data?.token ?? data?.accessToken ?? TokenStorage.BearerAccessToken ?? "";
             const refreshToken = data?.refreshtoken ?? data?.refreshToken ?? "";
+            const existingProfile = TokenStorage.profileCache ?? {};
 
             // Primary: keep tokens in memory only
             TokenStorage.BearerAccessToken = token;
-            TokenStorage.refreshToken = refreshToken;
+            TokenStorage.refreshToken = refreshToken || TokenStorage.refreshToken;
 
             // Build profile object (tokens included — encrypted at rest)
             // Support both raw API response format and flat IUser format
             const profile = {
                 token,
-                refreshToken,
-                email: data?.email ?? "",
-                userId: data?.entity?.[0]?.userId ?? data?.userId ?? data?.theUserId ?? 0,
-                userConcept: data?.userConcept ?? 0,
-                entityId: data?.entityDetails?.id ?? data?.entityId ?? 0,
-                roles: data?.roles ?? [],
-                amcode: data?.amcode ?? btoa(JSON.stringify(data?.roles ?? [])),
+                refreshToken: TokenStorage.refreshToken,
+                email: data?.email ?? existingProfile.email ?? "",
+                userId: data?.entity?.[0]?.userId ?? data?.userId ?? data?.theUserId ?? existingProfile.userId ?? 0,
+                userConcept: data?.userConcept ?? existingProfile.userConcept ?? 0,
+                entityId: data?.entityDetails?.id ?? data?.entityId ?? existingProfile.entityId ?? 0,
+                roles: data?.roles ?? existingProfile.roles ?? [],
+                amcode: data?.amcode ?? existingProfile.amcode ?? btoa(JSON.stringify(data?.roles ?? existingProfile.roles ?? [])),
             };
 
             // Cache in memory for sync access
@@ -51,6 +52,25 @@ export class TokenStorage {
             return true;
         } catch {
             return false;
+        }
+    }
+
+    static async updateTokens(accessToken: string = "", refreshToken: string = ""): Promise<void> {
+        if (accessToken) {
+            TokenStorage.BearerAccessToken = accessToken;
+        }
+        if (refreshToken) {
+            TokenStorage.refreshToken = refreshToken;
+        }
+
+        if (TokenStorage.profileCache) {
+            TokenStorage.profileCache = {
+                ...TokenStorage.profileCache,
+                token: TokenStorage.BearerAccessToken,
+                refreshToken: TokenStorage.refreshToken,
+            };
+
+            await saveProfile(TokenStorage.profileCache);
         }
     }
 

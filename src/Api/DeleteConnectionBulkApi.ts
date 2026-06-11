@@ -25,7 +25,7 @@ export default async function DeleteTheConnectionBulkApi(ids:number[]){
   const logData:any = Logger.logfunction("DeleteTheConnectionBulkApi", arguments);
   let isDeleted = false;
     try{
-           let header:Headers = GetOnlyTokenHeader();
+           let header:Headers = await GetOnlyTokenHeader();
            header.append('Content-Type','application/json');
             const response = await fetch(BaseUrl.DeleteTheConnectionBulkUrl(),{
                 method: 'POST',

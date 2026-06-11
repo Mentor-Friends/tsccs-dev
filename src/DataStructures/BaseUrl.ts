@@ -202,6 +202,10 @@ export class BaseUrl{
         return this.BASE_URL + '/api/auth/login';
     }
 
+    static RefreshTokenUrl(){
+        return this.BASE_URL + '/api/auth/refresh';
+    }
+
     static SignupUrl(){
         return this.BASE_URL + '/api/auth/signup';
     }

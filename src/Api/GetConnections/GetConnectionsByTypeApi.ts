@@ -19,7 +19,7 @@ export async function GetConnectionsByApiTypes(connectionTypes: GetConnectionsBy
     let connections:Connection[]= [];
   const logData : any = Logger.logfunction("GetConnectionsByApiTypes", arguments);
   try{
-    var header = GetRequestHeader();
+    var header = await GetRequestHeader();
     const response = await fetch(BaseUrl.getConnectionsByTypes(),{
       method: 'POST',
       headers:header,

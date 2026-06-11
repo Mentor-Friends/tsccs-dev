@@ -27,7 +27,7 @@ export async function GetConnectionToTheConcept(typeId: number, toTheConceptId:n
         urlencoded.append("userId", `${userId}`);
         urlencoded.append("inpage", `${inpage}`);
         urlencoded.append("page", `${page}`);
-        var header = GetRequestHeader('application/x-www-form-urlencoded');
+        var header = await GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetAllConnectionsToConceptUrl(),{
                 method: 'POST',
                 headers: header,

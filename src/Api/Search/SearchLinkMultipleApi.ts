@@ -21,7 +21,7 @@ import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRe
 export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: string=""){
     const logData : any = Logger.logfunction("SearchLinkMultipleApi", arguments);
     let startTime = performance.now()
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
+    var header = await GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.SearchLinkMultipleAllApiUrl();
     const body = JSON.stringify(searchQuery);
     try{

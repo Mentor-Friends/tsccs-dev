@@ -1,4 +1,3 @@
-import { strict } from "assert";
 import { BaseUrl } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
@@ -299,7 +298,7 @@ export class Logger {
 
             // clear application log from memory
             const chunkSize = 50;
-            let header = GetRequestHeader();
+            let header = await GetRequestHeader();
             let i = 0;
             while(storedLogs.length != 0)
             { 
@@ -361,7 +360,7 @@ export class Logger {
                 // const chunk = storedLogs.slice(i, i + chunkSize);
                 // console.log("Package Log URL : ", BaseUrl.PostLogger);
                 
-                let header= GetRequestHeader();
+                let header= await GetRequestHeader();
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: header,

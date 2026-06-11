@@ -62,7 +62,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_ids: numb
   var connectionList: Connection[] = [];
 
   try{
-      var header = GetRequestHeader();
+      var header = await GetRequestHeader();
       const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionBulkUrl(),{
         method: 'POST',
         headers: header,

@@ -16,7 +16,7 @@ import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRe
  */
 export async function SearchWithTypeAndLinkerApi(searchStructure:SearchStructure, searchQuery:SearchQuery[], token = ""){
     let queryUrl = BaseUrl.SearchAllTypeWithLinker(searchStructure.auth);
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
+    var header = await GetRequestHeaderWithAuthorization("application/json", token);
     queryUrl = queryUrl + '?search=' + searchStructure.search  + '&type=' + searchStructure.type + '&inpage=' + searchStructure.inpage + '&page=' + searchStructure.page;
     const body = JSON.stringify(searchQuery);
     try{

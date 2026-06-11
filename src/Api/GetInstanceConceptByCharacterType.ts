@@ -82,7 +82,7 @@ export async function GetInstanceConceptByCharacterType(
   try {
     const response = await fetch(BaseUrl.GetInstanceConceptByCharacterTypeUrl(), {
       method: "POST",
-      headers: GetRequestHeader("application/json"),
+      headers: await GetRequestHeader("application/json"),
       body: JSON.stringify({
         characterValue,
         type,

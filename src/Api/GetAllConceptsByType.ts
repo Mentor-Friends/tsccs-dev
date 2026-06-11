@@ -23,7 +23,7 @@ export async function GetAllConceptsByType(type:string,userId: number){
             urlencoded.append("type", type);
             urlencoded.append("user_id", userId.toString());
 
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            var header = await GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetAllConceptsByTypeUrl(),{
                 method: 'POST',
                 headers: header,

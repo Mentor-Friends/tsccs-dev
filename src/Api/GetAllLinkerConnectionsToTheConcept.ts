@@ -19,7 +19,7 @@ export async function GetAllLinkerConnectionsToTheConcept(conceptId:number){
 
     try{
         const start = new Date().getTime();
-          var header = GetRequestHeader('application/x-www-form-urlencoded');
+          var header = await GetRequestHeader('application/x-www-form-urlencoded');
           const response = await fetch(BaseUrl.GetAllLinkerConnectionToConceptUrl() + `?conceptId=${conceptId}`,{
               method: 'GET',
               headers: header,

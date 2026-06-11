@@ -46,7 +46,7 @@ export async function GetConnectionsBetweenApi(fetchConnections: FetchConnection
     const logData: any = Logger.logfunction("GetConnectionsBetweenApi", arguments);
     let result: FetchConnection[] = [];
     try {
-        const header = GetRequestHeader();
+        const header = await GetRequestHeader();
         const response = await fetch(BaseUrl.GetConnectionsBetweenUrl(), {
             method: 'POST',
             headers: header,

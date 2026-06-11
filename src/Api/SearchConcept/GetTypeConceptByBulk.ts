@@ -19,7 +19,7 @@ export async function GetTypeConceptByBulk(characters: string[]){
     let concepts: Concept[] = [];
     try{
         let typeCharacters = JSON.stringify(characters);
-        let header = GetRequestHeader();
+        let header = await GetRequestHeader();
         const response = await fetch(BaseUrl.GetTypeConceptBulk(),{
             method: 'POST',
             headers: header,

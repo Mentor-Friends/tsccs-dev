@@ -18,7 +18,7 @@ import { Logger } from "../app";
 export async function GetAllUserConcepts(userId: number){
   const logData : any = Logger.logfunction("GetAllUserConcepts", arguments);
     try{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            var header = await GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetAllConceptsOfUserUrl(),{
                 method: 'POST',
                 headers: header,

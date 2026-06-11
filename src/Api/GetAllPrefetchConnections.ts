@@ -23,7 +23,7 @@ export async function GetAllPrefetchConnections(userId:number, inpage:number){
       const start = new Date().getTime();
       var urlencoded = new URLSearchParams();
       urlencoded.append("user_id", userId.toString());
-      var header = GetRequestHeader('application/x-www-form-urlencoded');
+      var header = await GetRequestHeader('application/x-www-form-urlencoded');
         const response = await fetch(BaseUrl.GetAllPrefetchConnectionsUrl(),{
             method: 'POST',
             headers: header,

@@ -21,7 +21,7 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
   const logData : any = Logger.logfunction("GetLocalConceptByCharacterValue", arguments);
   let result = CreateDefaultLConcept();
     try{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            var header = await GetRequestHeader('application/x-www-form-urlencoded');
 
             const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',

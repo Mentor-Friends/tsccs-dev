@@ -75,7 +75,7 @@ import { HandleHttpError, HandleInternalError } from "../../Services/Common/Erro
  * @see {@link SearchWithTypeAndLinker} for advanced search with type and linker filters
  */
 export async function SearchAllConcepts(type:string, search:string, composition:string, token:string, inpage: number = 10, page:number =1){
-    var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded', token);
+    var header = await GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded', token);
     var urlencoded = new URLSearchParams();
     urlencoded.append("type", type);
     urlencoded.append("search", search);

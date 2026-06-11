@@ -19,7 +19,7 @@ import { Logger } from "../app";
 export async function GetReservedIds(){
   const logData : any = Logger.logfunction("GetReservedIds", arguments);
     try{
-            let header = GetRequestHeader('application/x-www-form-urlencoded');
+            let header = await GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetReservedIdUrl(),{
                 method: 'GET',
                 headers: header,

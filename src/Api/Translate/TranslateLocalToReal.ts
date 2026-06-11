@@ -18,7 +18,7 @@ export async function TranslateLocalToReal(conceptId: number){
   let result:Concept = CreateDefaultConcept();
     try{
 
-            var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
+            var header = await GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
 
             const response = await fetch(BaseUrl.GetRealConceptById(),{
               method: 'POST',

@@ -27,7 +27,7 @@ export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
   let result:Connection[] = [];
     try{
 
-      var header = GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
+      var header = await GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
       var jsonData = JSON.stringify(connectionData);
             const response = await fetch(BaseUrl.CreateGhostConnectionApiUrl(),{
                 method: 'POST',

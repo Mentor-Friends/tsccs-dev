@@ -33,7 +33,7 @@ export async function CreateTheCharacter(characterData: TheCharacter){
 
       var characterData = CharacterRepository.GetCharacter(characterData.data);
       if(characterData.id == 0){
-        var header = GetRequestHeader();
+        var header = await GetRequestHeader();
         const response = await fetch(BaseUrl.CreateTheCharacterDataUrl(),{
           method: 'POST',
           headers:header,

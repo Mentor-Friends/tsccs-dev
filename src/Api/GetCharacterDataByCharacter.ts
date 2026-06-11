@@ -20,7 +20,7 @@ import { Logger } from "../app";
 export async function GetCharacterByCharacter(characterValue: string){
   const logData : any = Logger.logfunction("GetCharacterByCharacter", arguments);
     try{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
+            var header = await GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetCharacterByCharacterUrl(),{
                 method: 'POST',
                 headers: header,

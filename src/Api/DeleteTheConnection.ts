@@ -28,7 +28,7 @@ export default async function DeleteTheConnection(id:number){
     try{
            const formdata = new FormData();
            formdata.append("id", id.toString());
-           let header = GetOnlyTokenHeader();
+           let header = await GetOnlyTokenHeader();
             const response = await fetch(BaseUrl.DeleteTheConnectionUrl(),{
                 method: 'POST',
                 headers: header,

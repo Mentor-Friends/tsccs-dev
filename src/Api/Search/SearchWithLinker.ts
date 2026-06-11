@@ -18,7 +18,7 @@ import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRe
  * ], "auth-token");
  */
 export async function SearchWithLinker(searchQuery: SearchQuery[], token: string=""){
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
+    var header = await GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.SearchLinkMultipleAll();
     const body = JSON.stringify(searchQuery);
     try{

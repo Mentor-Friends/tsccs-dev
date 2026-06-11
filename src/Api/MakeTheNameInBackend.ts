@@ -26,7 +26,7 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
             'typeUserId': typeUserId
         }
 
-        let myHeaders = GetRequestHeader();
+        let myHeaders = await GetRequestHeader();
 
         let requestObject = JSON.stringify(object);
             const response = await fetch(BaseUrl.MakeTheNameInBackendUrl(),{

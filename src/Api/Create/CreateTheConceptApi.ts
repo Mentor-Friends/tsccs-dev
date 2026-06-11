@@ -29,7 +29,7 @@ export async function CreateTheConceptApi(conceptData: any){
   const logData : any = Logger.logfunction("CreateTheConceptApi", conceptData);
   let result = CreateDefaultConcept();
     try{
-            var header = GetRequestHeader();
+            var header = await GetRequestHeader();
             const response = await fetch(BaseUrl.CreateTheConceptUrl(),{
                 method: 'POST',
                 headers: header,

@@ -19,7 +19,7 @@ import { HandleHttpError, HandleInternalError } from "../../Services/Common/Erro
  */
 export async function CreateSession(sessionData: SessionData){
     try{
-        var header = GetRequestHeader();
+        var header = await GetRequestHeader();
         const body = JSON.stringify(sessionData);
         const response = await fetch(BaseUrl.CreateSessionId(),{
             method: 'POST',

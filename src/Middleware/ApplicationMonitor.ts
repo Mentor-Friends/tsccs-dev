@@ -304,11 +304,13 @@ export class ApplicationMonitor {
     // }, 10000);
     history.pushState = function (...args) {
     const sessionId = TokenStorage.sessionId || 'unknown';
+    let referrer = document.referrer;
      const newUrl = args[2] ? new URL(args[2], location.origin).href : location.href;
       const urlChange = {
         url: newUrl,
         requestFrom: BaseUrl.BASE_APPLICATION,
-        sessionId: sessionId
+        sessionId: sessionId,
+        referrer: referrer
       }
       Logger.logApplication("ROUTE", "Route Change", urlChange )
       
@@ -327,10 +329,12 @@ export class ApplicationMonitor {
 
     window?.addEventListener("popstate", () => {
       const sessionId = TokenStorage.sessionId || 'unknown';
+      let referrer = document.referrer;
       const urlChange = {
         url: location.href,
         requestFrom:BaseUrl.BASE_APPLICATION,
-        sessionId:sessionId
+        sessionId:sessionId,
+        referrer: referrer
       }
       Logger.logApplication("ROUTE", "Route Changed (Back/Forward)", urlChange)
     });
@@ -339,10 +343,12 @@ export class ApplicationMonitor {
 
   static logOnWindowLoad(){
       const sessionId = TokenStorage.sessionId || 'unknown';
+      let referrer = document.referrer;
       const urlChange:any = {
         url: location.href,
         requestFrom:BaseUrl.BASE_APPLICATION,
-        sessionId:sessionId
+        sessionId:sessionId,
+        referrer: referrer
       };
       Logger.logApplication("ROUTE", "Initial Load", urlChange );
 

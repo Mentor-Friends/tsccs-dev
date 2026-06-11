@@ -22,7 +22,7 @@ export async function GetConceptByCharacterAndCategoryApi(characterValue: string
     let concept = CreateDefaultConcept();
 
     try{
-        var header = GetRequestHeader('application/x-www-form-urlencoded');
+        var header = await GetRequestHeader('application/x-www-form-urlencoded');
           const response = await fetch(BaseUrl.GetConceptByCharacterAndCategoryUrl(),{
               method: 'POST',
               headers: header,

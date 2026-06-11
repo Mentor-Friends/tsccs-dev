@@ -19,7 +19,7 @@ export async function CreatePrototypeApi(prototype: Prototype){
     let result: any;
   const logData : any = Logger.logfunction("CreatePrototypeApi", prototype);
     try{
-            var header = GetRequestHeader();
+            var header = await GetRequestHeader();
             const response = await fetch(BaseUrl.CreatePrototypeUrl(),{
                 method: 'POST',
                 headers: header,

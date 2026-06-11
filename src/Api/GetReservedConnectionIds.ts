@@ -19,7 +19,7 @@ import { Logger } from "../app";
 export async function GetReservedConnectionIds(){
   const logData : any = Logger.logfunction("GetReservedConnectionIds", arguments);
     try{
-            let header = GetRequestHeader('application/x-www-form-urlencoded');
+            let header = await GetRequestHeader('application/x-www-form-urlencoded');
             const response = await fetch(BaseUrl.GetReservedConnectionIdUrl(),{
                 method: 'GET',
                 headers: header,

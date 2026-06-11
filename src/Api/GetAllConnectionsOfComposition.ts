@@ -53,7 +53,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
   var connectionList: Connection[] = [];
 
   try{
-      var header = GetRequestHeader('application/json');
+      var header = await GetRequestHeader('application/json');
       const myHeaders = new Headers();
       const formdata = new FormData();
       formdata.append("composition_id", composition_id.toString());

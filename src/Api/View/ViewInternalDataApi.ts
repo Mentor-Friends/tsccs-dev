@@ -20,7 +20,7 @@ import { Connection, CreateDefaultConcept, GetConceptBulk } from "../../app";
 export async function ViewInternalDataApi(ids: number[]){
     let connectionList: Connection[] = [];
     try{
-        var header = GetRequestHeader();
+        var header = await GetRequestHeader();
 
           const response = await fetch(BaseUrl.ViewInternalDataUrl(),{
               method: 'POST',

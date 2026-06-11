@@ -22,7 +22,7 @@ import { HandleHttpError } from "../../Services/Common/ErrorPosting";
  */
 export async function CreateTextData(textData: TheTexts){
     try{
-            var header = GetRequestHeader();
+            var header = await GetRequestHeader();
             const response = await fetch(BaseUrl.CreateTheTextDataUrl(),{
                 method: 'POST',
                 headers:header,

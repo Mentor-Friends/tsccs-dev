@@ -26,7 +26,7 @@ export  async function DeleteUserInBackend(
   ) {
     const logData : any = Logger.logfunction("DeleteUserInBackend", arguments);
     try {
-    var header = GetRequestHeaderWithAuthorization("application/json", "");
+    var header = await GetRequestHeaderWithAuthorization("application/json", "");
       let queryUrl = BaseUrl.DeleteUserUrl();
       queryUrl = queryUrl + '?conceptId=' + id + '&apiKey=freeschema';
 

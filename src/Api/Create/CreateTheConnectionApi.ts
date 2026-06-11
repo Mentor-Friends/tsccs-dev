@@ -23,7 +23,7 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
   let result = new Connection(0,0,0,0,0,0,0);
     try{
 
-        var header = GetRequestHeader();
+        var header = await GetRequestHeader();
         var jsonData = JSON.stringify(connectionData);
             const response = await fetch(BaseUrl.CreateTheConnectionUrl(),{
                 method: 'POST',

@@ -2,11 +2,10 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { Connection } from "../DataStructures/Connection";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetOnlyTokenHeader } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 import { requestNextCacheServer } from "../Services/cacheService";
-import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 /**
  * Processes connection data from API response.
@@ -53,9 +52,7 @@ export async function GetConnection(id: number){
             formdata.append("id", id.toString());
             const reqData = {
               method: "POST",
-              headers: {
-                Authorization: "Bearer " + TokenStorage.BearerAccessToken,
-              },
+              headers: await GetOnlyTokenHeader(),
               body: formdata,
             };
             let response;

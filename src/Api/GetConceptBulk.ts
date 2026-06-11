@@ -125,7 +125,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
           Logger.logfunction(logData);
           return result;
         } else {
-          let header = GetRequestHeader();
+          let header = await GetRequestHeader();
           let response;
           const requestData = {
             method: "POST",

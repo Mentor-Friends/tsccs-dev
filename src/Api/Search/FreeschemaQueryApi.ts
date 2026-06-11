@@ -22,7 +22,7 @@ import { QueryCacheManager } from "../../WrapperFunctions/QueryCacheManager";
  */
 export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string=""){
     const logData : any = Logger.logfunction("FreeschemaQueryApi", arguments);
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
+    var header = await GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.FreeschemaQueryUrl();
     const body = JSON.stringify(query);
     const hash = await QueryCacheManager.getHash(query);
