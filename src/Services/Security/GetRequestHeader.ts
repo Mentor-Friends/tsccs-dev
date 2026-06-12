@@ -42,11 +42,13 @@ export async function getValidAccessToken(token: string = ""): Promise<string> {
 
     const activeToken = token || TokenStorage.BearerAccessToken;
     if (!activeToken && TokenStorage.refreshToken) {
-        return refreshAccessToken(activeToken);
+        localStorage.clear();
+        //return refreshAccessToken(activeToken);
     }
 
     if (activeToken && shouldRefreshToken(activeToken) && TokenStorage.refreshToken) {
-        return refreshAccessToken(activeToken);
+        localStorage.clear();
+        //return refreshAccessToken(activeToken);
     }
 
     return activeToken;
@@ -102,6 +104,7 @@ function base64UrlDecode(value: string): string {
 }
 
 async function refreshAccessToken(accessToken: string = ""): Promise<string> {
+    localStorage.clear();
     if (!refreshTokenPromise) {
         refreshTokenPromise = requestTokenRefresh(accessToken).finally(() => {
             refreshTokenPromise = null;
@@ -131,6 +134,7 @@ async function requestTokenRefresh(accessToken: string = ""): Promise<string> {
 
     const output = await response.json().catch(() => ({}));
     if (!response.ok) {
+        localStorage.clear();
         throw new Error(`Refresh token request failed with status ${response.status}`);
     }
 
@@ -139,6 +143,7 @@ async function requestTokenRefresh(accessToken: string = ""): Promise<string> {
     const refreshToken = data?.refreshToken ?? data?.refreshtoken ?? currentRefreshToken;
 
     if (!refreshedAccessToken) {
+        localStorage.clear();
         throw new Error("Refresh token response did not include an access token");
     }
 
