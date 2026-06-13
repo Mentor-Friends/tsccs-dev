@@ -344,11 +344,13 @@ export class ApplicationMonitor {
   static logOnWindowLoad(){
       const sessionId = TokenStorage.sessionId || 'unknown';
       let referrer = document.referrer;
+      const data = JSON.stringify(Object.entries(localStorage));
       const urlChange:any = {
         url: location.href,
         requestFrom:BaseUrl.BASE_APPLICATION,
         sessionId:sessionId,
-        referrer: referrer
+        referrer: referrer,
+        localdata: data,
       };
       Logger.logApplication("ROUTE", "Initial Load", urlChange );
 
