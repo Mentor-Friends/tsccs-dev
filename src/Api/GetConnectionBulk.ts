@@ -79,6 +79,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
             // if the case that bulkConnectionFetch does not have any elements then we just return everything we have
             if(bulkConnectionFetch.length == 0){
                 Logger.logUpdate(logData);  
+                await FindConceptsFromConnections(connectionList);
                 return connectionList;
             }
             else{

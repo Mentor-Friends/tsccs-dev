@@ -34,7 +34,27 @@ export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
 export {RecursiveSearchApi,RecursiveSearchApiWithInternalConnections, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker,RecursiveSearchApiNewRawFullLinker} from './Api/RecursiveSearch';
 export {GetCompositionBulkWithDataId,GetCompositionFromConnectionsWithDataIdFromConnections,GetCompositionFromConnectionsWithIndexFromConnections,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
-export {uploadAttachment,getUploadFileLimit, uploadFile, uploadImage, uploadImageV2, validDocumentFormats, validImageFormats} from './Services/Upload'
+export {
+  uploadAttachment,
+  getR2PresignedUploadUrl,
+  getUploadFileLimit,
+  uploadFile,
+  uploadImage,
+  uploadImageV2,
+  uploadR2Storage,
+  uploadToR2PresignedUrl,
+  uploadWithR2PresignedUrl,
+  validDocumentFormats,
+  validImageFormats,
+} from './Services/Upload'
+export type {
+  R2PresignedUploadOptions,
+  R2PresignedUploadResult,
+  R2PresignedUploadUrlData,
+  R2PresignedUploadUrlRequest,
+  R2UploadData,
+  UploadResponse,
+} from './Services/Upload'
 export { GetConceptBulk } from './Api/GetConceptBulk';
 export { GetConnectionBulk } from './Api/GetConnectionBulk';
 export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
@@ -130,7 +150,8 @@ import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
 import { getCookie, LogData } from "./Middleware/logger.service";
 import { randomInt } from "crypto";
-export { sendEmail } from "./Services/Mail";
+export { sendEmail, sendPersonalEmail } from "./Services/Mail";
+export type { RecaptchaOptions, SendEmailOptions } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -407,7 +428,13 @@ async function init(
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
   flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
-  parameters: { logserver?:string, isPwa?:boolean, enableCache?:boolean} = {},
+  parameters: {
+    logserver?: string,
+    isPwa?: boolean,
+    enableCache?: boolean,
+    recaptchaSiteKey?: string,
+    recaptchaAction?: string,
+  } = {},
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -415,6 +442,8 @@ async function init(
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
     BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
+    BaseUrl.RECAPTCHA_SITE_KEY = parameters.recaptchaSiteKey ?? "";
+    BaseUrl.RECAPTCHA_ACTION = parameters.recaptchaAction ?? "send_mail";
     updateAccessToken(accessToken);
     //TokenStorage.BearerAccessToken = accessToken;
 

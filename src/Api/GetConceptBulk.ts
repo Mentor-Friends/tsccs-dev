@@ -95,6 +95,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
         let bulkConceptFetch: number[] = [];
         for(let i=0; i<conceptIds.length; i++){
           if(!ConceptsData.GetNpc(conceptIds[i])){
+            let numberedConcept = Number(conceptIds[i]);
             let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
 
             if(conceptUse.id == 0){

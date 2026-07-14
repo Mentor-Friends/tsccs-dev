@@ -31,6 +31,10 @@ export class BaseUrl{
         isTest: false
     }
 
+    static RECAPTCHA_SITE_KEY: string = "";
+
+    static RECAPTCHA_ACTION: string = "send_mail";
+
     public static BASE_RANDOMIZER = 999;
 
     static setRandomizer(id: number) {
@@ -351,7 +355,7 @@ export class BaseUrl{
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR IMAGE UPLOAD //////////////////////
     static uploadImageUrl(){
-        return this.BASE_URL + '/api/Image/UploadImage';
+        return this.uploadR2StorageUrl();
     }
 
 
@@ -363,7 +367,15 @@ export class BaseUrl{
     //////////////////////////////////////////////////////////////////////
     //////////////////////API FOR FILE UPLOAD //////////////////////
     static uploadFileUrl(){
-        return this.BASE_URL + '/api/Image/UploadFile';
+        return this.uploadR2StorageUrl();
+    }
+
+    static uploadR2StorageUrl(){
+        return this.BASE_URL + '/api/R2Storage/upload';
+    }
+
+    static r2PresignedUploadUrl(){
+        return this.BASE_URL + '/api/R2Storage/presigned-upload-url';
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -373,6 +385,9 @@ export class BaseUrl{
     }
     static sendBulkMail(){
         return this.BASE_URL + '/api/sendmail/bulk';
+    }
+    static sendPersonalMail(){
+        return this.BASE_URL + '/api/sendmail/personal';
     }
 
     static getWidgetData(){

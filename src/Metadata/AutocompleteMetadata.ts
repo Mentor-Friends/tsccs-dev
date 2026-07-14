@@ -246,6 +246,9 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
     "GetConnectionsBetweenUrl": {
       "parameters": []
     },
+    "GetInstanceConceptByCharacterTypeUrl": {
+      "parameters": []
+    },
     "GetRealConceptById": {
       "parameters": []
     },
@@ -283,6 +286,9 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": []
     },
     "RecursiveSearchUrl": {
+      "parameters": []
+    },
+    "RefreshTokenUrl": {
       "parameters": []
     },
     "SearchAllTypeWithLinker": {
@@ -332,10 +338,16 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
     "getWidgetData": {
       "parameters": []
     },
+    "r2PresignedUploadUrl": {
+      "parameters": []
+    },
     "sendBulkMail": {
       "parameters": []
     },
     "sendMail": {
+      "parameters": []
+    },
+    "sendPersonalMail": {
       "parameters": []
     },
     "setRandomizer": {
@@ -350,6 +362,9 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": []
     },
     "uploadImageUrlWithSmall": {
+      "parameters": []
+    },
+    "uploadR2StorageUrl": {
       "parameters": []
     }
   },
@@ -1433,6 +1448,12 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": [
         "sessionId"
       ]
+    },
+    "updateTokens": {
+      "parameters": [
+        "accessToken",
+        "refreshToken"
+      ]
     }
   },
   "UserBinaryTree": {
@@ -2110,6 +2131,13 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       ],
       "documentation": "Retrieves an image by name from the cached images endpoint.\nReturns a readable stream for the image data.\n\nParam: imageName - Name/identifier of the image to retrieve\nReturns: Promise resolving to ReadableStream of image data, or null/undefined on error\n@throws Image stream on error (legacy behavior)"
     },
+    "GetInstanceConceptByCharacterType": {
+      "parameters": [
+        "characterValue",
+        "type"
+      ],
+      "documentation": "Fetches an instance concept from the backend API by its character value and type.\n\nParam: characterValue - The character value of the concept, such as a URL or identifier.\nParam: type - The type string that qualifies the character value, such as \"the_source_url\".\nReturns: The matching Concept object, or a default empty Concept if not found."
+    },
     "GetLink": {
       "parameters": [
         "id",
@@ -2616,12 +2644,23 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "databaseName"
       ]
     },
+    "getR2PresignedUploadUrl": {
+      "parameters": [
+        "body",
+        "token"
+      ],
+      "documentation": "Method to request an R2 pre-signed upload URL from the backend.\nParam: body Request metadata for the file to upload.\nParam: token string?\nReturns: UploadResponse<R2PresignedUploadUrlData> | null"
+    },
     "getUploadFileLimit": {
       "parameters": []
     },
     "getUserDetails": {
       "parameters": [],
       "documentation": "Returns user details synchronously.\nPriority: in-memory profileCache (encrypted) → legacy localStorage(\"profile\") fallback."
+    },
+    "getUserDetailsWithRefresh": {
+      "parameters": [],
+      "documentation": "Returns user details after hydrating storage and refreshing an expired token.\nUse this when callers need a valid token from the user details object."
     },
     "getWidgetBulkFromId": {
       "parameters": [
@@ -2749,7 +2788,8 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": [
         "body",
         "token",
-        "bulk"
+        "bulkOrOptions",
+        "recaptchaToken"
       ]
     },
     "sendMessage": {
@@ -2759,6 +2799,13 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "retryCount"
       ],
       "documentation": "Method to send message to the service worker from main thread\nParam: type string\nParam: payload any\nReturns: Promise<any>"
+    },
+    "sendPersonalEmail": {
+      "parameters": [
+        "body",
+        "token",
+        "options"
+      ]
     },
     "setHasActivatedSW": {
       "parameters": [
@@ -2781,7 +2828,8 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
     "updateAccessToken": {
       "parameters": [
         "accessToken",
-        "session"
+        "session",
+        "refreshToken"
       ],
       "documentation": "Updates the JWT access token used for authenticated API requests.\n\nThis function should be called after user authentication to set or update the bearer token\nthat will be used for all subsequent authenticated operations. The token is stored in\nTokenStorage and automatically included in API request headers.\n\n**When to Use:**\n- After successful login (LoginToBackend or Signin)\n- When refreshing an expired token\n- When switching between user sessions\n- When restoring a saved session on app reload\n\n**Token Flow:**\n1. User logs in via LoginToBackend() or Signin()\n2. Backend returns JWT token\n3. Call updateAccessToken() with the token\n4. Token is stored in memory (TokenStorage.BearerAccessToken)\n5. All API calls automatically use this token\n6. If service worker enabled, token is synced to service worker\n\n**Security Notes:**\n- Token is stored in memory only (not persisted to disk)\n- Token is cleared on page refresh (unless you save/restore it)\n- Never expose token in logs or client-side code\n- Token should be refreshed before expiration\n\nParam: accessToken - The JWT bearer token obtained from authentication.\nFormat: \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\nPass empty string to clear the token (logout).\n\nParam: session - Optional session information to sync with token.\nReserved for future use. Currently not fully implemented.\n\nReturns: void"
     },
@@ -2812,6 +2860,29 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "token"
       ],
       "documentation": "Method to upload image to server\nParam: body FormData\nParam: token string?\nReturns: JSON | string | null"
+    },
+    "uploadR2Storage": {
+      "parameters": [
+        "body",
+        "token"
+      ],
+      "documentation": "Method to upload a file or image to R2 storage.\nParam: body FormData. Append the file under the \"file\" key.\nParam: token string?\nReturns: UploadResponse<R2UploadData> | null"
+    },
+    "uploadToR2PresignedUrl": {
+      "parameters": [
+        "uploadUrl",
+        "file",
+        "contentType"
+      ],
+      "documentation": "Method to upload a file body to a pre-signed R2 URL.\nParam: uploadUrl URL returned by getR2PresignedUploadUrl\nParam: file Blob/File, raw body, or compatible file-like object\nParam: contentType Must match the contentType used when creating the signed URL.\nReturns: Response from R2"
+    },
+    "uploadWithR2PresignedUrl": {
+      "parameters": [
+        "file",
+        "options",
+        "token"
+      ],
+      "documentation": "Full R2 pre-signed upload workflow: create URL, PUT file to R2, return public URL.\nParam: file Blob/File, raw body, or compatible file-like object\nParam: options Optional fileName/contentType/folder/expiresInSeconds overrides.\nParam: token string?\nReturns: R2PresignedUploadResult"
     }
   }
 };

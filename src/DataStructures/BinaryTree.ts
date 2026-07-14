@@ -22,13 +22,17 @@ export class BinaryTree {
     /** Primary data store: concept ID → Concept object */
     private static conceptMap: Map<number, Concept> = new Map();
 
+    private static normalizeId(id: number): number {
+        return Number(id);
+    }
+
     /**
      * Low-level add — stores the node's key/value in the Map.
      * Kept for API compatibility (called internally by addConceptToTree).
      * @param node - Node with numeric key and Concept value
      */
     static addNodeToTree(node: Node) {
-        this.conceptMap.set(node.key, node.value);
+        this.conceptMap.set(this.normalizeId(node.key), node.value);
         if (this.root === null) {
             this.root = node;
         }
@@ -70,11 +74,12 @@ export class BinaryTree {
         BinaryCharacterTree.addNodeToTree(characterNode);
 
         // Primary store: O(1) Map insert
-        this.conceptMap.set(concept.id, concept);
+        const conceptId = this.normalizeId(concept.id);
+        this.conceptMap.set(conceptId, concept);
 
         // Keep root non-null so legacy null-checks pass
         if (this.root === null) {
-            this.root = new Node(concept.id, concept, null, null);
+            this.root = new Node(conceptId, concept, null, null);
         }
     }
 
@@ -88,9 +93,10 @@ export class BinaryTree {
      * @returns Node-like wrapper with .value = Concept, or null if not found
      */
     static async getNodeFromTree(id: number) {
-        const concept = this.conceptMap.get(id);
+        const conceptId = this.normalizeId(id);
+        const concept = this.conceptMap.get(conceptId);
         if (concept) {
-            return { key: id, value: concept } as Node;
+            return { key: conceptId, value: concept } as Node;
         }
         return null;
     }
@@ -102,9 +108,10 @@ export class BinaryTree {
      * @param id - The concept ID to remove
      */
     static async removeNodeFromTree(id: number) {
-        if (this.conceptMap.has(id)) {
-            dispatchIdEvent(id);
-            this.conceptMap.delete(id);
+        const conceptId = this.normalizeId(id);
+        if (this.conceptMap.has(conceptId)) {
+            dispatchIdEvent(conceptId);
+            this.conceptMap.delete(conceptId);
 
             if (this.conceptMap.size === 0) {
                 this.root = null;
@@ -128,7 +135,7 @@ export class BinaryTree {
     static async getConceptListFromIds(ids: number[], conceptArray: Concept[], remainingIds: any) {
         // Iterate backward so splice doesn't shift indexes
         for (let i = ids.length - 1; i >= 0; i--) {
-            const concept = this.conceptMap.get(ids[i]);
+            const concept = this.conceptMap.get(this.normalizeId(ids[i]));
             if (concept) {
                 conceptArray.push(concept);
                 ids.splice(i, 1);
