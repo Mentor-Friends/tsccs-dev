@@ -74,6 +74,10 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": [],
       "documentation": "Starts auto-syncing to the server every specified time interval.\nThis will automatically call `syncToServer` every 5 minutes"
     },
+    "stopAutoSync": {
+      "parameters": [],
+      "documentation": "Stops the access tracker auto-sync timer."
+    },
     "syncNow": {
       "parameters": [],
       "documentation": "Sync immediately called by setInterval when time to sync has arrived."
@@ -404,6 +408,11 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "id"
       ],
       "documentation": "Retrieves a concept by ID from the Map.\n\nReturns a { key, value } wrapper matching the Node shape that callers expect.\nCallers access the returned object's .value property to get the Concept.\n\nParam: id - The concept ID to look up\nReturns: Node-like wrapper with .value = Concept, or null if not found"
+    },
+    "normalizeId": {
+      "parameters": [
+        "id"
+      ]
     },
     "removeNodeFromTree": {
       "parameters": [
@@ -790,9 +799,21 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
   },
   "CountInfo": {},
   "DependencyObserver": {
+    "addTrackedEventListener": {
+      "parameters": [
+        "key",
+        "eventName",
+        "handler"
+      ],
+      "documentation": "Registers a window listener and tracks enough metadata to remove it later.\nThe key identifies the logical subscription; eventName is the CustomEvent name."
+    },
     "bind": {
       "parameters": [],
       "documentation": "Binds and refreshes the observable data. Override in subclasses to implement specific data fetching logic.\nReturns: The bound data"
+    },
+    "dispose": {
+      "parameters": [],
+      "documentation": "Removes all listeners owned by this observer."
     },
     "execute": {
       "parameters": [],
@@ -821,11 +842,21 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": [],
       "documentation": "Notifies all subscribers with the current data."
     },
+    "onDispose": {
+      "parameters": [],
+      "documentation": "Hook for subclasses that maintain additional subscriptions."
+    },
     "removeListenToEvent": {
       "parameters": [
         "id"
       ],
       "documentation": "Removes an event listener for a specific concept ID.\nParam: id - The concept ID to stop tracking"
+    },
+    "removeTrackedEventListener": {
+      "parameters": [
+        "key"
+      ],
+      "documentation": "Removes a previously tracked window listener by its logical key."
     },
     "run": {
       "parameters": [],

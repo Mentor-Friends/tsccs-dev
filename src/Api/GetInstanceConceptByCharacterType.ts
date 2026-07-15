@@ -1,6 +1,6 @@
 import { Concept } from "../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 
 type ConceptResponse = {
   id?: number;
@@ -80,7 +80,7 @@ export async function GetInstanceConceptByCharacterType(
   }
 
   try {
-    const response = await fetch(BaseUrl.GetInstanceConceptByCharacterTypeUrl(), {
+    const response = await fetchWithAuthRetry(BaseUrl.GetInstanceConceptByCharacterTypeUrl(), {
       method: "POST",
       headers: await GetRequestHeader("application/json"),
       body: JSON.stringify({

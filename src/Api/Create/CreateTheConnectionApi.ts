@@ -1,6 +1,6 @@
 import { Connection } from "../../DataStructures/Connection";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 /**
@@ -25,7 +25,7 @@ export async function CreateTheConnectionApi(connectionData: Connection[]){
 
         var header = await GetRequestHeader();
         var jsonData = JSON.stringify(connectionData);
-            const response = await fetch(BaseUrl.CreateTheConnectionUrl(),{
+            const response = await fetchWithAuthRetry(BaseUrl.CreateTheConnectionUrl(),{
                 method: 'POST',
                 headers:header,
                 body: jsonData

@@ -2,7 +2,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptByCharacterValueUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { AddTypeConcept } from "../Services/GetTheConcept";
@@ -23,7 +23,7 @@ export async function GetConceptByCharacterValue(characterValue: string){
     try{
             const formdata = new FormData();
             formdata.append("character_value", characterValue);
-            const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
+            const response = await fetchWithAuthRetry(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',
               body: formdata
           });

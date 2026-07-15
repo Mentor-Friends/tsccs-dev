@@ -2,7 +2,7 @@ import { Concept } from "./../DataStructures/Concept";
 import { ConceptsData } from "./../DataStructures/ConceptData";
 // import { GetConceptUrl } from "./../Constants/ApiConstants";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetOnlyTokenHeader } from "../Services/Security/GetRequestHeader";
+import { GetOnlyTokenHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import {
 //   AccessTracker,
   CreateDefaultConcept,
@@ -78,7 +78,7 @@ export async function GetConcept(id: number) {
         headers: await GetOnlyTokenHeader(),
       };
       try {
-        response = await fetch(BaseUrl.GetConceptUrl(), requestData);
+        response = await fetchWithAuthRetry(BaseUrl.GetConceptUrl(), requestData);
       } catch (error) {
         response = await requestNextCacheServer(requestData, "/api/getConcept");
       }

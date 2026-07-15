@@ -2,7 +2,7 @@ import { Concept } from "./../DataStructures/Concept";
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger } from "../app";
 import { BinaryTree, sendMessage, serviceWorker } from "../app";
@@ -134,7 +134,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
             body: JSON.stringify(bulkConceptFetch),
           };
           try {
-            response = await fetch(BaseUrl.GetConceptBulkUrl(), requestData);
+            response = await fetchWithAuthRetry(BaseUrl.GetConceptBulkUrl(), requestData);
           } catch (error) {
             response = await requestNextCacheServer(
               requestData,
@@ -190,7 +190,7 @@ export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
         'Content-Type': 'application/json',
       }
       try {
-        const response = await fetch(BaseUrl.GetConceptBulkUrl(), {
+        const response = await fetchWithAuthRetry(BaseUrl.GetConceptBulkUrl(), {
           method: 'POST',
           headers: myHeaders,
           body: JSON.stringify(bulkConceptFetch),

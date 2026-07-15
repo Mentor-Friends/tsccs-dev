@@ -2,7 +2,7 @@ import { ConnectionData } from "./../DataStructures/ConnectionData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { requestNextCacheServer } from "../Services/cacheService";
@@ -93,7 +93,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
                     body: JSON.stringify(bulkConnectionFetch)
                 }
                 try {
-                    response = await fetch(BaseUrl.GetConnectionBulkUrl(), reqData);
+                    response = await fetchWithAuthRetry(BaseUrl.GetConnectionBulkUrl(), reqData);
                 } catch (error) {
                     response = await requestNextCacheServer(reqData, "/api/get_connection_bulk");
                 }

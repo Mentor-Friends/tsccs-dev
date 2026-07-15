@@ -2,7 +2,7 @@ import { Connection } from '../DataStructures/Connection';
 import { ConnectionData } from '../DataStructures/ConnectionData';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
-import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { GetRequestHeader, fetchWithAuthRetry } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
 import { log } from 'console';
@@ -57,7 +57,7 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
       const myHeaders = new Headers();
       const formdata = new FormData();
       formdata.append("composition_id", composition_id.toString());
-      const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
+      const response = await fetchWithAuthRetry(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
         headers: myHeaders,
         body: formdata

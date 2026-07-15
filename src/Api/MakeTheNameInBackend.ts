@@ -1,7 +1,7 @@
 import { Logger } from "../app";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 
 /**
  * Creates a name/referent association for a concept in the backend.
@@ -29,7 +29,7 @@ export async function MakeTheNameInBackend(newConceptId:number, referent:string,
         let myHeaders = await GetRequestHeader();
 
         let requestObject = JSON.stringify(object);
-            const response = await fetch(BaseUrl.MakeTheNameInBackendUrl(),{
+            const response = await fetchWithAuthRetry(BaseUrl.MakeTheNameInBackendUrl(),{
                 method: 'POST',
                 headers: myHeaders,
                 body: requestObject

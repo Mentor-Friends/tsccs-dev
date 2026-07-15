@@ -2,7 +2,7 @@ import { LocalConceptsData } from "./../../DataStructures/Local/LocalConceptData
 import { GetConceptByCharacterValueUrl } from './../../Constants/ApiConstants';
 import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultLConcept, Logger } from "../../app";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 
@@ -23,7 +23,7 @@ export async function GetLocalConceptByCharacterValue(characterValue: string){
     try{
             var header = await GetRequestHeader('application/x-www-form-urlencoded');
 
-            const response = await fetch(BaseUrl.GetConceptByCharacterValueUrl(),{
+            const response = await fetchWithAuthRetry(BaseUrl.GetConceptByCharacterValueUrl(),{
               method: 'POST',
               headers: header,
               body: `character_value=${characterValue}`

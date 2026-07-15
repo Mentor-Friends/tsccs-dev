@@ -1,5 +1,4 @@
 import { Concept, Connection, CreateDefaultConcept, CreateTheConnectionLocal, GetTheConcept, InnerActions, LocalTransaction, MakeTheInstanceConceptLocal, MakeTheTypeConceptLocal } from "../app";
-import { ConceptsToDraw } from "../DataStructures/ConceptsToDraw";
 import { Prototype } from "../DataStructures/Prototype/Prototype";
 import { PrototypeOption } from "../DataStructures/Prototype/PrototypeOption";
 import { QuerySelector } from "../DataStructures/Prototype/QuerySelector";

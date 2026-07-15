@@ -1,7 +1,7 @@
 import { CreateTheConnectionUrl } from "../../Constants/ApiConstants";
 import { Concept } from "../../DataStructures/Concept";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { Connection, Logger } from "../../app";
@@ -29,7 +29,7 @@ export async function CreateTheGhostConnectionApi(connectionData: Connection[]){
 
       var header = await GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
       var jsonData = JSON.stringify(connectionData);
-            const response = await fetch(BaseUrl.CreateGhostConnectionApiUrl(),{
+            const response = await fetchWithAuthRetry(BaseUrl.CreateGhostConnectionApiUrl(),{
                 method: 'POST',
                 headers:header,
                 body: jsonData

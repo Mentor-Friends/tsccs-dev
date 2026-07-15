@@ -1,7 +1,7 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { Concept } from "./../DataStructures/Concept";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { AddTypeConcept } from "../Services/GetTheConcept";
@@ -40,7 +40,7 @@ export async function GetConceptByCharacterAndType(characterValue: string, typeI
         };
         var toSendJson = JSON.stringify(json);
           var header = await GetRequestHeader();
-          const response = await fetch(BaseUrl.GetConceptByCharacterAndTypeUrl(),{
+          const response = await fetchWithAuthRetry(BaseUrl.GetConceptByCharacterAndTypeUrl(),{
               method: 'POST',
               headers: header,
               body: toSendJson,

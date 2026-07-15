@@ -1,4 +1,4 @@
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 
@@ -84,7 +84,7 @@ export async function SearchAllConcepts(type:string, search:string, composition:
     urlencoded.append("page", page.toString());
     const queryUrl = BaseUrl.SearchCompositionsUrl() + "?" + urlencoded.toString();
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'GET',
             headers: header
         });

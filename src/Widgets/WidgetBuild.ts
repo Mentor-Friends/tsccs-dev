@@ -9,7 +9,6 @@ import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../Services/Search/SearchWithTypeAndLinker";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
-import { ConceptCircle } from "../Visualize/ConceptCircle";
 import { WidgetCacheManager } from "./WidgetCacheManager";
 import { GetConnection } from "../Api/GetConnection";
 

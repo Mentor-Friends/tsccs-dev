@@ -1,7 +1,7 @@
 import { DeleteConceptById, Logger } from "../../app"
 import { BaseUrl } from "../../DataStructures/BaseUrl"
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting"
-import { GetOnlyTokenHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetOnlyTokenHeader, GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Deletes a user account from the backend server.
@@ -30,7 +30,7 @@ export  async function DeleteUserInBackend(
       let queryUrl = BaseUrl.DeleteUserUrl();
       queryUrl = queryUrl + '?conceptId=' + id + '&apiKey=freeschema';
 
-      const response = await fetch(queryUrl, {
+      const response = await fetchWithAuthRetry(queryUrl, {
         method: 'POST',
         headers: header,
       })

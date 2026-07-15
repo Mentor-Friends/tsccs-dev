@@ -3,8 +3,20 @@ import { Logger } from "./logger.service";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 export class ApplicationMonitor {
+  private static globalErrorHandlersInitialized = false;
+  private static consoleErrorPatched = false;
+  private static errorEventListenerRegistered = false;
+  private static unhandledErrorListenerRegistered = false;
+  private static userInteractionListenersRegistered = false;
+  private static networkRequestsPatched = false;
+  private static performanceMetricsRegistered = false;
+  private static routeChangeListenersRegistered = false;
+  private static webSocketEventsPatched = false;
+  private static initialLoadTimeout: ReturnType<typeof setTimeout> | null = null;
+
   static initialize() {
     try {
+      if (!this.isBrowser()) return;
 
       // Initialize error handling and logging
       this.initGlobalErrorHandlers();
@@ -26,9 +38,9 @@ export class ApplicationMonitor {
   // Initialize global error handlers for JavaScript errors and promise rejections
   static initGlobalErrorHandlers() {
     try{
-      console.log("this is the window", window);
       // console.log("Into initGlobalErrorHandlers.")
-      if(typeof window === undefined) return;      
+      if(!this.isBrowser() || this.globalErrorHandlersInitialized) return;
+      this.globalErrorHandlersInitialized = true;
       
       // Track runtime errors
       (window as any).onerror = (message: string | Event, source: string | undefined, lineno: number | undefined, colno: number | undefined, error: Error | undefined) => {
@@ -73,6 +85,9 @@ export class ApplicationMonitor {
 
   static logCatchError() {
     try {
+      if (this.consoleErrorPatched) return;
+      this.consoleErrorPatched = true;
+
       const originalConsoleError = console.error;
       console.log("Inside originalConsoleError...");
       
@@ -104,6 +119,9 @@ export class ApplicationMonitor {
   
   static logErrorEvent() {
     try{
+      if (!this.isBrowser() || this.errorEventListenerRegistered) return;
+      this.errorEventListenerRegistered = true;
+
       // Log unhandled errors
       window.addEventListener("error", (event) => {
         console.log("Inside error event...")
@@ -129,6 +147,9 @@ export class ApplicationMonitor {
 
   static logUnhandledError() {
     try {
+      if (!this.isBrowser() || this.unhandledErrorListenerRegistered) return;
+      this.unhandledErrorListenerRegistered = true;
+
       // Log unhandled promise rejections
       window.addEventListener("unhandledrejection", (event) => {
         console.log("Inside unhandledrejection...")
@@ -150,6 +171,9 @@ export class ApplicationMonitor {
 
   // Log user interactions
   static logUserInteractions() {
+    if (!this.isBrowser() || typeof document === "undefined" || this.userInteractionListenersRegistered) return;
+    this.userInteractionListenersRegistered = true;
+
     document.addEventListener("click", (event) => {
       const sessionId = TokenStorage.sessionId || 'unknown';
       const target = event.target as HTMLElement;
@@ -194,8 +218,8 @@ export class ApplicationMonitor {
 
   static logNetworkRequests() {
     try {
-      if(typeof window === undefined) return
-      const sessionId = TokenStorage.sessionId || 'unknown';
+      if(!this.isBrowser() || this.networkRequestsPatched) return
+      this.networkRequestsPatched = true;
 
       const originalFetch = window?.fetch;
       // console.log("Original Fetch is equals to : ", originalFetch);
@@ -275,9 +299,11 @@ export class ApplicationMonitor {
   }
   
   static logPerformanceMetrics() {
-    if(typeof window === undefined){
+    if(!this.isBrowser() || this.performanceMetricsRegistered){
       return
     }
+    this.performanceMetricsRegistered = true;
+
     window?.addEventListener("load", () => {
       const timing = performance.timing;
       const sessionId = TokenStorage.sessionId || 'unknown';
@@ -293,8 +319,11 @@ export class ApplicationMonitor {
 
   // Log route changes (SPAs)
   static logRouteChanges() {
+    if (!this.isBrowser() || typeof history === "undefined" || this.routeChangeListenersRegistered) return;
+    this.routeChangeListenersRegistered = true;
+
     const pushState = history.pushState;
-    setTimeout(()=>{
+    this.initialLoadTimeout = setTimeout(()=>{
       ApplicationMonitor.logOnWindowLoad();
 
     }, 3000);
@@ -342,6 +371,7 @@ export class ApplicationMonitor {
 
 
   static logOnWindowLoad(){
+      if (!this.isBrowser() || typeof localStorage === "undefined") return;
       const sessionId = TokenStorage.sessionId || 'unknown';
       let referrer = document.referrer;
       const data = JSON.stringify(Object.entries(localStorage));
@@ -357,6 +387,7 @@ export class ApplicationMonitor {
   }
 
   static logSample(){
+      if (!this.isBrowser()) return;
       const sessionId = TokenStorage.sessionId || 'unknown';
       const urlChange:any = {
         url: location.href,
@@ -369,9 +400,11 @@ export class ApplicationMonitor {
 
   // Log WebSocket events
   static logWebSocketEvents() {
-    if(typeof window === undefined){
+    if(!this.isBrowser() || typeof WebSocket === "undefined" || this.webSocketEventsPatched){
       return
     }
+    this.webSocketEventsPatched = true;
+
     const sessionId = TokenStorage.sessionId || 'unknown';
     const originalWebSocket = WebSocket;
     window.WebSocket = class extends originalWebSocket {
@@ -423,6 +456,10 @@ export class ApplicationMonitor {
         });
       }
     };
+  }
+
+  private static isBrowser(): boolean {
+    return typeof window !== "undefined";
   }
 
 }

@@ -1,6 +1,6 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { Connection, CreateDefaultConcept, GetConceptBulk } from "../../app";
 
 /**
@@ -22,7 +22,7 @@ export async function ViewInternalDataApi(ids: number[]){
     try{
         var header = await GetRequestHeader();
 
-          const response = await fetch(BaseUrl.ViewInternalDataUrl(),{
+          const response = await fetchWithAuthRetry(BaseUrl.ViewInternalDataUrl(),{
               method: 'POST',
               headers: header,
               body: JSON.stringify(ids)

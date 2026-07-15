@@ -235,7 +235,11 @@ async function init(
     if(BaseUrl.FLAGS?.accessTracker){
       console.log("From service worker, flag of Access Tracker.")
       AccessTracker.activateStatus = true;
+      AccessTracker.startAutoSync();
       console.log("Access Tracker Activation status from service worker", AccessTracker.activateStatus)
+    } else {
+      AccessTracker.activateStatus = false;
+      AccessTracker.stopAutoSync();
     }
     /**
      * We initialize the system so that we get all the concepts from the backend system that are most likely to be used

@@ -2,7 +2,7 @@ import { ConceptsData } from "./../DataStructures/ConceptData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { Connection } from "../DataStructures/Connection";
-import { GetOnlyTokenHeader } from "../Services/Security/GetRequestHeader";
+import { GetOnlyTokenHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 import { requestNextCacheServer } from "../Services/cacheService";
@@ -57,7 +57,7 @@ export async function GetConnection(id: number){
             };
             let response;
             try {
-                response = await fetch(BaseUrl.GetConnectionUrl(), reqData);
+                response = await fetchWithAuthRetry(BaseUrl.GetConnectionUrl(), reqData);
             } catch (error) {
                 response = await requestNextCacheServer(reqData, "/api/get-connection-by-id")
             }

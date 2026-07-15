@@ -1,6 +1,6 @@
 import { BaseUrl, SearchQuery, SearchStructure } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Searches concepts by type with additional linker query filters.
@@ -20,7 +20,7 @@ export async function SearchWithTypeAndLinkerApi(searchStructure:SearchStructure
     queryUrl = queryUrl + '?search=' + searchStructure.search  + '&type=' + searchStructure.type + '&inpage=' + searchStructure.inpage + '&page=' + searchStructure.page;
     const body = JSON.stringify(searchQuery);
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'POST',
             headers: header,
             body: body

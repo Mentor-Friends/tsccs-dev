@@ -1,6 +1,6 @@
 import { BaseUrl, Concept, GetConceptBulk } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Retrieves type concepts for multiple character values in bulk.
@@ -20,7 +20,7 @@ export async function GetTypeConceptByBulk(characters: string[]){
     try{
         let typeCharacters = JSON.stringify(characters);
         let header = await GetRequestHeader();
-        const response = await fetch(BaseUrl.GetTypeConceptBulk(),{
+        const response = await fetchWithAuthRetry(BaseUrl.GetTypeConceptBulk(),{
             method: 'POST',
             headers: header,
             body:typeCharacters

@@ -3,7 +3,7 @@ import { Concept } from "../../DataStructures/Concept";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
 import { Connection, Logger } from "../../app";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
@@ -122,7 +122,7 @@ const syncConceptConnection = async (concepts: Concept[], connections: Connectio
      const myHeaders = await GetRequestHeaderWithAuthorization("application/json", TokenStorage.BearerAccessToken);
     //  myHeaders.set('Randomizer', BaseUrl.BASE_RANDOMIZER.toString());
      myHeaders.Randomizer = BaseUrl.getRandomizer().toString();
-      const response = await fetch(BaseUrl.CreateGhostConceptApiUrl(withAuth),{
+      const response = await fetchWithAuthRetry(BaseUrl.CreateGhostConceptApiUrl(withAuth),{
           method: 'POST',
           headers: myHeaders,
           body: JSON.stringify(myBody),

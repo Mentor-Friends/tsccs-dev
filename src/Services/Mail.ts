@@ -79,7 +79,7 @@ function loadRecaptchaScript(siteKey: string) {
     }
 
     if (!recaptchaScriptPromise) {
-        recaptchaScriptPromise = new Promise((resolve, reject) => {
+        const loadPromise = new Promise<void>((resolve, reject) => {
             const script = document.createElement('script')
             script.src = `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`
             script.async = true
@@ -87,6 +87,11 @@ function loadRecaptchaScript(siteKey: string) {
             script.onload = () => resolve()
             script.onerror = () => reject(new Error('Failed to load reCAPTCHA script'))
             document.head.appendChild(script)
+        })
+
+        recaptchaScriptPromise = loadPromise.catch((error) => {
+            recaptchaScriptPromise = null
+            throw error
         })
     }
 
@@ -161,9 +166,9 @@ function withRecaptchaBody(
 }
 
 function getHeaders(isFormData: boolean, token: string, recaptcha: RecaptchaOptions | null) {
-    const headers: Record<string, string> = {
-        Authorization: `Bearer ${token}`,
-    }
+    const headers: Record<string, string> = {}
+
+    if (token) headers.Authorization = `Bearer ${token}`
 
     if (!isFormData) headers['Content-Type'] = 'application/json'
 
@@ -172,6 +177,12 @@ function getHeaders(isFormData: boolean, token: string, recaptcha: RecaptchaOpti
     }
 
     return headers
+}
+
+function warnIfRecaptchaMissing(recaptcha: RecaptchaOptions | null) {
+    if (recaptcha?.token) return
+
+    console.warn('Sending email without a reCAPTCHA token. Ensure the backend rejects unverified mail requests.')
 }
 
 /**
@@ -193,7 +204,8 @@ export const sendEmail = async (
       const recaptcha = await resolveRecaptchaOptions(normalizeRecaptchaOptions(options.recaptcha))
       const isFormData = body instanceof FormData
       const url = getMailUrl(options)
-  
+      warnIfRecaptchaMissing(recaptcha)
+
       const response = await fetch(url, {
         method: 'POST',
         body: withRecaptchaBody(body, recaptcha),

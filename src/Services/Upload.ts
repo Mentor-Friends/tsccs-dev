@@ -406,7 +406,7 @@ export async function getUploadFileLimit(){
       headers: header
     });
     if(response.ok){
-      output = response.json();
+      output = await response.json();
     }
   }
   catch(err){

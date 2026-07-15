@@ -1,6 +1,6 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Records a URL visit within an existing session.
@@ -19,7 +19,7 @@ export async function CreateSessionVisit(sessionId: number, url: string){
         const urlencoded = new URLSearchParams();
         urlencoded.append("sessionId", sessionId.toString());
         urlencoded.append("url", url);
-        const response = await fetch(BaseUrl.CreateSessionVisitUrl(),{
+        const response = await fetchWithAuthRetry(BaseUrl.CreateSessionVisitUrl(),{
             method: 'POST',
             headers:header,
             body: urlencoded

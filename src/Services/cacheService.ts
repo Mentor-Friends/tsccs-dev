@@ -1,14 +1,23 @@
 import { BaseUrl, sendMessage } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
+function getStoredCacheServers(cacheServerName: string): string[] {
+  try {
+    const cacheServersRaw = sessionStorage.getItem(cacheServerName);
+    const parsedCacheServers = JSON.parse(cacheServersRaw ?? "[]");
+    return Array.isArray(parsedCacheServers) ? parsedCacheServers : [];
+  } catch {
+    return [];
+  }
+}
+
 function updateToNextNearestServer() {
   const currentCacheServer = BaseUrl.NODE_CACHE_URL;
   let cacheServerName = BaseUrl.BASE_APPLICATION + "_cacheServers";
   if (currentCacheServer === BaseUrl.BASE_URL) {
     throw new Error("Base Server Down");
   }
-  let myCacheServer = sessionStorage.getItem(cacheServerName) as any;
-  myCacheServer = JSON.parse(myCacheServer) as string[];
+  let myCacheServer = getStoredCacheServers(cacheServerName);
   const indexOfCurrentCacheServer = myCacheServer.indexOf(currentCacheServer);
   BaseUrl.isNearestCache = false;
   if (myCacheServer.includes(currentCacheServer)) {
@@ -26,7 +35,7 @@ function updateToNextNearestServer() {
     BaseUrl.NODE_CACHE_URL = BaseUrl.BASE_URL;
   }
   console.log("before the payload",TokenStorage.sessionId);
-  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+  if (typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.controller) {
     sendMessage("SESSION_DATA", {
       type: "SESSION_DATA",
       data: BaseUrl.NODE_CACHE_URL,

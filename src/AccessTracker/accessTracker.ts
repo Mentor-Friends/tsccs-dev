@@ -10,11 +10,7 @@ export class AccessTracker {
     private static nextSyncTime: number = Date.now(); 
     public static activateStatus:boolean = false;
     private static readonly accessData = "Access Data"
-        
-    static {
-        // console.log("Access Tracker init...")
-        this.startAutoSync();
-    }
+    private static autoSyncInterval: ReturnType<typeof setInterval> | null = null;
 
     /**
      * Increments the count for a specific conceptId.
@@ -160,9 +156,14 @@ export class AccessTracker {
      * Starts auto-syncing to the server every specified time interval.
      * This will automatically call `syncToServer` every 5 minutes
      */
-    private static startAutoSync(): void {
-        
-        setInterval(() => {
+    public static startAutoSync(): void {
+        if (this.autoSyncInterval) {
+            console.warn("Access Tracker auto-sync is already running.");
+            return;
+        }
+
+        this.setNextSyncTime();
+        this.autoSyncInterval = setInterval(() => {
             const currentTime = Date.now();
             // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
             // console.log(`Update Time: ${this.nextSyncTime}`);
@@ -172,6 +173,16 @@ export class AccessTracker {
                 this.syncNow().catch(console.error);
             }
         }, 60000); // Check every 60 Seconds
+    }
+
+    /**
+     * Stops the access tracker auto-sync timer.
+     */
+    public static stopAutoSync(): void {
+        if (this.autoSyncInterval !== null) {
+            clearInterval(this.autoSyncInterval);
+            this.autoSyncInterval = null;
+        }
     }
 
 

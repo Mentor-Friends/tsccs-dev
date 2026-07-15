@@ -1,6 +1,6 @@
 import { Connection } from "../DataStructures/Connection";
 import { HandleHttpError, HandleInternalError } from "../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { BaseUrl, Logger } from "../app";
 
 /**
@@ -20,7 +20,7 @@ export async function GetAllLinkerConnectionsFromTheConcept(conceptId:number){
     try{
         const start = new Date().getTime();
           var header = await GetRequestHeader('application/x-www-form-urlencoded');
-          const response = await fetch(BaseUrl.GetAllLinkerConnectionOfConceptUrl() + `?conceptId=${conceptId}`,{
+          const response = await fetchWithAuthRetry(BaseUrl.GetAllLinkerConnectionOfConceptUrl() + `?conceptId=${conceptId}`,{
               method: 'GET',
               headers: header,
           });

@@ -2,7 +2,7 @@ import { CharacterRepository } from "../../DataStructures/CharacterRepository";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 import { Logger } from "../../app";
 
@@ -34,7 +34,7 @@ export async function CreateTheCharacter(characterData: TheCharacter){
       var characterData = CharacterRepository.GetCharacter(characterData.data);
       if(characterData.id == 0){
         var header = await GetRequestHeader();
-        const response = await fetch(BaseUrl.CreateTheCharacterDataUrl(),{
+        const response = await fetchWithAuthRetry(BaseUrl.CreateTheCharacterDataUrl(),{
           method: 'POST',
           headers:header,
           body: JSON.stringify(characterData),

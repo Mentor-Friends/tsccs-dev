@@ -3,7 +3,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { SearchQuery } from "../DataStructures/SearchQuery";
 import { GetCompositionFromConnectionsWithDataId, GetCompositionFromConnectionsWithDataIdFromConnections } from "../Services/GetCompositionBulk";
 import { ConnectionData } from "../DataStructures/ConnectionData";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { resolveObjectURL } from "buffer";
 import {
   HandleHttpError,
@@ -66,7 +66,7 @@ export async function RecursiveSearchApi(
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
     let myHeaders = await GetRequestHeader();
-    const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
+    const response = await fetchWithAuthRetry(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
       body: raw,
@@ -140,7 +140,7 @@ export async function RecursiveSearchApiWithInternalConnections(
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
     let myHeaders = await GetRequestHeader();
-    const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
+    const response = await fetchWithAuthRetry(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
       body: raw,
@@ -219,7 +219,7 @@ export async function RecursiveSearchApiRaw(
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
     let myHeaders = await GetRequestHeader();
-    const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
+    const response = await fetchWithAuthRetry(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
       body: raw,
@@ -290,7 +290,7 @@ export async function RecursiveSearchApiRawFullLinker(
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
     let myHeaders = await GetRequestHeader();
-    const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
+    const response = await fetchWithAuthRetry(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
       body: raw,
@@ -361,7 +361,7 @@ export async function RecursiveSearchApiNewRawFullLinker(
     let raw = JSON.stringify(searchQuery);
     let Connections: Connection[] = [];
     let myHeaders = await GetRequestHeader();
-    const response = await fetch(BaseUrl.RecursiveSearchUrl(), {
+    const response = await fetchWithAuthRetry(BaseUrl.RecursiveSearchUrl(), {
       method: "POST",
       headers: myHeaders,
       body: raw,

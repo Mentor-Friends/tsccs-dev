@@ -37,6 +37,28 @@ export async function GetOnlyTokenHeader(): Promise<Headers> {
     return myHeaders;
 }
 
+export async function fetchWithAuthRetry(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+    const response = await fetch(input, init);
+    if (response.status !== 401 || !TokenStorage.refreshToken) {
+        return response;
+    }
+
+    try {
+        const token = await refreshAccessToken(TokenStorage.BearerAccessToken);
+        const headers = new Headers(init.headers);
+        if (token) {
+            headers.set("Authorization", "Bearer " + token);
+        }
+
+        return await fetch(input, {
+            ...init,
+            headers
+        });
+    } catch {
+        return response;
+    }
+}
+
 export async function getValidAccessToken(token: string = ""): Promise<string> {
     await TokenStorage.hydrateProfile();
 

@@ -3,7 +3,7 @@ import { GetReservedIdUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
 import { ReservedConnectionIds, ReservedIds } from "../DataStructures/ReservedIds";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 
@@ -20,7 +20,7 @@ export async function GetReservedConnectionIds(){
   const logData : any = Logger.logfunction("GetReservedConnectionIds", arguments);
     try{
             let header = await GetRequestHeader('application/x-www-form-urlencoded');
-            const response = await fetch(BaseUrl.GetReservedConnectionIdUrl(),{
+            const response = await fetchWithAuthRetry(BaseUrl.GetReservedConnectionIdUrl(),{
                 method: 'GET',
                 headers: header,
             });

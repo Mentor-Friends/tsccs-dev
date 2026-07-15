@@ -1,6 +1,6 @@
 import { BaseUrl, SearchStructure } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Searches internal compositions with authentication using query parameters.
@@ -25,7 +25,7 @@ export async function SearchInternalApi(search: SearchStructure, token: string =
     let queryUrl = BaseUrl.SearchInternalWithAuthenticatedCcsUrl();
     queryUrl = queryUrl + '?composition=' + search.composition + '&search=' + search.search  + '&internalComposition=' + search.internalComposition + '&type=' + search.type + '&inpage=' + search.inpage + '&page=' + search.page;
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'GET',
             headers: header
         });
@@ -61,7 +61,7 @@ export async function SearchInternalAllApi(search: SearchStructure){
     let queryUrl = BaseUrl.SearchInternalWithCcsUrl();
     queryUrl = queryUrl + '?composition=' + search.composition + '&search=' + search.search  + '&internalComposition=' + search.internalComposition + '&type=' + search.type + '&inpage=' + search.inpage + '&page=' + search.page;
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'GET',
             headers: header
         });

@@ -12,9 +12,9 @@ import { ConnectionBinaryTree } from '../src/DataStructures/ConnectionBinaryTree
 // require("fake-indexeddb/auto");
 
 
-let url = "http://192.168.10.2:7000";
+let url = "https://api.boomconsole.com";
 let aiurl = "";
-let nodeUrl = "https://theta.boomconcole.com";
+let nodeUrl = "https://api.boomconsole.com";
 let applicationName = "test";
 let accessToken = "";
 
