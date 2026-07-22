@@ -10,3 +10,5 @@
 /dist-wico/
 /node_modules/
 .env.*
+.vscode
+.env

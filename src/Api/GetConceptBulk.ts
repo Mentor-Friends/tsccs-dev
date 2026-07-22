@@ -186,9 +186,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
 export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
     const conceptList: Concept[] = []
     if (bulkConceptFetch.length > 0) {
-      const myHeaders = {
-        'Content-Type': 'application/json',
-      }
+      const myHeaders = await GetRequestHeader("application/json")
       try {
         const response = await fetchWithAuthRetry(BaseUrl.GetConceptBulkUrl(), {
           method: 'POST',

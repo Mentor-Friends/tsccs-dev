@@ -78,7 +78,7 @@ async function initializeApp() {
       secureCoreModePath: false,                 // false = main thread, true = service worker
       makeBaseSecure: true,                      // Enable secure HTTPS endpoints
       identificationKey: 'my-app-v1'            // Optional: Unique app identifier
-    });
+    }, "", "", "", true, "", undefined, { accessControl: true }, {}, "https://your-access-api.com");
 
     console.log('mftsccs-browser initialized successfully!');
   } catch (error) {
@@ -99,6 +99,8 @@ initializeApp();
 | `makeBaseSecure` | boolean | No | Force HTTPS for API calls (default: false) |
 | `identificationKey` | string | No | Unique identifier for your application |
 | `serviceWorkerPath` | string | No | Custom path to service worker file |
+| `flags` | object | No | Application flags (e.g. `{accessControl: true}`) |
+| `accessControlUrl` | string | No | URL to the access control API (if accessControl flag is true) |
 
 ## Your First Concept
 
@@ -754,9 +756,10 @@ await init({
 Now that you understand the basics, explore these advanced topics:
 
 1. **[Core Concepts](./CORE_CONCEPTS.md)** - Deep dive into concepts, connections, and compositions
-2. **[API Reference](./API_REFERENCE.md)** - Complete function documentation
-3. **[Architecture Guide](./ARCHITECTURE.md)** - Understand the system design
-4. **[Examples](./EXAMPLES.md)** - Real-world usage patterns
+2. **[Access Control](./ACCESS_CONTROL.md)** - Understand the newly integrated role and inheritance-based access rules
+3. **[API Reference](./API_REFERENCE.md)** - Complete function documentation
+4. **[Architecture Guide](./ARCHITECTURE.md)** - Understand the system design
+5. **[Examples](./EXAMPLES.md)** - Real-world usage patterns
 
 ### Example Projects
 

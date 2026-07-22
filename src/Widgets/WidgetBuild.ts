@@ -8,7 +8,7 @@ import { DecodeCountInfo } from "../Services/Common/DecodeCountInfo";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 import { DataIdBuildLayer } from "../Services/Search/SearchLinkMultiple";
 import { formatConnections, formatConnectionsDataId, formatConnectionsJustId } from "../Services/Search/SearchWithTypeAndLinker";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { WidgetCacheManager } from "./WidgetCacheManager";
 import { GetConnection } from "../Api/GetConnection";
 
@@ -84,7 +84,7 @@ export async function BuildWidgetFromId(id:number){
         const cached = WidgetCacheManager.getWidget(id);
         if (cached) {
             // Return cached data immediately, revalidate in the background
-            fetch(queryUrl, { method: 'GET', headers: header })
+            fetchWithAuthRetry(queryUrl, { method: 'GET', headers: header })
                 .then(async (response) => {
                     if (response.ok) {
                         const fresh = await response.json();
@@ -102,7 +102,7 @@ export async function BuildWidgetFromId(id:number){
 
         const buildPromise = (async()=>{
           try{
-            const response = await fetch(queryUrl,{
+            const response = await fetchWithAuthRetry(queryUrl,{
                 method: 'GET',
                 headers: header
             });
@@ -203,7 +203,7 @@ export async function BuildWidgetFromIdForLatest(id:number){
               let response;
               try {
                   let queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
-                  response = await fetch(queryUrl, { method: 'GET', headers: header });
+                  response = await fetchWithAuthRetry(queryUrl, { method: 'GET', headers: header });
               } catch (error) {
                   response = await requestNextCacheServer({ method: 'GET', headers: header }, "?id=" + id);
               }
@@ -226,7 +226,7 @@ export async function BuildWidgetFromIdForLatest(id:number){
           let response;
           try {
                 let queryUrl = BaseUrl.getLatestWidgetData() + "?id=" + id;
-                response = await fetch(queryUrl,{
+                response = await fetchWithAuthRetry(queryUrl,{
                     method: 'GET',
                     headers: header
                 });
@@ -296,7 +296,7 @@ export async function BuildWidgetFromIdForRecent(id:number){
               let response;
               try {
                   let queryUrl = BaseUrl.getRecentWidgetData() + "?id=" + id;
-                  response = await fetch(queryUrl, { method: 'GET', headers: header });
+                  response = await fetchWithAuthRetry(queryUrl, { method: 'GET', headers: header });
               } catch (error) {
                   response = await requestNextCacheServer({ method: 'GET', headers: header }, "?id=" + id);
               }
@@ -319,7 +319,7 @@ export async function BuildWidgetFromIdForRecent(id:number){
           let response;
           try {
                 let queryUrl = BaseUrl.getRecentWidgetData() + "?id=" + id;
-                response = await fetch(queryUrl,{
+                response = await fetchWithAuthRetry(queryUrl,{
                     method: 'GET',
                     headers: header
                 });

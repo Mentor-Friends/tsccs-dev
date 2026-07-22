@@ -8,7 +8,7 @@ const TOKEN_REFRESH_BUFFER_SECONDS = 60;
 let refreshTokenPromise: Promise<string> | null = null;
 
 export async function GetRequestHeader(
-    contentType: string = 'application/json',
+    contentType: string | null = 'application/json',
     Accept: string = 'application/json'
 ): Promise<RequestHeader> {
     const token = await getValidAccessToken();
@@ -16,7 +16,7 @@ export async function GetRequestHeader(
 }
 
 export async function GetRequestHeaderWithAuthorization(
-    contentType: string = 'application/json',
+    contentType: string | null = 'application/json',
     token: string = "",
     Accept: string = 'application/json',
 ): Promise<RequestHeader> {
@@ -74,13 +74,16 @@ export async function getValidAccessToken(token: string = ""): Promise<string> {
     return activeToken;
 }
 
-function buildRequestHeader(contentType: string, Accept: string, token: string = ""): RequestHeader {
+function buildRequestHeader(contentType: string | null, Accept: string, token: string = ""): RequestHeader {
     const sessionId = TokenStorage.sessionId?.toString() ?? "";
     const headers: RequestHeader = {
-        'Content-Type': contentType,
         'Accept': Accept,
         'X-Session-id': sessionId
     };
+
+    if (contentType) {
+        headers['Content-Type'] = contentType;
+    }
 
     if (token) {
         headers.Authorization = "Bearer " + token;

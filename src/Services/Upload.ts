@@ -1,6 +1,6 @@
 import { BaseUrl, Logger } from "../app";
 import { UpdatePackageLogWithError } from "./Common/ErrorPosting";
-import { GetRequestHeader, GetRequestHeaderWithAuthorization } from "./Security/GetRequestHeader";
+import { GetRequestHeader, GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "./Security/GetRequestHeader";
 
 export const validImageFormats = [
   "image/jpeg",
@@ -116,10 +116,9 @@ async function postUploadFormData<T = string | R2UploadData>(
   token: string = ""
 ): Promise<UploadResponse<T> | null> {
   try {
-    const headers = await GetRequestHeaderWithAuthorization("", token);
-    delete headers["Content-Type"];
+    const headers = await GetRequestHeaderWithAuthorization(null, token);
 
-    const response = await fetch(url, {
+    const response = await fetchWithAuthRetry(url, {
       method: "POST",
       body,
       headers,
@@ -142,7 +141,7 @@ async function postUploadJson<T>(
   token: string = ""
 ): Promise<UploadResponse<T> | null> {
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithAuthRetry(url, {
       method: "POST",
       body: JSON.stringify(body),
       headers: await GetRequestHeaderWithAuthorization("application/json", token),
@@ -401,7 +400,7 @@ export async function getUploadFileLimit(){
   let header = await GetRequestHeader();
   let output = {};
   try{
-    const response = await fetch(BaseUrl.UploadFileLimitUrl(),{
+    const response = await fetchWithAuthRetry(BaseUrl.UploadFileLimitUrl(),{
       method: 'GET',
       headers: header
     });

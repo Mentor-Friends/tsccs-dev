@@ -31,6 +31,7 @@ export default async function MakeTheInstanceConcept(
   passedSessionId: number = 999,
   referentId: number = 0
 ) {
+  userId = composition ? userId : 999; // If composition is true then userId is used otherwise it is set to 999.
   const logData : any = Logger.logfunction("MakeTheInstanceConcept", arguments) || {};
   if (serviceWorker) {
     logData.serviceWorker = true;

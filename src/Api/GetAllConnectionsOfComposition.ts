@@ -5,7 +5,6 @@ import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeleti
 import { GetRequestHeader, fetchWithAuthRetry } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
-import { log } from 'console';
 
 /**
  * Retrieves all connections belonging to a specific composition.
@@ -53,13 +52,12 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
   var connectionList: Connection[] = [];
 
   try{
-      var header = await GetRequestHeader('application/json');
-      const myHeaders = new Headers();
+      var headers = await GetRequestHeader(null);
       const formdata = new FormData();
       formdata.append("composition_id", composition_id.toString());
       const response = await fetchWithAuthRetry(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
-        headers: myHeaders,
+        headers: headers,
         body: formdata
       });
       console.log("this is getting connection from online", BaseUrl.GetAllConnectionsOfCompositionUrl(), composition_id);

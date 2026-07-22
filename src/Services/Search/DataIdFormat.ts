@@ -1,4 +1,4 @@
-import { Concept, Connection, GetTheConcept, Logger } from "../../app";
+import { Concept, Connection, GetConceptBulk, GetTheConcept, Logger } from "../../app";
 import { removeThePrefix } from "../Common/RegexFunction";
 import { AddCount } from "./JustIdFormat";
 
@@ -13,7 +13,7 @@ import { AddCount } from "./JustIdFormat";
  */
 export async function FormatFunctionDataForData(
   connections: Connection[],
-  compositionData: any[],
+  compositionData: any[] = [],
   reverse: number[] = []
 ) {
   try {
