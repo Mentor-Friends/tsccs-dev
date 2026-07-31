@@ -15,6 +15,8 @@ import { DeleteConnectionByIdBulk } from "../DeleteConnection";
 import { GetConnectionsBetweenApi } from "../../Api/GetConnections/GetConnectionsBetweenApi";
 import { buildFetchConnection, FetchConnectionQuery } from "../../DataStructures/FetchConnection";
 
+const TRANSACTION_COMMIT_BATCH_SIZE = 300;
+
 export class LocalTransaction {
   protected transactionId!: string;
   actions: InnerActions = {
@@ -42,9 +44,7 @@ export class LocalTransaction {
     if (!this.success) throw Error("Query Transaction Expired");
 
     await LocalSyncData.SyncDataOnline(this.transactionId);
-    if (this.pendingConnectionDeletions.length > 0) {
-      await DeleteConnectionByIdBulk(this.pendingConnectionDeletions);
-    }
+    await this.flushPendingConnectionDeletions();
     this.actions = { concepts: [], connections: [] };
     this.pendingConnectionDeletions = [];
     this.success = false;
@@ -54,9 +54,7 @@ export class LocalTransaction {
     if (!this.success) throw Error("Query Transaction Expired");
 
     await LocalSyncData.SyncDataOnlineWithoutAuth(this.transactionId);
-    if (this.pendingConnectionDeletions.length > 0) {
-      await DeleteConnectionByIdBulk(this.pendingConnectionDeletions);
-    }
+    await this.flushPendingConnectionDeletions();
     this.actions = { concepts: [], connections: [] };
     this.pendingConnectionDeletions = [];
     this.success = false;
@@ -83,13 +81,20 @@ export class LocalTransaction {
     );
   }
 
+  protected async flushPendingConnectionDeletions() {
+    for (let i = 0; i < this.pendingConnectionDeletions.length; i += TRANSACTION_COMMIT_BATCH_SIZE) {
+      const batch = this.pendingConnectionDeletions.slice(i, i + TRANSACTION_COMMIT_BATCH_SIZE);
+      await DeleteConnectionByIdBulk(batch);
+    }
+  }
+
   /**
    * Deletions
    */
 
   /**
    * Queries the backend for connections matching the given criteria and queues all
-   * returned connection IDs for bulk deletion when commitTransaction() is called.
+   * returned connection IDs for batched bulk deletion when commitTransaction() is called.
    *
    * **Nothing is deleted until commitTransaction() is called.**
    * Calling rollbackTransaction() discards the queue without touching the backend.
@@ -130,7 +135,7 @@ export class LocalTransaction {
    * });
    *
    * @see {@link DeleteConnectionsBetweenBulk} for sending multiple queries in one HTTP request
-   * @see {@link commitTransaction} where the queued deletions are executed via bulk delete
+   * @see {@link commitTransaction} where the queued deletions are executed in 300-id batches
    */
   async DeleteConnectionsBetween(query: Partial<FetchConnectionQuery>): Promise<number[]> {
     return this.DeleteConnectionsBetweenBulk([query]);
@@ -142,7 +147,7 @@ export class LocalTransaction {
    *
    * Prefer this over looping DeleteConnectionsBetween — all queries go to the backend
    * in one round trip, and all returned IDs are merged into the same pending-deletion queue.
-   * The actual deletion still fires as a single bulk call inside commitTransaction().
+   * The actual deletion fires in 300-id bulk batches inside commitTransaction().
    *
    * @param queries - Array of partial FetchConnectionQuery objects, one per query permutation.
    * @returns All connection IDs queued for deletion across every query in this call.
@@ -157,7 +162,7 @@ export class LocalTransaction {
    * await transaction.commitTransaction();
    *
    * @see {@link DeleteConnectionsBetween} for the single-query convenience wrapper
-   * @see {@link commitTransaction} where the queued deletions are executed via bulk delete
+   * @see {@link commitTransaction} where the queued deletions are executed in 300-id batches
    */
   async DeleteConnectionsBetweenBulk(queries: Partial<FetchConnectionQuery>[]): Promise<number[]> {
     try {

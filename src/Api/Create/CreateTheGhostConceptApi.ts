@@ -36,7 +36,7 @@ import { HandleHttpError, UpdatePackageLogWithError } from "../../Services/Commo
 export async function CreateTheGhostConceptApi(conceptData: Concept[], connectionData: Connection[], withAuth:boolean = true){
   const logData : any = Logger.logfunction("CreateTheGhostConceptApi",[conceptData.length, connectionData.length] )
   try {
-    const CHUNK_SIZE = 1000
+    const CHUNK_SIZE = 300
     let result: any = {
       "concepts": [],
       "connections": []
@@ -52,7 +52,7 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
     const stripedConnection = await stripTypeFromConceptOrConnection(connectionData);
 
     // sync all in one request if data is less
-    if (conceptData.length + connectionData.length <= (CHUNK_SIZE * 2)) {
+    if (conceptData.length + connectionData.length <= CHUNK_SIZE) {
       const response = await syncConceptConnection(stripedConcept, stripedConnection, withAuth)
       
       if (Array.isArray(response?.concepts)) result.concepts = [...result.concepts, ...response.concepts]
@@ -65,29 +65,19 @@ export async function CreateTheGhostConceptApi(conceptData: Concept[], connectio
     const splittedConcepts = chunkArrayByItemCount(stripedConcept, CHUNK_SIZE)
     const splittedConnections = chunkArrayByItemCount(stripedConnection, CHUNK_SIZE)
 
-    const syncConceptPromises: any[] = []
-    const syncConnectionPromises: any[] = []
     console.log("This is the with auth in syncing", withAuth);
-    // sync concept
+    // sync concepts first so later connection batches can resolve ghost IDs
     for (let i = 0; i < splittedConcepts.length; i++) {
       const concepts = splittedConcepts[i] as Concept[];
-      syncConceptPromises.push(syncConceptConnection(concepts, [], withAuth))
-    }
-    const conceptResponses = await Promise.all(syncConceptPromises)
-    for (let i = 0; i < conceptResponses.length; i++) {
-      const conceptsRes = conceptResponses[i];
+      const conceptsRes = await syncConceptConnection(concepts, [], withAuth)
       if (Array.isArray(conceptsRes?.concepts)) result.concepts = [...result.concepts, ...conceptsRes.concepts]
       if (Array.isArray(conceptsRes?.connections)) result.connections = [...result.connections, ...conceptsRes.connections]
     }
 
-    // sync connection
+    // sync connections sequentially to avoid large concurrent backend writes
     for (let i = 0; i < splittedConnections.length; i++) {
       const connections = splittedConnections[i] as Connection[];
-      syncConnectionPromises.push(syncConceptConnection([], connections, withAuth))
-    }
-    const connectionResponses = await Promise.all(syncConnectionPromises)
-    for (let i = 0; i < connectionResponses.length; i++) {
-      const connectionsRes = connectionResponses[i];
+      const connectionsRes = await syncConceptConnection([], connections, withAuth)
       if (Array.isArray(connectionsRes?.concepts)) result.concepts = [...result.concepts, ...connectionsRes.concepts]
       if (Array.isArray(connectionsRes?.connections)) result.connections = [...result.connections, ...connectionsRes.connections]
     }
@@ -146,7 +136,7 @@ catch (error) {
   throw error;
 }
 }
-// Function to split an array into chunks of 1024 items (500KB per chunk)
+// Function to split an array into request-sized chunks.
 function chunkArrayByItemCount(array: Concept[] | Connection[], itemsPerChunk: number) {
   const chunks = [];
   for (let i = 0; i < array.length; i += itemsPerChunk) {
