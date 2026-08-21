@@ -1,9 +1,19 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
+import { broadcastChannel } from "../../Constants/general.const";
 
 type RequestHeader = Record<string, string>;
 
 const TOKEN_REFRESH_BUFFER_SECONDS = 60;
+// Status that means "this access token is no good" on an ordinary API call — worth a refresh-and-retry.
+const ACCESS_TOKEN_EXPIRED_STATUSES = new Set([401]);
+// Statuses the /refresh endpoint itself returns for a request that can never succeed (see AuthController
+// "refresh" route): 406 for a dead/invalid refresh token, and 400 when the access token decodes fine but
+// carries an older claims shape the endpoint can't parse (e.g. missing EntityId) — same access token will
+// produce the same 400 every time, so it's just as terminal as 406. Endpoints elsewhere in the API also use
+// 406/400 for unrelated business errors (e.g. "Max Depth Error"), so this set must stay scoped to the
+// refresh response only.
+const REFRESH_TOKEN_INVALID_STATUSES = new Set([400, 401, 406]);
 
 let refreshTokenPromise: Promise<string> | null = null;
 
@@ -39,7 +49,7 @@ export async function GetOnlyTokenHeader(): Promise<Headers> {
 
 export async function fetchWithAuthRetry(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
     const response = await fetch(input, init);
-    if (response.status !== 401 || !TokenStorage.refreshToken) {
+    if (!ACCESS_TOKEN_EXPIRED_STATUSES.has(response.status) || !TokenStorage.refreshToken) {
         return response;
     }
 
@@ -156,7 +166,13 @@ async function requestTokenRefresh(accessToken: string = ""): Promise<string> {
 
     const output = await response.json().catch(() => ({}));
     if (!response.ok) {
-        throw new Error(`Refresh token request failed with status ${response.status}`);
+        if (REFRESH_TOKEN_INVALID_STATUSES.has(response.status)) {
+            invalidateAuthState();
+        }
+
+        const error: Error & { status?: number } = new Error(`Refresh token request failed with status ${response.status}`);
+        error.status = response.status;
+        throw error;
     }
 
     const data = output?.data ?? output;
@@ -164,9 +180,25 @@ async function requestTokenRefresh(accessToken: string = ""): Promise<string> {
     const refreshToken = data?.refreshToken ?? data?.refreshtoken ?? currentRefreshToken;
 
     if (!refreshedAccessToken) {
-        throw new Error("Refresh token response did not include an access token");
+        invalidateAuthState();
+        const error: Error & { status?: number } = new Error("Refresh token response did not include an access token");
+        error.status = 401;
+        throw error;
     }
 
     await TokenStorage.updateTokens(refreshedAccessToken, refreshToken);
     return refreshedAccessToken;
+}
+
+function invalidateAuthState(): void {
+    TokenStorage.logout();
+
+    try {
+        broadcastChannel.postMessage({
+            type: "AUTH_LOGOUT",
+            payload: { reason: "refresh-failed" }
+        });
+    } catch {
+        // BroadcastChannel can be unavailable in some runtimes. Local logout is still applied.
+    }
 }

@@ -285,7 +285,7 @@ export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
  */
 function updateAccessToken(accessToken: string = "", session?: any, refreshToken: string = "") {
   TokenStorage.BearerAccessToken = accessToken;
-  if (refreshToken) {
+  if (arguments.length >= 3) {
     TokenStorage.refreshToken = refreshToken;
   }
 
@@ -735,6 +735,23 @@ const broadcastActions: any = {
     const listener = subscribedListeners.find(listener => listener.listenerId == payload.listenerId)
     listener?.callback(payload.data)
     return { success: true }
+  },
+  AUTH_LOGOUT: async () => {
+    TokenStorage.logout();
+
+    if (serviceWorker) {
+      try {
+        await sendMessage("updateAccessToken", {
+          accessToken: "",
+          refreshToken: "",
+          session: TokenStorage.sessionId
+        });
+      } catch (error) {
+        console.warn("Unable to sync logout state to service worker", error);
+      }
+    }
+
+    return { success: true };
   },
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
