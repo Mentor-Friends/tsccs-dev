@@ -1,4 +1,4 @@
-import { Logger } from "../app";
+import { Logger, updateAccessToken } from "../app";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { TokenStorage } from '../DataStructures/Security/TokenStorage';
 import { HandleHttpError, HandleHttpErrorObject, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
@@ -101,6 +101,7 @@ export async function LoginToBackend(email:string, password:string, application:
             const result = await response.json();
             if(response.ok){
               await TokenStorage.saveUserProfile(result);
+              updateAccessToken(TokenStorage.BearerAccessToken, undefined, TokenStorage.refreshToken);
               Logger.logUpdate(logData);
              return result;
 

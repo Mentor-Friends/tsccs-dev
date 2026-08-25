@@ -1,73 +1,204 @@
+import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
-import { getUserDetails } from "../User/UserFromLocalStorage";
+import { broadcastChannel } from "../../Constants/general.const";
 
-export function GetRequestHeader(
-    contentType: string | null = 'application/json', 
-    accept: string = 'application/json'
-) {
-    const headers: Record<string, string> = {};
-    const token = TokenStorage.BearerAccessToken;
-    const xSessionId = TokenStorage.sessionId?.toString();
-    
-    // Add Authorization if token is available
+type RequestHeader = Record<string, string>;
+
+const TOKEN_REFRESH_BUFFER_SECONDS = 60;
+// Status that means "this access token is no good" on an ordinary API call — worth a refresh-and-retry.
+const ACCESS_TOKEN_EXPIRED_STATUSES = new Set([401]);
+// Statuses the /refresh endpoint itself returns for a request that can never succeed (see AuthController
+// "refresh" route): 406 for a dead/invalid refresh token, and 400 when the access token decodes fine but
+// carries an older claims shape the endpoint can't parse (e.g. missing EntityId) — same access token will
+// produce the same 400 every time, so it's just as terminal as 406. Endpoints elsewhere in the API also use
+// 406/400 for unrelated business errors (e.g. "Max Depth Error"), so this set must stay scoped to the
+// refresh response only.
+const REFRESH_TOKEN_INVALID_STATUSES = new Set([400, 401, 406]);
+
+let refreshTokenPromise: Promise<string> | null = null;
+
+export async function GetRequestHeader(
+    contentType: string | null = 'application/json',
+    Accept: string = 'application/json'
+): Promise<RequestHeader> {
+    const token = await getValidAccessToken();
+    return buildRequestHeader(contentType, Accept, token);
+}
+
+export async function GetRequestHeaderWithAuthorization(
+    contentType: string | null = 'application/json',
+    token: string = "",
+    Accept: string = 'application/json',
+): Promise<RequestHeader> {
+    const validToken = await getValidAccessToken(token);
+    return buildRequestHeader(contentType, Accept, validToken);
+}
+
+export async function GetOnlyTokenHeader(): Promise<Headers> {
+    const token = await getValidAccessToken();
+    const sessionId = TokenStorage.sessionId?.toString() ?? "";
+    const myHeaders = new Headers();
+
     if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        myHeaders.append('Authorization', 'Bearer ' + token);
+    }
+    myHeaders.append('X-Session-Id', sessionId);
+
+    return myHeaders;
+}
+
+export async function fetchWithAuthRetry(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+    const response = await fetch(input, init);
+    if (!ACCESS_TOKEN_EXPIRED_STATUSES.has(response.status) || !TokenStorage.refreshToken) {
+        return response;
     }
 
-    // Add Content-Type only if specified (important for FormData)
+    try {
+        const token = await refreshAccessToken(TokenStorage.BearerAccessToken);
+        const headers = new Headers(init.headers);
+        if (token) {
+            headers.set("Authorization", "Bearer " + token);
+        }
+
+        return await fetch(input, {
+            ...init,
+            headers
+        });
+    } catch {
+        return response;
+    }
+}
+
+export async function getValidAccessToken(token: string = ""): Promise<string> {
+    await TokenStorage.hydrateProfile();
+
+    const activeToken = token || TokenStorage.BearerAccessToken;
+    if (!activeToken && TokenStorage.refreshToken) {
+        return refreshAccessToken(activeToken);
+    }
+
+    if (activeToken && shouldRefreshToken(activeToken) && TokenStorage.refreshToken) {
+        return refreshAccessToken(activeToken);
+    }
+
+    return activeToken;
+}
+
+function buildRequestHeader(contentType: string | null, Accept: string, token: string = ""): RequestHeader {
+    const sessionId = TokenStorage.sessionId?.toString() ?? "";
+    const headers: RequestHeader = {
+        'Accept': Accept,
+        'X-Session-id': sessionId
+    };
+
     if (contentType) {
         headers['Content-Type'] = contentType;
     }
 
-    // Always include Accept header if provided
-    if (accept) {
-        headers['Accept'] = accept;
+    if (token) {
+        headers.Authorization = "Bearer " + token;
     }
-    headers['X-Session-id'] = xSessionId;
+
     return headers;
 }
 
-
-export function GetRequestHeaderWithAuthorization(contentType:string ='application/json', 
-token: string = "",Accept: string = 'application/json', 
-){
-    if(token == ""){
-        token = TokenStorage.BearerAccessToken;
-    }
-    let headers = {};
-    let sessionId = TokenStorage.sessionId?.toString();
-    if(token != ""){
-        headers = {
-            'Content-Type':contentType,
-            'Authorization': "Bearer " + token,
-            'Accept': Accept,
-            'X-Session-id': sessionId
-        };
-    }
-    else{
-        headers = {
-            'Content-Type':contentType,
-            'Accept': Accept,
-            'X-Session-id': sessionId
-        };
+function shouldRefreshToken(token: string): boolean {
+    const expiresAt = getJwtExpirationTime(token);
+    if (!expiresAt) {
+        return false;
     }
 
-    
-    return headers;
+    const refreshAt = expiresAt - TOKEN_REFRESH_BUFFER_SECONDS * 1000;
+    return Date.now() >= refreshAt;
 }
 
-export function GetOnlyTokenHeader(): Headers{
-    let token = TokenStorage.BearerAccessToken;
-    let sessionId = TokenStorage.sessionId?.toString();
-    if(token == ""){
-        let userDetails = getUserDetails();
-        if(userDetails.token != ""){
-            TokenStorage.BearerAccessToken = userDetails.token;
-            token = userDetails.token;
+function getJwtExpirationTime(token: string): number | null {
+    try {
+        const payload = token.split(".")[1];
+        if (!payload) {
+            return null;
         }
+
+        const decoded = JSON.parse(base64UrlDecode(payload));
+        if (typeof decoded.exp !== "number") {
+            return null;
+        }
+
+        return decoded.exp * 1000;
+    } catch {
+        return null;
     }
-    let myHeaders = new Headers()
-    myHeaders.append('Authorization', 'Bearer ' + token)
-    myHeaders.append('X-Session-Id', sessionId)
-    return myHeaders;
+}
+
+function base64UrlDecode(value: string): string {
+    const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, "=");
+    return atob(padded);
+}
+
+async function refreshAccessToken(accessToken: string = ""): Promise<string> {
+    if (!refreshTokenPromise) {
+        refreshTokenPromise = requestTokenRefresh(accessToken).finally(() => {
+            refreshTokenPromise = null;
+        });
+    }
+
+    return refreshTokenPromise;
+}
+
+async function requestTokenRefresh(accessToken: string = ""): Promise<string> {
+    const currentRefreshToken = TokenStorage.refreshToken;
+    if (!currentRefreshToken) {
+        return TokenStorage.BearerAccessToken;
+    }
+
+    const response = await fetch(BaseUrl.RefreshTokenUrl(), {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        body: JSON.stringify({
+            accessToken: accessToken || TokenStorage.BearerAccessToken,
+            refreshToken: currentRefreshToken,
+        }),
+    });
+
+    const output = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        if (REFRESH_TOKEN_INVALID_STATUSES.has(response.status)) {
+            invalidateAuthState();
+        }
+
+        const error: Error & { status?: number } = new Error(`Refresh token request failed with status ${response.status}`);
+        error.status = response.status;
+        throw error;
+    }
+
+    const data = output?.data ?? output;
+    const refreshedAccessToken = data?.accessToken ?? data?.token ?? "";
+    const refreshToken = data?.refreshToken ?? data?.refreshtoken ?? currentRefreshToken;
+
+    if (!refreshedAccessToken) {
+        invalidateAuthState();
+        const error: Error & { status?: number } = new Error("Refresh token response did not include an access token");
+        error.status = 401;
+        throw error;
+    }
+
+    await TokenStorage.updateTokens(refreshedAccessToken, refreshToken);
+    return refreshedAccessToken;
+}
+
+function invalidateAuthState(): void {
+    TokenStorage.logout();
+
+    try {
+        broadcastChannel.postMessage({
+            type: "AUTH_LOGOUT",
+            payload: { reason: "refresh-failed" }
+        });
+    } catch {
+        // BroadcastChannel can be unavailable in some runtimes. Local logout is still applied.
+    }
 }

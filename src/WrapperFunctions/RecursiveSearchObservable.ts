@@ -51,7 +51,8 @@ class RecursiveSearchObservable extends DependencyObserver {
    * @param id - The concept ID to track
    */
   listenToEvent(id: number) {
-    if (this.eventHandlers[id]) return; // already added
+    const eventKey = `concept:${id}`;
+    if (this.eventHandlers[eventKey]) return; // already added
 
     const handler = async (event: Event) => {
       // console.log("this is listening after the event is fired", id, event);
@@ -103,8 +104,7 @@ class RecursiveSearchObservable extends DependencyObserver {
       }
     };
 
-    this.eventHandlers[id] = handler;
-    window.addEventListener(`${id}`, handler);
+    this.addTrackedEventListener(eventKey, id, handler);
   }
 
   /**

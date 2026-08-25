@@ -1,4 +1,4 @@
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { SessionData } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
@@ -19,9 +19,9 @@ import { HandleHttpError, HandleInternalError } from "../../Services/Common/Erro
  */
 export async function CreateSession(sessionData: SessionData){
     try{
-        var header = GetRequestHeader();
+        var header = await GetRequestHeader();
         const body = JSON.stringify(sessionData);
-        const response = await fetch(BaseUrl.CreateSessionId(),{
+        const response = await fetchWithAuthRetry(BaseUrl.CreateSessionId(),{
             method: 'POST',
             headers:header,
             body: body

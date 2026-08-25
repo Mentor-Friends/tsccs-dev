@@ -67,6 +67,7 @@ export async function GetCompositionFromConnectionsWithDataId(conceptIds:number[
     // let oldConnections = await FindConnectionsOfCompositionsBulkInMemory(conceptIds);
     //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
     let compositions: any[] = [];
+    await GetConceptBulk(conceptIds);
     for(let i=0; i< conceptIds.length;i++){
         let comp = await GetCompositionWithIdFromMemory(conceptIds[i]);
         compositions.push(comp);
@@ -100,6 +101,7 @@ export async function GetCompositionFromConnectionsWithDataIdFromConnections(con
     }
       
     let newConnections = await GetConnectionBulk(connectionIds);
+    await GetConceptBulk(conceptIds);
     //CheckForConnectionDeletionWithIds(connectionIds,oldConnections);
     let compositions: any[] = [];
     for(let i=0; i< conceptIds.length;i++){

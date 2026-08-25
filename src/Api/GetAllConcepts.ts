@@ -1,7 +1,7 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetAllConceptsOfUserUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 
@@ -18,8 +18,8 @@ import { Logger } from "../app";
 export async function GetAllUserConcepts(userId: number){
   const logData : any = Logger.logfunction("GetAllUserConcepts", arguments);
     try{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
-            const response = await fetch(BaseUrl.GetAllConceptsOfUserUrl(),{
+            var header = await GetRequestHeader('application/x-www-form-urlencoded');
+            const response = await fetchWithAuthRetry(BaseUrl.GetAllConceptsOfUserUrl(),{
                 method: 'POST',
                 headers: header,
                 body: `user_id=${userId}`

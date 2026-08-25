@@ -1,6 +1,6 @@
 import { BaseUrl, SearchStructure } from "../../app";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Searches internal compositions with authentication using query parameters.
@@ -21,11 +21,11 @@ import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRe
  * }, "auth-token");
  */
 export async function SearchInternalApi(search: SearchStructure, token: string = ""){
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
+    var header = await GetRequestHeaderWithAuthorization("application/json", token);
     let queryUrl = BaseUrl.SearchInternalWithAuthenticatedCcsUrl();
     queryUrl = queryUrl + '?composition=' + search.composition + '&search=' + search.search  + '&internalComposition=' + search.internalComposition + '&type=' + search.type + '&inpage=' + search.inpage + '&page=' + search.page;
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'GET',
             headers: header
         });
@@ -57,11 +57,11 @@ export async function SearchInternalApi(search: SearchStructure, token: string =
  * @returns Array of search results or empty array on error
  */
 export async function SearchInternalAllApi(search: SearchStructure){
-    var header = GetRequestHeaderWithAuthorization("application/json", "");
+    var header = await GetRequestHeaderWithAuthorization("application/json", "");
     let queryUrl = BaseUrl.SearchInternalWithCcsUrl();
     queryUrl = queryUrl + '?composition=' + search.composition + '&search=' + search.search  + '&internalComposition=' + search.internalComposition + '&type=' + search.type + '&inpage=' + search.inpage + '&page=' + search.page;
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'GET',
             headers: header
         });

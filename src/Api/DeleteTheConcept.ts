@@ -2,7 +2,7 @@ import { ConceptsData, Logger } from "../app";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Concept } from "../DataStructures/Concept";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
-import { GetOnlyTokenHeader, GetRequestHeader, GetRequestHeaderWithAuthorization } from "../Services/Security/GetRequestHeader";
+import { GetOnlyTokenHeader, GetRequestHeader, GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 
 /**
  * Deletes a concept from the backend server by ID.
@@ -30,8 +30,8 @@ export default async function DeleteTheConcept(id:number){
            
            const formdata = new FormData();
            formdata.append("id", id.toString());
-           let header = GetOnlyTokenHeader();
-            const response = await fetch(BaseUrl.DeleteConceptUrl(),{
+           let header = await GetOnlyTokenHeader();
+            const response = await fetchWithAuthRetry(BaseUrl.DeleteConceptUrl(),{
                 method: 'POST',
                 headers: header,
                 body: formdata

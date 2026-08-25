@@ -3,7 +3,7 @@ import {  GetCharacterByCharacterUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
 import { TheCharacter } from "../DataStructures/TheCharacter";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 
@@ -20,8 +20,8 @@ import { Logger } from "../app";
 export async function GetCharacterByCharacter(characterValue: string){
   const logData : any = Logger.logfunction("GetCharacterByCharacter", arguments);
     try{
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
-            const response = await fetch(BaseUrl.GetCharacterByCharacterUrl(),{
+            var header = await GetRequestHeader('application/x-www-form-urlencoded');
+            const response = await fetchWithAuthRetry(BaseUrl.GetCharacterByCharacterUrl(),{
                 method: 'POST',
                 headers: header,
                 body: `character_value=${characterValue}`

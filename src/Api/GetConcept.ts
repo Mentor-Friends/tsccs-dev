@@ -2,7 +2,7 @@ import { Concept } from "./../DataStructures/Concept";
 import { ConceptsData } from "./../DataStructures/ConceptData";
 // import { GetConceptUrl } from "./../Constants/ApiConstants";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetOnlyTokenHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import {
 //   AccessTracker,
   CreateDefaultConcept,
@@ -17,7 +17,6 @@ import {
   UpdatePackageLogWithError,
 } from "../Services/Common/ErrorPosting";
 import { requestNextCacheServer } from "../Services/cacheService";
-import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 
 async function processGetConceptData(
   response: Response,
@@ -76,12 +75,10 @@ export async function GetConcept(id: number) {
       const requestData = {
         method: "POST",
         body: formdata,
-        headers: {
-          Authorization: "Bearer " + TokenStorage.BearerAccessToken,
-        },
+        headers: await GetOnlyTokenHeader(),
       };
       try {
-        response = await fetch(BaseUrl.GetConceptUrl(), requestData);
+        response = await fetchWithAuthRetry(BaseUrl.GetConceptUrl(), requestData);
       } catch (error) {
         response = await requestNextCacheServer(requestData, "/api/getConcept");
       }

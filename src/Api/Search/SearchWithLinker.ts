@@ -1,7 +1,7 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import {SearchQuery} from '../../DataStructures/SearchQuery';
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Searches concepts using multiple linker queries with authentication.
@@ -18,11 +18,11 @@ import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRe
  * ], "auth-token");
  */
 export async function SearchWithLinker(searchQuery: SearchQuery[], token: string=""){
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
+    var header = await GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.SearchLinkMultipleAll();
     const body = JSON.stringify(searchQuery);
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'POST',
             headers: header,
             body: body

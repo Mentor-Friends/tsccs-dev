@@ -1,7 +1,7 @@
 import { CreateTheTextDataUrl } from "../../Constants/ApiConstants";
 import { TheTexts } from "../../DataStructures/TheTexts";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../../Services/Common/ErrorPosting";
 
 /**
@@ -22,8 +22,8 @@ import { HandleHttpError } from "../../Services/Common/ErrorPosting";
  */
 export async function CreateTextData(textData: TheTexts){
     try{
-            var header = GetRequestHeader();
-            const response = await fetch(BaseUrl.CreateTheTextDataUrl(),{
+            var header = await GetRequestHeader();
+            const response = await fetchWithAuthRetry(BaseUrl.CreateTheTextDataUrl(),{
                 method: 'POST',
                 headers:header,
                 body: JSON.stringify(textData),

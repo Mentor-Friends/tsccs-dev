@@ -36,13 +36,62 @@ export class DependencyObserver{
     format: number = NORMAL;
     /** Map of concept IDs to their event handlers (string keys to support composite keys) */
     eventHandlers: { [key: string]: (event: Event) => void } = {};
+    /** Map of handler keys to actual browser event names. */
+    private eventNames: { [key: string]: string } = {};
+    /** Whether this observer has been disposed. */
+    protected isDisposed: boolean = false;
+
+    /**
+     * Registers a window listener and tracks enough metadata to remove it later.
+     * The key identifies the logical subscription; eventName is the CustomEvent name.
+     */
+    protected addTrackedEventListener(key: string | number, eventName: string | number, handler: (event: Event) => void) {
+        const listenerKey = `${key}`;
+        if (this.eventHandlers[listenerKey]) return;
+
+        const windowEventName = `${eventName}`;
+        this.eventHandlers[listenerKey] = handler;
+        this.eventNames[listenerKey] = windowEventName;
+        window.addEventListener(windowEventName, handler);
+    }
+
+    /**
+     * Removes a previously tracked window listener by its logical key.
+     */
+    protected removeTrackedEventListener(key: string | number) {
+        const listenerKey = `${key}`;
+        const handler = this.eventHandlers[listenerKey];
+        if (!handler) return;
+
+        window.removeEventListener(this.eventNames[listenerKey] ?? listenerKey, handler);
+        delete this.eventHandlers[listenerKey];
+        delete this.eventNames[listenerKey];
+    }
+
+    /**
+     * Hook for subclasses that maintain additional subscriptions.
+     */
+    protected onDispose() {}
+
+    /**
+     * Removes all listeners owned by this observer.
+     */
+    dispose() {
+        for (const key of Object.keys(this.eventHandlers)) {
+            this.removeTrackedEventListener(key);
+        }
+        this.isDataLoaded = false;
+        this.isDisposed = true;
+        this.onDispose();
+    }
 
     /**
      * Listens to changes for a specific concept type and updates subscribers when new concepts of that type are created.
      * @param id - The type concept ID to track
      */
     listenToEventType(id: number): void {
-        if (this.eventHandlers[id]) return; // already added
+        const eventKey = `type:${id}`;
+        if (this.eventHandlers[eventKey]) return; // already added
 
 
         const typeHandler = async(event:Event) => {
@@ -100,9 +149,8 @@ export class DependencyObserver{
                 //console.log("rejected this", id);
             }
         }
-        this.eventHandlers[id] = typeHandler;
-       // console.log("added listener", id);
-        window.addEventListener(`${id}`, typeHandler);
+        // console.log("added listener", id);
+        this.addTrackedEventListener(eventKey, id, typeHandler);
     }
 
     /**
@@ -110,7 +158,8 @@ export class DependencyObserver{
      * @param id - The concept ID to track
      */
     listenToEvent(id: number) {
-        if (this.eventHandlers[id]) return; // already added
+        const eventKey = `concept:${id}`;
+        if (this.eventHandlers[eventKey]) return; // already added
 
         const handler = async(event: Event) => {
             if(!this.isUpdating){
@@ -164,8 +213,7 @@ export class DependencyObserver{
                // console.log("rejected this", id);
             }
         };
-        this.eventHandlers[id] = handler;
-        window.addEventListener(`${id}`,handler);
+        this.addTrackedEventListener(eventKey, id, handler);
     }
 
     /**
@@ -173,11 +221,8 @@ export class DependencyObserver{
      * @param id - The concept ID to stop tracking
      */
     removeListenToEvent(id: number) {
-        const handler = this.eventHandlers[id];
-        if (handler) {
-            window.removeEventListener(`${id}`, handler);
-            delete this.eventHandlers[id];
-        }
+        this.removeTrackedEventListener(`concept:${id}`);
+        this.removeTrackedEventListener(id);
     }
 
 
@@ -188,7 +233,7 @@ export class DependencyObserver{
      * @param connectionType - The connection type ID to filter by
      */
     listenToEventConnectionType(id: number, connectionType: number) {
-        const key = `${id}_type_${connectionType}`;
+        const key = `concept:${id}:type:${connectionType}`;
         if (this.eventHandlers[key]) return; // already added
 
         const handler = async (event: Event) => {
@@ -240,8 +285,7 @@ export class DependencyObserver{
             }
         };
 
-        this.eventHandlers[key] = handler;
-        window.addEventListener(`${id}`, handler);
+        this.addTrackedEventListener(key, id, handler);
     }
 
 
@@ -277,6 +321,10 @@ export class DependencyObserver{
      * @returns Result of calling the callback with current data
      */
     subscribe(callback: any, errorCallback?: (error: Error) => void) {
+        this.isDisposed = false;
+        if (this.subscribers.length === 0 && Object.keys(this.eventHandlers).length === 0) {
+            this.isDataLoaded = false;
+        }
         this.subscribers.push(callback);
         const unsubscribeFn = () => this.unsubscribe(callback);
         const promise: any = this.bind().then(async () => {
@@ -311,6 +359,9 @@ export class DependencyObserver{
      */
     unsubscribe(callback: any){
         this.subscribers = this.subscribers.filter(fn=>fn!= callback);
+        if (this.subscribers.length === 0) {
+            this.dispose();
+        }
         return this.subscribers.length;
     }
 

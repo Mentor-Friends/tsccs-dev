@@ -1,5 +1,6 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl"
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting"
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader"
 
 /**
  * Deletes (trashes) a concept from the backend with explicit token auth.
@@ -19,11 +20,10 @@ export  async function TrashTheConcept(
     token: string,
   ) {
     try {
-      const myHeaders = new Headers()
-      myHeaders.append('Authorization', 'Bearer ' + token)
+      const myHeaders = await GetRequestHeaderWithAuthorization(null, token)
       const formdata = new FormData()
       formdata.append('id', id.toString())
-      const response = await fetch(BaseUrl.DeleteConceptUrl(), {
+      const response = await fetchWithAuthRetry(BaseUrl.DeleteConceptUrl(), {
         method: 'POST',
         body: formdata,
         headers: myHeaders,

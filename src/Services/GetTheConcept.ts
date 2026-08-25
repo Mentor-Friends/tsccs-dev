@@ -8,6 +8,20 @@ import { CreateDefaultConcept } from "./CreateDefaultConcept";
 
 const conceptCache = new Map<number, Promise<Concept>>();
 
+async function AddTypeConceptFromMemory(concept: Concept) {
+    if(concept.type == null){
+        let conceptType = await ConceptsData.GetConcept(concept.typeId);
+        if(conceptType.id == 0 && concept.typeId != null && concept.typeId != 0 && concept.typeId != 999){
+            let typeConceptString = await GetConcept(concept.typeId);
+            let typeConcept = typeConceptString as Concept;
+            concept.type = typeConcept;
+        }
+        else{
+            concept.type = conceptType;
+        }
+    }
+}
+
 /**
  * Retrieves a concept by its ID with intelligent caching and multi-source lookup.
  *
@@ -82,22 +96,8 @@ export default async function GetTheConcept(id: number, userId: number = 999){
     if (id > 0) {
         const node = await BinaryTree.getNodeFromTree(id);
         if (node?.value && node.value.id > 0) {
+            await AddTypeConceptFromMemory(node.value as Concept);
             return node.value as Concept;
-        }
-    }
-
-    if (serviceWorker) {
-        try {
-            const res: any = await sendMessage('GetTheConcept', {id, userId})
-            const data = res.data as Concept;
-            // Cache in main thread for future lookups
-            if (data && data.id > 0) {
-                ConceptsData.AddConceptToMemory(data);
-            }
-            return data;
-        } catch (error) {
-            console.error('GetTheConcept sw error: ', error)
-            handleServiceWorkerException(error)
         }
     }
 
@@ -108,6 +108,20 @@ export default async function GetTheConcept(id: number, userId: number = 999){
 
     const getConcept = (async () => {
         try{
+            if (serviceWorker) {
+                try {
+                    const res: any = await sendMessage('GetTheConcept', {id, userId})
+                    const data = res.data as Concept;
+                    // Cache in main thread for future lookups
+                    if (data && data.id > 0) {
+                        ConceptsData.AddConceptToMemory(data);
+                    }
+                    return data;
+                } catch (error) {
+                    console.error('GetTheConcept sw error: ', error)
+                    handleServiceWorkerException(error)
+                }
+            }
             if(id < 0){
             let lconcept:Concept = await LocalConceptsData.GetConceptByGhostId(id);
             return lconcept;
@@ -119,15 +133,7 @@ export default async function GetTheConcept(id: number, userId: number = 999){
             concept = conceptString as Concept;
             }
             if( concept.id != 0){
-        
-                if(concept.type == null){
-                    let conceptType = await ConceptsData.GetConcept(concept.typeId);
-                    if(conceptType == null && concept.typeId != null && concept.typeId != undefined){
-                        let typeConceptString = await GetConcept(concept.typeId);
-                        let typeConcept = typeConceptString as Concept;
-                        concept.type = typeConcept;
-                    }
-                }
+                await AddTypeConceptFromMemory(concept);
             }
             // Add Log
             // Logger.logInfo(startTime, userId, "read", "unknown", undefined, 200, concept, "GetTheConcept", ['id', 'userId'], "unknown", undefined )
@@ -196,16 +202,5 @@ export  async function AddTypeConcept(concept:Concept){
             handleServiceWorkerException(error)
         }
     }
-    if(concept.type == null){
-        let conceptType = await ConceptsData.GetConcept(concept.typeId);
-        if(conceptType.id == 0 && concept.typeId != 0 && concept.typeId != 999){
-            let typeConceptString = await GetConcept(concept.typeId);
-            let typeConcept = typeConceptString as Concept;
-            concept.type = typeConcept;
-        }
-        else{
-            concept.type = conceptType;
-        }
-
-    }
+    await AddTypeConceptFromMemory(concept);
 }

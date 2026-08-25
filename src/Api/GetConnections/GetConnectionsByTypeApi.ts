@@ -1,7 +1,7 @@
 import { BaseUrl, Connection, ConnectionData, Logger } from "../../app";
 import { GetConnectionsByTypes } from "../../DataStructures/ConnectionByType/GetConnectionByType";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Retrieves connections filtered by multiple connection type criteria.
@@ -19,8 +19,8 @@ export async function GetConnectionsByApiTypes(connectionTypes: GetConnectionsBy
     let connections:Connection[]= [];
   const logData : any = Logger.logfunction("GetConnectionsByApiTypes", arguments);
   try{
-    var header = GetRequestHeader();
-    const response = await fetch(BaseUrl.getConnectionsByTypes(),{
+    var header = await GetRequestHeader();
+    const response = await fetchWithAuthRetry(BaseUrl.getConnectionsByTypes(),{
       method: 'POST',
       headers:header,
       body: JSON.stringify(connectionTypes),

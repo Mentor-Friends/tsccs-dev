@@ -20,6 +20,8 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
     totalCount:number = 0;
     /** Cleanup function for cache subscription */
     private unsubscribeCache: (() => void) | null = null;
+    /** Prevents duplicate async cache listener setup. */
+    private cacheSubscriptionStarted: boolean = false;
 
     /**
      * Creates a new schema query observable.
@@ -31,13 +33,27 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
         this.query = query;
         this.format = query.outputFormat;
         this.order = query.order;
-        QueryCacheManager.getHash(query).then(hash => {
+    }
+
+    private ensureCacheSubscription() {
+        if (this.cacheSubscriptionStarted) return;
+        this.cacheSubscriptionStarted = true;
+        QueryCacheManager.getHash(this.query).then(hash => {
+            if (this.isDisposed) return;
             this.unsubscribeCache = QueryCacheManager.subscribe(hash, async (result) => {
                 this.isDataLoaded = false;
                 await this.bind();
                 this.notify();
             });
         });
+    }
+
+    protected onDispose() {
+        if (this.unsubscribeCache) {
+            this.unsubscribeCache();
+            this.unsubscribeCache = null;
+        }
+        this.cacheSubscriptionStarted = false;
     }
 
     /**
@@ -73,6 +89,7 @@ export class SearchLinkMultipleAllObservable extends DependencyObserver{
      */
     async bind() {
         try {
+            this.ensureCacheSubscription();
             if(this.compositionIds.length > 0){
                 for(let i=0; i<this.compositionIds.length; i++){
                     this.removeListenToEvent(this.compositionIds[i]);
@@ -190,6 +207,11 @@ export function SchemaQueryListener(query: FreeschemaQuery, token: string){
  * @param token - Authentication token
  * @returns Promise resolving to formatted query results
  */
-export function SchemaQuery(query: FreeschemaQuery, token: string){
-    return new SearchLinkMultipleAllObservable(query, token).execute();
+export async function SchemaQuery(query: FreeschemaQuery, token: string){
+    const observer = new SearchLinkMultipleAllObservable(query, token);
+    try {
+        return await observer.execute();
+    } finally {
+        observer.dispose();
+    }
 }

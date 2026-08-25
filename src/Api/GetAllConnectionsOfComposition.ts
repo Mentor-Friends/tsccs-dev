@@ -2,10 +2,9 @@ import { Connection } from '../DataStructures/Connection';
 import { ConnectionData } from '../DataStructures/ConnectionData';
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
-import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { GetRequestHeader, fetchWithAuthRetry } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { Logger } from '../app';
-import { log } from 'console';
 
 /**
  * Retrieves all connections belonging to a specific composition.
@@ -53,10 +52,10 @@ export async function GetAllConnectionsOfCompositionOnline(composition_id: numbe
   var connectionList: Connection[] = [];
 
   try{
+      var headers = await GetRequestHeader(null);
       const formdata = new FormData();
       formdata.append("composition_id", composition_id.toString());
-      const headers = await GetRequestHeader('','application/json');
-      const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
+      const response = await fetchWithAuthRetry(BaseUrl.GetAllConnectionsOfCompositionUrl(),{
         method: 'POST',
         headers: headers,
         body: formdata

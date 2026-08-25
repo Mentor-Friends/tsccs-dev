@@ -3,7 +3,7 @@ import { GetReservedIdUrl } from './../Constants/ApiConstants';
 import { Concept } from "../DataStructures/Concept";
 import { ReservedIds } from "../DataStructures/ReservedIds";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 
@@ -19,8 +19,8 @@ import { Logger } from "../app";
 export async function GetReservedIds(){
   const logData : any = Logger.logfunction("GetReservedIds", arguments);
     try{
-            let header = GetRequestHeader('application/x-www-form-urlencoded');
-            const response = await fetch(BaseUrl.GetReservedIdUrl(),{
+            let header = await GetRequestHeader('application/x-www-form-urlencoded');
+            const response = await fetchWithAuthRetry(BaseUrl.GetReservedIdUrl(),{
                 method: 'GET',
                 headers: header,
             });

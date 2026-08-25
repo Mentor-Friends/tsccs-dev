@@ -4,7 +4,7 @@ import { BaseUrl } from "../DataStructures/BaseUrl";
 import { FindConceptsFromConnections } from '../Services/FindConeceptsFromConnection';
 import { FindConnectionsOfCompositionsBulkInMemory } from '../Services/FindConnectionsOfCompositionBulkInMemory';
 import { CheckForConnectionDeletion } from '../Services/CheckForConnectionDeletion';
-import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { GetRequestHeader, fetchWithAuthRetry } from '../Services/Security/GetRequestHeader';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from '../app';
 
@@ -62,8 +62,8 @@ export async function GetAllConnectionsOfCompositionOnline(composition_ids: numb
   var connectionList: Connection[] = [];
 
   try{
-      var header = GetRequestHeader("application/json");
-      const response = await fetch(BaseUrl.GetAllConnectionsOfCompositionBulkUrl(),{
+      var header = await GetRequestHeader();
+      const response = await fetchWithAuthRetry(BaseUrl.GetAllConnectionsOfCompositionBulkUrl(),{
         method: 'POST',
         headers: header,
         body: JSON.stringify(composition_ids)

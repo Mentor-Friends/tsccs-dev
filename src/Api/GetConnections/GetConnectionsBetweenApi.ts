@@ -1,7 +1,7 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { FetchConnection } from "../../DataStructures/FetchConnection";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { Logger } from "../../Middleware/logger.service";
 
 /**
@@ -46,8 +46,8 @@ export async function GetConnectionsBetweenApi(fetchConnections: FetchConnection
     const logData: any = Logger.logfunction("GetConnectionsBetweenApi", arguments);
     let result: FetchConnection[] = [];
     try {
-        const header = GetRequestHeader();
-        const response = await fetch(BaseUrl.GetConnectionsBetweenUrl(), {
+        const header = await GetRequestHeader();
+        const response = await fetchWithAuthRetry(BaseUrl.GetConnectionsBetweenUrl(), {
             method: 'POST',
             headers: header,
             body: JSON.stringify(fetchConnections),

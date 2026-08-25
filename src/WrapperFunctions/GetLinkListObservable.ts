@@ -43,7 +43,8 @@ export class GetLinkListObservable extends DependencyObserver{
      * @param id - The type concept ID to track
      */
     listenToEventType(id: number): void {
-        if (this.eventHandlers[id]) return; // already added
+        const eventKey = `type:${id}`;
+        if (this.eventHandlers[eventKey]) return; // already added
 
         const handler = async (event: Event) => {
             if(!this.isUpdating){
@@ -77,8 +78,7 @@ export class GetLinkListObservable extends DependencyObserver{
             }
         };
 
-        this.eventHandlers[id] = handler;
-        window.addEventListener(`${id}`, handler);
+        this.addTrackedEventListener(eventKey, id, handler);
     }
 
 

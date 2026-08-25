@@ -1,6 +1,6 @@
 // import { expect, test} from '@jest/globals';
 import {GetConcept} from '../src/Api/GetConcept';
-import { BaseUrl, BinaryTree, Connection, CreateDefaultConcept, init } from '../src/app';
+import { BaseUrl, BinaryTree, ConceptsData, Connection, CreateDefaultConcept, init } from '../src/app';
 import { IdentifierFlags } from '../src/DataStructures/IdentifierFlags';
 import { TokenStorage } from '../src/DataStructures/Security/TokenStorage';
 import { GetConnection } from '../src/Api/GetConnection';
@@ -12,11 +12,26 @@ import { ConnectionBinaryTree } from '../src/DataStructures/ConnectionBinaryTree
 // require("fake-indexeddb/auto");
 
 
-let url = "http://192.168.10.2:7000";
+let url = "https://api.boomconsole.com";
 let aiurl = "";
-let nodeUrl = "https://theta.boomconcole.com";
+let nodeUrl = "https://api.boomconsole.com";
 let applicationName = "test";
 let accessToken = "";
+
+test('ConceptsData.GetConcept finds cached concepts when id is a numeric string', async() => {
+  const mockId = 555123;
+  const concept = CreateDefaultConcept();
+  concept.id = mockId;
+  concept.characterValue = "NUMERIC_STRING_ID";
+  concept.typeId = 111;
+  concept.categoryId = 4;
+
+  ConceptsData.AddConceptToMemory(concept);
+
+  const cachedConcept = await ConceptsData.GetConcept(`${mockId}` as unknown as number);
+
+  expect(cachedConcept.id).toBe(mockId);
+});
 // describe('sum module', () => {
 //   test('adds 1 + 2 to equal 3', () => {
 //     expect(sum(1, 2)).toBe(3);

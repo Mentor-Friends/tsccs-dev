@@ -1,5 +1,5 @@
 import { BaseUrl, ConceptsData, ConnectionData, Logger } from "../app";
-import { TokenStorage } from "../DataStructures/Security/TokenStorage";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 
 type CountMap = Record<number, number>;
 
@@ -10,11 +10,7 @@ export class AccessTracker {
     private static nextSyncTime: number = Date.now(); 
     public static activateStatus:boolean = false;
     private static readonly accessData = "Access Data"
-        
-    static {
-        // console.log("Access Tracker init...")
-        this.startAutoSync();
-    }
+    private static autoSyncInterval: ReturnType<typeof setInterval> | null = null;
 
     /**
      * Increments the count for a specific conceptId.
@@ -110,19 +106,16 @@ export class AccessTracker {
                 return;
             }
 
-            const accessToken = TokenStorage.BearerAccessToken
-            if(!accessToken) return;
+            const headers = await GetRequestHeader();
+            if(!headers.Authorization) return;
             
             // Ensure conceptsData and connectionsData are not undefined or null
             const conceptsToSend = this.conceptsData && Object.keys(this.conceptsData).length > 0 ? this.conceptsData : {};
             const connectionsToSend = this.connectionsData && Object.keys(this.connectionsData).length > 0 ? this.connectionsData : {};
 
-            const response = await fetch(BaseUrl.PostPrefetchConceptConnections(), {
+            const response = await fetchWithAuthRetry(BaseUrl.PostPrefetchConceptConnections(), {
                 method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
-                },
+                headers,
                 body: JSON.stringify({
                 concepts: conceptsToSend,
                 connections: connectionsToSend
@@ -160,9 +153,14 @@ export class AccessTracker {
      * Starts auto-syncing to the server every specified time interval.
      * This will automatically call `syncToServer` every 5 minutes
      */
-    private static startAutoSync(): void {
-        
-        setInterval(() => {
+    public static startAutoSync(): void {
+        if (this.autoSyncInterval) {
+            console.warn("Access Tracker auto-sync is already running.");
+            return;
+        }
+
+        this.setNextSyncTime();
+        this.autoSyncInterval = setInterval(() => {
             const currentTime = Date.now();
             // console.log(`[CHECK] Current Time: ${new Date(currentTime).toISOString()}`);
             // console.log(`Update Time: ${this.nextSyncTime}`);
@@ -172,6 +170,16 @@ export class AccessTracker {
                 this.syncNow().catch(console.error);
             }
         }, 60000); // Check every 60 Seconds
+    }
+
+    /**
+     * Stops the access tracker auto-sync timer.
+     */
+    public static stopAutoSync(): void {
+        if (this.autoSyncInterval !== null) {
+            clearInterval(this.autoSyncInterval);
+            this.autoSyncInterval = null;
+        }
     }
 
 
@@ -196,7 +204,7 @@ export class AccessTracker {
      */
     public static async GetSuggestedConcepts(top?:number) {
         try {
-            const accessToken = TokenStorage.BearerAccessToken;
+            const headers = await GetRequestHeader();
 
             // Construct the URL with the top parameter if it exists
             const url = new URL(BaseUrl.GetSuggestedConcepts());
@@ -204,12 +212,9 @@ export class AccessTracker {
                 url.searchParams.append('top', top.toString());
             }
 
-            const response = await fetch(url.toString(), {
+            const response = await fetchWithAuthRetry(url.toString(), {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
+                headers,
             });
 
             if (!response.ok) {
@@ -239,7 +244,7 @@ export class AccessTracker {
      */
     public static async GetSuggestedConnections(top?:number) {
         try {
-            const accessToken = TokenStorage.BearerAccessToken;
+            const headers = await GetRequestHeader();
             
             // Construct the URL with the top parameter if it exists
             const url = new URL(BaseUrl.GetSuggestedConnections());
@@ -247,12 +252,9 @@ export class AccessTracker {
                 url.searchParams.append('top', top.toString());
             }
 
-            const response = await fetch(url.toString(), {
+            const response = await fetchWithAuthRetry(url.toString(), {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
+                headers,
             });
 
             if (!response.ok) {

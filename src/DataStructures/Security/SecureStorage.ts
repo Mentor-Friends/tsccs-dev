@@ -31,6 +31,10 @@ async function deriveKey(salt: Uint8Array): Promise<CryptoKey> {
  * is not portable to other origins or browsers.
  */
 export async function saveProfile(profile: Record<string, any>): Promise<void> {
+    if (typeof localStorage === "undefined" || typeof crypto === "undefined" || !crypto.subtle) {
+        return;
+    }
+
     const encoder = new TextEncoder();
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -61,6 +65,10 @@ export async function saveProfile(profile: Record<string, any>): Promise<void> {
  * Decrypts and returns the stored profile, or null if absent/tampered.
  */
 export async function loadProfile(): Promise<Record<string, any> | null> {
+    if (typeof localStorage === "undefined" || typeof crypto === "undefined" || !crypto.subtle) {
+        return null;
+    }
+
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
 
@@ -97,6 +105,10 @@ export async function loadProfile(): Promise<Record<string, any> | null> {
  * Removes the stored profile.
  */
 export function clearProfile(): void {
+    if (typeof localStorage === "undefined") {
+        return;
+    }
+
     console.error("[SecureStorage] ccs_profile is being removed. Stack trace:", new Error().stack);
     localStorage.removeItem(STORAGE_KEY);
 }

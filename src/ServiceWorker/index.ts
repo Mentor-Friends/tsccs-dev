@@ -124,7 +124,7 @@ export async function handleMessageEvent(event: any) {
     event.source.postMessage(responseData)
   } catch (error: any) {
     console.error('Service worker Message Handle Error: ', type, error)
-    if (error?.status == 401 || error?.status == 500) {
+    if (error?.status == 401 || error?.status == 406 || error?.status == 500) {
       responseData = {success: false, data: {status: error.status, statusText: error?.url}, messageId: payload.messageId}
     }
     processMessageQueue = await Promise.all(processMessageQueue.filter(item => item != payload.messageId))
@@ -152,6 +152,7 @@ const actions: Actions = {
             payload?.url,
             payload?.aiurl,
             payload?.accessToken,
+            payload?.refreshToken,
             payload?.nodeUrl,
             payload?.enableAi,
             payload?.applicationName,
@@ -162,7 +163,7 @@ const actions: Actions = {
         return {success: true, data: undefined, name: 'init'}
     },
     updateAccessToken: async (payload) => {
-        await updateAccessToken(payload.accessToken, payload.session)
+        await updateAccessToken(payload.accessToken, payload.session, payload.refreshToken)
         return {success: true, name: 'updateAccessToken'}
     },
     SESSION_DATA: async (payload) => {
@@ -198,6 +199,7 @@ async function init(
     url: string = "",
     aiurl: string = "",
     accessToken: string = "",
+    refreshToken: string = "",
     nodeUrl: string = "",
     enableAi: boolean = true,
     applicationName: string = "",
@@ -209,6 +211,7 @@ async function init(
     BaseUrl.AI_URL = aiurl;
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
+    TokenStorage.refreshToken = refreshToken;
     if (accessToken) {
       TokenStorage.BearerAccessToken = accessToken;
     }
@@ -239,7 +242,11 @@ async function init(
     if(BaseUrl.FLAGS?.accessTracker){
       console.log("From service worker, flag of Access Tracker.")
       AccessTracker.activateStatus = true;
+      AccessTracker.startAutoSync();
       console.log("Access Tracker Activation status from service worker", AccessTracker.activateStatus)
+    } else {
+      AccessTracker.activateStatus = false;
+      AccessTracker.stopAutoSync();
     }
     /**
      * We initialize the system so that we get all the concepts from the backend system that are most likely to be used

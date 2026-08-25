@@ -3,7 +3,7 @@ import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { FreeSchemaResponse } from "../../DataStructures/Responses/ErrorResponse";
 import {SearchQuery} from '../../DataStructures/SearchQuery';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Searches for concepts using multiple linked queries with performance tracking.
@@ -21,11 +21,11 @@ import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRe
 export async function SearchLinkMultipleApi(searchQuery: SearchQuery[], token: string=""){
     const logData : any = Logger.logfunction("SearchLinkMultipleApi", arguments);
     let startTime = performance.now()
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
+    var header = await GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.SearchLinkMultipleAllApiUrl();
     const body = JSON.stringify(searchQuery);
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'POST',
             headers: header,
             body: body

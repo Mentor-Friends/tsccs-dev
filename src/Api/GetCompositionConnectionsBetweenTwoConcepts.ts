@@ -1,7 +1,7 @@
 import { Connection } from "../DataStructures/Connection";
 import { ConnectionData } from "../DataStructures/ConnectionData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import {
   HandleHttpError,
   HandleInternalError,
@@ -49,8 +49,10 @@ export async function GetCompositionConnectionsBetweenTwoConcepts(
     formdata.append("ofConceptId", ofConceptId.toString());
     formdata.append("mainKey", mainKey.toString());
     formdata.append("toConceptId", toConcept.toString());
-    const headers = await GetRequestHeader("",'application/json');
-    const response = await fetch(
+    const headers = await GetRequestHeader(null, 'application/json');
+
+    const response = await fetchWithAuthRetry(
+
       BaseUrl.GetCompositionConnectionBetweenTwoConceptsUrl(),
       {
         method: "POST",

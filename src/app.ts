@@ -34,7 +34,27 @@ export { GetConnectionById } from './Services/GetConnections';
 export {MakeTheTimestamp} from './Services/MakeTheTimestamp';
 export {RecursiveSearchApi,RecursiveSearchApiWithInternalConnections, RecursiveSearchApiRaw,RecursiveSearchApiRawFullLinker,RecursiveSearchApiNewRawFullLinker} from './Api/RecursiveSearch';
 export {GetCompositionBulkWithDataId,GetCompositionFromConnectionsWithDataIdFromConnections,GetCompositionFromConnectionsWithIndexFromConnections,GetCompositionBulk,GetCompositionFromConnectionsWithDataId} from './Services/GetCompositionBulk';
-export {uploadAttachment,getUploadFileLimit, uploadFile, uploadImage, uploadImageV2, validDocumentFormats, validImageFormats} from './Services/Upload'
+export {
+  uploadAttachment,
+  getR2PresignedUploadUrl,
+  getUploadFileLimit,
+  uploadFile,
+  uploadImage,
+  uploadImageV2,
+  uploadR2Storage,
+  uploadToR2PresignedUrl,
+  uploadWithR2PresignedUrl,
+  validDocumentFormats,
+  validImageFormats,
+} from './Services/Upload'
+export type {
+  R2PresignedUploadOptions,
+  R2PresignedUploadResult,
+  R2PresignedUploadUrlData,
+  R2PresignedUploadUrlRequest,
+  R2UploadData,
+  UploadResponse,
+} from './Services/Upload'
 export { GetConceptBulk } from './Api/GetConceptBulk';
 export { GetConnectionBulk } from './Api/GetConnectionBulk';
 export {GetAllConnectionsOfCompositionBulk} from './Api/GetAllConnectionsOfCompositionBulk';
@@ -75,6 +95,7 @@ export {GetConnectionBetweenTwoConceptsLinker} from './Services/GetConnectionBet
 export {DelayFunctionExecution} from './Services/Common/DelayFunction';
 export {GetCompositionWithIdAndDateFromMemory,GetCompositionFromMemoryWithConnections} from './Services/GetComposition';
 export { GetConceptByCharacterAndType} from './Api/GetConceptByCharacterAndType';
+export { GetInstanceConceptByCharacterType} from './Api/GetInstanceConceptByCharacterType';
 export {GetConnectionDataPrefetch} from './Services/GetCompositionBulk';
 export { FormatFromConnectionsAltered} from './Services/Search/SearchLinkMultiple';
 export {NORMAL, JUSTDATA, DATAID, DATAIDDATE, RAW, ALLID, LISTNORMAL, DATAV2} from './Constants/FormatConstants';
@@ -129,8 +150,8 @@ import { Logger } from "./app";
 import { BASE_URL } from "./Constants/ApiConstants";
 import { getCookie, LogData } from "./Middleware/logger.service";
 import { randomInt } from "crypto";
-import { access } from "fs";
-export { sendEmail } from "./Services/Mail";
+export { sendEmail, sendPersonalEmail } from "./Services/Mail";
+export type { RecaptchaOptions, SendEmailOptions } from "./Services/Mail";
 export { BuilderStatefulWidget } from "./Widgets/BuilderStatefulWidget";
 export { LocalTransaction } from "./Services/Transaction/LocalTransaction";
 export { InnerActions } from "./Constants/general.const";
@@ -152,7 +173,7 @@ export {CreateConnectionBetweenEntityLocal} from './Services/CreateConnection/Cr
 export {BuildWidgetFromId} from './Widgets/WidgetBuild';
 export { clearAllCaches } from './Services/CacheClear';
 export {removeAllChildren} from './Services/Common/RemoveAllChild';
-export {getUserDetails} from './Services/User/UserFromLocalStorage';
+export {getUserDetails, getUserDetailsWithRefresh} from './Services/User/UserFromLocalStorage';
 export { TokenStorage } from './DataStructures/Security/TokenStorage';
 export {CountInfo} from './DataStructures/Count/CountInfo';
 export {LogEvent} from './Services/Logs/LogEvent';
@@ -174,11 +195,25 @@ type listeners = {
   callback: any,
   createdAt: number
 }
+type QueuedMessage = {
+  message: {
+    type: string,
+    payload: any
+  },
+  resolve: (value: any) => void,
+  reject: (reason?: any) => void
+}
 export var serviceWorker: any;
 const TABID = Date.now().toString(36) + Math.random().toString(36).substring(2)
 export let subscribedListeners: listeners[] = [];
 // let serviceWorkerReady = false;
-let messageQueue: any[] = [];
+let messageQueue: QueuedMessage[] = [];
+let isBroadcastMessageListenerRegistered = false;
+let isServiceWorkerMessageListenerRegistered = false;
+let serviceWorkerQueueInterval: ReturnType<typeof setInterval> | null = null;
+let isProcessingMessageQueue = false;
+let isServiceWorkerControllerChangeListenerRegistered = false;
+const serviceWorkerStateChangeWorkers = new WeakSet<object>();
 // for sw use only START
 export let hasActivatedSW: boolean = false
 export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
@@ -248,8 +283,11 @@ export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
  * @see {@link Signin} for alternative authentication
  * @see {@link init} which can also set initial token
  */
-function updateAccessToken(accessToken: string = "", session?: any) {
+function updateAccessToken(accessToken: string = "", session?: any, refreshToken: string = "") {
   TokenStorage.BearerAccessToken = accessToken;
+  if (arguments.length >= 3) {
+    TokenStorage.refreshToken = refreshToken;
+  }
 
   // because in the service worker document is not defined.
   if(typeof document == undefined){
@@ -262,7 +300,7 @@ function updateAccessToken(accessToken: string = "", session?: any) {
     //TokenStorage.sessionId = parseInt(parsedCookie);
   }
  // let parsedCookie = getCookie("SessionId") ?? "999";
-  if (serviceWorker) sendMessage('updateAccessToken', { accessToken, session: TokenStorage.sessionId})
+  if (serviceWorker) sendMessage('updateAccessToken', { accessToken, refreshToken: TokenStorage.refreshToken, session: TokenStorage.sessionId})
 }
 
 
@@ -407,9 +445,16 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean; accessControl?: boolean } = {},
-  parameters: { logserver?:string, isPwa?:boolean, enableCache?:boolean} = {},
+  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
+  parameters: {
+    logserver?: string,
+    isPwa?: boolean,
+    enableCache?: boolean,
+    recaptchaSiteKey?: string,
+    recaptchaAction?: string,
+  } = {},
   accessControlUrl: string = "",
+
 ) {
   try {
     BaseUrl.BASE_URL = url;
@@ -417,6 +462,9 @@ async function init(
     BaseUrl.NODE_URL = nodeUrl;
     BaseUrl.BASE_APPLICATION = applicationName;
     BaseUrl.LOG_SERVER = parameters.logserver ?? "https://logdev.freeschema.com";
+    BaseUrl.RECAPTCHA_SITE_KEY = parameters.recaptchaSiteKey ?? "";
+    BaseUrl.RECAPTCHA_ACTION = parameters.recaptchaAction ?? "send_mail";
+    updateAccessToken(accessToken);
     BaseUrl.ACCESS_CONTROL_BASE_URL = accessControlUrl;
     console.log("setting the logserver", BaseUrl.LOG_SERVER, parameters.logserver);
     const explicitAccessToken = (accessToken ?? "").trim();
@@ -524,6 +572,7 @@ async function init(
  */
 export async function sendMessage(type: string, payload: any, retryCount = 0) {
   let messagedProcessed = false
+  const shouldWatchProcess = type !== 'checkProcess' && type !== 'SESSION_DATA' && type !== 'updateAccessToken';
   const messageId = Math.random().toString(36).substring(2); // Generate a unique message ID
   payload.messageId = messageId
   payload.TABID = TABID
@@ -532,59 +581,94 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
   const newPayload = JSON.parse(JSON.stringify(payload))
 
   let checkProcessInterval: any
-  if (type != 'checkProcess' && retryCount == 0) {
-    checkProcessInterval = setInterval(async () => {
-     // console.log('process took more than one second', messageId, type, messagedProcessed)
-      // if (!await checkIfExecutingProcess(messageId, type) && !messagedProcessed) {
-      //   console.log("Message process missing")
-      //   throw Error('Failed to handle type ' + type + ' ' + messageId)
-      // }
-      if (!messagedProcessed && !await checkIfExecutingProcess(messageId, type)) {
-        clearInterval(checkProcessInterval)
+  return new Promise((resolve, reject) => {
+    let responseTimeout: ReturnType<typeof setTimeout> | undefined;
+    let serviceWorkerReadyTimeout: ReturnType<typeof setTimeout> | undefined;
+    let responseHandler: ((event: any) => void) | undefined;
+    let settled = false;
+
+    const cleanup = () => {
+      if (checkProcessInterval) {
+        clearInterval(checkProcessInterval);
+        checkProcessInterval = undefined;
+      }
+      if (responseTimeout) {
+        clearTimeout(responseTimeout);
+        responseTimeout = undefined;
+      }
+      if (serviceWorkerReadyTimeout) {
+        clearTimeout(serviceWorkerReadyTimeout);
+        serviceWorkerReadyTimeout = undefined;
+      }
+      if (responseHandler && navigator?.serviceWorker) {
+        navigator.serviceWorker.removeEventListener("message", responseHandler);
+        responseHandler = undefined;
+      }
+    };
+
+    const settleResolve = (value: any) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(value);
+    };
+
+    const settleReject = (reason?: any) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(reason);
+    };
+
+    const retryMessage = () => {
+      if (retryCount == 0 && shouldWatchProcess) {
+        console.log('retrying ', type, messageId);
+        sendMessage(type, payload, retryCount + 1).then(settleResolve).catch(settleReject);
+      } else {
+        settleReject(`Failed to handle type ${type} ${messageId}`);
+      }
+    };
+
+    const startProcessCheck = () => {
+      if (!shouldWatchProcess || retryCount > 0) return;
+      checkProcessInterval = setInterval(async () => {
+        if (!messagedProcessed && !await checkIfExecutingProcess(messageId, type)) {
           if (!messagedProcessed) {
             console.log('Failed to handle type ' + type + ' message not found ' + messageId, 'retrying: ', retryCount == 0, type)
-            if (retryCount == 0 && type != 'checkProcess') {
-              console.log('retrying ', type, messageId)
-              const res = await sendMessage(type, payload, retryCount + 1)
-              return res
-            } else {
-              // throw Error('Failed to handle type ' + type + ' ' + messageId)
-              console.log('Failed to handle type ' + type + ' ' + messageId)
-            }
+            cleanup();
+            retryMessage();
           }
-        // throw Error('Failed to handle type ' + type + ' ' + messageId)
-      }
-    }, 2000)
-  }
+        }
+      }, 2000)
+    };
 
-  return new Promise((resolve, reject) => {
     if (!((navigator.serviceWorker.controller || serviceWorker))) console.log('', navigator.serviceWorker.controller, serviceWorker, type)
     if ((navigator.serviceWorker.controller || serviceWorker)) {
-      const responseHandler = (event: any) => {
+      responseHandler = (event: any) => {
         if (event?.data?.messageId == messageId) { // Check if the message ID matches
           messagedProcessed = true
          // if (type != 'checkProcess') 
             //console.log('received from sw', type, messageId)
-          clearInterval(checkProcessInterval)
           if (!event.data.success) {
             if (event?.data?.status == 401) {
-              reject(HandleHttpError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
+              settleReject(HandleHttpError(new Response('Unauthorized', {status: 401, statusText: event?.data?.statusText})))
             } else if (event?.data?.status == 500) {
-              reject(HandleInternalError(new Response('Internal Server Error', {status: 500, statusText: event?.data?.statusText})))
+              settleReject(HandleInternalError(new Response('Internal Server Error', {status: 500, statusText: event?.data?.statusText})))
             } else {
               console.error('Error in the response from worker:', event)
-              reject(`Failed to handle action ${type} ${JSON.stringify(payload)}, Response: ${JSON.stringify(event.data)}`)
+              settleReject(`Failed to handle action ${type} ${JSON.stringify(payload)}, Response: ${JSON.stringify(event.data)}`)
             }
+            return;
           }
           if (event.data?.actions) {
             payload.actions = JSON.parse(JSON.stringify(event.data.actions))
           }
-          resolve(event.data);
-          navigator.serviceWorker.removeEventListener("message", responseHandler);
+          settleResolve(event.data);
         }
       };
   
       navigator.serviceWorker.addEventListener("message", responseHandler);
+      startProcessCheck();
   
       // Send the message to the service worker
       if (navigator.serviceWorker.controller) {
@@ -606,32 +690,28 @@ export async function sendMessage(type: string, payload: any, retryCount = 0) {
         // if (serviceWorkerReady) console.warn('service worker was registered already but is not available NOW!!!')
         console.info('ready', navigator.serviceWorker.ready)
         // wait one second before checking again
-        setTimeout(() => {
+        serviceWorkerReadyTimeout = setTimeout(() => {
           console.warn(`Re-Trying after certain time. messageId: ${messageId}, type: ${type}`)
           if (serviceWorker) {
             console.info('This is triggered ')
             serviceWorker?.postMessage({ type, payload });
           } else {
             console.log('not ready', type)
-            clearInterval(checkProcessInterval)
-            reject("Service worker not ready");
+            settleReject("Service worker not ready");
           }
         }, 30000) // 30 seconds
       }
   
       // Timeout for waiting for the response (e.g., 5 seconds)
-      setTimeout(() => {
-        clearInterval(checkProcessInterval)
-        reject(`No response from service worker after timeout: ${type}`);
-        navigator.serviceWorker.removeEventListener("message", responseHandler);
+      responseTimeout = setTimeout(() => {
+        settleReject(`No response from service worker after timeout: ${type}`);
       }, 210000); // 3.5 minutes
     } else {
-      messageQueue.push({message: {type, payload: newPayload}})
+      messageQueue.push({message: {type, payload: newPayload}, resolve: settleResolve, reject: settleReject})
       //console.log('Message Queued', type, payload)
       //console.log(navigator.serviceWorker.controller, serviceWorker, type)
       if (type == 'init') {
-        clearInterval(checkProcessInterval)
-        resolve(null)
+        settleResolve(null)
       }
     }
   });
@@ -655,6 +735,23 @@ const broadcastActions: any = {
     const listener = subscribedListeners.find(listener => listener.listenerId == payload.listenerId)
     listener?.callback(payload.data)
     return { success: true }
+  },
+  AUTH_LOGOUT: async () => {
+    TokenStorage.logout();
+
+    if (serviceWorker) {
+      try {
+        await sendMessage("updateAccessToken", {
+          accessToken: "",
+          refreshToken: "",
+          session: TokenStorage.sessionId
+        });
+      } catch (error) {
+        console.warn("Unable to sync logout state to service worker", error);
+      }
+    }
+
+    return { success: true };
   },
   dispatchEvent: async (payload: any) => {
     if (serviceWorker) {
@@ -682,10 +779,8 @@ const broadcastActions: any = {
 /**
  * Method to trigger broadcast message listener
  */
-function listenBroadCastMessages() {
-  // broadcast event can be listened through both the service worker and other tabs
-  broadcastChannel.addEventListener('message', async (event) => {
-    const { type, payload }: any = event.data;
+async function handleBroadcastMessage(event: MessageEvent) {
+  const { type, payload }: any = event.data;
       if (!type) return;
       let responseData: {success: boolean, data?: any} = {success: false, data: undefined}
     
@@ -695,14 +790,19 @@ function listenBroadCastMessages() {
         console.warn(`Unable to handle "${type}" case in BC service worker`)
       }
     
-  });
+}
+
+function listenBroadCastMessages() {
+  if (isBroadcastMessageListenerRegistered) return;
+
+  // broadcast event can be listened through both the service worker and other tabs
+  broadcastChannel.addEventListener('message', handleBroadcastMessage);
+  isBroadcastMessageListenerRegistered = true;
 }
 /**
  * If service worker sends any messages then this will listen.
  */
-function listenPostMessagaes() {
-  // broadcast event can be listened through both the service worker and other tabs
-  navigator.serviceWorker.addEventListener('message', async (event: any) => {
+async function handleServiceWorkerMessage(event: any) {
     try {
       if (event.data && event.data.type === 'API_401') {
         const { requestDetails } = event.data;
@@ -738,7 +838,14 @@ function listenPostMessagaes() {
     })
   }
     
-  });
+}
+
+function listenPostMessagaes() {
+  if (isServiceWorkerMessageListenerRegistered) return;
+
+  // broadcast event can be listened through both the service worker and other tabs
+  navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+  isServiceWorkerMessageListenerRegistered = true;
 }
 
 /**
@@ -827,25 +934,37 @@ export function dispatchIdEvent(id: number|string, data:any = {}) {
 }
 
 async function processMessageQueue() {
+  if (isProcessingMessageQueue) return;
+  isProcessingMessageQueue = true;
+  try {
   console.log('message queue', messageQueue)
   // process init if exist in queue
   const initQueueItem = messageQueue.find(item => item?.message?.type == 'init')
   if (initQueueItem) {
-    console.log('Processing Init Queue poped', initQueueItem?.type, initQueueItem);
+    console.log('Processing Init Queue poped', initQueueItem.message.type, initQueueItem);
     // remove current init items
     const index = messageQueue.indexOf(initQueueItem);
     if (index > -1) { // only splice array when item is found
       messageQueue.splice(index, 1); // 2nd parameter means remove one item only
     }
-    await sendMessage(initQueueItem?.type, initQueueItem?.payload)
+    await sendMessage(initQueueItem.message.type, initQueueItem.message.payload)
+      .then(initQueueItem.resolve)
+      .catch(initQueueItem.reject)
   }
 
   console.log('message queue while', messageQueue)
   
   while (messageQueue.length > 0) {
-    const { message, resolve, reject } = messageQueue.shift();
+    const queuedMessage = messageQueue.shift();
+    if (!queuedMessage) continue;
+    const { message, resolve, reject } = queuedMessage;
     console.log('Queue poped', message.type, message);
     await sendMessage(message.type, message.payload)
+      .then(resolve)
+      .catch(reject)
+  }
+  } finally {
+    isProcessingMessageQueue = false;
   }
 }
 
@@ -863,6 +982,49 @@ export const handleServiceWorkerException = (error: any) => {
   console.error('Service Worker Error', error)
 }
 
+function startServiceWorkerQueueProcessor() {
+  if (serviceWorkerQueueInterval) return;
+
+  serviceWorkerQueueInterval = setInterval(() => {
+    if (messageQueue.length) {
+      processMessageQueue().catch((error) => {
+        console.error("Service Worker message queue processing failed", error);
+      });
+    }
+  }, 2000);
+}
+
+function listenServiceWorkerControllerChange() {
+  if (isServiceWorkerControllerChangeListenerRegistered) return;
+
+  navigator.serviceWorker.addEventListener('controllerchange', async () => {
+    console.warn('controller change triggered', navigator.serviceWorker.controller)
+    if (navigator.serviceWorker.controller) {
+      serviceWorker = navigator.serviceWorker.controller
+      console.warn('Service worker has been activated; controller change');
+      await initServiceWorker()
+    }
+  });
+  isServiceWorkerControllerChangeListenerRegistered = true;
+}
+
+function listenRegistrationStateChange(registration: ServiceWorkerRegistration) {
+  const workers = [registration.installing, registration.waiting, registration.active];
+
+  workers.forEach((worker) => {
+    if (!worker || serviceWorkerStateChangeWorkers.has(worker)) return;
+    serviceWorkerStateChangeWorkers.add(worker);
+
+    worker.addEventListener('statechange', async (event: any) => {
+      if (event?.target?.state === 'activating') {
+        serviceWorker = navigator.serviceWorker.controller
+        console.warn('Service Worker is activating statechange');
+        await initServiceWorker()
+      }
+    });
+  });
+}
+
 /**
  * Function to setup initial flag
  */
@@ -872,14 +1034,27 @@ function initializeFlags(flags: any) {
     if (flags.logApplication) {
       ApplicationMonitor.initialize();
       Logger.logApplicationActivationStatus = true;
+      Logger.startAutoSync();
+    } else {
+      Logger.logApplicationActivationStatus = false;
     }
     if (flags.logPackage) {
       Logger.logPackageActivationStatus = true;
+      Logger.startAutoSync();
       console.warn("Package log started.");
+    } else {
+      Logger.logPackageActivationStatus = false;
+    }
+    if (!flags.logApplication && !flags.logPackage) {
+      Logger.stopAutoSync();
     }
     if (flags.accessTracker) {
       AccessTracker.activateStatus = true;
+      AccessTracker.startAutoSync();
       console.warn("Access Tracker Activated.");
+    } else {
+      AccessTracker.activateStatus = false;
+      AccessTracker.stopAutoSync();
     }
     if (flags.isTest) {
       IdentifierFlags.isDataLoaded = true;
@@ -925,12 +1100,7 @@ async function handleRegisterServiceWorker(enableSW: any) {
           "Service Worker registered:",
           registration
         );
-        // process queue if exist
-        setInterval(() => {
-          //console.log('message process interrval calling', messageQueue)
-          if (messageQueue.length)
-            processMessageQueue()
-        }, 2000)
+        startServiceWorkerQueueProcessor();
         
         // Add Listeners before initializing the service worker
 
@@ -973,27 +1143,10 @@ async function handleRegisterServiceWorker(enableSW: any) {
         };
 
         // Listen for the activation of the new service worker
-        registration.addEventListener('controllerchange', async () => {
-          console.warn('controller change triggered', navigator.serviceWorker.controller)
-          if (navigator.serviceWorker.controller) {
-            serviceWorker = navigator.serviceWorker.controller
-            console.warn('Service worker has been activated; controller change');
-            await initServiceWorker()
-            // The new service worker is now controlling the page
-            // You can reload the page if necessary or handle the update process here
-          }
-        });
+        listenServiceWorkerControllerChange();
 
         // state change 
-        if (registration.installing || registration.waiting || registration.active) {
-          registration.addEventListener('statechange', async (event: any) => {
-            if (event?.target?.state === 'activating') {
-              serviceWorker = navigator.serviceWorker.controller
-              console.warn('Service Worker is activating statechange');
-              await initServiceWorker()
-            }
-          });
-        }
+        listenRegistrationStateChange(registration);
         
         // If the service worker is already active, mark it as ready
         if (registration.active) {
@@ -1030,6 +1183,7 @@ async function initServiceWorker() {
     url: BaseUrl.BASE_URL,
     aiurl: BaseUrl.AI_URL,
     accessToken: TokenStorage.BearerAccessToken,
+    refreshToken: TokenStorage.refreshToken,
     nodeUrl: BaseUrl.NODE_URL,
     enableAi: false,
     applicationName: BaseUrl.BASE_APPLICATION,
@@ -1038,15 +1192,59 @@ async function initServiceWorker() {
   });
 }
 
+function sendServiceWorkerProbe(type: string, payload: any, timeoutMs = 1500): Promise<any | null> {
+  const targetWorker = navigator.serviceWorker?.controller || serviceWorker;
+  if (!targetWorker) return Promise.resolve(null);
+
+  const messageId = Math.random().toString(36).substring(2);
+  const probePayload = {
+    ...payload,
+    messageId,
+    TABID
+  };
+
+  return new Promise((resolve) => {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+
+    const cleanup = () => {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = undefined;
+      }
+      navigator.serviceWorker?.removeEventListener("message", responseHandler);
+    };
+
+    const responseHandler = (event: any) => {
+      if (event?.data?.messageId !== messageId) return;
+      cleanup();
+      resolve(event.data);
+    };
+
+    navigator.serviceWorker?.addEventListener("message", responseHandler);
+    timeout = setTimeout(() => {
+      cleanup();
+      resolve(null);
+    }, timeoutMs);
+
+    try {
+      targetWorker.postMessage({ type, payload: probePayload });
+    } catch {
+      cleanup();
+      resolve(null);
+    }
+  });
+}
+
 async function checkIfExecutingProcess(messageId: string, type: string) {
   try {
-    const res: any = await sendMessage("checkProcess", {checkMessageId: messageId})
+    const res: any = await sendServiceWorkerProbe("checkProcess", {checkMessageId: messageId})
+    if (!res) return true;
     console.log('check interval data res for type ', type, messageId, res.data)
     if (res?.data?.processing) return true
-    else false
-  } catch (error) {
-    console.error('error on checing executing process', type, messageId, error)
     return false
+  } catch (error) {
+    console.warn('Unable to check executing process', type, messageId, error)
+    return true
   }
 }
 
@@ -1127,6 +1325,8 @@ async function initializeAppConfig() {
      type: 'SESSION_DATA',
      data: BaseUrl.NODE_CACHE_URL,
      session: TokenStorage.sessionId
+   }).catch((error) => {
+      console.warn("Unable to sync session data to service worker", error);
    })
   }
 }

@@ -25,4 +25,5 @@ export class FreeschemaQuery{
     includeInFilter: boolean = false;
     isOldConnectionType: boolean = false;
     cache: boolean = true;
+    usePipelineQuery: boolean = false;
 }

@@ -8,6 +8,7 @@
  */
 
 import { BaseUrl } from "../../app";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Security/GetRequestHeader";
 import {
   AccessRequest,
   AccessResult,
@@ -84,11 +85,9 @@ export class APIClientService implements IAPIClientService {
   }
 
   private static async getAsync<T>(url: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${url}`, {
+    const response = await fetchWithAuthRetry(`${this.baseUrl}${url}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: await GetRequestHeader()
     });
 
     if (!response.ok) {
@@ -104,11 +103,9 @@ export class APIClientService implements IAPIClientService {
   }
 
   private static async postAsync<T>(url: string, body: unknown): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${url}`, {
+    const response = await fetchWithAuthRetry(`${this.baseUrl}${url}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: await GetRequestHeader(),
       body: JSON.stringify(body)
     });
 
@@ -127,16 +124,14 @@ export class APIClientService implements IAPIClientService {
   private static async deleteAsync<T>(url: string, body?: unknown): Promise<T> {
     const options: RequestInit = {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: await GetRequestHeader()
     };
 
     if (body !== undefined && body !== null) {
       options.body = JSON.stringify(body);
     }
 
-    const response = await fetch(`${this.baseUrl}${url}`, options);
+    const response = await fetchWithAuthRetry(`${this.baseUrl}${url}`, options);
 
     if (!response.ok) {
       throw new Error(`DELETE '${url}' failed with status ${response.status}`);

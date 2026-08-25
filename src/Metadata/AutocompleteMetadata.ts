@@ -6,6 +6,158 @@ export type TsccsAutocompleteEntry = {
 export type TsccsAutocompleteMetadata = Record<string, Record<string, TsccsAutocompleteEntry>>;
 
 export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
+  "AccessControlService": {
+    "assignAccess": {
+      "parameters": [
+        "request"
+      ]
+    },
+    "assignSuperAdmin": {
+      "parameters": [
+        "entityId"
+      ]
+    },
+    "checkAccess": {
+      "parameters": [
+        "conceptId",
+        "permission",
+        "entityId"
+      ]
+    },
+    "checkAccessBulk": {
+      "parameters": [
+        "conceptIds",
+        "permission",
+        "entityId"
+      ]
+    },
+    "getAccessInheritanceStatus": {
+      "parameters": [
+        "conceptId",
+        "connectionTypeId"
+      ]
+    },
+    "getConceptIdsWithPermission": {
+      "parameters": [
+        "permission",
+        "conceptIdsFilter",
+        "entityId"
+      ],
+      "documentation": "Get all conceptIds which have a certain permission for an entity.\nDelegates to checkAccessBulk for full inheritance support."
+    },
+    "getParentAccessId": {
+      "parameters": [
+        "conceptId"
+      ]
+    },
+    "hasAnyGrant": {
+      "parameters": [
+        "ownChain",
+        "typeChain",
+        "subjects",
+        "decisions"
+      ]
+    },
+    "hasParentAccessInheritance": {
+      "parameters": [
+        "conceptId",
+        "parentConceptId"
+      ]
+    },
+    "isSuperAdmin": {
+      "parameters": [
+        "entityId"
+      ]
+    },
+    "makeConceptPrivate": {
+      "parameters": [
+        "conceptId"
+      ]
+    },
+    "parseBoolData": {
+      "parameters": [
+        "response"
+      ]
+    },
+    "parseIntData": {
+      "parameters": [
+        "response"
+      ]
+    },
+    "removeParentAccessInheritance": {
+      "parameters": [
+        "conceptId",
+        "parentConceptId"
+      ]
+    },
+    "removeParentAccessInheritanceBulk": {
+      "parameters": [
+        "childConceptIds",
+        "parentConceptId"
+      ]
+    },
+    "resolveBulkDecisions": {
+      "parameters": [
+        "accessIds",
+        "permission",
+        "subjects"
+      ]
+    },
+    "resolveBulkInheritanceGraph": {
+      "parameters": [
+        "seedAccessIds",
+        "inheritTypeId",
+        "accessIdToConceptId"
+      ],
+      "documentation": "Resolve inheritance graph via 3-source BFS, depth-limited to MAX_BFS_DEPTH.\n\nSource 1: FreeSchema internal connections (\"the_parent_access_inheritance\")\nSource 2: Explicit parent access links (via Access API)\nSource 3: Concept-connection access inheritance"
+    },
+    "resolveSubjects": {
+      "parameters": [
+        "entityId"
+      ]
+    },
+    "revokeAccess": {
+      "parameters": [
+        "conceptId",
+        "permission",
+        "entityId"
+      ]
+    },
+    "revokeAccessBulk": {
+      "parameters": [
+        "request"
+      ]
+    },
+    "revokeSuperAdmin": {
+      "parameters": [
+        "entityId"
+      ]
+    },
+    "setAccessInheritance": {
+      "parameters": [
+        "conceptId"
+      ]
+    },
+    "setAccessInheritanceStatus": {
+      "parameters": [
+        "conceptId",
+        "isEnabled",
+        "connectionTypeId"
+      ]
+    },
+    "setParentAccessInheritance": {
+      "parameters": [
+        "conceptId",
+        "parentConceptId"
+      ]
+    },
+    "setParentAccessInheritanceBulk": {
+      "parameters": [
+        "childConceptIds",
+        "parentConceptId"
+      ]
+    }
+  },
   "AccessTracker": {
     "GetSuggestedConcepts": {
       "parameters": [
@@ -73,6 +225,10 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
     "startAutoSync": {
       "parameters": [],
       "documentation": "Starts auto-syncing to the server every specified time interval.\nThis will automatically call `syncToServer` every 5 minutes"
+    },
+    "stopAutoSync": {
+      "parameters": [],
+      "documentation": "Stops the access tracker auto-sync timer."
     },
     "syncNow": {
       "parameters": [],
@@ -246,6 +402,9 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
     "GetConnectionsBetweenUrl": {
       "parameters": []
     },
+    "GetInstanceConceptByCharacterTypeUrl": {
+      "parameters": []
+    },
     "GetRealConceptById": {
       "parameters": []
     },
@@ -283,6 +442,9 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": []
     },
     "RecursiveSearchUrl": {
+      "parameters": []
+    },
+    "RefreshTokenUrl": {
       "parameters": []
     },
     "SearchAllTypeWithLinker": {
@@ -332,10 +494,16 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
     "getWidgetData": {
       "parameters": []
     },
+    "r2PresignedUploadUrl": {
+      "parameters": []
+    },
     "sendBulkMail": {
       "parameters": []
     },
     "sendMail": {
+      "parameters": []
+    },
+    "sendPersonalMail": {
       "parameters": []
     },
     "setRandomizer": {
@@ -350,6 +518,9 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": []
     },
     "uploadImageUrlWithSmall": {
+      "parameters": []
+    },
+    "uploadR2StorageUrl": {
       "parameters": []
     }
   },
@@ -389,6 +560,11 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "id"
       ],
       "documentation": "Retrieves a concept by ID from the Map.\n\nReturns a { key, value } wrapper matching the Node shape that callers expect.\nCallers access the returned object's .value property to get the Concept.\n\nParam: id - The concept ID to look up\nReturns: Node-like wrapper with .value = Concept, or null if not found"
+    },
+    "normalizeId": {
+      "parameters": [
+        "id"
+      ]
     },
     "removeNodeFromTree": {
       "parameters": [
@@ -775,9 +951,21 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
   },
   "CountInfo": {},
   "DependencyObserver": {
+    "addTrackedEventListener": {
+      "parameters": [
+        "key",
+        "eventName",
+        "handler"
+      ],
+      "documentation": "Registers a window listener and tracks enough metadata to remove it later.\nThe key identifies the logical subscription; eventName is the CustomEvent name."
+    },
     "bind": {
       "parameters": [],
       "documentation": "Binds and refreshes the observable data. Override in subclasses to implement specific data fetching logic.\nReturns: The bound data"
+    },
+    "dispose": {
+      "parameters": [],
+      "documentation": "Removes all listeners owned by this observer."
     },
     "execute": {
       "parameters": [],
@@ -806,11 +994,21 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": [],
       "documentation": "Notifies all subscribers with the current data."
     },
+    "onDispose": {
+      "parameters": [],
+      "documentation": "Hook for subclasses that maintain additional subscriptions."
+    },
     "removeListenToEvent": {
       "parameters": [
         "id"
       ],
       "documentation": "Removes an event listener for a specific concept ID.\nParam: id - The concept ID to stop tracking"
+    },
+    "removeTrackedEventListener": {
+      "parameters": [
+        "key"
+      ],
+      "documentation": "Removes a previously tracked window listener by its logical key."
     },
     "run": {
       "parameters": [],
@@ -1095,13 +1293,13 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": [
         "query"
       ],
-      "documentation": "Queries the backend for connections matching the given criteria and queues all\nreturned connection IDs for bulk deletion when commitTransaction() is called.\n\n**Nothing is deleted until commitTransaction() is called.**\nCalling rollbackTransaction() discards the queue without touching the backend.\n\nSupported query permutations:\n1. `ofTheConceptId` + `toTheConceptId` + `type` — connections between two specific concepts\n2. `ofTheConceptId` + `type`                    — all connections FROM a concept of that type\n3. `toTheConceptId` + `type`                    — all connections TO a concept of that type\n4. `typeId` + `isComposition: true`             — all internal connections of a composition\n\nFor multiple queries in one go use {@link DeleteConnectionsBetweenBulk} — it sends\nall queries in a single HTTP request.\n\nParam: query - Partial FetchConnectionQuery with only the fields relevant to your permutation.\nReturns: The connection IDs queued for deletion by this call."
+      "documentation": "Queries the backend for connections matching the given criteria and queues all\nreturned connection IDs for batched bulk deletion when commitTransaction() is called.\n\n**Nothing is deleted until commitTransaction() is called.**\nCalling rollbackTransaction() discards the queue without touching the backend.\n\nSupported query permutations:\n1. `ofTheConceptId` + `toTheConceptId` + `type` — connections between two specific concepts\n2. `ofTheConceptId` + `type`                    — all connections FROM a concept of that type\n3. `toTheConceptId` + `type`                    — all connections TO a concept of that type\n4. `typeId` + `isComposition: true`             — all internal connections of a composition\n\nFor multiple queries in one go use {@link DeleteConnectionsBetweenBulk} — it sends\nall queries in a single HTTP request.\n\nParam: query - Partial FetchConnectionQuery with only the fields relevant to your permutation.\nReturns: The connection IDs queued for deletion by this call."
     },
     "DeleteConnectionsBetweenBulk": {
       "parameters": [
         "queries"
       ],
-      "documentation": "Same as {@link DeleteConnectionsBetween} but resolves multiple queries in a single\nHTTP request to POST /api/get-connection-between.\n\nPrefer this over looping DeleteConnectionsBetween — all queries go to the backend\nin one round trip, and all returned IDs are merged into the same pending-deletion queue.\nThe actual deletion still fires as a single bulk call inside commitTransaction().\n\nParam: queries - Array of partial FetchConnectionQuery objects, one per query permutation.\nReturns: All connection IDs queued for deletion across every query in this call."
+      "documentation": "Same as {@link DeleteConnectionsBetween} but resolves multiple queries in a single\nHTTP request to POST /api/get-connection-between.\n\nPrefer this over looping DeleteConnectionsBetween — all queries go to the backend\nin one round trip, and all returned IDs are merged into the same pending-deletion queue.\nThe actual deletion fires in 300-id bulk batches inside commitTransaction().\n\nParam: queries - Array of partial FetchConnectionQuery objects, one per query permutation.\nReturns: All connection IDs queued for deletion across every query in this call."
     },
     "MakeTheInstanceConceptLocal": {
       "parameters": [
@@ -1127,6 +1325,9 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "documentation": "Method to commi the created Transactions"
     },
     "commitTransactionWithoutAuth": {
+      "parameters": []
+    },
+    "flushPendingConnectionDeletions": {
       "parameters": []
     },
     "initialize": {
@@ -1433,6 +1634,12 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": [
         "sessionId"
       ]
+    },
+    "updateTokens": {
+      "parameters": [
+        "accessToken",
+        "refreshToken"
+      ]
     }
   },
   "UserBinaryTree": {
@@ -1507,6 +1714,11 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
   },
   "WidgetTree": {},
   "tsccs": {
+    "AccessControlService": {
+      "parameters": [
+        "apiClient"
+      ]
+    },
     "AccessTracker": {
       "parameters": []
     },
@@ -1825,6 +2037,12 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       ],
       "documentation": "Retrieves connections for multiple compositions in bulk.\nOptimizes fetching by batching multiple composition IDs in one request.\n\n**Complex Logic**: Checks in-memory cache, fetches from API, detects deletions\nby comparing old and new data, and bulk-fetches related concepts.\n\nParam: composition_ids - Array of composition IDs to fetch connections for\nReturns: Array of Connection objects for all compositions"
     },
+    "GetAllLinkerConnectionsFromTheConcept": {
+      "parameters": [
+        "conceptId"
+      ],
+      "documentation": "Retrieves all linker connections originating from a specific concept.\nFetches connections where the concept is the source/origin.\n\nParam: conceptId - ID of the concept to get linker connections from\nReturns: Array of Connection objects originating from the concept"
+    },
     "GetAllTheConnectionsByTypeAndOfTheConcept": {
       "parameters": [
         "id",
@@ -2109,6 +2327,13 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "imageName"
       ],
       "documentation": "Retrieves an image by name from the cached images endpoint.\nReturns a readable stream for the image data.\n\nParam: imageName - Name/identifier of the image to retrieve\nReturns: Promise resolving to ReadableStream of image data, or null/undefined on error\n@throws Image stream on error (legacy behavior)"
+    },
+    "GetInstanceConceptByCharacterType": {
+      "parameters": [
+        "characterValue",
+        "type"
+      ],
+      "documentation": "Fetches an instance concept from the backend API by its character value and type.\n\nParam: characterValue - The character value of the concept, such as a URL or identifier.\nParam: type - The type string that qualifies the character value, such as \"the_source_url\".\nReturns: The matching Concept object, or a default empty Concept if not found."
     },
     "GetLink": {
       "parameters": [
@@ -2616,12 +2841,23 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "databaseName"
       ]
     },
+    "getR2PresignedUploadUrl": {
+      "parameters": [
+        "body",
+        "token"
+      ],
+      "documentation": "Method to request an R2 pre-signed upload URL from the backend.\nParam: body Request metadata for the file to upload.\nParam: token string?\nReturns: UploadResponse<R2PresignedUploadUrlData> | null"
+    },
     "getUploadFileLimit": {
       "parameters": []
     },
     "getUserDetails": {
       "parameters": [],
       "documentation": "Returns user details synchronously.\nPriority: in-memory profileCache (encrypted) → legacy localStorage(\"profile\") fallback."
+    },
+    "getUserDetailsWithRefresh": {
+      "parameters": [],
+      "documentation": "Returns user details after hydrating storage and refreshing an expired token.\nUse this when callers need a valid token from the user details object."
     },
     "getWidgetBulkFromId": {
       "parameters": [
@@ -2668,7 +2904,8 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "applicationName",
         "enableSW",
         "flags",
-        "parameters"
+        "parameters",
+        "accessControlUrl"
       ],
       "documentation": "Initializes the mftsccs-browser package and sets up all required subsystems.\n\nThis is the FIRST function you must call before using any other functionality in the package.\nIt configures the backend connections, initializes local databases, sets up service workers,\nand prepares the system for concept and connection operations.\n\n**Initialization Process:**\n1. Configures Base URLs for backend, AI, and node servers\n2. Sets up access token for authenticated requests\n3. Generates unique application randomizer for IndexedDB identification\n4. Initializes feature flags (logging, access tracking, etc.)\n5. Checks for service worker support\n6. Initializes local IndexedDB databases for caching\n7. Sets up message listeners for service worker communication\n8. Optionally registers and activates service worker\n9. Falls back to main thread if service worker unavailable\n\n**Subsystems Initialized:**\n- IndexedDB databases (concepts, connections, settings)\n- Service worker (if enabled and supported)\n- Message passing between main thread and service worker\n- Broadcast channel for cross-tab communication\n- Access token storage\n- Logging and monitoring systems\n- Access tracking (if enabled)\n\nParam: url - The backend API base URL (C# data fabric server).\nThis is the primary server for concept and connection data.\nExample: \"https://api.example.com\" or \"https://backend.yourdomain.com\"\n**Required** for most operations.\n\nParam: aiurl - The AI service URL for AI-powered features and data preloading.\nIf not using AI features, pass empty string and set enableAi to false.\nExample: \"https://ai.example.com\"\n\nParam: accessToken - JWT bearer token for authenticated API requests.\nCan be empty string on initialization - set later with updateAccessToken().\nToken is obtained through LoginToBackend() or Signin().\nExample: \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n\nParam: nodeUrl - The Node.js server URL for business logic and security features.\nUsed for additional server-side operations.\nExample: \"https://node.example.com\"\n\nParam: enableAi - Flag to enable/disable AI features and AI data preloading to IndexedDB.\nSet to false if not using AI features or if aiurl is not provided.\nDefault: true\n\nParam: applicationName - Unique identifier for your application.\nUsed to create separate IndexedDB instances for different apps.\nExample: \"my-app-v1\", \"project-manager\", \"knowledge-base\"\nUseful when multiple applications share the same domain.\n\nParam: enableSW - Service worker configuration object. Service worker enables background\nprocessing for better performance and offline capabilities.\n- activate: boolean - Enable/disable service worker\n- scope: string (optional) - Service worker scope path (default: \"/\")\n- pathToSW: string (optional) - Path to service worker file (default: \"/service-worker.js\")\n- manual: boolean (optional) - If true, assumes SW already registered manually\nExample: {activate: true, scope: \"/\", pathToSW: \"/sw.js\"}\n\nParam: flags - Feature flags object for enabling/disabling various features:\n- logApplication: boolean - Enable application-level logging\n- logPackage: boolean - Enable package-level logging\n- accessTracker: boolean - Enable access tracking/analytics\n- isTest: boolean - Mark as test environment\nAll default to false if not specified.\n\nParam: parameters - Additional configuration parameters:\n- logserver: string - Custom log server URL (default: \"https://logdev.freeschema.com\")\n- isPwa: boolean - Enable PWA offline persistence to IndexedDB (default: false)\n- enableCache: boolean - Enable/disable widget and FreeschemaQuery caching.\nWhen false, QueryCacheManager and WidgetCacheManager skip all reads and writes\n(memory and IndexedDB). Stored in Environments under key 'enableCache' so it\ncan be read or changed at runtime via Environments.getValue/setValue.\nDefault: true.\n\nReturns: Promise<boolean> - Returns true if initialization succeeds, undefined if it fails.\nOn failure, falls back to main thread operation and logs warnings."
     },
@@ -2749,7 +2986,8 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
       "parameters": [
         "body",
         "token",
-        "bulk"
+        "bulkOrOptions",
+        "recaptchaToken"
       ]
     },
     "sendMessage": {
@@ -2759,6 +2997,13 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "retryCount"
       ],
       "documentation": "Method to send message to the service worker from main thread\nParam: type string\nParam: payload any\nReturns: Promise<any>"
+    },
+    "sendPersonalEmail": {
+      "parameters": [
+        "body",
+        "token",
+        "options"
+      ]
     },
     "setHasActivatedSW": {
       "parameters": [
@@ -2781,7 +3026,8 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
     "updateAccessToken": {
       "parameters": [
         "accessToken",
-        "session"
+        "session",
+        "refreshToken"
       ],
       "documentation": "Updates the JWT access token used for authenticated API requests.\n\nThis function should be called after user authentication to set or update the bearer token\nthat will be used for all subsequent authenticated operations. The token is stored in\nTokenStorage and automatically included in API request headers.\n\n**When to Use:**\n- After successful login (LoginToBackend or Signin)\n- When refreshing an expired token\n- When switching between user sessions\n- When restoring a saved session on app reload\n\n**Token Flow:**\n1. User logs in via LoginToBackend() or Signin()\n2. Backend returns JWT token\n3. Call updateAccessToken() with the token\n4. Token is stored in memory (TokenStorage.BearerAccessToken)\n5. All API calls automatically use this token\n6. If service worker enabled, token is synced to service worker\n\n**Security Notes:**\n- Token is stored in memory only (not persisted to disk)\n- Token is cleared on page refresh (unless you save/restore it)\n- Never expose token in logs or client-side code\n- Token should be refreshed before expiration\n\nParam: accessToken - The JWT bearer token obtained from authentication.\nFormat: \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\nPass empty string to clear the token (logout).\n\nParam: session - Optional session information to sync with token.\nReserved for future use. Currently not fully implemented.\n\nReturns: void"
     },
@@ -2812,6 +3058,29 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
         "token"
       ],
       "documentation": "Method to upload image to server\nParam: body FormData\nParam: token string?\nReturns: JSON | string | null"
+    },
+    "uploadR2Storage": {
+      "parameters": [
+        "body",
+        "token"
+      ],
+      "documentation": "Method to upload a file or image to R2 storage.\nParam: body FormData. Append the file under the \"file\" key.\nParam: token string?\nReturns: UploadResponse<R2UploadData> | null"
+    },
+    "uploadToR2PresignedUrl": {
+      "parameters": [
+        "uploadUrl",
+        "file",
+        "contentType"
+      ],
+      "documentation": "Method to upload a file body to a pre-signed R2 URL.\nParam: uploadUrl URL returned by getR2PresignedUploadUrl\nParam: file Blob/File, raw body, or compatible file-like object\nParam: contentType Must match the contentType used when creating the signed URL.\nReturns: Response from R2"
+    },
+    "uploadWithR2PresignedUrl": {
+      "parameters": [
+        "file",
+        "options",
+        "token"
+      ],
+      "documentation": "Full R2 pre-signed upload workflow: create URL, PUT file to R2, return public URL.\nParam: file Blob/File, raw body, or compatible file-like object\nParam: options Optional fileName/contentType/folder/expiresInSeconds overrides.\nParam: token string?\nReturns: R2PresignedUploadResult"
     }
   }
 };

@@ -1,4 +1,5 @@
 import { TokenStorage } from "../../DataStructures/Security/TokenStorage";
+import { getValidAccessToken } from "../Security/GetRequestHeader";
 
 /**
  * Returns user details synchronously.
@@ -21,6 +22,7 @@ export function getUserDetails() {
         userDetails.entity = cached.entityId ?? 0;
         userDetails.userConcept = cached.userConcept ?? 0;
         userDetails.userId = cached.userId ?? 0;
+        userDetails.token = TokenStorage.BearerAccessToken || cached.token || "";
         userDetails.email = cached.email ?? "";
         userDetails.amcode = cached.amcode ?? "";
         userDetails.roles = cached.roles ?? [];
@@ -45,5 +47,16 @@ export function getUserDetails() {
         // corrupted localStorage — ignore
     }
 
+    return userDetails;
+}
+
+/**
+ * Returns user details after hydrating storage and refreshing an expired token.
+ * Use this when callers need a valid token from the user details object.
+ */
+export async function getUserDetailsWithRefresh() {
+    const token = await getValidAccessToken();
+    const userDetails = getUserDetails();
+    userDetails.token = token;
     return userDetails;
 }

@@ -1,7 +1,7 @@
 import { FreeschemaQuery, Logger } from "../../app";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { QueryCacheManager } from "../../WrapperFunctions/QueryCacheManager";
 
 /**
@@ -22,14 +22,14 @@ import { QueryCacheManager } from "../../WrapperFunctions/QueryCacheManager";
  */
 export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string=""){
     const logData : any = Logger.logfunction("FreeschemaQueryApi", arguments);
-    var header = GetRequestHeaderWithAuthorization("application/json", token);
+    var header = await GetRequestHeaderWithAuthorization("application/json", token);
     const queryUrl = BaseUrl.FreeschemaQueryUrl();
     const body = JSON.stringify(query);
     const hash = await QueryCacheManager.getHash(query);
     const cached = query.cache !== false ? QueryCacheManager.get(hash) : null;
     if(cached){
         // Return cached data immediately, revalidate in the background
-        fetch(queryUrl, {
+        fetchWithAuthRetry(queryUrl, {
             method: 'POST',
             headers: header,
             body: body
@@ -47,7 +47,7 @@ export async function FreeschemaQueryApi(query: FreeschemaQuery, token: string="
         return cached;
     }
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'POST',
             headers: header,
             body: body

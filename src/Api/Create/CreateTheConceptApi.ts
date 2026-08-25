@@ -3,7 +3,7 @@ import { Concept } from "../../DataStructures/Concept";
 import { Returner } from "../../DataStructures/Returner";
 import { TheCharacter } from "../../DataStructures/TheCharacter";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { CreateDefaultConcept, Logger } from "../../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
 
@@ -29,8 +29,8 @@ export async function CreateTheConceptApi(conceptData: any){
   const logData : any = Logger.logfunction("CreateTheConceptApi", conceptData);
   let result = CreateDefaultConcept();
     try{
-            var header = GetRequestHeader();
-            const response = await fetch(BaseUrl.CreateTheConceptUrl(),{
+            var header = await GetRequestHeader();
+            const response = await fetchWithAuthRetry(BaseUrl.CreateTheConceptUrl(),{
                 method: 'POST',
                 headers: header,
                 body: JSON.stringify(conceptData),

@@ -1,5 +1,5 @@
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { Concept } from "../DataStructures/Concept";
 import { CreateDefaultConcept } from "../Services/CreateDefaultConcept";
 import { ConceptsData, GetConceptByCharacter, Logger } from "../app";
@@ -32,8 +32,8 @@ export async function MakeTheTypeConceptApi(type: string, userId: number) {
       // get the concept by character and category from the api
       concept = await GetConceptByCharacterAndCategory(type);
       if (concept.id == 0 || concept.typeId == 4) {
-        let header = GetRequestHeader("application/x-www-form-urlencoded");
-        const response = await fetch(BaseUrl.MakeTheTypeConceptUrl(), {
+        let header = await GetRequestHeader("application/x-www-form-urlencoded");
+        const response = await fetchWithAuthRetry(BaseUrl.MakeTheTypeConceptUrl(), {
           method: "POST",
           headers: header,
           body: `type=${type}`,

@@ -2,7 +2,7 @@ import { ConnectionData } from "./../DataStructures/ConnectionData";
 import { BaseUrl } from "../DataStructures/BaseUrl";
 import { Connection } from "../DataStructures/Connection";
 import { FindConceptsFromConnections } from "../Services/FindConeceptsFromConnection";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger, sendMessage, serviceWorker } from "../app";
 import { requestNextCacheServer } from "../Services/cacheService";
@@ -79,12 +79,13 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
             // if the case that bulkConnectionFetch does not have any elements then we just return everything we have
             if(bulkConnectionFetch.length == 0){
                 Logger.logUpdate(logData);  
+                await FindConceptsFromConnections(connectionList);
                 return connectionList;
             }
             else{
     
                 // if the connection could not be found in the local memory then fetch from the api.
-                let header = GetRequestHeader("application/json");
+                let header = await GetRequestHeader();
                 let response;
                 const reqData = {
                     method: 'POST',
@@ -92,7 +93,7 @@ export async function GetConnectionBulk(connectionIds: number[] = []): Promise<C
                     body: JSON.stringify(bulkConnectionFetch)
                 }
                 try {
-                    response = await fetch(BaseUrl.GetConnectionBulkUrl(), reqData);
+                    response = await fetchWithAuthRetry(BaseUrl.GetConnectionBulkUrl(), reqData);
                 } catch (error) {
                     response = await requestNextCacheServer(reqData, "/api/get_connection_bulk");
                 }

@@ -353,7 +353,7 @@ emailQuery.name = "emails";
 emailQuery.selectors = ["the_email"];
 
 // Get phone numbers
-const phoneQuery = new FreeschemaQuery();
+const phoneQuery = new ();
 phoneQuery.typeConnection = "has_phone";
 phoneQuery.name = "phones";
 phoneQuery.selectors = ["the_phone"];

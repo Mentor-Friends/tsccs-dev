@@ -1,6 +1,6 @@
 import { BaseUrl, ConnectionData, Logger } from "../app";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
-import { GetOnlyTokenHeader } from "../Services/Security/GetRequestHeader";
+import { GetOnlyTokenHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 
 /**
  * Deletes multiple connections from the backend in a single bulk operation.
@@ -25,9 +25,9 @@ export default async function DeleteTheConnectionBulkApi(ids:number[]){
   const logData:any = Logger.logfunction("DeleteTheConnectionBulkApi", arguments);
   let isDeleted = false;
     try{
-           let header:Headers = GetOnlyTokenHeader();
+           let header:Headers = await GetOnlyTokenHeader();
            header.append('Content-Type','application/json');
-            const response = await fetch(BaseUrl.DeleteTheConnectionBulkUrl(),{
+            const response = await fetchWithAuthRetry(BaseUrl.DeleteTheConnectionBulkUrl(),{
                 method: 'POST',
                 headers: header,
                 body: JSON.stringify(ids)

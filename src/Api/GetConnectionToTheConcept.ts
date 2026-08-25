@@ -1,6 +1,6 @@
 import { Connection } from "../DataStructures/Connection";
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError } from "../Services/Common/ErrorPosting";
 
 /**
@@ -27,8 +27,8 @@ export async function GetConnectionToTheConcept(typeId: number, toTheConceptId:n
         urlencoded.append("userId", `${userId}`);
         urlencoded.append("inpage", `${inpage}`);
         urlencoded.append("page", `${page}`);
-        var header = GetRequestHeader('application/x-www-form-urlencoded');
-            const response = await fetch(BaseUrl.GetAllConnectionsToConceptUrl(),{
+        var header = await GetRequestHeader('application/x-www-form-urlencoded');
+            const response = await fetchWithAuthRetry(BaseUrl.GetAllConnectionsToConceptUrl(),{
                 method: 'POST',
                 headers: header,
                 body: urlencoded

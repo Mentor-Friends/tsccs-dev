@@ -1,4 +1,3 @@
-import { strict } from "assert";
 import { BaseUrl } from "../app";
 import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
@@ -21,25 +20,20 @@ export class Logger {
     public static logPackageActivationStatus:boolean = false;
 
     // Private auto-sync interval management
-    private static autoSyncInterval: number | null = null;
-
-    // Ensure logs are managed automatically
-    static {
-        this.startAutoSync();
-    }
+    private static autoSyncInterval: ReturnType<typeof setInterval> | null = null;
 
     /**
      * Automatically starts the auto-sync mechanism.
      * This is private and does not need external interaction.
      */
-    private static startAutoSync(): void {
+    public static startAutoSync(): void {
         if (this.autoSyncInterval) {
             console.warn("Auto-sync is already running.");
             return;
         }
         this.nextSyncTime = Date.now() + this.SYNC_INTERVAL_MS;
 
-        setInterval(() => {
+        this.autoSyncInterval = setInterval(() => {
             const currentTime = Date.now();
             // console.log("Current Time : ",currentTime);
             if (this.nextSyncTime && currentTime >= this.nextSyncTime) {
@@ -54,7 +48,7 @@ export class Logger {
     /**
      * Automatically stops the auto-sync mechanism when required.
      */
-    private static stopAutoSync(): void {
+    public static stopAutoSync(): void {
         if (this.autoSyncInterval !== null) {
             clearInterval(this.autoSyncInterval);
             this.autoSyncInterval = null;
@@ -299,7 +293,7 @@ export class Logger {
 
             // clear application log from memory
             const chunkSize = 50;
-            let header = GetRequestHeader();
+            let header = await GetRequestHeader();
             let i = 0;
             while(storedLogs.length != 0)
             { 
@@ -361,7 +355,7 @@ export class Logger {
                 // const chunk = storedLogs.slice(i, i + chunkSize);
                 // console.log("Package Log URL : ", BaseUrl.PostLogger);
                 
-                let header= GetRequestHeader();
+                let header= await GetRequestHeader();
                 const response = await fetch(BaseUrl.PostLogger(), {
                     method: "POST",
                     headers: header,

@@ -2,7 +2,7 @@ import { BaseUrl } from '../DataStructures/BaseUrl';
 import { ConceptsData } from '../DataStructures/ConceptData';
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from '../Services/Common/ErrorPosting';
 import { PurgatoryDatabaseUpdated } from '../Services/InitializeSystem';
-import { GetRequestHeader } from '../Services/Security/GetRequestHeader';
+import { GetRequestHeader, fetchWithAuthRetry } from '../Services/Security/GetRequestHeader';
 import { ConnectionData, Logger } from '../app';
 import { GetAllAiData } from './../Constants/ApiConstants';
 
@@ -23,8 +23,8 @@ export async function GetAllPrefetchConnections(userId:number, inpage:number){
       const start = new Date().getTime();
       var urlencoded = new URLSearchParams();
       urlencoded.append("user_id", userId.toString());
-      var header = GetRequestHeader('application/x-www-form-urlencoded');
-        const response = await fetch(BaseUrl.GetAllPrefetchConnectionsUrl(),{
+      var header = await GetRequestHeader('application/x-www-form-urlencoded');
+        const response = await fetchWithAuthRetry(BaseUrl.GetAllPrefetchConnectionsUrl(),{
             method: 'POST',
             headers: header,
             body: urlencoded

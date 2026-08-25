@@ -1,4 +1,4 @@
-import { GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { HandleHttpError, HandleInternalError } from "../../Services/Common/ErrorPosting";
 
@@ -75,7 +75,7 @@ import { HandleHttpError, HandleInternalError } from "../../Services/Common/Erro
  * @see {@link SearchWithTypeAndLinker} for advanced search with type and linker filters
  */
 export async function SearchAllConcepts(type:string, search:string, composition:string, token:string, inpage: number = 10, page:number =1){
-    var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded', token);
+    var header = await GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded', token);
     var urlencoded = new URLSearchParams();
     urlencoded.append("type", type);
     urlencoded.append("search", search);
@@ -84,7 +84,7 @@ export async function SearchAllConcepts(type:string, search:string, composition:
     urlencoded.append("page", page.toString());
     const queryUrl = BaseUrl.SearchCompositionsUrl() + "?" + urlencoded.toString();
     try{
-        const response = await fetch(queryUrl,{
+        const response = await fetchWithAuthRetry(queryUrl,{
             method: 'GET',
             headers: header
         });

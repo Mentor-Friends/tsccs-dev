@@ -1,7 +1,7 @@
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetAllConceptsByTypeUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { Logger } from "../app";
 
@@ -23,8 +23,8 @@ export async function GetAllConceptsByType(type:string,userId: number){
             urlencoded.append("type", type);
             urlencoded.append("user_id", userId.toString());
 
-            var header = GetRequestHeader('application/x-www-form-urlencoded');
-            const response = await fetch(BaseUrl.GetAllConceptsByTypeUrl(),{
+            var header = await GetRequestHeader('application/x-www-form-urlencoded');
+            const response = await fetchWithAuthRetry(BaseUrl.GetAllConceptsByTypeUrl(),{
                 method: 'POST',
                 headers: header,
                 body: urlencoded

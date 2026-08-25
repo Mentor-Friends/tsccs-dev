@@ -1,7 +1,7 @@
 import { BaseUrl, Concept, Logger } from "../../app";
 import { Prototype } from "../../DataStructures/Prototype/Prototype";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeader } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 
 /**
  * Creates a new prototype in the backend.
@@ -19,8 +19,8 @@ export async function CreatePrototypeApi(prototype: Prototype){
     let result: any;
   const logData : any = Logger.logfunction("CreatePrototypeApi", prototype);
     try{
-            var header = GetRequestHeader();
-            const response = await fetch(BaseUrl.CreatePrototypeUrl(),{
+            var header = await GetRequestHeader();
+            const response = await fetchWithAuthRetry(BaseUrl.CreatePrototypeUrl(),{
                 method: 'POST',
                 headers: header,
                 body: JSON.stringify(prototype),

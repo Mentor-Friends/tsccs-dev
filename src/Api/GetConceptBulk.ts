@@ -2,7 +2,7 @@ import { Concept } from "./../DataStructures/Concept";
 import { ConceptsData } from "./../DataStructures/ConceptData";
 import { GetConceptBulkUrl, GetConceptUrl } from './../Constants/ApiConstants';
 import { BaseUrl } from "../DataStructures/BaseUrl";
-import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+import { GetRequestHeader, fetchWithAuthRetry } from "../Services/Security/GetRequestHeader";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { handleServiceWorkerException, Logger } from "../app";
 import { BinaryTree, sendMessage, serviceWorker } from "../app";
@@ -95,6 +95,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
         let bulkConceptFetch: number[] = [];
         for(let i=0; i<conceptIds.length; i++){
           if(!ConceptsData.GetNpc(conceptIds[i])){
+            let numberedConcept = Number(conceptIds[i]);
             let conceptUse :Concept= await ConceptsData.GetConcept(conceptIds[i]);
 
             if(conceptUse.id == 0){
@@ -125,7 +126,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
           Logger.logfunction(logData);
           return result;
         } else {
-          let header = GetRequestHeader("application/json");
+          let header = await GetRequestHeader();
           let response;
           const requestData = {
             method: "POST",
@@ -133,7 +134,7 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
             body: JSON.stringify(bulkConceptFetch),
           };
           try {
-            response = await fetch(BaseUrl.GetConceptBulkUrl(), requestData);
+            response = await fetchWithAuthRetry(BaseUrl.GetConceptBulkUrl(), requestData);
           } catch (error) {
             response = await requestNextCacheServer(
               requestData,
@@ -185,9 +186,9 @@ export async function GetConceptBulk(passedConcepts: number[]): Promise<Concept[
 export async function BulkConceptGetterApi(bulkConceptFetch: number[]) {
     const conceptList: Concept[] = []
     if (bulkConceptFetch.length > 0) {
-      const myHeaders = GetRequestHeader("application/json")
+      const myHeaders = await GetRequestHeader("application/json")
       try {
-        const response = await fetch(BaseUrl.GetConceptBulkUrl(), {
+        const response = await fetchWithAuthRetry(BaseUrl.GetConceptBulkUrl(), {
           method: 'POST',
           headers: myHeaders,
           body: JSON.stringify(bulkConceptFetch),

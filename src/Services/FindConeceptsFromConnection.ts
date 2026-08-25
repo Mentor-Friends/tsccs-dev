@@ -14,13 +14,13 @@ export  async function FindConceptsFromConnections(connectionList:Connection[] =
         for(let i=0;i < connectionList.length; i++){
 
           if(!ConceptList.includes(connectionList[i].ofTheConceptId )){
-            ConceptList.push(connectionList[i].ofTheConceptId);
+            ConceptList.push(Number(connectionList[i].ofTheConceptId));
           }
           if(!ConceptList.includes(connectionList[i].toTheConceptId)){
-            ConceptList.push(connectionList[i].toTheConceptId);
+            ConceptList.push(Number(connectionList[i].toTheConceptId));
           }
           if(!ConceptList.includes(connectionList[i].typeId)){
-            ConceptList.push(connectionList[i].typeId);
+            ConceptList.push(Number(connectionList[i].typeId));
           }
 
         }

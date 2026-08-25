@@ -1,6 +1,6 @@
 import { BaseUrl } from "../../DataStructures/BaseUrl";
 import { HandleHttpError, HandleInternalError, UpdatePackageLogWithError } from "../../Services/Common/ErrorPosting";
-import { GetRequestHeader, GetRequestHeaderWithAuthorization } from "../../Services/Security/GetRequestHeader";
+import { GetRequestHeader, GetRequestHeaderWithAuthorization, fetchWithAuthRetry } from "../../Services/Security/GetRequestHeader";
 import { Concept, ConceptsData, CreateDefaultConcept, Logger } from "../../app";
 
 /**
@@ -18,9 +18,9 @@ export async function TranslateLocalToReal(conceptId: number){
   let result:Concept = CreateDefaultConcept();
     try{
 
-            var header = GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
+            var header = await GetRequestHeaderWithAuthorization('application/x-www-form-urlencoded');
 
-            const response = await fetch(BaseUrl.GetRealConceptById(),{
+            const response = await fetchWithAuthRetry(BaseUrl.GetRealConceptById(),{
               method: 'POST',
               headers: header,
               body: `id=${conceptId}`
