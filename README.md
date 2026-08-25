@@ -931,13 +931,13 @@ This creates the `dist/` folder with:
 - `dist/main.bundle.js` - Main bundle
 - `dist/types/` - TypeScript declarations
 
-For the lean WICO autocomplete metadata package:
+To also add the WICO autocomplete metadata bundle to the same `dist/` folder:
 
 ```bash
 npm run build:wico
 ```
 
-This creates `dist-wico/` with a metadata-only bundle, minimal TypeScript declarations, and a small package manifest.
+This runs the full `build` first (so `dist/main.bundle.js` and `dist/serviceWorker.bundle.js` are present), then adds `dist/wico-metadata.bundle.js` — everything from the main entry plus `getTsccsAutocompleteMetadata`/`tsccsAutocompleteMetadata` — importable via the `mftsccs-browser/wico` subpath. A single `npm publish` ships both.
 
 #### 3. Test the Package Locally (Optional but Recommended)
 

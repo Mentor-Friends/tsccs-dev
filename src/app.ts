@@ -445,7 +445,7 @@ async function init(
   enableAi: boolean = true,
   applicationName: string = "",
   enableSW: {activate: boolean, scope?: string, pathToSW?: string, manual?: boolean} | undefined = undefined,
-  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean } = {},
+  flags: { logApplication?: boolean; logPackage?:boolean; accessTracker?:boolean; isTest?: boolean, accessControl?: boolean } = {},
   parameters: {
     logserver?: string,
     isPwa?: boolean,

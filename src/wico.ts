@@ -1,3 +1,5 @@
+export * from "./app";
+
 export {
   getTsccsAutocompleteMetadata,
   tsccsAutocompleteMetadata,
