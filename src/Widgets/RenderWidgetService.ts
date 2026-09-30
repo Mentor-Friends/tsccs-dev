@@ -55,7 +55,8 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
         // await renderWidget(widgets[0].id, attachNode, props);
         await renderLatestWidget(output?.[0]?.data?.the_page?.the_page_body?.id, attachNode, props, showDocumentation);
       else{
-        attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4> ' + pageId; 
+        attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4> ';
+        attachNode.appendChild(document.createTextNode(String(pageId)));
       }
     }
 
@@ -146,7 +147,8 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
       const widgetTree = DataCache.cache.get(`wdgt_${latestWidgetId}`);
       console.log("renderImportedWidget widgetTree -->", widgetTree);
       if (!widgetTree.name) {
-        attachNode.innerHTML = "<h4>Invalid or Widget doesn't exist</h4>" + widgetId;
+        attachNode.innerHTML = "<h4>Invalid or Widget doesn't exist</h4>";
+        attachNode.appendChild(document.createTextNode(String(widgetId)));
         return;
       }
       const appElement = attachNode;
@@ -236,9 +238,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
           ".widget-documentation-btn"
         );
         widgetPreviewButtonList?.forEach((previewButton: any) => {
-          previewButton.addEventListener("click", (event: any) => {
-            const eventTarget = event?.target;
-            const widgetId = eventTarget?.getAttribute("widget-id");
+          previewButton.addEventListener("click", () => {
+            // read from the bound button: a click on the inner <svg>/<path> has no widget-id
+            const widgetId = previewButton.getAttribute("widget-id");
             openDocumentationPreviewModal(widgetId);
           });
         });
@@ -374,7 +376,8 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
       const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
       console.log("this is the widget tree", widgetTree);
       if (!widgetTree.name) {
-        attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>' + widgetId;
+        attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>';
+        attachNode.appendChild(document.createTextNode(String(widgetId)));
         return 
       }
       const appElement = attachNode;
@@ -464,9 +467,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
         ".widget-documentation-btn"
       );
       widgetPreviewButtonList?.forEach((previewButton: any) => {
-        previewButton.addEventListener("click", (event:any) => {
-          const eventTarget = event?.target;
-          const widgetId = eventTarget?.getAttribute('widget-id');
+        previewButton.addEventListener("click", () => {
+          // read from the bound button: a click on the inner <svg>/<path> has no widget-id
+          const widgetId = previewButton.getAttribute('widget-id');
           openDocumentationPreviewModal(widgetId);
         });
       });

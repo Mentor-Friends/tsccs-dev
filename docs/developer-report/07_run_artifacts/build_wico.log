@@ -1,0 +1,91 @@
+
+> mftsccs-browser@2.2.48-beta prebuild:wico
+> npm run generate-autocomplete-metadata && npm run build
+
+
+> mftsccs-browser@2.2.48-beta generate-autocomplete-metadata
+> node ./scripts/generate-autocomplete-metadata.cjs
+
+Generated autocomplete metadata for 200 tsccs exports in src/Metadata/AutocompleteMetadata.ts
+
+> mftsccs-browser@2.2.48-beta build
+> webpack --config webpack.config.js
+
+assets by path types/ 364 KiB 263 assets
+assets by status 1.08 MiB [big]
+  asset serviceWorker.bundle.js 560 KiB [compared for emit] [javascript module] [minimized] [big] (name: serviceWorker) 1 related asset
+  asset main.bundle.js 549 KiB [compared for emit] [javascript module] [minimized] [big] (name: main) 1 related asset
+orphan modules 816 KiB [orphan] 150 modules
+runtime modules 2.26 KiB 10 modules
+cacheable modules 1.71 MiB
+  modules by path ./src/ 1.47 MiB 93 modules
+  modules by path ./node_modules/ 237 KiB
+    modules by path ./node_modules/postcss-selector-parser/dist/ 118 KiB 30 modules
+    modules by path ./node_modules/postcss/lib/ 103 KiB
+      ./node_modules/postcss/lib/postcss.js 2.83 KiB [built] [code generated]
+      + 26 modules
+    + 5 modules
+  ./terminal-highlight (ignored) 15 bytes [built] [code generated]
+  path (ignored) 15 bytes [built] [code generated]
+  source-map-js (ignored) 15 bytes [built] [code generated]
+  url (ignored) 15 bytes [built] [code generated]
+  fs (ignored) 15 bytes [built] [code generated]
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  main.bundle.js (549 KiB)
+  serviceWorker.bundle.js (560 KiB)
+
+WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  main (549 KiB)
+      main.bundle.js
+  serviceWorker (560 KiB)
+      serviceWorker.bundle.js
+
+WARNING in webpack performance recommendations: 
+You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
+For more info visit https://webpack.js.org/guides/code-splitting/
+
+webpack 5.101.2 compiled with 3 warnings in 15673 ms
+
+> mftsccs-browser@2.2.48-beta build:wico
+> webpack --config webpack.wico.config.js
+
+assets by status 363 KiB [compared for emit] 253 assets
+assets by status 633 KiB [emitted]
+  asset wico-metadata.bundle.js 632 KiB [emitted] [javascript module] [minimized] [big] (name: wico) 1 related asset
+  asset types/Metadata/AutocompleteMetadata.d.ts 350 bytes [emitted]
+  asset types/wico.d.ts 238 bytes [emitted]
+orphan modules 1.58 MiB [orphan] 234 modules
+runtime modules 1.13 KiB 5 modules
+cacheable modules 1.81 MiB
+  modules by path ./node_modules/ 237 KiB
+    modules by path ./node_modules/postcss-selector-parser/dist/ 118 KiB 30 modules
+    modules by path ./node_modules/postcss/lib/ 103 KiB
+      ./node_modules/postcss/lib/postcss.js 2.83 KiB [built] [code generated]
+      + 26 modules
+    + 5 modules
+  ./src/wico.ts + 233 modules 1.58 MiB [built] [code generated]
+  ./terminal-highlight (ignored) 15 bytes [built] [code generated]
+  path (ignored) 15 bytes [built] [code generated]
+  source-map-js (ignored) 15 bytes [built] [code generated]
+  url (ignored) 15 bytes [built] [code generated]
+  fs (ignored) 15 bytes [built] [code generated]
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  wico-metadata.bundle.js (632 KiB)
+
+WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  wico (632 KiB)
+      wico-metadata.bundle.js
+
+WARNING in webpack performance recommendations: 
+You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
+For more info visit https://webpack.js.org/guides/code-splitting/
+
+webpack 5.101.2 compiled with 3 warnings in 12997 ms

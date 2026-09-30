@@ -1,0 +1,58 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ontology report</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{--paper:#f6f3ec;--card:#fffdf8;--ink:#1c1815;--muted:#6b625a;--line:#e4ddcf;--heart:#b9711a;--build:#2c7c77;--proto:#6266a8;--bad:#a8322d;--ok:#2f7a3b;--warn:#b9711a;--code:#1f1b18}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#191613;--card:#221e1a;--ink:#efe8dc;--muted:#a79d90;--line:#3a332c;--code:#0f0d0b}}
+:root[data-theme="dark"]{--paper:#191613;--card:#221e1a;--ink:#efe8dc;--muted:#a79d90;--line:#3a332c;--code:#0f0d0b}
+*{box-sizing:border-box}html,body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 Inter,system-ui,sans-serif}
+.wrap{display:grid;grid-template-columns:230px minmax(0,1fr);gap:32px;max-width:1180px;margin:0 auto;padding:32px 16px}
+@media(max-width:820px){.wrap{grid-template-columns:1fr}.toc{position:static!important}}
+.toc{position:sticky;top:16px;align-self:start;font:12px/1.5 'IBM Plex Mono',monospace}
+.toc a{display:block;color:var(--muted);text-decoration:none;padding:3px 0}.toc a:hover{color:var(--heart)}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.2}h1{font-size:34px;margin:.2em 0 .4em}h2{font-size:24px;margin-top:1.8em}
+.kicker,.eye{font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--heart)}
+.eye{color:var(--build);display:block;margin-top:28px}
+.card{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--build);border-radius:8px;padding:14px 18px;margin:14px 0}
+.card.h{border-left-color:var(--bad)}.card.m{border-left-color:var(--warn)}.card.l{border-left-color:var(--proto)}.card.i{border-left-color:var(--muted)}
+.note{background:color-mix(in srgb,var(--heart) 10%,var(--card));border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:12px 0;display:block;overflow-x:auto}
+th,td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}th{font:500 11px 'IBM Plex Mono',monospace;text-transform:uppercase;color:var(--muted)}
+code{font:13px 'IBM Plex Mono',monospace;background:color-mix(in srgb,var(--ink) 7%,transparent);padding:1px 4px;border-radius:4px;word-break:break-word}
+pre{background:var(--code);color:#eee6d8;border-radius:8px;padding:14px;overflow-x:auto;font:12.5px/1.5 'IBM Plex Mono',monospace}
+pre .fix{color:#7fd08a}pre .old{color:#e58f86;text-decoration:line-through}
+.pill{display:inline-block;font:500 11px 'IBM Plex Mono',monospace;padding:2px 8px;border-radius:99px;border:1px solid var(--line);margin:2px}
+.s-fixed{background:color-mix(in srgb,var(--ok) 18%,transparent)}.s-flagged{background:color-mix(in srgb,var(--warn) 20%,transparent)}.s-decision{background:color-mix(in srgb,var(--proto) 20%,transparent)}
+.sev-high,.sev-critical{color:var(--bad);font-weight:600}.sev-medium{color:var(--warn);font-weight:600}.sev-low{color:var(--proto)}.sev-info{color:var(--muted)}
+footer{margin-top:40px;border-top:1px solid var(--line);padding-top:12px}
+a{color:var(--build)}
+svg text{font-family:Inter,sans-serif}
+</style></head><body><div class="wrap"><nav class="toc"><div class="kicker">Part 5</div><a href="#engine">The ontology engine this SDK speaks</a><a href="#fixes">Where the fixes sit on the map</a><a href="#suggest">Suggested ontology changes</a><a href="#process">Process composition</a>
+<a href="developer_report.html">&larr; index</a></nav><main><div class="kicker">tsccs-dev (npm: mftsccs-browser 2.2.48-beta) &middot; 2026-09-30</div><h1>Ontology report</h1><section id="engine"><span class="eye">The ontology engine this SDK speaks</span><h2>The ontology engine this SDK speaks</h2><p>The SDK is a client of the two-table engine:
+<b>the_concepts</b> (id, userId, typeId, categoryId, referentId, characterValue, accessId, typeCharacter, ghostId) and
+<b>the_connections</b> (id, ofTheConceptId, toTheConceptId, typeId, orderId, userId, accessId, ghostId). Identity is <code>(id, userId)</code>.
+The referent rule shows up as <code>referentId</code> (0/NULL = self, a positive number = a pointer to another concept).</p>
+<table><tr><th>Construct</th><th>SDK surface</th></tr>
+<tr><td>Type concept (<code>the_X</code>)</td><td>MakeTheTypeConcept[Local], GetConceptByCharacterAndCategory, BinaryTypeTree</td></tr>
+<tr><td>Instance concept</td><td>MakeTheInstanceConcept[Local]: userId is forced to 999 when composition=false (service default stamp)</td></tr>
+<tr><td>Connection (typed link)</td><td>CreateTheConnection[Local], CreateConnection (auto-creates the type), connection type names like <code>the_person_s_email</code></td></tr>
+<tr><td>Composition (ordered parts)</td><td>CreateTheComposition[Local], GetComposition*, UpdateComposition, PatchComposition</td></tr>
+<tr><td>Virtual ids</td><td>negative id = local/offline, positive = synced, ghostId keeps the local reference; resolved by LocalSyncData / GetTheConcept</td></tr>
+<tr><td>Query</td><td>FreeschemaQuery {type, conceptIds, typeConnection, selectors, freeschemaQueries[], filters[], filterLogic, reverse, outputFormat (NORMAL=1, DATAID=2, JUSTDATA=3, DATAIDDATE=4, RAW=5, ALLID=6, LISTNORMAL=7, DATAV2=8), usePipelineQuery, isSecure} → POST /api/freeschema-query</td></tr>
+<tr><td>Access</td><td>accessId on each row; AccessControl client (/access/assign, /check, /revoke, /inheritance, /super-admin, concept-based variants)</td></tr>
+<tr><td>Widgets as data</td><td>the_widget, the_page (the_page_body, the_page_title, the_page_slug, ...), the_documentation (the_documentation_password, ...)</td></tr></table></section><section id="fixes"><span class="eye">Where the fixes sit on the map</span><h2>Where the fixes sit on the map</h2><p>None of the fixes changes graph shape, types, or connection names. F1/F2 sit in the logging side channel. F6/F12 are in the widget
+renderer, which reads <code>the_page</code> / <code>the_documentation</code> compositions. F9 is documentation of the init boundary.</p></section><section id="suggest"><span class="eye">Suggested ontology changes</span><h2>Suggested ontology changes</h2><div class="card m"><b>the_documentation_password / the_documentation username / bearerToken (needs decision)</b>
+<p>The <code>the_documentation</code> composition stores API credentials as ordinary concept text (characterValue), readable by anyone who has
+read access to the widget. Suggestion: stop modelling secrets as concepts. Replace them with a reference to a secret held server-side
+(for example <code>the_documentation_credential_reference</code>). Migration first: enumerate existing <code>the_documentation_password</code> rows, rotate those
+credentials, re-point the documentation to the reference, then delete the text rows.</p></div>
+<div class="card l"><b>Log records (safe now)</b><p>Logs are not graph data; nothing to change. Recorded here as checked.</p></div>
+<div class="card i"><b>Naming checked</b><p>The type strings in the code (<code>the_page_*</code>, <code>the_widget</code>, <code>the_documentation_*</code>) follow the <code>the_</code> prefix convention.
+I did not measure live rows, so I make no rename suggestions.</p></div></section><section id="process"><span class="eye">Process composition</span><h2>Process composition</h2><ol>
+<li><code>init()</code>: sets BaseUrl, hydrates TokenStorage from localStorage, sets flags, then either registers the service worker or runs <code>initConceptConnection()</code> on the main thread (IndexedDB → binary trees).</li>
+<li><code>LoginToBackend</code>: POST /api/auth/login, then saveUserProfile (localStorage, F3) and updateAccessToken (synced to the SW). <b>F1 fix here.</b></li>
+<li>Write: MakeTheInstanceConceptLocal / CreateTheConnectionLocal inside LocalTransaction, which produces negative ids in memory and IndexedDB.</li>
+<li>Sync: LocalSyncData.SyncDataOnline, which calls create_the_concept / create_the_connection; ghost ids are mapped to real ids.</li>
+<li>Read: FreeschemaQuery → SchemaQuery / SchemaQueryListener → POST /api/freeschema-query → formatter by outputFormat → QueryCacheManager. <b>F2 fix (token redaction in log).</b></li>
+<li>Render: renderPage → SchemaQuery(the_page) → renderLatestWidget → BuilderStatefulWidget (new Function) → documentation modal. <b>F6/F12 fixes.</b></li>
+<li>In SW mode, every step above is carried by <code>sendMessage(type)</code> → handler map. <b>F7 gap: 4 types missing.</b></li></ol></section>
+<footer><span class="pill">tsccs-dev</span><span class="pill">developer report</span><span class="pill">reusable-test</span><span class="pill">2026-09-30</span></footer></main></div></body></html>

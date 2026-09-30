@@ -242,8 +242,10 @@ export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
  * 6. If service worker enabled, token is synced to service worker
  *
  * **Security Notes:**
- * - Token is stored in memory only (not persisted to disk)
- * - Token is cleared on page refresh (unless you save/restore it)
+ * - Token is held in memory (TokenStorage.BearerAccessToken). LoginToBackend also persists the
+ *   profile (access + refresh token) to localStorage key "ccs_profile", AES-GCM encrypted with a
+ *   key derived from a constant passphrase, and init() restores it on page load
+ * - Treat that stored profile as readable by any script running on the page (XSS)
  * - Never expose token in logs or client-side code
  * - Token should be refreshed before expiration
  *
@@ -290,7 +292,7 @@ function updateAccessToken(accessToken: string = "", session?: any, refreshToken
   }
 
   // because in the service worker document is not defined.
-  if(typeof document == undefined){
+  if(typeof document == "undefined"){
     // for the service worker
    // TokenStorage.sessionId = session;
   }
