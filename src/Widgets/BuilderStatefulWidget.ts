@@ -8,6 +8,33 @@ import { TCustomFunction } from "../DataStructures/TypeLibrary";
 import { getUserDetails } from "../Services/User/UserFromLocalStorage";
 
 /**
+ * Widget lifecycle code (before_render, after_render, mount_child, custom functions,
+ * dependencies) arrives as source strings and has to be compiled with `new Function`.
+ * A page mounts the same widget many times (cards in a list, child widgets, re-renders),
+ * and every compile adds to the SDK's script evaluation time (1,036 ms on a mobile
+ * PageSpeed run of databn.com). Each distinct source is compiled once and reused; the
+ * compiled function is still called with `this` bound to the widget instance, exactly
+ * as before. The cache is bounded so live editing in the builder cannot grow it forever.
+ */
+const COMPILED_LIFECYCLE_LIMIT = 500;
+const compiledLifecycleCache = new Map<string, Function>();
+
+function compileLifecycle(source: unknown): Function {
+  const key = `${source}`;
+  let compiled = compiledLifecycleCache.get(key);
+  if (!compiled) {
+    compiled = new Function("tsccs",`
+        return (async function() {
+          ${source}
+        }).call(this);
+      `);
+    if (compiledLifecycleCache.size >= COMPILED_LIFECYCLE_LIMIT) compiledLifecycleCache.clear();
+    compiledLifecycleCache.set(key, compiled);
+  }
+  return compiled;
+}
+
+/**
  * BuilderStatefulWidget - A dynamic, stateful widget component for building interactive UI elements.
  *
  * This class extends StatefulWidget to provide a powerful widget system that supports:
@@ -276,12 +303,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   async mount_child() {
 
     try{
-      const dynamicAsyncFunction = new Function("tsccs",`
-        return (async function() {
-          ${this.mountChildWidgetsFunction}
-        }).call(this);
-      `).bind(this);
-      dynamicAsyncFunction(tsccs);
+      compileLifecycle(this.mountChildWidgetsFunction).call(this, tsccs);
     }
     catch(error)
     {
@@ -433,12 +455,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
    */
   render_widgetDependencies() {
     try{
-      const dynamicAsyncFunction = new Function("tsccs",`
-        return (async function() {
-          ${this.widgetDependenciesData}
-        }).call(this);
-      `).bind(this);
-      dynamicAsyncFunction(tsccs);
+      compileLifecycle(this.widgetDependenciesData).call(this, tsccs);
     }
     catch(error){
       console.log("This is the error in the before render", error);
@@ -474,15 +491,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
       ?.map((customFunction: TCustomFunction) => customFunction?.code)
       .join("");
     try {
-      const dynamicAsyncFunction = new Function(
-        "tsccs",
-        `
-          return (async function() {
-            ${allCustomFunctions}
-          }).call(this);
-        `
-      ).bind(this);
-      dynamicAsyncFunction(tsccs);
+      compileLifecycle(allCustomFunctions).call(this, tsccs);
     } catch (error) {
       console.error("This is the error in the render_custom_functions", error);
       throw error;
@@ -519,12 +528,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
    */
   before_render() {
     try{
-      const dynamicAsyncFunction = new Function("tsccs",`
-        return (async function() {
-          ${this.componentDidMountFunction}
-        }).call(this);
-      `).bind(this);
-      dynamicAsyncFunction(tsccs);
+      compileLifecycle(this.componentDidMountFunction).call(this, tsccs);
     }
     catch(error){
       console.log("This is the error in the before render", error);
@@ -577,13 +581,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
     //   async function () {}
     // ).constructor;
     try{
-      const dynamicAsyncFunction = new Function("tsccs",`
-        return (async function() {
-          ${this.addEventFunction}
-        }).call(this);
-      `).bind(this);
-
-      dynamicAsyncFunction(tsccs);
+      compileLifecycle(this.addEventFunction).call(this, tsccs);
     }
     catch(error){
       console.log("This is the error in the after render", error);
