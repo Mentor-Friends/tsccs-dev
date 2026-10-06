@@ -43,8 +43,8 @@ export class LocalTransaction {
   async commitTransaction() {
     if (!this.success) throw Error("Query Transaction Expired");
 
-    await LocalSyncData.SyncDataOnline(this.transactionId);
     await this.flushPendingConnectionDeletions();
+    await LocalSyncData.SyncDataOnline(this.transactionId);
     this.actions = { concepts: [], connections: [] };
     this.pendingConnectionDeletions = [];
     this.success = false;
@@ -53,8 +53,8 @@ export class LocalTransaction {
   async commitTransactionWithoutAuth() {
     if (!this.success) throw Error("Query Transaction Expired");
 
-    await LocalSyncData.SyncDataOnlineWithoutAuth(this.transactionId);
     await this.flushPendingConnectionDeletions();
+    await LocalSyncData.SyncDataOnlineWithoutAuth(this.transactionId);
     this.actions = { concepts: [], connections: [] };
     this.pendingConnectionDeletions = [];
     this.success = false;
@@ -84,13 +84,35 @@ export class LocalTransaction {
   protected async flushPendingConnectionDeletions() {
     for (let i = 0; i < this.pendingConnectionDeletions.length; i += TRANSACTION_COMMIT_BATCH_SIZE) {
       const batch = this.pendingConnectionDeletions.slice(i, i + TRANSACTION_COMMIT_BATCH_SIZE);
-      await DeleteConnectionByIdBulk(batch);
+      const deleted = await DeleteConnectionByIdBulk(batch);
+      if (!deleted) throw Error("Failed to delete queued connections");
     }
   }
 
   /**
    * Deletions
    */
+
+  /**
+   * Queues a connection ID for deletion during the next commit.
+   */
+  deleteConnection(id: number) {
+    this.deleteConnections([id]);
+  }
+
+  /**
+   * Queues connection IDs for deletion during the next commit.
+   * Duplicate IDs are removed so each connection is deleted once.
+   */
+  deleteConnections(ids: number[]) {
+    if (!this.success) throw Error("Query Transaction Expired");
+
+    const queued = new Set(this.pendingConnectionDeletions);
+    for (const id of ids) {
+      if (Number.isFinite(id) && id !== 0) queued.add(id);
+    }
+    this.pendingConnectionDeletions = Array.from(queued);
+  }
 
   /**
    * Queries the backend for connections matching the given criteria and queues all
@@ -172,7 +194,7 @@ export class LocalTransaction {
       const results = await GetConnectionsBetweenApi(fetchConnections);
       const ids: number[] = [];
       for (const r of results) ids.push(...r.connectionIds);
-      this.pendingConnectionDeletions.push(...ids);
+      this.deleteConnections(ids);
       return ids;
     } catch (err) {
       console.log(err);
