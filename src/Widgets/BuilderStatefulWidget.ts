@@ -19,15 +19,19 @@ import { getUserDetails } from "../Services/User/UserFromLocalStorage";
 const COMPILED_LIFECYCLE_LIMIT = 500;
 const compiledLifecycleCache = new Map<string, Function>();
 
-function compileLifecycle(source: unknown): Function {
-  const key = `${source}`;
+/**
+ * `sourceURL` names the compiled code in DevTools, so stack traces show
+ * `widget/<name>-<id>/after_render.js` instead of an anonymous `VM298`.
+ */
+function compileLifecycle(source: unknown, sourceUrl: string): Function {
+  const key = `${sourceUrl}\n${source}`;
   let compiled = compiledLifecycleCache.get(key);
   if (!compiled) {
     compiled = new Function("tsccs",`
         return (async function() {
           ${source}
         }).call(this);
-      `);
+      \n//# sourceURL=${sourceUrl}`);
     if (compiledLifecycleCache.size >= COMPILED_LIFECYCLE_LIMIT) compiledLifecycleCache.clear();
     compiledLifecycleCache.set(key, compiled);
   }
@@ -146,6 +150,27 @@ export class BuilderStatefulWidget extends StatefulWidget {
 
   /** JavaScript code (as string) for widget dependencies initialization */
   widgetDependenciesData: string = '';
+
+  /** ID of the widget this instance was built from, used to identify it in error logs */
+  widgetId: number = 0;
+
+  /** Name of the widget this instance was built from, used to identify it in error logs */
+  widgetName: string = "";
+
+  /**
+   * Runs one lifecycle hook's source with `this` bound to the widget. The hook is async and its
+   * promise is not awaited by callers, so a rejection is logged here with the widget it came from
+   * and then rethrown, which keeps the usual "Uncaught (in promise)" report.
+   */
+  protected runLifecycle(hook: string, source: unknown) {
+    const label = `${this.widgetName || "widget"}-${this.widgetId}`.replace(/[^\w-]+/g, "_");
+    const result = compileLifecycle(source, `widget/${label}/${hook}.js`).call(this, tsccs);
+    result?.catch?.((error: unknown) => {
+      console.error(`Widget "${this.widgetName}" (id ${this.widgetId}) failed in ${hook}:`, error);
+      throw error;
+    });
+    return result;
+  }
 
   /**
    * Retrieves the current user's ID from local storage.
@@ -303,7 +328,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
   async mount_child() {
 
     try{
-      compileLifecycle(this.mountChildWidgetsFunction).call(this, tsccs);
+      this.runLifecycle("mount_child", this.mountChildWidgetsFunction);
     }
     catch(error)
     {
@@ -455,7 +480,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
    */
   render_widgetDependencies() {
     try{
-      compileLifecycle(this.widgetDependenciesData).call(this, tsccs);
+      this.runLifecycle("dependency", this.widgetDependenciesData);
     }
     catch(error){
       console.log("This is the error in the before render", error);
@@ -491,7 +516,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
       ?.map((customFunction: TCustomFunction) => customFunction?.code)
       .join("");
     try {
-      compileLifecycle(allCustomFunctions).call(this, tsccs);
+      this.runLifecycle("custom_functions", allCustomFunctions);
     } catch (error) {
       console.error("This is the error in the render_custom_functions", error);
       throw error;
@@ -528,7 +553,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
    */
   before_render() {
     try{
-      compileLifecycle(this.componentDidMountFunction).call(this, tsccs);
+      this.runLifecycle("before_render", this.componentDidMountFunction);
     }
     catch(error){
       console.log("This is the error in the before render", error);
@@ -581,7 +606,7 @@ export class BuilderStatefulWidget extends StatefulWidget {
     //   async function () {}
     // ).constructor;
     try{
-      compileLifecycle(this.addEventFunction).call(this, tsccs);
+      this.runLifecycle("after_render", this.addEventFunction);
     }
     catch(error){
       console.log("This is the error in the after render", error);

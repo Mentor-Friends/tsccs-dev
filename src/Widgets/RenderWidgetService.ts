@@ -944,6 +944,8 @@ function applyLazyImagesFromSnapshot(tree: WidgetTree, lazyImageSources: Set<str
       newWidget.widgetState = {...state};
       newWidget.customFunctions = tree.custom_functions;
       newWidget.widgetDependenciesData = tree.dependency;
+      newWidget.widgetId = tree.id;
+      newWidget.widgetName = tree.name;
       // newWidget.css = `#${tree.id} { ${tree.css} }`;
       // newWidget.css = newWidget.css ? newWidget.css : "";
       if (props) newWidget.data = props;
@@ -1043,6 +1045,8 @@ export async function convertWidgetTreeToWidgetWithWrapper(tree: WidgetTree, par
   newWidget.mountChildWidgetsFunction = tree.mount_child;
   newWidget.customFunctions = tree.custom_functions;
   newWidget.widgetDependenciesData = tree.dependency;
+  newWidget.widgetId = tree.id;
+  newWidget.widgetName = tree.name;
   newWidget.inDevelopment = isInDevelopment === false ? false : true;
   // newWidget.css = newWidget.css ? newWidget.css : "";
   parentElement.innerHTML = "";
