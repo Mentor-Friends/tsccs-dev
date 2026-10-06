@@ -8,6 +8,102 @@ import { initializeLibraries } from "./RenderWidgetLibrary.service";
 import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForRecent, GetWidgetForTree } from "./WidgetBuild";
 
 /**
+ * Optional render behaviour for {@link renderLatestWidget} and {@link materializeWidget}.
+ */
+export type WidgetRenderOptions = {
+  /**
+   * The attach node already holds server-rendered HTML for this widget (the page cache that the
+   * cache server writes into #app). Rendering normally clears that HTML first and rebuilds the page
+   * widget by widget, so visitors see the page blank out and then jump while it rebuilds
+   * (PageSpeed on databn.com: CLS 0.60 to 0.75, 1,980 ms LCP render delay on mobile).
+   *
+   * With this option the server HTML stays on screen, in a snapshot positioned exactly where it
+   * was, while the live widgets build hidden underneath. Both swap in a single frame when the
+   * render finishes. Images the server HTML marked `loading="lazy"` stay lazy in the live render.
+   */
+  preserveServerHtml?: boolean;
+};
+
+type ServerSnapshot = {
+  lazyImageSources: Set<string>;
+  release: () => void;
+};
+
+/** The snapshot is released after this long even if the render never settles. */
+const SERVER_SNAPSHOT_MAX_MS = 10000;
+
+/**
+ * Moves the server-rendered children of `attachNode` into a snapshot that is drawn over the same
+ * spot, and hides `attachNode` (keeping its height) while the live render builds into it.
+ *
+ * The snapshot is appended after #app, so `document.getElementById` and `querySelector` calls in
+ * widget code find the live elements first. It copies the class list of `attachNode` so the cached
+ * CSS, which is scoped to that class, still applies to it.
+ */
+function holdServerSnapshot(attachNode: HTMLElement): ServerSnapshot | null {
+  if (typeof document === "undefined" || !attachNode?.isConnected || !attachNode.firstElementChild) return null;
+
+  const rect = attachNode.getBoundingClientRect();
+  const snapshot = document.createElement("div");
+  snapshot.className = attachNode.className;
+  snapshot.setAttribute("data-server-snapshot", "");
+  snapshot.style.cssText = [
+    "position:absolute",
+    `top:${rect.top + window.scrollY}px`,
+    `left:${rect.left + window.scrollX}px`,
+    `width:${rect.width}px`,
+    "margin:0",
+    "z-index:2147483000",
+  ].join(";");
+
+  const lazyImageSources = new Set<string>();
+  attachNode.querySelectorAll<HTMLImageElement>('img[loading="lazy"]').forEach((img) => {
+    const src = img.getAttribute("src");
+    if (src) lazyImageSources.add(src);
+  });
+
+  while (attachNode.firstChild) snapshot.appendChild(attachNode.firstChild);
+  document.body.appendChild(snapshot);
+
+  const previousVisibility = attachNode.style.visibility;
+  const previousMinHeight = attachNode.style.minHeight;
+  attachNode.style.visibility = "hidden";
+  attachNode.style.minHeight = `${rect.height}px`;
+
+  let released = false;
+  const release = () => {
+    if (released) return;
+    released = true;
+    clearTimeout(timer);
+    snapshot.remove();
+    attachNode.style.visibility = previousVisibility;
+    attachNode.style.minHeight = previousMinHeight;
+  };
+  const timer = setTimeout(release, SERVER_SNAPSHOT_MAX_MS);
+
+  return { lazyImageSources, release };
+}
+
+/**
+ * Adds `loading="lazy" decoding="async"` to images in the widget tree whose src the server HTML
+ * marked as lazy (below the first screen). The attribute has to be in the HTML string before it is
+ * mounted; adding it to a mounted image is too late because the request has already started.
+ */
+function applyLazyImagesFromSnapshot(tree: WidgetTree, lazyImageSources: Set<string>) {
+  if (!lazyImageSources.size || !tree) return;
+  if (typeof tree.html === "string") {
+    tree.html = tree.html.replace(/<img\b([^>]*)>/gi, (tag: string, attributes: string) => {
+      if (/\bloading\s*=/i.test(attributes)) return tag;
+      const src = attributes.match(/\bsrc\s*=\s*(["'])(.*?)\1/i)?.[2];
+      if (!src || !lazyImageSources.has(src)) return tag;
+      const decoding = /\bdecoding\s*=/i.test(attributes) ? "" : ' decoding="async"';
+      return `<img loading="lazy"${decoding}${attributes}>`;
+    });
+  }
+  tree.children?.forEach((child: WidgetTree) => applyLazyImagesFromSnapshot(child, lazyImageSources));
+}
+
+/**
  * Renders a complete page with its widgets and properties.
  *
  * Fetches page data, applies page-level properties (meta tags, styles), and renders
@@ -277,12 +373,14 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
  * @param attachNode - DOM element to attach the widget to
  * @param props - Optional properties to pass to the widget
  * @param showDocumentation - Whether to show documentation button
+ * @param options - Optional render behaviour, see {@link WidgetRenderOptions}
  */
     export async function renderLatestWidget(
       widgetId: number,
       attachNode: HTMLElement,
       props?: any,
-      showDocumentation?: boolean
+      showDocumentation?: boolean,
+      options?: WidgetRenderOptions
     ) {
       // try{
       // const widgets = await GetRelation(widgetId, "the_widget_latest");
@@ -328,8 +426,7 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
         let bulkWidgetData = cacheWidget.data;
         const trueBulk = await checkUseLatestWidget(bulkWidgetData, latestWidgetId)
 
-        return await materializeWidget(latestWidgetId, trueBulk, attachNode, props, showDocumentation);
-        // return await materializeWidget(latestWidgetId, bulkWidgetData, attachNode, props);
+        return await materializeWidget(latestWidgetId, trueBulk, attachNode, props, showDocumentation, options);
       } catch (error: any) {
         console.error(`Error Caught Rendering Widget: ${error}`);
         attachNode.textContent = `Error: ${error.message}`
@@ -370,8 +467,18 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
  * @param showDocumentation - Whether to show documentation button (default: true)
  * @returns Promise resolving to the rendered widget instance
  */
-    export async function materializeWidget(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props?: any, showDocumentation: boolean = true){
+    export async function materializeWidget(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props?: any, showDocumentation: boolean = true, options?: WidgetRenderOptions){
+      const snapshot = options?.preserveServerHtml ? holdServerSnapshot(attachNode) : null;
+      try {
+        return await materializeWidgetInto(widgetId, bulkWidget, attachNode, props, showDocumentation, snapshot);
+      } finally {
+        snapshot?.release();
+      }
+    }
+
+    async function materializeWidgetInto(widgetId: number, bulkWidget:any, attachNode: HTMLElement, props: any, showDocumentation: boolean, snapshot: ServerSnapshot | null){
       const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
+      if (snapshot) applyLazyImagesFromSnapshot(widgetTree, snapshot.lazyImageSources);
       console.log("this is the widget tree", widgetTree);
       if (!widgetTree.name) {
         attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>' + widgetId;
@@ -506,8 +613,11 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
       const childWidgets = mainWidget?.data?.the_widget?.the_widget_s_child;
       outputBulk.push(mainWidget);
       if (childWidgets && childWidgets.length) {
-        for (let index = 0; index < childWidgets.length; index++) {
-          const childWidget = childWidgets[index];
+        // Every child subtree is resolved at the same time. Resolving them one after another made
+        // each "use latest" fetch wait for all the fetches before it (14 sequential
+        // get-latest-widget calls on databn.com). Each subtree collects into its own list and the
+        // lists are joined in child order, so outputBulk has the same order as before.
+        const subtrees = await Promise.all(childWidgets.map(async (childWidget: any) => {
           let originIdOfChildWidget =
             childWidget?.data.the_child_widget?.the_child_widget_info?.data
               ?.the_widget?.the_widget_root?.id;
@@ -515,24 +625,23 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
             ?.the_child_widget_use_latest?.data
             ? true
             : false;
-            //console.log("originIdOfChildWidget", originIdOfChildWidget, childWidget)
             originIdOfChildWidget = Number(originIdOfChildWidget) || false
-          // alert(`getting latest of ${originIdOfChildWidget} if this condition ${useLatest} ${typeof originIdOfChildWidget}`);
           let validChildWid: any|null = null
           if (useLatest && originIdOfChildWidget) {
             const validChildWidBulkData = await BuildWidgetFromIdForLatest(originIdOfChildWidget);
-            // console.log("this the latest widget uselatest", validChildWid);
-            validChildWid = validChildWidBulkData?.data?.[0] || [];
+            // Concurrent requests for the same widget share one result object, so each child gets
+            // its own copy: sChildId below must stay per child, as it was when requests ran in turn.
+            const latestWidget = validChildWidBulkData?.data?.[0];
+            validChildWid = latestWidget ? { ...latestWidget } : [];
             validChildWid.useLatest = true;
             childWidget.data.the_child_widget.the_child_widget_info = validChildWid;
           } 
           childWidget.data.the_child_widget.the_child_widget_info.sChildId = childWidget.id
-          // else {
-          //   validChildWid = childWidget.data.the_child_widget.the_child_widget_info.data[0];
-          //   alert("not using latest")
-          // }
-          await createBulkWidgetRecursive(childWidget.data.the_child_widget.the_child_widget_info, outputBulk)
-        }
+          const subtree: any[] = [];
+          await createBulkWidgetRecursive(childWidget.data.the_child_widget.the_child_widget_info, subtree);
+          return subtree;
+        }));
+        subtrees.forEach((subtree) => outputBulk.push(...subtree));
       }
     }
 
