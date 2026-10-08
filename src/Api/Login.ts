@@ -81,7 +81,7 @@ import { HandleHttpError, HandleHttpErrorObject, HandleInternalError, UpdatePack
  * @see {@link updateAccessToken} for manually updating the stored token
  */
 export async function LoginToBackend(email:string, password:string, application:string = "boomconsole.com"){
-  const logData : any = Logger.logfunction("LoginToBackend", arguments);
+  const logData : any = Logger.logfunction("LoginToBackend", [email, "[REDACTED]", application]);
     try{
         let object = {
             'email': email,

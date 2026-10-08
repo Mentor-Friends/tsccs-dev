@@ -43,6 +43,7 @@
     "jest": "^30.4.2",
     "postcss": "^8.5.6",
     "postcss-nested": "^7.0.2",
+    "terser-webpack-plugin": "^5.6.1",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.2",
     "webpack": "^5.89.0",

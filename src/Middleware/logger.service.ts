@@ -3,6 +3,30 @@ import { TokenStorage } from "../DataStructures/Security/TokenStorage";
 import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
 import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
 
+const JWT_PATTERN = /^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/;
+
+function redactLogValue(value: any): any {
+    return typeof value === "string" && JWT_PATTERN.test(value.trim()) ? "[REDACTED_TOKEN]" : value;
+}
+
+/**
+ * Shallow-redacts JWT-shaped strings from logged function parameters.
+ * Keeps the original shape: an `arguments` object is copied key-by-key.
+ */
+export function redactLogArguments(args: any[]): any[] {
+    if (!Array.isArray(args)) return args;
+    return args.map((arg: any) => {
+        if (arg && typeof arg === "object" && Object.prototype.toString.call(arg) === "[object Arguments]") {
+            const copy: Record<string, any> = {};
+            for (let i = 0; i < arg.length; i++) {
+                copy[i] = redactLogValue(arg[i]);
+            }
+            return copy;
+        }
+        return redactLogValue(arg);
+    });
+}
+
 export class Logger {
 
     private static isLoggerActive: boolean = true;
@@ -160,7 +184,9 @@ export class Logger {
         
         //   if(this.logPackageActivationStatus){
         // console.log("Inside Package Log Activation Status: ");
-        let myarguments: any = args;
+        // Never ship bearer tokens (JWTs) to the log server: callers pass their raw
+        // `arguments`, which can include an explicit auth token parameter.
+        let myarguments: any = redactLogArguments(args);
         //let size = Object.values(myarguments[0]).length;
         const applicationId = BaseUrl.getRandomizer();
         const sessionId = TokenStorage.sessionId;
@@ -396,7 +422,7 @@ export class Logger {
     */
     private static saveLogToLocalStorage(logType:string, logMessage:any):void{
         try{
-            if (typeof localStorage === undefined) {
+            if (typeof localStorage === "undefined") {
                 console.warn("Local Storage type undefined");
                 return
             } else {
@@ -411,7 +437,7 @@ export class Logger {
     }
 
     private static clearLogsFromLocalStorage(logType:string) {
-        if (typeof localStorage === undefined) {
+        if (typeof localStorage === "undefined") {
             console.warn('localStorage is not available');
             return;
         } else {

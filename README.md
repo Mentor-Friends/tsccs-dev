@@ -95,11 +95,15 @@ yarn add mftsccs-browser
 import { init, MakeTheInstanceConceptLocal, GetTheConceptLocal } from 'mftsccs-browser';
 
 // Initialize the package
-await init({
-  url: 'https://your-backend-api.com',
-  clientUrl: 'https://your-app.com',
-  secureCoreModePath: false
-});
+await init(
+  'https://your-backend-api.com',   // url: backend (data fabric) API base URL
+  '',        // aiurl
+  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+  '',        // nodeUrl
+  false,     // enableAi
+  'my-app',  // applicationName
+  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
+);
 
 // Create a concept (recommended: local-first with transactions)
 const newConcept = await MakeTheInstanceConceptLocal(
@@ -205,15 +209,18 @@ console.log('Synced:', actions.concepts.length, 'concepts,', actions.connections
 import { init, sendMessage } from 'mftsccs-browser';
 
 // Initialize with service worker
-await init({
-  url: 'https://your-backend-api.com',
-  clientUrl: 'https://your-app.com',
-  secureCoreModePath: true, // Enable service worker mode
-  serviceWorkerPath: '/service-worker.js'
-});
+await init(
+  'https://your-backend-api.com',   // url: backend (data fabric) API base URL
+  '',        // aiurl
+  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+  '',        // nodeUrl
+  false,     // enableAi
+  'my-app',  // applicationName
+  { activate: true, scope: '/', pathToSW: '/serviceWorker.bundle.js' } // enableSW
+);
 
 // All operations automatically use the service worker
-const concepts = await sendMessage('getConcept', { id: 123 });
+const concepts = await sendMessage('GetConcept', { id: 123 });
 ```
 
 ## Core Concepts
@@ -536,25 +543,18 @@ await DeleteConnectionById(connectionId);
 ### Initialization Options
 
 ```javascript
-await init({
-  // Required: Backend API URL
-  url: 'https://api.example.com',
-
-  // Required: Your application URL
-  clientUrl: 'https://app.example.com',
-
-  // Optional: Enable service worker mode (recommended for production)
-  secureCoreModePath: false,
-
-  // Optional: Custom service worker path
-  serviceWorkerPath: '/sw.js',
-
-  // Optional: Enable detailed logging
-  makeBaseSecure: true,
-
-  // Optional: Custom configuration
-  identificationKey: 'your-app-key'
-}, "", "", "", true, "", undefined, { accessControl: true }, {}, "https://your-access-api.com");
+await init(
+  'https://api.example.com',   // url: backend (data fabric) API base URL
+  '',        // aiurl
+  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+  '',        // nodeUrl
+  false,     // enableAi
+  'my-app',  // applicationName
+  undefined, // enableSW
+  { accessControl: true }, // flags
+  {},        // parameters
+  'https://your-access-api.com' // accessControlUrl
+);
 ```
 
 ### Environment Variables
@@ -583,7 +583,15 @@ SECURE_MODE=true
 import { init, LocalTransaction, GetCompositionLocal } from 'mftsccs-browser';
 
 // Initialize
-await init({ url: API_URL, clientUrl: CLIENT_URL });
+await init(
+  API_URL,   // url: backend (data fabric) API base URL
+  '',        // aiurl
+  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+  '',        // nodeUrl
+  false,     // enableAi
+  'my-app',  // applicationName
+  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
+);
 
 // Create a transaction for atomic operations
 const transaction = new LocalTransaction();
@@ -645,7 +653,15 @@ const employees = await SearchWithTypeAndLinker(
 import { init, LocalTransaction, GetTheConceptLocal } from 'mftsccs-browser';
 
 // Initialize
-await init({ url: API_URL, clientUrl: CLIENT_URL });
+await init(
+  API_URL,   // url: backend (data fabric) API base URL
+  '',        // aiurl
+  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+  '',        // nodeUrl
+  false,     // enableAi
+  'my-app',  // applicationName
+  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
+);
 
 // Create a transaction that works offline
 const transaction = new LocalTransaction();

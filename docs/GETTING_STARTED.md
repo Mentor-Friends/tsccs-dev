@@ -72,13 +72,18 @@ import { init } from 'mftsccs-browser';
 
 async function initializeApp() {
   try {
-    await init({
-      url: 'https://your-backend-api.com',      // Your backend API URL
-      clientUrl: 'https://your-app.com',        // Your application URL
-      secureCoreModePath: false,                 // false = main thread, true = service worker
-      makeBaseSecure: true,                      // Enable secure HTTPS endpoints
-      identificationKey: 'my-app-v1'            // Optional: Unique app identifier
-    }, "", "", "", true, "", undefined, { accessControl: true }, {}, "https://your-access-api.com");
+    await init(
+      'https://your-backend-api.com',   // url: backend (data fabric) API base URL
+      '',        // aiurl
+      '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+      '',        // nodeUrl
+      false,     // enableAi
+      'my-app',  // applicationName
+      undefined, // enableSW
+      { accessControl: true }, // flags
+      {},        // parameters
+      'https://your-access-api.com' // accessControlUrl
+    );
 
     console.log('mftsccs-browser initialized successfully!');
   } catch (error) {
@@ -91,16 +96,20 @@ initializeApp();
 
 ### Initialization Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `url` | string | Yes | Your backend API base URL |
-| `clientUrl` | string | Yes | Your application's URL |
-| `secureCoreModePath` | boolean | No | Enable service worker mode (default: false) |
-| `makeBaseSecure` | boolean | No | Force HTTPS for API calls (default: false) |
-| `identificationKey` | string | No | Unique identifier for your application |
-| `serviceWorkerPath` | string | No | Custom path to service worker file |
-| `flags` | object | No | Application flags (e.g. `{accessControl: true}`) |
-| `accessControlUrl` | string | No | URL to the access control API (if accessControl flag is true) |
+`init()` takes **positional** arguments (see `src/app.ts`):
+
+| # | Parameter | Type | Required | Description |
+|---|-----------|------|----------|-------------|
+| 1 | `url` | string | Yes | Backend (data fabric) API base URL |
+| 2 | `aiurl` | string | No | AI service URL (pass `''` when unused) |
+| 3 | `accessToken` | string | No | Initial bearer token (usually `''`; set by `LoginToBackend`) |
+| 4 | `nodeUrl` | string | No | Node server URL (app config, access tracker, local concepts) |
+| 5 | `enableAi` | boolean | No | Preload AI data (default `true`) |
+| 6 | `applicationName` | string | No | Application name; separates IndexedDB stores |
+| 7 | `enableSW` | object | No | `{ activate, scope?, pathToSW?, manual? }` service-worker mode |
+| 8 | `flags` | object | No | `{ logApplication, logPackage, accessTracker, isTest, accessControl }` |
+| 9 | `parameters` | object | No | `{ logserver, isPwa, enableCache, recaptchaSiteKey, recaptchaAction }` |
+| 10 | `accessControlUrl` | string | No | Access-control API base URL (when `flags.accessControl` is true) |
 
 ## Your First Concept
 
@@ -202,7 +211,15 @@ async function connectTwoConcepts(fromId, toId, connectionType) {
 import { init, CreateTheConcept, CreateTheConnection } from 'mftsccs-browser';
 
 async function buildSocialNetwork() {
-  await init({ url: API_URL, clientUrl: CLIENT_URL });
+  await init(
+    API_URL,   // url: backend (data fabric) API base URL
+    '',        // aiurl
+    '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+    '',        // nodeUrl
+    false,     // enableAi
+    'my-app',  // applicationName
+    undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
+  );
 
   // Create concepts
   const alice = await CreateTheConcept('Alice', TYPE_PERSON, CATEGORY_USER);
@@ -495,12 +512,15 @@ if ('serviceWorker' in navigator) {
 ```javascript
 import { init } from 'mftsccs-browser';
 
-await init({
-  url: 'https://api.example.com',
-  clientUrl: 'https://app.example.com',
-  secureCoreModePath: true,  // Enable service worker mode
-  serviceWorkerPath: '/service-worker.js'
-});
+await init(
+  'https://api.example.com',   // url: backend (data fabric) API base URL
+  '',        // aiurl
+  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+  '',        // nodeUrl
+  false,     // enableAi
+  'my-app',  // applicationName
+  { activate: true, scope: '/', pathToSW: '/serviceWorker.bundle.js' } // enableSW
+);
 ```
 
 ### Communicating with Service Worker
@@ -510,7 +530,7 @@ import { sendMessage } from 'mftsccs-browser';
 
 async function useServiceWorker() {
   // Send messages to service worker
-  const concept = await sendMessage('getConcept', { id: 123 });
+  const concept = await sendMessage('GetConcept', { id: 123 });
 
   // All standard API calls automatically use service worker when enabled
   const newConcept = await CreateTheConcept('New Item', 1, 1);
@@ -605,14 +625,30 @@ async function trackSession(userId) {
 ```javascript
 // ✅ Good
 async function main() {
-  await init({ url: API_URL, clientUrl: CLIENT_URL });
+  await init(
+    API_URL,   // url: backend (data fabric) API base URL
+    '',        // aiurl
+    '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+    '',        // nodeUrl
+    false,     // enableAi
+    'my-app',  // applicationName
+    undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
+  );
   const concept = await CreateTheConcept('Test', 1, 1);
 }
 
 // ❌ Bad
 async function main() {
   const concept = await CreateTheConcept('Test', 1, 1); // Will fail!
-  await init({ url: API_URL, clientUrl: CLIENT_URL });
+  await init(
+    API_URL,   // url: backend (data fabric) API base URL
+    '',        // aiurl
+    '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+    '',        // nodeUrl
+    false,     // enableAi
+    'my-app',  // applicationName
+    undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
+  );
 }
 ```
 
@@ -692,14 +728,22 @@ await CreateTheConnection(person.id, company.id, CONNECTION_WORKS_AT);
 **Solution**: Always call `init()` before using any other functions.
 
 ```javascript
-await init({ url: API_URL, clientUrl: CLIENT_URL });
+await init(
+  API_URL,   // url: backend (data fabric) API base URL
+  '',        // aiurl
+  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+  '',        // nodeUrl
+  false,     // enableAi
+  'my-app',  // applicationName
+  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
+);
 ```
 
 #### 2. CORS Errors
 
 **Problem**: Backend API rejecting requests due to CORS policy.
 
-**Solution**: Ensure your backend allows requests from your `clientUrl`.
+**Solution**: Ensure your backend allows requests from your application origin.
 
 ```javascript
 // Backend configuration (example for Express.js)
@@ -741,12 +785,15 @@ Enable detailed logging for debugging:
 ```javascript
 import { init } from 'mftsccs-browser';
 
-await init({
-  url: API_URL,
-  clientUrl: CLIENT_URL,
-  makeBaseSecure: true,
-  // Add debug flag if available in your configuration
-});
+await init(
+  API_URL,   // url: backend (data fabric) API base URL
+  '',        // aiurl
+  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
+  '',        // nodeUrl
+  false,     // enableAi
+  'my-app',  // applicationName
+  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
+);
 
 // Check browser console for detailed logs
 ```
