@@ -455,6 +455,44 @@ function applyLazyImagesFromSnapshot(tree: WidgetTree, lazyImageSources: Set<str
     }
 
 /**
+ * Renders an exact widget version the way a published page renders its widget.
+ *
+ * Unlike {@link renderWidget}, child widgets marked "use latest" are swapped for their latest
+ * version, as {@link renderLatestWidget} does, so an unpublished version renders exactly as it
+ * will once published. The version is fetched from the API, not the cache server, so a version
+ * saved moments ago renders as saved.
+ *
+ * Errors are thrown instead of only logged, so a caller (such as a test harness) can tell a
+ * failed render from a successful one.
+ *
+ * @param widgetId - The widget version ID to render
+ * @param attachNode - DOM element to attach the widget to
+ * @param props - Optional properties to pass to the widget
+ * @param showDocumentation - Whether to show documentation button (default: false)
+ * @param options - Optional render behaviour, see {@link WidgetRenderOptions}
+ * @returns Promise resolving to the rendered widget instance
+ * @throws When the widget does not exist or does not render
+ */
+    export async function renderWidgetVersion(
+      widgetId: number,
+      attachNode: HTMLElement,
+      props?: any,
+      showDocumentation: boolean = false,
+      options?: WidgetRenderOptions
+    ) {
+      const bulkWidget = await BuildWidgetFromId(widgetId);
+      if (!Array.isArray(bulkWidget) || !bulkWidget.length) {
+        throw new Error(`Widget ${widgetId} does not exist or could not be loaded`);
+      }
+      const trueBulk = await checkUseLatestWidget(bulkWidget, widgetId);
+      const widgetObject = await materializeWidget(widgetId, trueBulk, attachNode, props, showDocumentation, options);
+      if (!widgetObject) {
+        throw new Error(`Widget ${widgetId} did not render`);
+      }
+      return widgetObject;
+    }
+
+/**
  * Materializes a widget tree into DOM elements with styles and scripts.
  *
  * Core rendering logic that converts widget data into live DOM, applies styles,
