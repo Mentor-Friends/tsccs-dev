@@ -1,0 +1,3 @@
+M0 null-control: green (expect green)
+M1 login passes raw arguments: red (expect red)
+M2 logfunction skips redaction: red (expect red)

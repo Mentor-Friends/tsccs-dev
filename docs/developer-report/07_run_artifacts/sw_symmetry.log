@@ -1,0 +1,7 @@
+emitted types: 99, handler keys: 97
+EMITTED WITH NO SW HANDLER (4):
+  BuildWidgetFromIdForRecent  <- src/Widgets/WidgetBuild.ts
+  DeleteConnectionByTypeLocal  <- src/Services/DeleteConnectionByType.ts
+  GetRelationLocal  <- src/Services/Local/GetRelationLocal.ts
+  MakeTheTypeConcept  <- src/Services/MakeTheTypeConcept.ts
+SW HANDLERS NEVER EMITTED BY sendMessage literal (2): GetLinkListener, checkProcess

@@ -1,0 +1,5 @@
+12 vulnerabilities (3 low, 1 moderate, 8 high)
+
+To address all issues, run:
+  npm audit fix
+found 0 vulnerabilities

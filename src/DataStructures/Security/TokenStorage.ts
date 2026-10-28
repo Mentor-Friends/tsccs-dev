@@ -15,7 +15,7 @@ export class TokenStorage {
     }
 
     /**
-     * Stores user profile securely (encrypted in sessionStorage)
+     * Stores user profile (AES-GCM encrypted with a constant-passphrase key, in localStorage)
      * and keeps the token in memory for API calls.
      * Also populates profileCache so getUserDetails() works synchronously.
      */
@@ -47,7 +47,7 @@ export class TokenStorage {
             // Cache in memory for sync access
             TokenStorage.profileCache = profile;
 
-            // Encrypt and persist to sessionStorage
+            // Encrypt and persist to localStorage (see SecureStorage.ts)
             await saveProfile(profile);
             return true;
         } catch {

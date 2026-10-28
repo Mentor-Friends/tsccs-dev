@@ -1,0 +1,790 @@
+diff --git a/README.md b/README.md
+index 7c5e1dc..dc33d91 100644
+--- a/README.md
++++ b/README.md
+@@ -95,11 +95,15 @@ yarn add mftsccs-browser
+ import { init, MakeTheInstanceConceptLocal, GetTheConceptLocal } from 'mftsccs-browser';
+ 
+ // Initialize the package
+-await init({
+-  url: 'https://your-backend-api.com',
+-  clientUrl: 'https://your-app.com',
+-  secureCoreModePath: false
+-});
++await init(
++  'https://your-backend-api.com',   // url: backend (data fabric) API base URL
++  '',        // aiurl
++  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++  '',        // nodeUrl
++  false,     // enableAi
++  'my-app',  // applicationName
++  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
++);
+ 
+ // Create a concept (recommended: local-first with transactions)
+ const newConcept = await MakeTheInstanceConceptLocal(
+@@ -205,15 +209,18 @@ console.log('Synced:', actions.concepts.length, 'concepts,', actions.connections
+ import { init, sendMessage } from 'mftsccs-browser';
+ 
+ // Initialize with service worker
+-await init({
+-  url: 'https://your-backend-api.com',
+-  clientUrl: 'https://your-app.com',
+-  secureCoreModePath: true, // Enable service worker mode
+-  serviceWorkerPath: '/service-worker.js'
+-});
++await init(
++  'https://your-backend-api.com',   // url: backend (data fabric) API base URL
++  '',        // aiurl
++  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++  '',        // nodeUrl
++  false,     // enableAi
++  'my-app',  // applicationName
++  { activate: true, scope: '/', pathToSW: '/serviceWorker.bundle.js' } // enableSW
++);
+ 
+ // All operations automatically use the service worker
+-const concepts = await sendMessage('getConcept', { id: 123 });
++const concepts = await sendMessage('GetConcept', { id: 123 });
+ ```
+ 
+ ## Core Concepts
+@@ -536,25 +543,18 @@ await DeleteConnectionById(connectionId);
+ ### Initialization Options
+ 
+ ```javascript
+-await init({
+-  // Required: Backend API URL
+-  url: 'https://api.example.com',
+-
+-  // Required: Your application URL
+-  clientUrl: 'https://app.example.com',
+-
+-  // Optional: Enable service worker mode (recommended for production)
+-  secureCoreModePath: false,
+-
+-  // Optional: Custom service worker path
+-  serviceWorkerPath: '/sw.js',
+-
+-  // Optional: Enable detailed logging
+-  makeBaseSecure: true,
+-
+-  // Optional: Custom configuration
+-  identificationKey: 'your-app-key'
+-}, "", "", "", true, "", undefined, { accessControl: true }, {}, "https://your-access-api.com");
++await init(
++  'https://api.example.com',   // url: backend (data fabric) API base URL
++  '',        // aiurl
++  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++  '',        // nodeUrl
++  false,     // enableAi
++  'my-app',  // applicationName
++  undefined, // enableSW
++  { accessControl: true }, // flags
++  {},        // parameters
++  'https://your-access-api.com' // accessControlUrl
++);
+ ```
+ 
+ ### Environment Variables
+@@ -583,7 +583,15 @@ SECURE_MODE=true
+ import { init, LocalTransaction, GetCompositionLocal } from 'mftsccs-browser';
+ 
+ // Initialize
+-await init({ url: API_URL, clientUrl: CLIENT_URL });
++await init(
++  API_URL,   // url: backend (data fabric) API base URL
++  '',        // aiurl
++  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++  '',        // nodeUrl
++  false,     // enableAi
++  'my-app',  // applicationName
++  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
++);
+ 
+ // Create a transaction for atomic operations
+ const transaction = new LocalTransaction();
+@@ -645,7 +653,15 @@ const employees = await SearchWithTypeAndLinker(
+ import { init, LocalTransaction, GetTheConceptLocal } from 'mftsccs-browser';
+ 
+ // Initialize
+-await init({ url: API_URL, clientUrl: CLIENT_URL });
++await init(
++  API_URL,   // url: backend (data fabric) API base URL
++  '',        // aiurl
++  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++  '',        // nodeUrl
++  false,     // enableAi
++  'my-app',  // applicationName
++  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
++);
+ 
+ // Create a transaction that works offline
+ const transaction = new LocalTransaction();
+diff --git a/docs/GETTING_STARTED.md b/docs/GETTING_STARTED.md
+index e27bf86..dbd1854 100644
+--- a/docs/GETTING_STARTED.md
++++ b/docs/GETTING_STARTED.md
+@@ -72,13 +72,18 @@ import { init } from 'mftsccs-browser';
+ 
+ async function initializeApp() {
+   try {
+-    await init({
+-      url: 'https://your-backend-api.com',      // Your backend API URL
+-      clientUrl: 'https://your-app.com',        // Your application URL
+-      secureCoreModePath: false,                 // false = main thread, true = service worker
+-      makeBaseSecure: true,                      // Enable secure HTTPS endpoints
+-      identificationKey: 'my-app-v1'            // Optional: Unique app identifier
+-    }, "", "", "", true, "", undefined, { accessControl: true }, {}, "https://your-access-api.com");
++    await init(
++      'https://your-backend-api.com',   // url: backend (data fabric) API base URL
++      '',        // aiurl
++      '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++      '',        // nodeUrl
++      false,     // enableAi
++      'my-app',  // applicationName
++      undefined, // enableSW
++      { accessControl: true }, // flags
++      {},        // parameters
++      'https://your-access-api.com' // accessControlUrl
++    );
+ 
+     console.log('mftsccs-browser initialized successfully!');
+   } catch (error) {
+@@ -91,16 +96,20 @@ initializeApp();
+ 
+ ### Initialization Parameters
+ 
+-| Parameter | Type | Required | Description |
+-|-----------|------|----------|-------------|
+-| `url` | string | Yes | Your backend API base URL |
+-| `clientUrl` | string | Yes | Your application's URL |
+-| `secureCoreModePath` | boolean | No | Enable service worker mode (default: false) |
+-| `makeBaseSecure` | boolean | No | Force HTTPS for API calls (default: false) |
+-| `identificationKey` | string | No | Unique identifier for your application |
+-| `serviceWorkerPath` | string | No | Custom path to service worker file |
+-| `flags` | object | No | Application flags (e.g. `{accessControl: true}`) |
+-| `accessControlUrl` | string | No | URL to the access control API (if accessControl flag is true) |
++`init()` takes **positional** arguments (see `src/app.ts`):
++
++| # | Parameter | Type | Required | Description |
++|---|-----------|------|----------|-------------|
++| 1 | `url` | string | Yes | Backend (data fabric) API base URL |
++| 2 | `aiurl` | string | No | AI service URL (pass `''` when unused) |
++| 3 | `accessToken` | string | No | Initial bearer token (usually `''`; set by `LoginToBackend`) |
++| 4 | `nodeUrl` | string | No | Node server URL (app config, access tracker, local concepts) |
++| 5 | `enableAi` | boolean | No | Preload AI data (default `true`) |
++| 6 | `applicationName` | string | No | Application name; separates IndexedDB stores |
++| 7 | `enableSW` | object | No | `{ activate, scope?, pathToSW?, manual? }` service-worker mode |
++| 8 | `flags` | object | No | `{ logApplication, logPackage, accessTracker, isTest, accessControl }` |
++| 9 | `parameters` | object | No | `{ logserver, isPwa, enableCache, recaptchaSiteKey, recaptchaAction }` |
++| 10 | `accessControlUrl` | string | No | Access-control API base URL (when `flags.accessControl` is true) |
+ 
+ ## Your First Concept
+ 
+@@ -202,7 +211,15 @@ async function connectTwoConcepts(fromId, toId, connectionType) {
+ import { init, CreateTheConcept, CreateTheConnection } from 'mftsccs-browser';
+ 
+ async function buildSocialNetwork() {
+-  await init({ url: API_URL, clientUrl: CLIENT_URL });
++  await init(
++    API_URL,   // url: backend (data fabric) API base URL
++    '',        // aiurl
++    '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++    '',        // nodeUrl
++    false,     // enableAi
++    'my-app',  // applicationName
++    undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
++  );
+ 
+   // Create concepts
+   const alice = await CreateTheConcept('Alice', TYPE_PERSON, CATEGORY_USER);
+@@ -495,12 +512,15 @@ if ('serviceWorker' in navigator) {
+ ```javascript
+ import { init } from 'mftsccs-browser';
+ 
+-await init({
+-  url: 'https://api.example.com',
+-  clientUrl: 'https://app.example.com',
+-  secureCoreModePath: true,  // Enable service worker mode
+-  serviceWorkerPath: '/service-worker.js'
+-});
++await init(
++  'https://api.example.com',   // url: backend (data fabric) API base URL
++  '',        // aiurl
++  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++  '',        // nodeUrl
++  false,     // enableAi
++  'my-app',  // applicationName
++  { activate: true, scope: '/', pathToSW: '/serviceWorker.bundle.js' } // enableSW
++);
+ ```
+ 
+ ### Communicating with Service Worker
+@@ -510,7 +530,7 @@ import { sendMessage } from 'mftsccs-browser';
+ 
+ async function useServiceWorker() {
+   // Send messages to service worker
+-  const concept = await sendMessage('getConcept', { id: 123 });
++  const concept = await sendMessage('GetConcept', { id: 123 });
+ 
+   // All standard API calls automatically use service worker when enabled
+   const newConcept = await CreateTheConcept('New Item', 1, 1);
+@@ -605,14 +625,30 @@ async function trackSession(userId) {
+ ```javascript
+ // ✅ Good
+ async function main() {
+-  await init({ url: API_URL, clientUrl: CLIENT_URL });
++  await init(
++    API_URL,   // url: backend (data fabric) API base URL
++    '',        // aiurl
++    '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++    '',        // nodeUrl
++    false,     // enableAi
++    'my-app',  // applicationName
++    undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
++  );
+   const concept = await CreateTheConcept('Test', 1, 1);
+ }
+ 
+ // ❌ Bad
+ async function main() {
+   const concept = await CreateTheConcept('Test', 1, 1); // Will fail!
+-  await init({ url: API_URL, clientUrl: CLIENT_URL });
++  await init(
++    API_URL,   // url: backend (data fabric) API base URL
++    '',        // aiurl
++    '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++    '',        // nodeUrl
++    false,     // enableAi
++    'my-app',  // applicationName
++    undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
++  );
+ }
+ ```
+ 
+@@ -692,14 +728,22 @@ await CreateTheConnection(person.id, company.id, CONNECTION_WORKS_AT);
+ **Solution**: Always call `init()` before using any other functions.
+ 
+ ```javascript
+-await init({ url: API_URL, clientUrl: CLIENT_URL });
++await init(
++  API_URL,   // url: backend (data fabric) API base URL
++  '',        // aiurl
++  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++  '',        // nodeUrl
++  false,     // enableAi
++  'my-app',  // applicationName
++  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
++);
+ ```
+ 
+ #### 2. CORS Errors
+ 
+ **Problem**: Backend API rejecting requests due to CORS policy.
+ 
+-**Solution**: Ensure your backend allows requests from your `clientUrl`.
++**Solution**: Ensure your backend allows requests from your application origin.
+ 
+ ```javascript
+ // Backend configuration (example for Express.js)
+@@ -741,12 +785,15 @@ Enable detailed logging for debugging:
+ ```javascript
+ import { init } from 'mftsccs-browser';
+ 
+-await init({
+-  url: API_URL,
+-  clientUrl: CLIENT_URL,
+-  makeBaseSecure: true,
+-  // Add debug flag if available in your configuration
+-});
++await init(
++  API_URL,   // url: backend (data fabric) API base URL
++  '',        // aiurl
++  '',        // accessToken (set later via LoginToBackend / updateAccessToken)
++  '',        // nodeUrl
++  false,     // enableAi
++  'my-app',  // applicationName
++  undefined  // enableSW: { activate: true, pathToSW: '/serviceWorker.bundle.js' } for service-worker mode
++);
+ 
+ // Check browser console for detailed logs
+ ```
+diff --git a/package-lock.json b/package-lock.json
+index bbc898f..ee13c3d 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "mftsccs-browser",
+-  "version": "2.2.42-beta",
++  "version": "2.2.48-beta",
+   "lockfileVersion": 3,
+   "requires": true,
+   "packages": {
+     "": {
+       "name": "mftsccs-browser",
+-      "version": "2.2.42-beta",
++      "version": "2.2.48-beta",
+       "hasInstallScript": true,
+       "license": "ISC",
+       "dependencies": {
+@@ -23,6 +23,7 @@
+         "jest": "^30.4.2",
+         "postcss": "^8.5.6",
+         "postcss-nested": "^7.0.2",
++        "terser-webpack-plugin": "^5.6.1",
+         "ts-loader": "^9.5.1",
+         "typescript": "^5.3.2",
+         "webpack": "^5.89.0",
+@@ -3909,6 +3910,16 @@
+         "node": ">=8.0.0"
+       }
+     },
++    "node_modules/eslint-scope/node_modules/estraverse": {
++      "version": "4.3.0",
++      "resolved": "https://registry.npmjs.org/estraverse/-/estraverse-4.3.0.tgz",
++      "integrity": "sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw==",
++      "dev": true,
++      "license": "BSD-2-Clause",
++      "engines": {
++        "node": ">=4.0"
++      }
++    },
+     "node_modules/esprima": {
+       "version": "4.0.1",
+       "resolved": "https://registry.npmjs.org/esprima/-/esprima-4.0.1.tgz",
+@@ -5645,6 +5656,19 @@
+         "url": "https://github.com/sponsors/sindresorhus"
+       }
+     },
++    "node_modules/p-locate": {
++      "version": "4.1.0",
++      "resolved": "https://registry.npmjs.org/p-locate/-/p-locate-4.1.0.tgz",
++      "integrity": "sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "p-limit": "^2.2.0"
++      },
++      "engines": {
++        "node": ">=8"
++      }
++    },
+     "node_modules/p-try": {
+       "version": "2.2.0",
+       "resolved": "https://registry.npmjs.org/p-try/-/p-try-2.2.0.tgz",
+@@ -5896,16 +5920,6 @@
+       ],
+       "license": "MIT"
+     },
+-    "node_modules/randombytes": {
+-      "version": "2.1.0",
+-      "resolved": "https://registry.npmjs.org/randombytes/-/randombytes-2.1.0.tgz",
+-      "integrity": "sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==",
+-      "dev": true,
+-      "license": "MIT",
+-      "dependencies": {
+-        "safe-buffer": "^5.1.0"
+-      }
+-    },
+     "node_modules/react-is-18": {
+       "name": "react-is",
+       "version": "18.3.1",
+@@ -6069,27 +6083,6 @@
+         "node": ">=8"
+       }
+     },
+-    "node_modules/safe-buffer": {
+-      "version": "5.2.1",
+-      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz",
+-      "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
+-      "dev": true,
+-      "funding": [
+-        {
+-          "type": "github",
+-          "url": "https://github.com/sponsors/feross"
+-        },
+-        {
+-          "type": "patreon",
+-          "url": "https://www.patreon.com/feross"
+-        },
+-        {
+-          "type": "consulting",
+-          "url": "https://feross.org/support"
+-        }
+-      ],
+-      "license": "MIT"
+-    },
+     "node_modules/schema-utils": {
+       "version": "4.3.2",
+       "resolved": "https://registry.npmjs.org/schema-utils/-/schema-utils-4.3.2.tgz",
+@@ -6120,16 +6113,6 @@
+         "semver": "bin/semver.js"
+       }
+     },
+-    "node_modules/serialize-javascript": {
+-      "version": "6.0.2",
+-      "resolved": "https://registry.npmjs.org/serialize-javascript/-/serialize-javascript-6.0.2.tgz",
+-      "integrity": "sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==",
+-      "dev": true,
+-      "license": "BSD-3-Clause",
+-      "dependencies": {
+-        "randombytes": "^2.1.0"
+-      }
+-    },
+     "node_modules/shallow-clone": {
+       "version": "3.0.1",
+       "resolved": "https://registry.npmjs.org/shallow-clone/-/shallow-clone-3.0.1.tgz",
+@@ -6494,16 +6477,15 @@
+       }
+     },
+     "node_modules/terser-webpack-plugin": {
+-      "version": "5.3.14",
+-      "resolved": "https://registry.npmjs.org/terser-webpack-plugin/-/terser-webpack-plugin-5.3.14.tgz",
+-      "integrity": "sha512-vkZjpUjb6OMS7dhV+tILUW6BhpDR7P2L/aQSAv+Uwk+m8KATX9EccViHTJR2qDtACKPIYndLGCyl3FMo+r2LMw==",
++      "version": "5.6.1",
++      "resolved": "https://registry.npmjs.org/terser-webpack-plugin/-/terser-webpack-plugin-5.6.1.tgz",
++      "integrity": "sha512-201R5j+sJpK8nFWwKVyNfZot8FaJbLZDq5evriVzbV1wDtSXDjRUDRfJzHpAaxFDMEhsZL1QkeqM61wgsS3KaQ==",
+       "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "@jridgewell/trace-mapping": "^0.3.25",
+         "jest-worker": "^27.4.5",
+         "schema-utils": "^4.3.0",
+-        "serialize-javascript": "^6.0.2",
+         "terser": "^5.31.1"
+       },
+       "engines": {
+@@ -6517,12 +6499,39 @@
+         "webpack": "^5.1.0"
+       },
+       "peerDependenciesMeta": {
++        "@minify-html/node": {
++          "optional": true
++        },
+         "@swc/core": {
+           "optional": true
+         },
++        "@swc/css": {
++          "optional": true
++        },
++        "@swc/html": {
++          "optional": true
++        },
++        "clean-css": {
++          "optional": true
++        },
++        "cssnano": {
++          "optional": true
++        },
++        "csso": {
++          "optional": true
++        },
+         "esbuild": {
+           "optional": true
+         },
++        "html-minifier-terser": {
++          "optional": true
++        },
++        "lightningcss": {
++          "optional": true
++        },
++        "postcss": {
++          "optional": true
++        },
+         "uglify-js": {
+           "optional": true
+         }
+diff --git a/package.json b/package.json
+index 4a7cc63..07a5f28 100644
+--- a/package.json
++++ b/package.json
+@@ -43,6 +43,7 @@
+     "jest": "^30.4.2",
+     "postcss": "^8.5.6",
+     "postcss-nested": "^7.0.2",
++    "terser-webpack-plugin": "^5.6.1",
+     "ts-loader": "^9.5.1",
+     "typescript": "^5.3.2",
+     "webpack": "^5.89.0",
+@@ -64,4 +65,4 @@
+   "dependencies": {
+     "ncp": "^2.0.0"
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/src/Api/Login.ts b/src/Api/Login.ts
+index a24d1ee..01fb55e 100644
+--- a/src/Api/Login.ts
++++ b/src/Api/Login.ts
+@@ -81,7 +81,7 @@ import { HandleHttpError, HandleHttpErrorObject, HandleInternalError, UpdatePack
+  * @see {@link updateAccessToken} for manually updating the stored token
+  */
+ export async function LoginToBackend(email:string, password:string, application:string = "boomconsole.com"){
+-  const logData : any = Logger.logfunction("LoginToBackend", arguments);
++  const logData : any = Logger.logfunction("LoginToBackend", [email, "[REDACTED]", application]);
+     try{
+         let object = {
+             'email': email,
+diff --git a/src/DataStructures/Security/TokenStorage.ts b/src/DataStructures/Security/TokenStorage.ts
+index 017b118..270407a 100644
+--- a/src/DataStructures/Security/TokenStorage.ts
++++ b/src/DataStructures/Security/TokenStorage.ts
+@@ -15,7 +15,7 @@ export class TokenStorage {
+     }
+ 
+     /**
+-     * Stores user profile securely (encrypted in sessionStorage)
++     * Stores user profile (AES-GCM encrypted with a constant-passphrase key, in localStorage)
+      * and keeps the token in memory for API calls.
+      * Also populates profileCache so getUserDetails() works synchronously.
+      */
+@@ -47,7 +47,7 @@ export class TokenStorage {
+             // Cache in memory for sync access
+             TokenStorage.profileCache = profile;
+ 
+-            // Encrypt and persist to sessionStorage
++            // Encrypt and persist to localStorage (see SecureStorage.ts)
+             await saveProfile(profile);
+             return true;
+         } catch {
+diff --git a/src/Metadata/AutocompleteMetadata.ts b/src/Metadata/AutocompleteMetadata.ts
+index 49d1846..2c6333a 100644
+--- a/src/Metadata/AutocompleteMetadata.ts
++++ b/src/Metadata/AutocompleteMetadata.ts
+@@ -1628,7 +1628,7 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
+       "parameters": [
+         "signinResponse"
+       ],
+-      "documentation": "Stores user profile securely (encrypted in sessionStorage)\nand keeps the token in memory for API calls.\nAlso populates profileCache so getUserDetails() works synchronously."
++      "documentation": "Stores user profile (AES-GCM encrypted with a constant-passphrase key, in localStorage)\nand keeps the token in memory for API calls.\nAlso populates profileCache so getUserDetails() works synchronously."
+     },
+     "setSession": {
+       "parameters": [
+@@ -3029,7 +3029,7 @@ export const tsccsAutocompleteMetadata: TsccsAutocompleteMetadata = {
+         "session",
+         "refreshToken"
+       ],
+-      "documentation": "Updates the JWT access token used for authenticated API requests.\n\nThis function should be called after user authentication to set or update the bearer token\nthat will be used for all subsequent authenticated operations. The token is stored in\nTokenStorage and automatically included in API request headers.\n\n**When to Use:**\n- After successful login (LoginToBackend or Signin)\n- When refreshing an expired token\n- When switching between user sessions\n- When restoring a saved session on app reload\n\n**Token Flow:**\n1. User logs in via LoginToBackend() or Signin()\n2. Backend returns JWT token\n3. Call updateAccessToken() with the token\n4. Token is stored in memory (TokenStorage.BearerAccessToken)\n5. All API calls automatically use this token\n6. If service worker enabled, token is synced to service worker\n\n**Security Notes:**\n- Token is stored in memory only (not persisted to disk)\n- Token is cleared on page refresh (unless you save/restore it)\n- Never expose token in logs or client-side code\n- Token should be refreshed before expiration\n\nParam: accessToken - The JWT bearer token obtained from authentication.\nFormat: \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\nPass empty string to clear the token (logout).\n\nParam: session - Optional session information to sync with token.\nReserved for future use. Currently not fully implemented.\n\nReturns: void"
++      "documentation": "Updates the JWT access token used for authenticated API requests.\n\nThis function should be called after user authentication to set or update the bearer token\nthat will be used for all subsequent authenticated operations. The token is stored in\nTokenStorage and automatically included in API request headers.\n\n**When to Use:**\n- After successful login (LoginToBackend or Signin)\n- When refreshing an expired token\n- When switching between user sessions\n- When restoring a saved session on app reload\n\n**Token Flow:**\n1. User logs in via LoginToBackend() or Signin()\n2. Backend returns JWT token\n3. Call updateAccessToken() with the token\n4. Token is stored in memory (TokenStorage.BearerAccessToken)\n5. All API calls automatically use this token\n6. If service worker enabled, token is synced to service worker\n\n**Security Notes:**\n- Token is held in memory (TokenStorage.BearerAccessToken). LoginToBackend also persists the\nprofile (access + refresh token) to localStorage key \"ccs_profile\", AES-GCM encrypted with a\nkey derived from a constant passphrase, and init() restores it on page load\n- Treat that stored profile as readable by any script running on the page (XSS)\n- Never expose token in logs or client-side code\n- Token should be refreshed before expiration\n\nParam: accessToken - The JWT bearer token obtained from authentication.\nFormat: \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\nPass empty string to clear the token (logout).\n\nParam: session - Optional session information to sync with token.\nReserved for future use. Currently not fully implemented.\n\nReturns: void"
+     },
+     "uploadAttachment": {
+       "parameters": [
+diff --git a/src/Middleware/logger.service.ts b/src/Middleware/logger.service.ts
+index 90c04ce..719f6be 100644
+--- a/src/Middleware/logger.service.ts
++++ b/src/Middleware/logger.service.ts
+@@ -3,6 +3,30 @@ import { TokenStorage } from "../DataStructures/Security/TokenStorage";
+ import { UpdatePackageLogWithError } from "../Services/Common/ErrorPosting";
+ import { GetRequestHeader } from "../Services/Security/GetRequestHeader";
+ 
++const JWT_PATTERN = /^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/;
++
++function redactLogValue(value: any): any {
++    return typeof value === "string" && JWT_PATTERN.test(value.trim()) ? "[REDACTED_TOKEN]" : value;
++}
++
++/**
++ * Shallow-redacts JWT-shaped strings from logged function parameters.
++ * Keeps the original shape: an `arguments` object is copied key-by-key.
++ */
++export function redactLogArguments(args: any[]): any[] {
++    if (!Array.isArray(args)) return args;
++    return args.map((arg: any) => {
++        if (arg && typeof arg === "object" && Object.prototype.toString.call(arg) === "[object Arguments]") {
++            const copy: Record<string, any> = {};
++            for (let i = 0; i < arg.length; i++) {
++                copy[i] = redactLogValue(arg[i]);
++            }
++            return copy;
++        }
++        return redactLogValue(arg);
++    });
++}
++
+ export class Logger {
+ 
+     private static isLoggerActive: boolean = true;
+@@ -160,7 +184,9 @@ export class Logger {
+         
+         //   if(this.logPackageActivationStatus){
+         // console.log("Inside Package Log Activation Status: ");
+-        let myarguments: any = args;
++        // Never ship bearer tokens (JWTs) to the log server: callers pass their raw
++        // `arguments`, which can include an explicit auth token parameter.
++        let myarguments: any = redactLogArguments(args);
+         //let size = Object.values(myarguments[0]).length;
+         const applicationId = BaseUrl.getRandomizer();
+         const sessionId = TokenStorage.sessionId;
+@@ -396,7 +422,7 @@ export class Logger {
+     */
+     private static saveLogToLocalStorage(logType:string, logMessage:any):void{
+         try{
+-            if (typeof localStorage === undefined) {
++            if (typeof localStorage === "undefined") {
+                 console.warn("Local Storage type undefined");
+                 return
+             } else {
+@@ -411,7 +437,7 @@ export class Logger {
+     }
+ 
+     private static clearLogsFromLocalStorage(logType:string) {
+-        if (typeof localStorage === undefined) {
++        if (typeof localStorage === "undefined") {
+             console.warn('localStorage is not available');
+             return;
+         } else {
+diff --git a/src/Widgets/RenderWidgetService.ts b/src/Widgets/RenderWidgetService.ts
+index a27b706..e2650e1 100644
+--- a/src/Widgets/RenderWidgetService.ts
++++ b/src/Widgets/RenderWidgetService.ts
+@@ -55,7 +55,8 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
+         // await renderWidget(widgets[0].id, attachNode, props);
+         await renderLatestWidget(output?.[0]?.data?.the_page?.the_page_body?.id, attachNode, props, showDocumentation);
+       else{
+-        attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4> ' + pageId; 
++        attachNode.innerHTML = '<h4>Invalid or Page doesn\'t exist</h4> ';
++        attachNode.appendChild(document.createTextNode(String(pageId)));
+       }
+     }
+ 
+@@ -146,7 +147,8 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
+       const widgetTree = DataCache.cache.get(`wdgt_${latestWidgetId}`);
+       console.log("renderImportedWidget widgetTree -->", widgetTree);
+       if (!widgetTree.name) {
+-        attachNode.innerHTML = "<h4>Invalid or Widget doesn't exist</h4>" + widgetId;
++        attachNode.innerHTML = "<h4>Invalid or Widget doesn't exist</h4>";
++        attachNode.appendChild(document.createTextNode(String(widgetId)));
+         return;
+       }
+       const appElement = attachNode;
+@@ -236,9 +238,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
+           ".widget-documentation-btn"
+         );
+         widgetPreviewButtonList?.forEach((previewButton: any) => {
+-          previewButton.addEventListener("click", (event: any) => {
+-            const eventTarget = event?.target;
+-            const widgetId = eventTarget?.getAttribute("widget-id");
++          previewButton.addEventListener("click", () => {
++            // read from the bound button: a click on the inner <svg>/<path> has no widget-id
++            const widgetId = previewButton.getAttribute("widget-id");
+             openDocumentationPreviewModal(widgetId);
+           });
+         });
+@@ -374,7 +376,8 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
+       const widgetTree = await getWidgetBulkFromId(widgetId,[], bulkWidget);
+       console.log("this is the widget tree", widgetTree);
+       if (!widgetTree.name) {
+-        attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>' + widgetId;
++        attachNode.innerHTML = '<h4>Invalid or Widget doesn\'t exist</h4>';
++        attachNode.appendChild(document.createTextNode(String(widgetId)));
+         return 
+       }
+       const appElement = attachNode;
+@@ -464,9 +467,9 @@ import { BuildWidgetFromCache, BuildWidgetFromIdForLatest, BuildWidgetFromIdForR
+         ".widget-documentation-btn"
+       );
+       widgetPreviewButtonList?.forEach((previewButton: any) => {
+-        previewButton.addEventListener("click", (event:any) => {
+-          const eventTarget = event?.target;
+-          const widgetId = eventTarget?.getAttribute('widget-id');
++        previewButton.addEventListener("click", () => {
++          // read from the bound button: a click on the inner <svg>/<path> has no widget-id
++          const widgetId = previewButton.getAttribute('widget-id');
+           openDocumentationPreviewModal(widgetId);
+         });
+       });
+diff --git a/src/app.ts b/src/app.ts
+index e386ccf..0990743 100644
+--- a/src/app.ts
++++ b/src/app.ts
+@@ -242,8 +242,10 @@ export function setHasActivatedSW (value: boolean) { hasActivatedSW = value}
+  * 6. If service worker enabled, token is synced to service worker
+  *
+  * **Security Notes:**
+- * - Token is stored in memory only (not persisted to disk)
+- * - Token is cleared on page refresh (unless you save/restore it)
++ * - Token is held in memory (TokenStorage.BearerAccessToken). LoginToBackend also persists the
++ *   profile (access + refresh token) to localStorage key "ccs_profile", AES-GCM encrypted with a
++ *   key derived from a constant passphrase, and init() restores it on page load
++ * - Treat that stored profile as readable by any script running on the page (XSS)
+  * - Never expose token in logs or client-side code
+  * - Token should be refreshed before expiration
+  *
+@@ -290,7 +292,7 @@ function updateAccessToken(accessToken: string = "", session?: any, refreshToken
+   }
+ 
+   // because in the service worker document is not defined.
+-  if(typeof document == undefined){
++  if(typeof document == "undefined"){
+     // for the service worker
+    // TokenStorage.sessionId = session;
+   }
+diff --git a/tests/LoggerRedaction.test.ts b/tests/LoggerRedaction.test.ts
+new file mode 100644
+index 0000000..4138bef
+--- /dev/null
++++ b/tests/LoggerRedaction.test.ts
+@@ -0,0 +1,60 @@
++import { Logger, redactLogArguments } from "../src/Middleware/logger.service";
++
++jest.mock("../src/app", () => ({
++  BaseUrl: { BASE_APPLICATION: "test-app", getRandomizer: () => 1, PostLogger: () => "", LoginUrl: () => "https://backend.test/api/auth/login" },
++  get Logger() { return jest.requireActual("../src/Middleware/logger.service").Logger; },
++  updateAccessToken: jest.fn(),
++}));
++
++const JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.c2lnbmF0dXJl";
++
++function callWithArguments(this: any, ..._a: any[]) {
++  // mirrors the SDK call sites: Logger.logfunction("Name", arguments)
++  // eslint-disable-next-line prefer-rest-params
++  return Logger.logfunction("FreeschemaQueryApi", arguments);
++}
++
++describe("package logger redaction", () => {
++  beforeEach(() => {
++    (Logger as any).packageLogsData = [];
++    Logger.logPackageActivationStatus = true;
++  });
++  afterEach(() => {
++    Logger.logPackageActivationStatus = false;
++  });
++
++  test("a JWT passed as an explicit token argument never reaches the queued log", () => {
++    callWithArguments({ type: "the_user" }, JWT);
++    const queued = JSON.stringify((Logger as any).packageLogsData);
++    expect(queued).not.toContain(JWT);
++    expect(queued).toContain("[REDACTED_TOKEN]");
++    // non-secret parameters are kept for diagnostics
++    expect(queued).toContain("the_user");
++  });
++
++  test("redactLogArguments keeps the arguments-object shape", () => {
++    const out = (function (..._a: any[]) {
++      // eslint-disable-next-line prefer-rest-params
++      return redactLogArguments([arguments]);
++    })("plain", JWT);
++    expect(out[0]).toEqual({ 0: "plain", 1: "[REDACTED_TOKEN]" });
++  });
++
++  test("LoginToBackend does not queue the password in the package log (outcome)", async () => {
++    const { LoginToBackend } = require("../src/Api/Login");
++    const { Logger: RealLogger } = require("../src/app"); // the instance Login.ts actually uses
++    RealLogger.logPackageActivationStatus = true;
++    (RealLogger as any).packageLogsData = [];
++    const seen: any[] = [];
++    const spy = jest.spyOn(RealLogger, "formatLogData").mockImplementation((...a: any[]) => { seen.push(a); return {}; });
++    const PASSWORD = "S3ntinel-Pa55word!";
++    global.fetch = jest.fn(async () => ({ ok: false, status: 401, json: async () => ({ message: "bad" }) })) as any;
++    try { await LoginToBackend("user@example.com", PASSWORD, "app"); } catch { /* error path is fine */ }
++    spy.mockRestore();
++    const queued = JSON.stringify(seen);
++    expect(queued).toContain("LoginToBackend");
++    expect(queued).toContain("user@example.com");
++    expect(queued).not.toContain(PASSWORD);
++    RealLogger.logPackageActivationStatus = false;
++  });
++});
