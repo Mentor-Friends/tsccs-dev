@@ -167,7 +167,12 @@ export class AccessControlService implements IAccessControlService {
       }
 
       // Type concept check
-      if (concept.referentId === null || concept.referentId === undefined || concept.referentId === 0) {
+      // FIX SEC-10: only a NULL referent marks a type concept (the server's rule). Referent 0 is a
+      // composition / value instance (the SDK writes referent 0 for those), and granting it here let
+      // every private composition skip Phases 3-5. Referent 0 (and a missing referent on a record
+      // that is not a type) now falls through to the public-threshold and inheritance checks.
+      // NOTE: this check runs in the client and is advisory only; the server must enforce access.
+      if (concept.referentId === null) {
         results.set(conceptId, true); continue;
       }
 
